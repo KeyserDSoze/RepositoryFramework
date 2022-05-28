@@ -2,10 +2,9 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class BytePopulationService<T, TKey> : IBytePopulationService<T, TKey>
-        where TKey : notnull
+    internal class BytePopulationService : IBytePopulationService
     {
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
             if (type == typeof(byte) || type == typeof(byte?))
                 return RandomNumberGenerator.GetBytes(1)[0];

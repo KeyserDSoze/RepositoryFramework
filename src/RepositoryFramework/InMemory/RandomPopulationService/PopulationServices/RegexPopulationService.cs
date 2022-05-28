@@ -3,13 +3,12 @@ using RepositoryFramework.Services;
 
 namespace RepositoryFramework.Population
 {
-    internal class RegexPopulationService<T, TKey> : IRegexPopulationService<T, TKey>
-        where TKey : notnull
+    internal class RegexPopulationService : IRegexPopulationService
     {
         private readonly IRegexService _regexService;
         public RegexPopulationService(IRegexService regexService) 
             => _regexService = regexService;
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
             string[] regexes = args;
             var seed = regexes.First();

@@ -2,10 +2,9 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class CharPopulationService<T, TKey> : ICharPopulationService<T, TKey>
-        where TKey : notnull
+    internal class CharPopulationService : ICharPopulationService
     {
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
             => (char)RandomNumberGenerator.GetInt32(256);
     }
 }

@@ -1,35 +1,34 @@
 ﻿namespace RepositoryFramework.Population
 {
-    internal class PopulationServiceFactory<T, TKey> : IPopulationServiceFactory<T, TKey>
-        where TKey : notnull
+    internal class PopulationServiceFactory : IPopulationServiceFactory
     {
-        private readonly IArrayPopulationService<T, TKey> _arrayPopulationService;
-        private readonly IAbstractPopulationService<T, TKey> _abstractPopulationService;
-        private readonly IBoolPopulationService<T, TKey> _boolPopulationService;
-        private readonly IBytePopulationService<T, TKey> _bytePopulationService;
-        private readonly ICharPopulationService<T, TKey> _charPopulationService;
-        private readonly IDictionaryPopulationService<T, TKey> _dictionaryPopulationService;
-        private readonly IEnumerablePopulationService<T, TKey> _enumerablePopulationService;
-        private readonly INumberPopulationService<T, TKey> _numberPopulationService;
-        private readonly IGuidPopulationService<T, TKey> _guidPopulationService;
-        private readonly ITimePopulationService<T, TKey> _timePopulationService;
-        private readonly IStringPopulationService<T, TKey> _stringPopulationService;
-        private readonly IRangePopulationService<T, TKey> _rangePopulationService;
-        private readonly IClassPopulationService<T, TKey> _classPopulationService;
+        private readonly IArrayPopulationService _arrayPopulationService;
+        private readonly IAbstractPopulationService _abstractPopulationService;
+        private readonly IBoolPopulationService _boolPopulationService;
+        private readonly IBytePopulationService _bytePopulationService;
+        private readonly ICharPopulationService _charPopulationService;
+        private readonly IDictionaryPopulationService _dictionaryPopulationService;
+        private readonly IEnumerablePopulationService _enumerablePopulationService;
+        private readonly INumberPopulationService _numberPopulationService;
+        private readonly IGuidPopulationService _guidPopulationService;
+        private readonly ITimePopulationService _timePopulationService;
+        private readonly IStringPopulationService _stringPopulationService;
+        private readonly IRangePopulationService _rangePopulationService;
+        private readonly IClassPopulationService _classPopulationService;
 
-        public PopulationServiceFactory(IArrayPopulationService<T,TKey> arrayPopulationService,
-            IAbstractPopulationService<T,TKey> abstractPopulationService,
-            IBoolPopulationService<T, TKey> boolPopulationService,
-            IBytePopulationService<T, TKey> bytePopulationService,
-            ICharPopulationService<T, TKey> charPopulationService,
-            IDictionaryPopulationService<T, TKey> dictionaryPopulationService,
-            IEnumerablePopulationService<T, TKey> enumerablePopulationService,
-            INumberPopulationService<T, TKey> numberPopulationService,
-            IGuidPopulationService<T, TKey> guidPopulationService,
-            ITimePopulationService<T, TKey> timePopulationService,
-            IStringPopulationService<T, TKey> stringPopulationService,
-            IRangePopulationService<T, TKey> rangePopulationService,
-            IClassPopulationService<T, TKey> classPopulationService)
+        public PopulationServiceFactory(IArrayPopulationService arrayPopulationService,
+            IAbstractPopulationService abstractPopulationService,
+            IBoolPopulationService boolPopulationService,
+            IBytePopulationService bytePopulationService,
+            ICharPopulationService charPopulationService,
+            IDictionaryPopulationService dictionaryPopulationService,
+            IEnumerablePopulationService enumerablePopulationService,
+            INumberPopulationService numberPopulationService,
+            IGuidPopulationService guidPopulationService,
+            ITimePopulationService timePopulationService,
+            IStringPopulationService stringPopulationService,
+            IRangePopulationService rangePopulationService,
+            IClassPopulationService classPopulationService)
         {
             _arrayPopulationService = arrayPopulationService;
             _abstractPopulationService = abstractPopulationService;
@@ -45,7 +44,7 @@
             _rangePopulationService = rangePopulationService;
             _classPopulationService = classPopulationService;
         }
-        public IRandomPopulationService<T, TKey> GetService(Type type, string treeName)
+        public IRandomPopulationService GetService(Type type, string treeName)
         {
             if (type == typeof(int) || type == typeof(int?) || type == typeof(uint) || type == typeof(uint?)
                 || type == typeof(short) || type == typeof(short?) || type == typeof(ushort) || type == typeof(ushort?)

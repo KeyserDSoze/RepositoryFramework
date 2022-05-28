@@ -2,10 +2,9 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class TimePopulationService<T, TKey> : ITimePopulationService<T, TKey>
-        where TKey : notnull
+    internal class TimePopulationService : ITimePopulationService
     {
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
             if (type == typeof(DateTime) || type == typeof(DateTime?))
                 return DateTime.UtcNow;

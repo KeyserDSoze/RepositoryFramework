@@ -9,7 +9,7 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         private readonly IServiceCollection _services;
-        private readonly InternalBehaviorSettings<T, TKey> _internalBehaviorSettings = new();
+        private readonly InternalBehaviorSettings _internalBehaviorSettings = new();
         public RepositoryPatternInMemoryBuilder(IServiceCollection services)
             => _services = services;
         public RepositoryPatternInMemoryBuilder<TNext, TNextKey> AddRepositoryPatternInMemoryStorage<TNext, TNextKey>(Action<RepositoryPatternBehaviorSettings<TNext, TNextKey>>? settings = default)
@@ -25,37 +25,36 @@ namespace RepositoryFramework
             => _services!.AddRepositoryPatternInMemoryStorageWithIntKey(settings);
         public RepositoryPatternInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(Expression<Func<T, TKey>> navigationKey, int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
         {
-            _services.AddSingleton<IPopulationService<T, TKey>, PopulationService<T, TKey>>();
-            _services.AddSingleton<IPopulationServiceFactory<T, TKey>, PopulationServiceFactory<T, TKey>>();
+            _services.AddSingleton<IPopulationService, PopulationService>();
+            _services.AddSingleton<IPopulationServiceFactory, PopulationServiceFactory>();
             _services.AddSingleton<IInstanceCreator, InstanceCreator>();
             _services.AddSingleton<IRegexService, RegexService>();
-            _services.AddSingleton<IAbstractPopulationService<T, TKey>, AbstractPopulationService<T, TKey>>();
-            _services.AddSingleton<IArrayPopulationService<T, TKey>, ArrayPopulationService<T, TKey>>();
-            _services.AddSingleton<IBoolPopulationService<T, TKey>, BoolPopulationService<T, TKey>>();
-            _services.AddSingleton<IBytePopulationService<T, TKey>, BytePopulationService<T, TKey>>();
-            _services.AddSingleton<ICharPopulationService<T, TKey>, CharPopulationService<T, TKey>>();
-            _services.AddSingleton<IClassPopulationService<T, TKey>, ObjectPopulationService<T, TKey>>();
-            _services.AddSingleton<IDelegatedPopulationService<T, TKey>, DelegatedPopulationService<T, TKey>>();
-            _services.AddSingleton<IDictionaryPopulationService<T, TKey>, DictionaryPopulationService<T, TKey>>();
-            _services.AddSingleton<IEnumerablePopulationService<T, TKey>, EnumerablePopulationService<T, TKey>>();
-            _services.AddSingleton<IGuidPopulationService<T, TKey>, GuidPopulationService<T, TKey>>();
-            _services.AddSingleton<IConcretizationPopulationService<T, TKey>, ConcretizationPopulationService<T, TKey>>();
-            _services.AddSingleton<INumberPopulationService<T, TKey>, NumberPopulationService<T, TKey>>();
-            _services.AddSingleton<IRangePopulationService<T, TKey>, RangePopulationService<T, TKey>>();
-            _services.AddSingleton<IRegexPopulationService<T, TKey>, RegexPopulationService<T, TKey>>();
-            _services.AddSingleton<IStringPopulationService<T, TKey>, StringPopulationService<T, TKey>>();
-            _services.AddSingleton<ITimePopulationService<T, TKey>, TimePopulationService<T, TKey>>();
+            _services.AddSingleton<IAbstractPopulationService, AbstractPopulationService>();
+            _services.AddSingleton<IArrayPopulationService, ArrayPopulationService>();
+            _services.AddSingleton<IBoolPopulationService, BoolPopulationService>();
+            _services.AddSingleton<IBytePopulationService, BytePopulationService>();
+            _services.AddSingleton<ICharPopulationService, CharPopulationService>();
+            _services.AddSingleton<IClassPopulationService, ObjectPopulationService>();
+            _services.AddSingleton<IDelegatedPopulationService, DelegatedPopulationService>();
+            _services.AddSingleton<IDictionaryPopulationService, DictionaryPopulationService>();
+            _services.AddSingleton<IEnumerablePopulationService, EnumerablePopulationService>();
+            _services.AddSingleton<IGuidPopulationService, GuidPopulationService>();
+            _services.AddSingleton<IConcretizationPopulationService, ConcretizationPopulationService>();
+            _services.AddSingleton<INumberPopulationService, NumberPopulationService>();
+            _services.AddSingleton<IRangePopulationService, RangePopulationService>();
+            _services.AddSingleton<IRegexPopulationService, RegexPopulationService>();
+            _services.AddSingleton<IStringPopulationService, StringPopulationService>();
+            _services.AddSingleton<ITimePopulationService, TimePopulationService>();
             ServiceProviderExtensions.AllPopulationServiceSettings.Add(new PopulationServiceSettings
             {
-                PopulationServiceType = typeof(IPopulationService<T, TKey>),
+                PopulationServiceType = typeof(IPopulationService),
                 EntityType = typeof(T),
                 NumberOfElements = numberOfElements,
-                InternalSettingsType = typeof(InternalBehaviorSettings<T, TKey>),
+                BehaviorSettings = _internalBehaviorSettings,
                 NumberOfElementsWhenEnumerableIsFound = numberOfElementsWhenEnumerableIsFound,
                 AddElementToMemory = (key, entity) => InMemoryStorage<T, TKey>.Values.Add((TKey)key, (T)entity),
                 KeyName = navigationKey.ToString().Split('.').Last()
             });
-            _services.AddSingleton(_internalBehaviorSettings);
             return new(this, _internalBehaviorSettings);
         }
         public IServiceCollection Finalize()

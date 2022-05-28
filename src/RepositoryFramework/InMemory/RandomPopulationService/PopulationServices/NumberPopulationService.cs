@@ -2,10 +2,9 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class NumberPopulationService<T, TKey> : INumberPopulationService<T, TKey>
-        where TKey : notnull
+    internal class NumberPopulationService : INumberPopulationService
     {
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
             if (type == typeof(int) || type == typeof(int?))
                 return BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));

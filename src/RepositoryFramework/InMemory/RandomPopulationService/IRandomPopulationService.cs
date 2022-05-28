@@ -1,8 +1,7 @@
 ﻿namespace RepositoryFramework.Population
 {
-    public interface IRandomPopulationService<T, TKey>
-        where TKey : notnull
+    public interface IRandomPopulationService
     {
-        dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args);
+        dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args);
     }
 }

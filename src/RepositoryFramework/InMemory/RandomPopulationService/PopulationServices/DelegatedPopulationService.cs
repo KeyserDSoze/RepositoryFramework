@@ -1,9 +1,8 @@
 ﻿namespace RepositoryFramework.Population
 {
-    internal class DelegatedPopulationService<T, TKey> : IDelegatedPopulationService<T, TKey>
-        where TKey : notnull
+    internal class DelegatedPopulationService : IDelegatedPopulationService
     {
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
             => args.Invoke();
     }
 }

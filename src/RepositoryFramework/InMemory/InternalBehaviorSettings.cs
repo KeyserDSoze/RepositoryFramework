@@ -1,7 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    public class InternalBehaviorSettings<T, TKey> : IInternalBehaviorSettings
-        where TKey : notnull
+    public class InternalBehaviorSettings
     {
         public Dictionary<string, string[]> RegexForValueCreation { get; set; } = new();
         public Dictionary<string, Func<dynamic>> DelegatedMethodForValueCreation { get; set; } = new();

@@ -2,8 +2,7 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class ObjectPopulationService<T, TKey> : IClassPopulationService<T, TKey>
-        where TKey : notnull
+    internal class ObjectPopulationService : IClassPopulationService
     {
         private readonly IInstanceCreator _instanceCreator;
 
@@ -11,16 +10,16 @@ namespace RepositoryFramework.Population
         {
             _instanceCreator = instanceCreator;
         }
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
             if (!type.IsInterface && !type.IsAbstract)
             {
-                var entity = _instanceCreator.CreateInstance(type, populationService, numberOfEntities, treeName);
+                var entity = _instanceCreator.CreateInstance(type, populationService, numberOfEntities, treeName, settings);
                 try
                 {
                     var properties = type.GetProperties();
                     foreach (var property in properties)
-                        property.SetValue(entity, populationService.Construct(property.PropertyType, numberOfEntities, treeName, property.Name));
+                        property.SetValue(entity, populationService.Construct(property.PropertyType, numberOfEntities, treeName, property.Name, settings));
                 }
                 catch
                 {

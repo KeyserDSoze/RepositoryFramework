@@ -10,11 +10,11 @@ namespace RepositoryFramework.UnitTest
     //https://github.com/moodmosaic/Fare/tree/master/Src/Fare
     public class RandomCreationTest
     {
-        private readonly IRepository<PopulationTest, string> _test;
+        private readonly IStringableRepository<PopulationTest> _test;
         private readonly IStringableRepository<RegexPopulationTest> _population;
         private readonly IStringableQuery<DelegationPopulation> _delegation;
 
-        public RandomCreationTest(IRepository<PopulationTest, string> test,
+        public RandomCreationTest(IStringableRepository<PopulationTest> test,
             IStringableRepository<RegexPopulationTest> population,
             IStringableQuery<DelegationPopulation> delegation)
         {

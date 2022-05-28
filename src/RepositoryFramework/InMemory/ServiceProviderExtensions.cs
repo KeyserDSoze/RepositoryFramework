@@ -16,9 +16,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 var properties = populationServiceSetting.EntityType.GetProperties();
                 for (int i = 0; i < populationServiceSetting.NumberOfElements; i++)
                 {
-                    var entity = instanceCreator!.CreateInstance(populationServiceSetting.EntityType, populationService!, populationServiceSetting.NumberOfElementsWhenEnumerableIsFound, string.Empty);
+                    var entity = instanceCreator!.CreateInstance(populationServiceSetting.EntityType, populationService!,
+                        populationServiceSetting.NumberOfElementsWhenEnumerableIsFound, string.Empty,
+                        populationServiceSetting.BehaviorSettings);
                     foreach (var property in properties.Where(x => x.CanWrite))
-                        property.SetValue(entity, populationService!.Construct(property.PropertyType, populationServiceSetting.NumberOfElementsWhenEnumerableIsFound, string.Empty, property.Name));
+                        property.SetValue(entity, populationService!.Construct(property.PropertyType,
+                            populationServiceSetting.NumberOfElementsWhenEnumerableIsFound, string.Empty,
+                            property.Name, populationServiceSetting.BehaviorSettings));
+
                     var key = properties.First(x => x.Name == populationServiceSetting.KeyName).GetValue(entity);
                     populationServiceSetting.AddElementToMemory(key!, entity!);
                 }

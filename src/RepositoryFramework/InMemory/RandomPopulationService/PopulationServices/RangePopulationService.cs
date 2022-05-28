@@ -1,13 +1,14 @@
-﻿namespace RepositoryFramework.Population
+﻿using System.Security.Cryptography;
+
+namespace RepositoryFramework.Population
 {
-    internal class RangePopulationService<T, TKey> : IRangePopulationService<T, TKey>
-        where TKey : notnull
+    internal class RangePopulationService : IRangePopulationService
     {
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
 
-            int firstNumber = populationService.Construct(typeof(int), numberOfEntities, treeName, "X");
-            int secondNumber = populationService.Construct(typeof(int), numberOfEntities, treeName, "Y");
+            int firstNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
+            int secondNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
             if (firstNumber < 0)
                 firstNumber *= -1;
             if (secondNumber < 0)

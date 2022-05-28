@@ -1,9 +1,8 @@
 ﻿namespace RepositoryFramework.Population
 {
-    internal class ConcretizationPopulationService<T, TKey> : IConcretizationPopulationService<T, TKey>
-        where TKey : notnull
+    internal class ConcretizationPopulationService : IConcretizationPopulationService
     {
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
-            => populationService.Construct(args, numberOfEntities, treeName, string.Empty)!;
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
+            => populationService.Construct(args, numberOfEntities, treeName, string.Empty, settings)!;
     }
 }

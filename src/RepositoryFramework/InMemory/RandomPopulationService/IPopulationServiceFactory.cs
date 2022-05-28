@@ -1,8 +1,7 @@
 ﻿namespace RepositoryFramework.Population
 {
-    public interface IPopulationServiceFactory<T, TKey>
-        where TKey : notnull
+    public interface IPopulationServiceFactory
     {
-        IRandomPopulationService<T, TKey> GetService(Type type, string treeName);
+        IRandomPopulationService GetService(Type type, string treeName);
     }
 }

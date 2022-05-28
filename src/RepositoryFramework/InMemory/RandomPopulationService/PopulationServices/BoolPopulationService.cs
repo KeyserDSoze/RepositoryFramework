@@ -2,10 +2,9 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class BoolPopulationService<T, TKey> : IBoolPopulationService<T, TKey>
-        where TKey : notnull
+    internal class BoolPopulationService : IBoolPopulationService
     {
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
             => RandomNumberGenerator.GetInt32(4) > 1;
     }
 }

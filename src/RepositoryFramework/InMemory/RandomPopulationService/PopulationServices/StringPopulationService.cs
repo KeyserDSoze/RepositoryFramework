@@ -1,9 +1,8 @@
 ﻿namespace RepositoryFramework.Population
 {
-    internal class StringPopulationService<T, TKey> : IStringPopulationService<T, TKey>
-        where TKey : notnull
+    internal class StringPopulationService : IStringPopulationService
     {
-        public dynamic GetValue(Type type, IPopulationService<T, TKey> populationService, int numberOfEntities, string treeName, dynamic args)
+        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
             => $"{treeName}_{Guid.NewGuid()}";
     }
 }
