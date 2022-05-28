@@ -6,19 +6,19 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddRepositoryPatternWithStringKey<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-           where TStorage : class, IStringableRepositoryPattern<T>
+           where TStorage : class, IStringableRepository<T>
                => services
-                    .AddServiceWithLifeTime<IStringableRepositoryPattern<T>, TStorage>(serviceLifetime);
+                    .AddServiceWithLifeTime<IStringableRepository<T>, TStorage>(serviceLifetime);
         public static IServiceCollection AddCommandPatternWithStringKey<T, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TStorage : class, IStringableCommandPattern<T>
+            where TStorage : class, IStringableCommand<T>
                 => services
-                    .AddServiceWithLifeTime<IStringableCommandPattern<T>, TStorage>(serviceLifetime);
+                    .AddServiceWithLifeTime<IStringableCommand<T>, TStorage>(serviceLifetime);
         public static IServiceCollection AddQueryPatternWithStringKey<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-           where TStorage : class, IStringableQueryPattern<T>
+           where TStorage : class, IStringableQuery<T>
                 => services
-                    .AddServiceWithLifeTime<IStringableQueryPattern<T>, TStorage>(serviceLifetime);
+                    .AddServiceWithLifeTime<IStringableQuery<T>, TStorage>(serviceLifetime);
         public static RepositoryPatternInMemoryBuilder<T, string> AddRepositoryPatternInMemoryStorageWithStringKey<T>(
             this IServiceCollection services,
             Action<RepositoryPatternBehaviorSettings<T, string>>? settings = default)

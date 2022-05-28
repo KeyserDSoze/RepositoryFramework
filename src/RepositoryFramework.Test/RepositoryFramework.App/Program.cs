@@ -13,7 +13,7 @@ using Rystem;
 
 ServiceLocator
     .Create()
-    .AddRepositoryPatternClient<User, string>("localhost:7058");
+    .AddRepositoryClient<User, string>("localhost:7058");
 //    .AddRepositoryPatternInMemoryStorage<User, string>()
 //    .PopulateWithRandomData(x => x.Id!)
 //    .WithPattern(x => x.Email, "[a-z]{4,5}")
@@ -68,13 +68,15 @@ ServiceLocator
 //    .Populate();
 
 //var storage = ServiceLocator.GetService<IRepositoryPattern<Solomon, string>>();
-var storage = ServiceLocator.GetService<IRepositoryPatternClient<User, string>>();
+var storage = ServiceLocator.GetService<IRepositoryClient<User, string>>();
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
 var all = await storage.QueryAsync();
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 await storage.InsertAsync("aaa", new("aaa") { Id = "a", Name = "b" });
 await storage.UpdateAsync("aaa", new("aaa") { Id = "a3", Name = "b3" });
+all = await storage.QueryAsync(x => x.Name == "b3", 1);
+all = await storage.QueryAsync(x => x.Name == "b3", 1, 1);
 var q = await storage.GetAsync("aaa");
 await storage.DeleteAsync("aaa");
 all = await storage.QueryAsync();

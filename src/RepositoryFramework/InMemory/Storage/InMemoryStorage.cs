@@ -158,10 +158,14 @@ namespace RepositoryFramework
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    if (predicate == null)
-                        return Values.Select(x => x.Value);
-                    else
-                        return Values.Select(x => x.Value).Where(predicate.Compile());
+                    IEnumerable<T> values = Values.Select(x => x.Value);
+                    if (predicate != null)
+                        values = values.Where(predicate.Compile());
+                    if (top != null && top > 0)
+                        values = values.Take(top.Value);
+                    if (skip != null && skip > 0)
+                        values = values.Skip(skip.Value);
+                    return values;
                 }
                 else
                     throw new TaskCanceledException();

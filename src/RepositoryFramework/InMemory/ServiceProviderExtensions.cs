@@ -1,9 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework;
+﻿using RepositoryFramework;
 using RepositoryFramework.Population;
 using RepositoryFramework.Services;
-using System.Collections;
-using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

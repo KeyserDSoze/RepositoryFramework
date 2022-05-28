@@ -24,6 +24,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.AddApiForRepositoryPattern();
+app.AddApiForRepositoryFramework();
 
 app.Run();

@@ -11,12 +11,12 @@ namespace RepositoryFramework.UnitTest
     public class RandomCreationTest
     {
         private readonly IRepository<PopulationTest, string> _test;
-        private readonly IStringableRepositoryPattern<RegexPopulationTest> _population;
-        private readonly IStringableQueryPattern<DelegationPopulation> _delegation;
+        private readonly IStringableRepository<RegexPopulationTest> _population;
+        private readonly IStringableQuery<DelegationPopulation> _delegation;
 
         public RandomCreationTest(IRepository<PopulationTest, string> test,
-            IStringableRepositoryPattern<RegexPopulationTest> population,
-            IStringableQueryPattern<DelegationPopulation> delegation)
+            IStringableRepository<RegexPopulationTest> population,
+            IStringableQuery<DelegationPopulation> delegation)
         {
             _test = test;
             _population = population;

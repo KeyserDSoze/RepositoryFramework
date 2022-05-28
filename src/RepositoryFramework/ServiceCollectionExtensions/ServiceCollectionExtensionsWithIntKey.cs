@@ -6,19 +6,19 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddRepositoryPatternWithIntKey<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-           where TStorage : class, IIntableRepositoryPattern<T>
+           where TStorage : class, IIntableRepository<T>
                => services
-                    .AddServiceWithLifeTime<IIntableCommandPattern<T>, TStorage>(serviceLifetime);
+                    .AddServiceWithLifeTime<IIntableCommand<T>, TStorage>(serviceLifetime);
         public static IServiceCollection AddCommandPatternWithIntKey<T, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TStorage : class, IIntableCommandPattern<T>
+            where TStorage : class, IIntableCommand<T>
                 => services
-                    .AddServiceWithLifeTime<IIntableCommandPattern<T>, TStorage>(serviceLifetime);
+                    .AddServiceWithLifeTime<IIntableCommand<T>, TStorage>(serviceLifetime);
         public static IServiceCollection AddQueryPatternWithIntKey<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-           where TStorage : class, IIntableQueryPattern<T>
+           where TStorage : class, IIntableQuery<T>
                 => services
-                    .AddServiceWithLifeTime<IIntableQueryPattern<T>, TStorage>(serviceLifetime);
+                    .AddServiceWithLifeTime<IIntableQuery<T>, TStorage>(serviceLifetime);
         public static RepositoryPatternInMemoryBuilder<T, int> AddRepositoryPatternInMemoryStorageWithIntKey<T>(
             this IServiceCollection services,
             Action<RepositoryPatternBehaviorSettings<T, int>>? settings = default)

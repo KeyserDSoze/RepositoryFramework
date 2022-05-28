@@ -9,41 +9,49 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class WebApplicationExtensions
     {
         internal static Dictionary<Type, RepositoryFrameworkService> Services = new();
-        public static WebApplication AddApiForRepositoryPattern(this WebApplication app, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
+        public static WebApplication AddApiForRepository<T>(this WebApplication app, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
+            => app.AddApiForRepository(typeof(T), startingPath, authorizationPolicy);
+        public static WebApplication AddApiForRepository(this WebApplication app, Type modelType, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
+        {
+            if (!Services.ContainsKey(modelType))
+                throw new ArgumentException($"Please check if your {modelType.Name} model has a service injected for IRepository, IQuery, ICommand.");
+            var serviceValue = Services[modelType];
+            if (serviceValue.QueryType != null || serviceValue.RepositoryType != null)
+            {
+                _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddGet), BindingFlags.NonPublic | BindingFlags.Static)!
+                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
+                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
+            }
+            if (serviceValue.QueryType != null || serviceValue.RepositoryType != null)
+            {
+                _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddQuery), BindingFlags.NonPublic | BindingFlags.Static)!
+                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
+                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
+            }
+            if (serviceValue.CommandType != null || serviceValue.RepositoryType != null)
+            {
+                _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddInsert), BindingFlags.NonPublic | BindingFlags.Static)!
+                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
+                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
+            }
+            if (serviceValue.CommandType != null || serviceValue.RepositoryType != null)
+            {
+                _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddUpdate), BindingFlags.NonPublic | BindingFlags.Static)!
+                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
+                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
+            }
+            if (serviceValue.CommandType != null || serviceValue.RepositoryType != null)
+            {
+                _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddDelete), BindingFlags.NonPublic | BindingFlags.Static)!
+                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
+                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
+            }
+            return app;
+        }
+        public static WebApplication AddApiForRepositoryFramework(this WebApplication app, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
         {
             foreach (var service in Services)
-            {
-                if (service.Value.QueryType != null || service.Value.RepositoryType != null)
-                {
-                    _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddGet), BindingFlags.NonPublic | BindingFlags.Static)!
-                        .MakeGenericMethod(service.Key, service.Value.KeyType, (service.Value.QueryType ?? service.Value.RepositoryType)!)
-                        .Invoke(null, new object[] { app, service.Key.Name, startingPath, authorizationPolicy! });
-                }
-                if (service.Value.QueryType != null || service.Value.RepositoryType != null)
-                {
-                    _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddQuery), BindingFlags.NonPublic | BindingFlags.Static)!
-                        .MakeGenericMethod(service.Key, service.Value.KeyType, (service.Value.QueryType ?? service.Value.RepositoryType)!)
-                        .Invoke(null, new object[] { app, service.Key.Name, startingPath, authorizationPolicy! });
-                }
-                if (service.Value.CommandType != null || service.Value.RepositoryType != null)
-                {
-                    _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddInsert), BindingFlags.NonPublic | BindingFlags.Static)!
-                        .MakeGenericMethod(service.Key, service.Value.KeyType, (service.Value.CommandType ?? service.Value.RepositoryType)!)
-                        .Invoke(null, new object[] { app, service.Key.Name, startingPath, authorizationPolicy! });
-                }
-                if (service.Value.CommandType != null || service.Value.RepositoryType != null)
-                {
-                    _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddUpdate), BindingFlags.NonPublic | BindingFlags.Static)!
-                        .MakeGenericMethod(service.Key, service.Value.KeyType, (service.Value.CommandType ?? service.Value.RepositoryType)!)
-                        .Invoke(null, new object[] { app, service.Key.Name, startingPath, authorizationPolicy! });
-                }
-                if (service.Value.CommandType != null || service.Value.RepositoryType != null)
-                {
-                    _ = typeof(WebApplicationExtensions).GetMethod(nameof(AddDelete), BindingFlags.NonPublic | BindingFlags.Static)!
-                        .MakeGenericMethod(service.Key, service.Value.KeyType, (service.Value.CommandType ?? service.Value.RepositoryType)!)
-                        .Invoke(null, new object[] { app, service.Key.Name, startingPath, authorizationPolicy! });
-                }
-            }
+                _ = app.AddApiForRepository(service.Key, startingPath, authorizationPolicy);
             return app;
         }
         private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, AuthorizationForApi authorization, AuthorizationPath path)

@@ -4,11 +4,11 @@ using System.Text;
 
 namespace RepositoryFramework.Client
 {
-    internal class RepositoryPatternClient<T, TKey> : IRepositoryPatternClient<T, TKey>
+    internal class RepositoryClient<T, TKey> : IRepositoryClient<T, TKey>, IQueryClient<T, TKey>, ICommandClient<T, TKey>
         where TKey : notnull
     {
         private readonly HttpClient _httpClient;
-        public RepositoryPatternClient(IHttpClientFactory httpClientFactory)
+        public RepositoryClient(IHttpClientFactory httpClientFactory)
         {
             _httpClient = httpClientFactory.CreateClient($"{typeof(T).Name}RepositoryPatternClient");
         }
@@ -25,7 +25,7 @@ namespace RepositoryFramework.Client
             response.EnsureSuccessStatusCode();
             return await response!.Content.ReadFromJsonAsync<bool>(cancellationToken: cancellationToken);
         }
-
+        private const string LogicAnd = "&";
         public Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             var query = new StringBuilder("list");
@@ -34,9 +34,9 @@ namespace RepositoryFramework.Client
             if (predicate != null)
                 query.Append($"query={predicate}");
             if (top != null)
-                query.Append($"{(predicate == null ? string.Empty : "?")}top={top}");
+                query.Append($"{(predicate == null ? string.Empty : LogicAnd)}top={top}");
             if (skip != null)
-                query.Append($"{(predicate == null && top == null ? string.Empty : "?")}skip={skip}");
+                query.Append($"{(predicate == null && top == null ? string.Empty : LogicAnd)}skip={skip}");
             return _httpClient.GetFromJsonAsync<IEnumerable<T>>(query.ToString(), cancellationToken)!;
         }
 
