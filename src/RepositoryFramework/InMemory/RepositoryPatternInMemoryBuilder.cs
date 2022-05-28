@@ -25,9 +25,9 @@ namespace RepositoryFramework
             => _services!.AddRepositoryPatternInMemoryStorageWithIntKey(settings);
         public RepositoryPatternInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(Expression<Func<T, TKey>> navigationKey, int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
         {
-            _services.AddSingleton<IInstanceCreator, InstanceCreator>();
             _services.AddSingleton<IPopulationService<T, TKey>, PopulationService<T, TKey>>();
             _services.AddSingleton<IPopulationServiceFactory<T, TKey>, PopulationServiceFactory<T, TKey>>();
+            _services.AddSingleton<IInstanceCreator, InstanceCreator>();
             _services.AddSingleton<IRegexService, RegexService>();
             _services.AddSingleton<IAbstractPopulationService<T, TKey>, AbstractPopulationService<T, TKey>>();
             _services.AddSingleton<IArrayPopulationService<T, TKey>, ArrayPopulationService<T, TKey>>();
@@ -39,7 +39,7 @@ namespace RepositoryFramework
             _services.AddSingleton<IDictionaryPopulationService<T, TKey>, DictionaryPopulationService<T, TKey>>();
             _services.AddSingleton<IEnumerablePopulationService<T, TKey>, EnumerablePopulationService<T, TKey>>();
             _services.AddSingleton<IGuidPopulationService<T, TKey>, GuidPopulationService<T, TKey>>();
-            _services.AddSingleton<IImplementationPopulationService<T, TKey>, ImplementationPopulationService<T, TKey>>();
+            _services.AddSingleton<IConcretizationPopulationService<T, TKey>, ConcretizationPopulationService<T, TKey>>();
             _services.AddSingleton<INumberPopulationService<T, TKey>, NumberPopulationService<T, TKey>>();
             _services.AddSingleton<IRangePopulationService<T, TKey>, RangePopulationService<T, TKey>>();
             _services.AddSingleton<IRegexPopulationService<T, TKey>, RegexPopulationService<T, TKey>>();

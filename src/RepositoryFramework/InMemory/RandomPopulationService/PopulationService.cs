@@ -6,14 +6,14 @@
         private readonly IPopulationServiceFactory<T, TKey> _factory;
         private readonly InternalBehaviorSettings<T, TKey> _settings;
         private readonly IDelegatedPopulationService<T, TKey> _delegatedPopulationService;
-        private readonly IImplementationPopulationService<T, TKey> _implementationPopulationService;
+        private readonly IConcretizationPopulationService<T, TKey> _implementationPopulationService;
         private readonly IRegexPopulationService<T, TKey> _regexPopulationService;
 
         public PopulationService(IPopulationServiceFactory<T, TKey> factory,
             InternalBehaviorSettings<T, TKey> settings,
             IDelegatedPopulationService<T, TKey> delegatedPopulationService,
             IRegexPopulationService<T, TKey> regexPopulationService,
-            IImplementationPopulationService<T, TKey> implementationPopulationService)
+            IConcretizationPopulationService<T, TKey> implementationPopulationService)
         {
             _factory = factory;
             _settings = settings;
