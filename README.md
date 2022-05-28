@@ -1,4 +1,4 @@
-# RepositoryPattern
+# Repository Framework
 
 ### Contribute: https://www.buymeacoffee.com/keyserdsoze
 
