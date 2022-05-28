@@ -36,17 +36,18 @@ namespace Microsoft.Extensions.DependencyInjection
                 configureClient?.Invoke(options);
                 options.BaseAddress = new Uri($"https://{domain}/{startingPath}/{typeof(T).Name.ToLower()}/");
             });
+            Type keyType = typeof(TKey);
             if (clientType == ClientType.Query)
             {
                 if (specificClient)
                 {
-                    if (typeof(TKey) == typeof(Guid))
+                    if (keyType == typeof(Guid))
                         return services.AddServiceWithLifeTimeClient<IGuidableQueryClient<T>, GuidRepositoryClient<T>>(serviceLifetime);
-                    else if (typeof(TKey) == typeof(string))
+                    else if (keyType == typeof(string))
                         return services.AddServiceWithLifeTimeClient<IStringableQueryClient<T>, StringRepositoryClient<T>>(serviceLifetime);
-                    else if (typeof(TKey) == typeof(int))
+                    else if (keyType == typeof(int))
                         return services.AddServiceWithLifeTimeClient<IIntableQueryClient<T>, IntRepositoryClient<T>>(serviceLifetime);
-                    else if (typeof(TKey) == typeof(long))
+                    else if (keyType == typeof(long))
                         return services.AddServiceWithLifeTimeClient<ILongableQueryClient<T>, LongRepositoryClient<T>>(serviceLifetime);
                 }
                 return services.AddServiceWithLifeTimeClient<IQueryClient<T, TKey>, RepositoryClient<T, TKey>>(serviceLifetime);
@@ -55,13 +56,13 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 if (specificClient)
                 {
-                    if (typeof(TKey) == typeof(Guid))
+                    if (keyType == typeof(Guid))
                         return services.AddServiceWithLifeTimeClient<IGuidableCommandClient<T>, GuidRepositoryClient<T>>(serviceLifetime);
-                    else if (typeof(TKey) == typeof(string))
+                    else if (keyType == typeof(string))
                         return services.AddServiceWithLifeTimeClient<IStringableCommandClient<T>, StringRepositoryClient<T>>(serviceLifetime);
-                    else if (typeof(TKey) == typeof(int))
+                    else if (keyType == typeof(int))
                         return services.AddServiceWithLifeTimeClient<IIntableCommandClient<T>, IntRepositoryClient<T>>(serviceLifetime);
-                    else if (typeof(TKey) == typeof(long))
+                    else if (keyType == typeof(long))
                         return services.AddServiceWithLifeTimeClient<ILongableCommandClient<T>, LongRepositoryClient<T>>(serviceLifetime);
                 }
                 return services.AddServiceWithLifeTimeClient<ICommandClient<T, TKey>, RepositoryClient<T, TKey>>(serviceLifetime);
@@ -70,13 +71,13 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 if (specificClient)
                 {
-                    if (typeof(TKey) == typeof(Guid))
+                    if (keyType == typeof(Guid))
                         return services.AddServiceWithLifeTimeClient<IGuidableRepositoryClient<T>, GuidRepositoryClient<T>>(serviceLifetime);
-                    else if (typeof(TKey) == typeof(string))
+                    else if (keyType == typeof(string))
                         return services.AddServiceWithLifeTimeClient<IStringableRepositoryClient<T>, StringRepositoryClient<T>>(serviceLifetime);
-                    else if (typeof(TKey) == typeof(int))
+                    else if (keyType == typeof(int))
                         return services.AddServiceWithLifeTimeClient<IIntableRepositoryClient<T>, IntRepositoryClient<T>>(serviceLifetime);
-                    else if (typeof(TKey) == typeof(long))
+                    else if (keyType == typeof(long))
                         return services.AddServiceWithLifeTimeClient<ILongableRepositoryClient<T>, LongRepositoryClient<T>>(serviceLifetime);
                 }
                 return services.AddServiceWithLifeTimeClient<IRepositoryClient<T, TKey>, RepositoryClient<T, TKey>>(serviceLifetime);

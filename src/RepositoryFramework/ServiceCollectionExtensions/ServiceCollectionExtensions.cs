@@ -13,7 +13,10 @@ namespace Microsoft.Extensions.DependencyInjection
         private static Type? GetType(Type type, int index)
         {
             var pattern = type.GetInterfaces()
+                .OrderByDescending(x => x.GetGenericArguments().Length)
                 .FirstOrDefault(x => x.Name.Contains("IRepository") || x.Name.Contains("IQuery") || x.Name.Contains("ICommand"));
+            if(pattern != null && type.GetGenericArguments().Length > index)
+                return type.GetGenericArguments()[index];
             if (pattern != null && pattern.GetGenericArguments().Length > index)
                 return pattern.GetGenericArguments()[index];
             else

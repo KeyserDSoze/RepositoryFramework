@@ -8,12 +8,12 @@
         private readonly IDelegatedPopulationService<T, TKey> _delegatedPopulationService;
         private readonly IImplementationPopulationService<T, TKey> _implementationPopulationService;
         private readonly IRegexPopulationService<T, TKey> _regexPopulationService;
+
         public PopulationService(IPopulationServiceFactory<T, TKey> factory,
             InternalBehaviorSettings<T, TKey> settings,
             IDelegatedPopulationService<T, TKey> delegatedPopulationService,
             IRegexPopulationService<T, TKey> regexPopulationService,
-            IImplementationPopulationService<T, TKey> implementationPopulationService
-            )
+            IImplementationPopulationService<T, TKey> implementationPopulationService)
         {
             _factory = factory;
             _settings = settings;
@@ -40,9 +40,12 @@
                 return _regexPopulationService.GetValue(type, this, numberOfEntities, treeName,
                     _settings.RegexForValueCreation[treeName]);
 
+            if (_settings.AutoIncrementations.ContainsKey(treeName))
+                return _settings.AutoIncrementations[treeName]++;
+
             if (_settings.ImplementationForValueCreation.ContainsKey(treeName) && !string.IsNullOrWhiteSpace(propertyName))
                 return _implementationPopulationService.GetValue(type, this, numberOfEntities, treeName,
-                    _settings.ImplementationForValueCreation[treeName]); 
+                    _settings.ImplementationForValueCreation[treeName]);
 
             var service = _factory.GetService(type, treeName);
             if (service != default)

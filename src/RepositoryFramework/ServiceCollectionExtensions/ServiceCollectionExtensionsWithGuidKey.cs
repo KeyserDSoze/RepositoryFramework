@@ -23,6 +23,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static RepositoryPatternInMemoryBuilder<T, Guid> AddRepositoryPatternInMemoryStorageWithGuidKey<T>(
             this IServiceCollection services,
             Action<RepositoryPatternBehaviorSettings<T, Guid>>? settings = default)
-                => services.AddRepositoryPatternInMemoryStorage(settings);
+                => services.AddRepositoryPatternInMemoryStorage(true, settings);
     }
 }

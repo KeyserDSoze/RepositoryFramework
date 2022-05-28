@@ -22,6 +22,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static RepositoryPatternInMemoryBuilder<T, string> AddRepositoryPatternInMemoryStorageWithStringKey<T>(
             this IServiceCollection services,
             Action<RepositoryPatternBehaviorSettings<T, string>>? settings = default)
-        => services.AddRepositoryPatternInMemoryStorage(settings);
+        => services.AddRepositoryPatternInMemoryStorage(true, settings);
     }
 }

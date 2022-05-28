@@ -53,6 +53,16 @@ namespace RepositoryFramework
                 dictionary.Add(nameOfProperty, () => creator.Invoke()!);
             return this;
         }
+        public RepositoryPatternInMemoryCreatorBuilder<T, TKey> WithAutoIncrement<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, TProperty start)
+        {
+            string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
+            var dictionary = _internalBehaviorSettings.AutoIncrementations;
+            if (dictionary.ContainsKey(nameOfProperty))
+                dictionary[nameOfProperty] = start!;
+            else
+                dictionary.Add(nameOfProperty, start!);
+            return this;
+        }
         public RepositoryPatternInMemoryCreatorBuilder<T, TKey> WithImplementation<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Type implementationType)
         {
             string nameOfProperty = GetNameOfProperty(navigationPropertyPath);

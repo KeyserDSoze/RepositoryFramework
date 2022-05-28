@@ -80,6 +80,7 @@ namespace RepositoryFramework
 
     internal class Solomon
     {
+        public int S { get; set; }
         public Range Z { get; set; }
         public string? Key { get; set; }
         public string? Value { get; set; }
