@@ -67,6 +67,7 @@ namespace RepositoryFramework.UnitTest
                 .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}")
                 .WithImplementation(x => x.I, typeof(MyInnerInterfaceImplementation))
                 .WithPattern(x => x.I!.A!, "[a-z]{4,5}")
+                .WithPattern(x => x.II!.A!, "[a-z]{4,5}")
                 .WithImplementation<IInnerInterface, MyInnerInterfaceImplementation>(x => x.I!)
                 .And()
                 .AddRepositoryPatternInMemoryStorageWithStringKey<RegexPopulationTest>()

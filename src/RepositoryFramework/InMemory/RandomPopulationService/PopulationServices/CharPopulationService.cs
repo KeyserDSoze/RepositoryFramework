@@ -6,7 +6,7 @@ namespace RepositoryFramework.Population
     {
         public int Priority => 1;
 
-        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
+        public dynamic GetValue(RandomPopulationOptions options)
             => (char)RandomNumberGenerator.GetInt32(256);
 
         public bool IsValid(Type type) 

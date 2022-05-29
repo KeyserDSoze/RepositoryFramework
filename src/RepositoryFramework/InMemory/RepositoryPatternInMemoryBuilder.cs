@@ -44,7 +44,6 @@ namespace RepositoryFramework
             _services.AddSingleton(PopulationServiceSelector.Instance);
             ServiceProviderExtensions.AllPopulationServiceSettings.Add(new PopulationServiceSettings
             {
-                PopulationServiceType = typeof(IPopulationService),
                 EntityType = typeof(T),
                 NumberOfElements = numberOfElements,
                 BehaviorSettings = _internalBehaviorSettings,

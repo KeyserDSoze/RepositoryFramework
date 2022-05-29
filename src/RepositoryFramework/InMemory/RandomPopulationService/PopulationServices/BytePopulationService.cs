@@ -6,9 +6,9 @@ namespace RepositoryFramework.Population
     {
         public int Priority => 1;
 
-        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
+        public dynamic GetValue(RandomPopulationOptions options)
         {
-            if (type == typeof(byte) || type == typeof(byte?))
+            if (options.Type == typeof(byte) || options.Type == typeof(byte?))
                 return RandomNumberGenerator.GetBytes(1)[0];
             else
                 return (sbyte)RandomNumberGenerator.GetBytes(1)[0];

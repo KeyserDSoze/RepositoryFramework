@@ -5,14 +5,15 @@ namespace RepositoryFramework.Population
     internal class EnumerablePopulationService : IRandomPopulationService
     {
         public int Priority => 2;
-        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
+        public dynamic GetValue(RandomPopulationOptions options)
         {
-            var valueType = type.GetGenericArguments().First();
+            var valueType = options.Type.GetGenericArguments().First();
             var listType = typeof(List<>).MakeGenericType(valueType);
             var entity = Activator.CreateInstance(listType)! as IList;
-            for (int i = 0; i < numberOfEntities; i++)
+            for (int i = 0; i < options.NumberOfEntities; i++)
             {
-                var newValue = populationService.Construct(type.GetGenericArguments().First(), numberOfEntities, treeName, string.Empty, settings);
+                var newValue = options.PopulationService.Construct(options.Type.GetGenericArguments().First(),
+                    options.NumberOfEntities, options.TreeName, string.Empty);
                 entity!.Add(newValue);
             }
             return entity!;

@@ -6,16 +6,19 @@ namespace RepositoryFramework.Population
     {
         public int Priority => 0;
 
-        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
+        public dynamic GetValue(RandomPopulationOptions options)
         {
-            if (!type.IsInterface && !type.IsAbstract)
+            if (!options.Type.IsInterface && !options.Type.IsAbstract)
             {
-                var entity = populationService.InstanceCreator.CreateInstance(type, populationService, numberOfEntities, treeName, settings);
+                var entity = options.PopulationService.InstanceCreator
+                    .CreateInstance(options);
                 try
                 {
-                    var properties = type.GetProperties();
+                    var properties = options.Type.GetProperties();
                     foreach (var property in properties)
-                        property.SetValue(entity, populationService.Construct(property.PropertyType, numberOfEntities, treeName, property.Name, settings));
+                        property.SetValue(entity, options.PopulationService
+                            .Construct(property.PropertyType, options.NumberOfEntities,
+                            options.TreeName, property.Name));
                 }
                 catch
                 {

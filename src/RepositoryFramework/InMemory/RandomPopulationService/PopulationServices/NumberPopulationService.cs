@@ -5,27 +5,27 @@ namespace RepositoryFramework.Population
     internal class NumberPopulationService : IRandomPopulationService
     {
         public int Priority => 1;
-        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
+        public dynamic GetValue(RandomPopulationOptions options)
         {
-            if (type == typeof(int) || type == typeof(int?))
+            if (options.Type == typeof(int) || options.Type == typeof(int?))
                 return BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
-            else if (type == typeof(uint) || type == typeof(uint?))
+            else if (options.Type == typeof(uint) || options.Type == typeof(uint?))
                 return BitConverter.ToUInt32(RandomNumberGenerator.GetBytes(4));
-            else if (type == typeof(short) || type == typeof(short?))
+            else if (options.Type == typeof(short) || options.Type == typeof(short?))
                 return BitConverter.ToInt16(RandomNumberGenerator.GetBytes(2));
-            else if (type == typeof(ushort) || type == typeof(ushort?))
+            else if (options.Type == typeof(ushort) || options.Type == typeof(ushort?))
                 return BitConverter.ToUInt16(RandomNumberGenerator.GetBytes(2));
-            else if (type == typeof(long) || type == typeof(long?))
+            else if (options.Type == typeof(long) || options.Type == typeof(long?))
                 return BitConverter.ToInt64(RandomNumberGenerator.GetBytes(8));
-            else if (type == typeof(ulong) || type == typeof(ulong?))
+            else if (options.Type == typeof(ulong) || options.Type == typeof(ulong?))
                 return BitConverter.ToUInt64(RandomNumberGenerator.GetBytes(8));
-            else if (type == typeof(nint) || type == typeof(nint?))
+            else if (options.Type == typeof(nint) || options.Type == typeof(nint?))
                 return (nint)BitConverter.ToInt16(RandomNumberGenerator.GetBytes(2));
-            else if (type == typeof(nuint) || type == typeof(nuint?))
+            else if (options.Type == typeof(nuint) || options.Type == typeof(nuint?))
                 return (nuint)BitConverter.ToUInt16(RandomNumberGenerator.GetBytes(2));
-            else if (type == typeof(float) || type == typeof(float?))
+            else if (options.Type == typeof(float) || options.Type == typeof(float?))
                 return BitConverter.ToSingle(RandomNumberGenerator.GetBytes(4));
-            else if (type == typeof(double) || type == typeof(double?))
+            else if (options.Type == typeof(double) || options.Type == typeof(double?))
                 return BitConverter.ToDouble(RandomNumberGenerator.GetBytes(8));
             else
                 return new decimal(BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4)),

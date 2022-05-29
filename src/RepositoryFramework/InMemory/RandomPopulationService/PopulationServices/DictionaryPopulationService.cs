@@ -6,16 +6,18 @@ namespace RepositoryFramework.Population
     {
         public int Priority => 3;
 
-        public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
+        public dynamic GetValue(RandomPopulationOptions options)
         {
-            var keyType = type.GetGenericArguments().First();
-            var valueType = type.GetGenericArguments().Last();
+            var keyType = options.Type.GetGenericArguments().First();
+            var valueType = options.Type.GetGenericArguments().Last();
             var dictionaryType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
             var entity = Activator.CreateInstance(dictionaryType)! as IDictionary;
-            for (int i = 0; i < numberOfEntities; i++)
+            for (int i = 0; i < options.NumberOfEntities; i++)
             {
-                var newKey = populationService.Construct(type.GetGenericArguments().First(), numberOfEntities, treeName, "Key", settings);
-                var newValue = populationService.Construct(type.GetGenericArguments().Last(), numberOfEntities, treeName, "Value", settings);
+                var newKey = options.PopulationService.Construct(options.Type.GetGenericArguments().First(),
+                    options.NumberOfEntities, options.TreeName, "Key");
+                var newValue = options.PopulationService.Construct(options.Type.GetGenericArguments().Last(),
+                    options.NumberOfEntities, options.TreeName, "Value");
                 entity!.Add(newKey, newValue);
             }
             return entity!;

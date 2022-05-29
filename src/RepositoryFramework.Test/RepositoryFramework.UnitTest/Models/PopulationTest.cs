@@ -50,11 +50,17 @@ namespace RepositoryFramework.UnitTest.Models
         public InnerPopulation[]? W { get; set; }
         public ICollection<InnerPopulation>? J { get; set; }
         public IInnerInterface? I { get; set; }
+        public IInnerInterfaceForDynamic? II { get; set; }
     }
     public class InnerPopulation
     {
         public string? A { get; set; }
         public int? B { get; set; }
+    }
+    public interface IInnerInterfaceForDynamic
+    {
+        string A { get; set; }
+        string B { get; set; }
     }
     public interface IInnerInterface
     {
