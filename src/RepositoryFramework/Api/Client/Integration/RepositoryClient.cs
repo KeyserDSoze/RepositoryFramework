@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Linq.Expressions;
 using System.Net.Http.Json;
 using System.Text;
 
@@ -10,7 +11,7 @@ namespace RepositoryFramework.Client
         private readonly HttpClient _httpClient;
         public RepositoryClient(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClientFactory.CreateClient($"{typeof(T).Name}RepositoryPatternClient");
+            _httpClient = httpClientFactory.CreateClient($"{typeof(T).Name}{ServiceCollectionExtensions.HttpClientName}");
         }
 
         public Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)

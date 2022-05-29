@@ -65,20 +65,20 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             return router;
         }
-        private static void AddGet<T, TKey, TPattern>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
+        private static void AddGet<T, TKey, TService>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name.ToLower()}/get", async (TKey key, TPattern pattern) =>
+            _ = app.MapGet($"{startingPath}/{name.ToLower()}/get", async (TKey key, TService service) =>
                {
-                   var queryPattern = pattern as IQuery<T, TKey>;
-                   return await queryPattern!.GetAsync(key);
+                   var queryService = service as IQuery<T, TKey>;
+                   return await queryService!.GetAsync(key);
                }).WithName($"Get{name}")
                .AddAuthorization(authorization, AuthorizationPath.Get);
         }
-        private static void AddQuery<T, TKey, TPattern>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
+        private static void AddQuery<T, TKey, TService>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
            where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name.ToLower()}/list", async (string? query, int? top, int? skip, TPattern pattern) =>
+            _ = app.MapGet($"{startingPath}/{name.ToLower()}/list", async (string? query, int? top, int? skip, TService service) =>
               {
                   dynamic? expression = null;
                   if (!string.IsNullOrWhiteSpace(query))
@@ -86,38 +86,38 @@ namespace Microsoft.Extensions.DependencyInjection
                       var parameter = Expression.Parameter(typeof(T), query.Split(' ').First());
                       expression = DynamicExpressionParser.ParseLambda<T, bool>(ParsingConfig.Default, false, query);
                   }
-                  var queryPattern = pattern as IQuery<T, TKey>;
-                  return await queryPattern!.QueryAsync(expression, top, skip);
+                  var queryService = service as IQuery<T, TKey>;
+                  return await queryService!.QueryAsync(expression, top, skip);
               }).WithName($"List{name}")
               .AddAuthorization(authorization, AuthorizationPath.Query);
         }
-        private static void AddInsert<T, TKey, TPattern>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
+        private static void AddInsert<T, TKey, TService>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
           where TKey : notnull
         {
-            _ = app.MapPost($"{startingPath}/{name.ToLower()}/insert", async (TKey key, T entity, TPattern pattern) =>
+            _ = app.MapPost($"{startingPath}/{name.ToLower()}/insert", async (TKey key, T entity, TService service) =>
             {
-                var commandPattern = pattern as ICommand<T, TKey>;
-                return await commandPattern!.InsertAsync(key, entity);
+                var commandService = service as ICommand<T, TKey>;
+                return await commandService!.InsertAsync(key, entity);
             }).WithName($"Insert{name}")
             .AddAuthorization(authorization, AuthorizationPath.Insert);
         }
-        private static void AddUpdate<T, TKey, TPattern>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
+        private static void AddUpdate<T, TKey, TService>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
           where TKey : notnull
         {
-            _ = app.MapPost($"{startingPath}/{name.ToLower()}/update", async (TKey key, T entity, TPattern pattern) =>
+            _ = app.MapPost($"{startingPath}/{name.ToLower()}/update", async (TKey key, T entity, TService service) =>
             {
-                var commandPattern = pattern as ICommand<T, TKey>;
-                return await commandPattern!.UpdateAsync(key, entity);
+                var commandService = service as ICommand<T, TKey>;
+                return await commandService!.UpdateAsync(key, entity);
             }).WithName($"Update{name}")
             .AddAuthorization(authorization, AuthorizationPath.Update);
         }
-        private static void AddDelete<T, TKey, TPattern>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
+        private static void AddDelete<T, TKey, TService>(WebApplication app, string name, string startingPath, AuthorizationForApi authorization)
           where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name.ToLower()}/delete", async (TKey key, TPattern pattern) =>
+            _ = app.MapGet($"{startingPath}/{name.ToLower()}/delete", async (TKey key, TService service) =>
             {
-                var commandPattern = pattern as ICommand<T, TKey>;
-                return await commandPattern!.DeleteAsync(key);
+                var commandService = service as ICommand<T, TKey>;
+                return await commandService!.DeleteAsync(key);
             }).WithName($"Delete{name}")
             .AddAuthorization(authorization, AuthorizationPath.Delete);
         }

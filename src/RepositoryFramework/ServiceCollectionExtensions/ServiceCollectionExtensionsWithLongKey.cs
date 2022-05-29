@@ -4,24 +4,24 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddRepositoryPatternWithLongKey<T, TStorage>(this IServiceCollection services,
+        public static IServiceCollection AddRepositoryWithLongKey<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TStorage : class, ILongableRepository<T>
                => services
                     .AddServiceWithLifeTime<ILongableRepository<T>, TStorage>(serviceLifetime);
-        public static IServiceCollection AddCommandPatternWithLongKey<T, TStorage>(this IServiceCollection services,
+        public static IServiceCollection AddCommandWithLongKey<T, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TStorage : class, ILongableCommand<T>
                 => services
                     .AddServiceWithLifeTime<ILongableCommand<T>, TStorage>(serviceLifetime);
-        public static IServiceCollection AddQueryPatternWithLongKey<T, TStorage>(this IServiceCollection services,
+        public static IServiceCollection AddQueryWithLongKey<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TStorage : class, ILongableQuery<T>
                 => services
                     .AddServiceWithLifeTime<ILongableQuery<T>, TStorage>(serviceLifetime);
-        public static RepositoryPatternInMemoryBuilder<T, long> AddRepositoryPatternInMemoryStorageWithLongKey<T>(
+        public static RepositoryInMemoryBuilder<T, long> AddRepositoryInMemoryStorageWithLongKey<T>(
             this IServiceCollection services,
-            Action<RepositoryPatternBehaviorSettings<T, long>>? settings = default)
-        => services.AddRepositoryPatternInMemoryStorage(true, settings);
+            Action<RepositoryBehaviorSettings<T, long>>? settings = default)
+        => services.AddRepositoryInMemoryStorage(true, settings);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace RepositoryFramework
 {
-    public interface IQueryPattern { }
     public interface IQuery<T, TKey> : IQueryPattern
         where TKey : notnull
     {

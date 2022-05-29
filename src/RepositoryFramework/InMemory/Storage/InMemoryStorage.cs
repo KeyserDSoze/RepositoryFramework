@@ -6,9 +6,9 @@ namespace RepositoryFramework
     internal class InMemoryStorage<T, TKey> : IRepository<T, TKey>
         where TKey : notnull
     {
-        private readonly RepositoryPatternBehaviorSettings<T, TKey> _settings;
+        private readonly RepositoryBehaviorSettings<T, TKey> _settings;
 
-        public InMemoryStorage(RepositoryPatternBehaviorSettings<T, TKey> settings)
+        public InMemoryStorage(RepositoryBehaviorSettings<T, TKey> settings)
         {
             _settings = settings;
         }

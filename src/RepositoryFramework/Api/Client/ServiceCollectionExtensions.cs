@@ -22,7 +22,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 _ => services.AddScoped(typeof(TInterface), typeof(TImplementation))
             };
         }
-        private static IServiceCollection AddRepositoryPatternClient<T, TKey>(this IServiceCollection services,
+        internal const string HttpClientName = "RepositoryClient";
+        private static IServiceCollection AddRepositoryClient<T, TKey>(this IServiceCollection services,
             bool specificClient,
             ClientType clientType,
             string domain,
@@ -31,7 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
             ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
         where TKey : notnull
         {
-            services.AddHttpClient($"{typeof(T).Name}RepositoryPatternClient", options =>
+            services.AddHttpClient($"{typeof(T).Name}{HttpClientName}", options =>
             {
                 configureClient?.Invoke(options);
                 options.BaseAddress = new Uri($"https://{domain}/{startingPath}/{typeof(T).Name.ToLower()}/");
@@ -89,30 +90,30 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
            where TKey : notnull
-            => services.AddRepositoryPatternClient<T, TKey>(false, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
+            => services.AddRepositoryClient<T, TKey>(false, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
         public static IServiceCollection AddRepositoryClientWithStringKey<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-            => services.AddRepositoryPatternClient<T, string>(true, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
+            => services.AddRepositoryClient<T, string>(true, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
         public static IServiceCollection AddRepositoryClientWithGuidKey<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-            => services.AddRepositoryPatternClient<T, Guid>(true, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
+            => services.AddRepositoryClient<T, Guid>(true, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
         public static IServiceCollection AddRepositoryClientWithIntKey<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-            => services.AddRepositoryPatternClient<T, int>(true, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
+            => services.AddRepositoryClient<T, int>(true, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
         public static IServiceCollection AddRepositoryClientWithLongKey<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-            => services.AddRepositoryPatternClient<T, long>(true, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
+            => services.AddRepositoryClient<T, long>(true, ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
     }
 }

@@ -1,6 +1,5 @@
 ﻿namespace RepositoryFramework
 {
-    public interface ICommandPattern { }
     public interface ICommand<T, TKey> : ICommandPattern
         where TKey : notnull
     {

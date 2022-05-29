@@ -14,11 +14,11 @@ using Rystem;
 ServiceLocator
     .Create()
     //.AddRepositoryClient<User, string>("localhost:7058");
-    //.AddRepositoryPatternInMemoryStorage<User, string>()
+    //.AddRepositoryInMemoryStorage<User, string>()
     //.PopulateWithRandomData(x => x.Id!)
     //.WithPattern(x => x.Email, "[a-z]{4,5}")
     //.And()
-    .AddRepositoryPatternInMemoryStorage<Solomon, string>(options =>
+    .AddRepositoryInMemoryStorage<Solomon, string>(options =>
     {
         var customRange = new Range(1000, 2000);
         options.MillisecondsOfWaitForDelete = customRange;

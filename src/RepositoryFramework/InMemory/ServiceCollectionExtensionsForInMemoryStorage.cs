@@ -4,18 +4,18 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
-        public static RepositoryPatternInMemoryBuilder<T, TKey> AddRepositoryPatternInMemoryStorage<T, TKey>(
+        public static RepositoryInMemoryBuilder<T, TKey> AddRepositoryInMemoryStorage<T, TKey>(
             this IServiceCollection services,
-            Action<RepositoryPatternBehaviorSettings<T, TKey>>? settings = default)
+            Action<RepositoryBehaviorSettings<T, TKey>>? settings = default)
             where TKey : notnull 
-            => services.AddRepositoryPatternInMemoryStorage(false, settings);
-        private static RepositoryPatternInMemoryBuilder<T, TKey> AddRepositoryPatternInMemoryStorage<T, TKey>(
+            => services.AddRepositoryInMemoryStorage(false, settings);
+        private static RepositoryInMemoryBuilder<T, TKey> AddRepositoryInMemoryStorage<T, TKey>(
             this IServiceCollection services,
             bool isSpecific,
-            Action<RepositoryPatternBehaviorSettings<T, TKey>>? settings)
+            Action<RepositoryBehaviorSettings<T, TKey>>? settings)
             where TKey : notnull
         {
-            var options = new RepositoryPatternBehaviorSettings<T, TKey>();
+            var options = new RepositoryBehaviorSettings<T, TKey>();
             settings?.Invoke(options);
             Check(options.ExceptionOddsForQuery);
             Check(options.ExceptionOddsForInsert);
@@ -26,36 +26,36 @@ namespace Microsoft.Extensions.DependencyInjection
             Type keyType = typeof(TKey);
             if (isSpecific && keyType == typeof(string))
             {
-                services.AddRepositoryPatternWithStringKey<T, InMemoryStringableStorage<T>>(ServiceLifetime.Singleton);
-                services.AddCommandPatternWithStringKey<T, InMemoryStringableStorage<T>>(ServiceLifetime.Singleton);
-                services.AddQueryPatternWithStringKey<T, InMemoryStringableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddRepositoryWithStringKey<T, InMemoryStringableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddCommandWithStringKey<T, InMemoryStringableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddQueryWithStringKey<T, InMemoryStringableStorage<T>>(ServiceLifetime.Singleton);
             }
             else if (isSpecific && keyType == typeof(int))
             {
-                services.AddRepositoryPatternWithIntKey<T, InMemoryIntableStorage<T>>(ServiceLifetime.Singleton);
-                services.AddCommandPatternWithIntKey<T, InMemoryIntableStorage<T>>(ServiceLifetime.Singleton);
-                services.AddQueryPatternWithIntKey<T, InMemoryIntableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddRepositoryWithIntKey<T, InMemoryIntableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddCommandWithIntKey<T, InMemoryIntableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddQueryWithIntKey<T, InMemoryIntableStorage<T>>(ServiceLifetime.Singleton);
             }
             else if (isSpecific && keyType == typeof(long))
             {
-                services.AddRepositoryPatternWithLongKey<T, InMemoryLongableStorage<T>>(ServiceLifetime.Singleton);
-                services.AddCommandPatternWithLongKey<T, InMemoryLongableStorage<T>>(ServiceLifetime.Singleton);
-                services.AddQueryPatternWithLongKey<T, InMemoryLongableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddRepositoryWithLongKey<T, InMemoryLongableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddCommandWithLongKey<T, InMemoryLongableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddQueryWithLongKey<T, InMemoryLongableStorage<T>>(ServiceLifetime.Singleton);
             }
             else if (isSpecific && keyType == typeof(Guid))
             {
-                services.AddRepositoryPatternWithGuidKey<T, InMemoryGuidableStorage<T>>(ServiceLifetime.Singleton);
-                services.AddCommandPatternWithGuidKey<T, InMemoryGuidableStorage<T>>(ServiceLifetime.Singleton);
-                services.AddQueryPatternWithGuidKey<T, InMemoryGuidableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddRepositoryWithGuidKey<T, InMemoryGuidableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddCommandWithGuidKey<T, InMemoryGuidableStorage<T>>(ServiceLifetime.Singleton);
+                services.AddQueryWithGuidKey<T, InMemoryGuidableStorage<T>>(ServiceLifetime.Singleton);
             }
             else
             {
-                services.AddRepositoryPattern<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
-                services.AddCommandPattern<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
-                services.AddQueryPattern<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+                services.AddRepository<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+                services.AddCommand<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+                services.AddQuery<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             }
 
-            return new RepositoryPatternInMemoryBuilder<T, TKey>(services);
+            return new RepositoryInMemoryBuilder<T, TKey>(services);
 
             static void Check(List<ExceptionOdds> odds)
             {

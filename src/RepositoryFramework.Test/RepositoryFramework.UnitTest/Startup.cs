@@ -20,7 +20,7 @@ namespace RepositoryFramework.UnitTest
             services.AddSingleton(configuration);
             services
                 .AddRystem()
-                .AddRepositoryPatternInMemoryStorage<User, string>(options =>
+                .AddRepositoryInMemoryStorage<User, string>(options =>
                 {
                     var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
                         int.Parse(configuration["data_creation:delay_in_write_to"]));
@@ -35,7 +35,7 @@ namespace RepositoryFramework.UnitTest
                 .PopulateWithRandomData(x => x.Id!, 100)
                 .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com")
                 .And()
-                .AddRepositoryPatternInMemoryStorage<Car, string>(options =>
+                .AddRepositoryInMemoryStorage<Car, string>(options =>
                 {
                     var customExceptions = new List<ExceptionOdds>
                     {
@@ -61,7 +61,7 @@ namespace RepositoryFramework.UnitTest
                     options.ExceptionOddsForUpdate.AddRange(customExceptions);
                     options.ExceptionOddsForQuery.AddRange(customExceptions);
                 })
-                .AddRepositoryPatternInMemoryStorageWithStringKey<PopulationTest>()
+                .AddRepositoryInMemoryStorageWithStringKey<PopulationTest>()
                 .PopulateWithRandomData(x => x.P)
                 .WithPattern(x => x.J!.First().A, "[a-z]{4,5}")
                 .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}")
@@ -70,7 +70,7 @@ namespace RepositoryFramework.UnitTest
                 .WithPattern(x => x.II!.A!, "[a-z]{4,5}")
                 .WithImplementation<IInnerInterface, MyInnerInterfaceImplementation>(x => x.I!)
                 .And()
-                .AddRepositoryPatternInMemoryStorageWithStringKey<RegexPopulationTest>()
+                .AddRepositoryInMemoryStorageWithStringKey<RegexPopulationTest>()
                 .PopulateWithRandomData(x => x.P, 90, 8)
                 .WithPattern(x => x.A, "[1-9]{1,2}")
                 .WithPattern(x => x.AA, "[1-9]{1,2}")
@@ -114,7 +114,7 @@ namespace RepositoryFramework.UnitTest
                 .WithPattern(x => x.J!.First().A, "[a-z]{4,5}")
                 .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}")
                 .And()
-                .AddRepositoryPatternInMemoryStorageWithStringKey<DelegationPopulation>()
+                .AddRepositoryInMemoryStorageWithStringKey<DelegationPopulation>()
                 .PopulateWithRandomData(x => x.P)
                 .WithValue(x => x.A, () => 2)
                 .WithValue(x => x.AA, () => 2)

@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    public class RepositoryPatternBehaviorSettings<T, TKey>
+    public class RepositoryBehaviorSettings<T, TKey>
         where TKey : notnull
     {
         public Range MillisecondsOfWaitForDelete { get; set; }

@@ -5,25 +5,25 @@ using System.Linq.Expressions;
 
 namespace RepositoryFramework
 {
-    public class RepositoryPatternInMemoryBuilder<T, TKey>
+    public class RepositoryInMemoryBuilder<T, TKey>
         where TKey : notnull
     {
         private readonly IServiceCollection _services;
         private readonly InternalBehaviorSettings _internalBehaviorSettings = new();
-        public RepositoryPatternInMemoryBuilder(IServiceCollection services)
+        public RepositoryInMemoryBuilder(IServiceCollection services)
             => _services = services;
-        public RepositoryPatternInMemoryBuilder<TNext, TNextKey> AddRepositoryPatternInMemoryStorage<TNext, TNextKey>(Action<RepositoryPatternBehaviorSettings<TNext, TNextKey>>? settings = default)
+        public RepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
             where TNextKey : notnull
-            => _services!.AddRepositoryPatternInMemoryStorage(settings);
-        public RepositoryPatternInMemoryBuilder<TNext, string> AddRepositoryPatternInMemoryStorageWithStringKey<TNext>(Action<RepositoryPatternBehaviorSettings<TNext, string>>? settings = default)
-            => _services!.AddRepositoryPatternInMemoryStorageWithStringKey(settings);
-        public RepositoryPatternInMemoryBuilder<TNext, Guid> AddRepositoryPatternInMemoryStorageWithGuidKey<TNext>(Action<RepositoryPatternBehaviorSettings<TNext, Guid>>? settings = default)
-            => _services!.AddRepositoryPatternInMemoryStorageWithGuidKey(settings);
-        public RepositoryPatternInMemoryBuilder<TNext, long> AddRepositoryPatternInMemoryStorageWithLongKey<TNext>(Action<RepositoryPatternBehaviorSettings<TNext, long>>? settings = default)
-            => _services!.AddRepositoryPatternInMemoryStorageWithLongKey(settings);
-        public RepositoryPatternInMemoryBuilder<TNext, int> AddRepositoryPatternInMemoryStorageWithIntKey<TNext>(Action<RepositoryPatternBehaviorSettings<TNext, int>>? settings = default)
-            => _services!.AddRepositoryPatternInMemoryStorageWithIntKey(settings);
-        public RepositoryPatternInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(Expression<Func<T, TKey>> navigationKey, int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
+            => _services!.AddRepositoryInMemoryStorage(settings);
+        public RepositoryInMemoryBuilder<TNext, string> AddRepositoryInMemoryStorageWithStringKey<TNext>(Action<RepositoryBehaviorSettings<TNext, string>>? settings = default)
+            => _services!.AddRepositoryInMemoryStorageWithStringKey(settings);
+        public RepositoryInMemoryBuilder<TNext, Guid> AddRepositoryInMemoryStorageWithGuidKey<TNext>(Action<RepositoryBehaviorSettings<TNext, Guid>>? settings = default)
+            => _services!.AddRepositoryInMemoryStorageWithGuidKey(settings);
+        public RepositoryInMemoryBuilder<TNext, long> AddRepositoryInMemoryStorageWithLongKey<TNext>(Action<RepositoryBehaviorSettings<TNext, long>>? settings = default)
+            => _services!.AddRepositoryInMemoryStorageWithLongKey(settings);
+        public RepositoryInMemoryBuilder<TNext, int> AddRepositoryInMemoryStorageWithIntKey<TNext>(Action<RepositoryBehaviorSettings<TNext, int>>? settings = default)
+            => _services!.AddRepositoryInMemoryStorageWithIntKey(settings);
+        public RepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(Expression<Func<T, TKey>> navigationKey, int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
         {
             _services.AddSingleton<IPopulationService, PopulationService>();
             _services.AddSingleton<IInstanceCreator, InstanceCreator>();

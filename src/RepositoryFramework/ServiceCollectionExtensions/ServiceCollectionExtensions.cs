@@ -12,13 +12,13 @@ namespace Microsoft.Extensions.DependencyInjection
             => GetType(typeof(TEntity), 1);
         private static Type? GetType(Type type, int index)
         {
-            var pattern = type.GetInterfaces()
+            var service = type.GetInterfaces()
                 .OrderByDescending(x => x.GetGenericArguments().Length)
                 .FirstOrDefault(x => x.Name.Contains("IRepository") || x.Name.Contains("IQuery") || x.Name.Contains("ICommand"));
-            if(pattern != null && type.GetGenericArguments().Length > index)
+            if(service != null && type.GetGenericArguments().Length > index)
                 return type.GetGenericArguments()[index];
-            if (pattern != null && pattern.GetGenericArguments().Length > index)
-                return pattern.GetGenericArguments()[index];
+            if (service != null && service.GetGenericArguments().Length > index)
+                return service.GetGenericArguments()[index];
             else
             {
                 Type? nextType = null;
@@ -66,17 +66,17 @@ namespace Microsoft.Extensions.DependencyInjection
             };
         }
 
-        public static IServiceCollection AddRepositoryPattern<T, TKey, TStorage>(this IServiceCollection services,
+        public static IServiceCollection AddRepository<T, TKey, TStorage>(this IServiceCollection services,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
           where TStorage : class, IRepository<T, TKey>
           where TKey : notnull
               => services.AddServiceWithLifeTime<IRepository<T, TKey>, TStorage>(serviceLifetime);
-        public static IServiceCollection AddCommandPattern<T, TKey, TStorage>(this IServiceCollection services,
+        public static IServiceCollection AddCommand<T, TKey, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TStorage : class, ICommand<T, TKey>
             where TKey : notnull
               => services.AddServiceWithLifeTime<ICommand<T, TKey>, TStorage>(serviceLifetime);
-        public static IServiceCollection AddQueryPattern<T, TKey, TStorage>(this IServiceCollection services,
+        public static IServiceCollection AddQuery<T, TKey, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TStorage : class, IQuery<T, TKey>
            where TKey : notnull

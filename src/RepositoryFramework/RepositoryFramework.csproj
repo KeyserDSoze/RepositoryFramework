@@ -7,15 +7,14 @@
 		<Authors>Alessandro Rapiti</Authors>
 		<Company>Alessandro Rapiti</Company>
 		<Product>Repository Framework</Product>
-		<Description>
-
-		</Description>
+		<Description>Repository framework allows you to use correctly concepts like repository pattern, CQRS and DDD. You have interfaces for your domains, auto-generated api, auto-generated HttpClient to simplify connection "api to front-end", a functionality for auto-population in memory of your models, a functionality to simulate: exceptions and waiting time from external sources to improve your implementation/business test and load test.</Description>
 		<Copyright>2022</Copyright>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageIcon>repositorypattern.png</PackageIcon>
+		<PackageIcon>repositoryframework.png</PackageIcon>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
 		<PackageId>RepositoryFramework</PackageId>
 		<Version>0.8.0</Version>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -32,7 +31,6 @@
 		<None Include="repositoryframework.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 </Project>

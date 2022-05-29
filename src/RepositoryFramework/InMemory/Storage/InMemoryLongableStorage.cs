@@ -2,7 +2,7 @@
 {
     internal class InMemoryLongableStorage<T> : InMemoryStorage<T, long>, ILongableRepository<T>
     {
-        public InMemoryLongableStorage(RepositoryPatternBehaviorSettings<T, long> settings) : base(settings)
+        public InMemoryLongableStorage(RepositoryBehaviorSettings<T, long> settings) : base(settings)
         {
         }
     }
