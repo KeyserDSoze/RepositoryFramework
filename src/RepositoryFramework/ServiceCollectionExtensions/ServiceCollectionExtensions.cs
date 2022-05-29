@@ -46,16 +46,16 @@ namespace Microsoft.Extensions.DependencyInjection
             var keyType = GetTypeOfKey<TInterface>();
             if (keyType == null)
                 throw new ArgumentNullException($"Key for {typeof(TInterface).FullName} not found. Check if your object {typeof(TInterface).Name} extends IRepository, IQuery or ICommand.");
-            if (!WebApplicationExtensions.Services.ContainsKey(entityType))
-                WebApplicationExtensions.Services.Add(entityType, new());
-            WebApplicationExtensions.Services[entityType].KeyType = keyType;
+            if (!EndpointRouteBuilderExtensions.Services.ContainsKey(entityType))
+                EndpointRouteBuilderExtensions.Services.Add(entityType, new());
+            EndpointRouteBuilderExtensions.Services[entityType].KeyType = keyType;
 
             if (IsThatInterface<TInterface, IRepositoryPattern>())
-                WebApplicationExtensions.Services[entityType].RepositoryType = typeof(TInterface);
+                EndpointRouteBuilderExtensions.Services[entityType].RepositoryType = typeof(TInterface);
             else if (IsThatInterface<TInterface, ICommandPattern>())
-                WebApplicationExtensions.Services[entityType].CommandType = typeof(TInterface);
+                EndpointRouteBuilderExtensions.Services[entityType].CommandType = typeof(TInterface);
             else if (IsThatInterface<TInterface, IQueryPattern>())
-                WebApplicationExtensions.Services[entityType].QueryType = typeof(TInterface);
+                EndpointRouteBuilderExtensions.Services[entityType].QueryType = typeof(TInterface);
 
             return serviceLifetime switch
             {

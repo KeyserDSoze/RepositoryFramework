@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -7,26 +7,27 @@
 		<Nullable>enable</Nullable>
 		<Authors>Alessandro Rapiti</Authors>
 		<Company>Alessandro Rapiti</Company>
-		<Product>Rystem.RepositoryFramework</Product>
+		<Product>Rystem.RepositoryFramework.HttpClient</Product>
 		<Description>Rystem.RepositoryFramework allows you to use correctly concepts like repository pattern, CQRS and DDD. You have interfaces for your domains, auto-generated api, auto-generated HttpClient to simplify connection "api to front-end", a functionality for auto-population in memory of your models, a functionality to simulate exceptions and waiting time from external sources to improve your implementation/business test and load test.</Description>
 		<Copyright>2022</Copyright>
 		<PackageIcon>repositoryframework.png</PackageIcon>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
-		<PackageId>Rystem.RepositoryFramework</PackageId>
+		<PackageId>Rystem.RepositoryFramework.HttpClient</PackageId>
 		<Version>0.8.1</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<None Include="..\RepositoryFramework\repositoryframework.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
-	
+
 	<ItemGroup>
-		<PackageReference Include="Fare" Version="2.2.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-		<PackageReference Include="System.Collections" Version="4.3.0" />
-		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.18" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
 	</ItemGroup>
 	
 	<Choose>
@@ -41,12 +42,4 @@
 			</ItemGroup>
 		</When>
 	</Choose>
-	
-	<ItemGroup>
-		<None Include="repositoryframework.png">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-	</ItemGroup>
-
 </Project>

@@ -9,7 +9,7 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         private readonly IServiceCollection _services;
-        private readonly InternalBehaviorSettings _internalBehaviorSettings = new();
+        private readonly BehaviorSettings _internalBehaviorSettings = new();
         public RepositoryInMemoryBuilder(IServiceCollection services)
             => _services = services;
         public RepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)

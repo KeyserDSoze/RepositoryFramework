@@ -11,7 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RepositoryFramework.Test", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.UnitTest", "src\RepositoryFramework.Test\RepositoryFramework.UnitTest\RepositoryFramework.UnitTest.csproj", "{DDD9149D-FCDC-4357-87EF-48B8AF12394D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.WebApi", "src\RepositoryFramework.Test\RepositoryFramework.WebApi\RepositoryFramework.WebApi.csproj", "{41A01404-6E05-4D7F-AE25-2C8DEA168D0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.WebApi", "src\RepositoryFramework.Test\RepositoryFramework.WebApi\RepositoryFramework.WebApi.csproj", "{41A01404-6E05-4D7F-AE25-2C8DEA168D0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.Abstractions", "src\RepositoryFramework.Abstractions\RepositoryFramework.Abstractions.csproj", "{9E8722AC-4AA6-4275-80F7-643EAE681B2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.HttpClient", "src\RepositoryFramework.HttpClient\RepositoryFramework.HttpClient.csproj", "{7C31EE6A-2148-4CD3-A56D-EDFF18A4E21B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +39,14 @@ Global
 		{41A01404-6E05-4D7F-AE25-2C8DEA168D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41A01404-6E05-4D7F-AE25-2C8DEA168D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41A01404-6E05-4D7F-AE25-2C8DEA168D0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E8722AC-4AA6-4275-80F7-643EAE681B2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E8722AC-4AA6-4275-80F7-643EAE681B2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E8722AC-4AA6-4275-80F7-643EAE681B2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E8722AC-4AA6-4275-80F7-643EAE681B2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C31EE6A-2148-4CD3-A56D-EDFF18A4E21B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C31EE6A-2148-4CD3-A56D-EDFF18A4E21B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C31EE6A-2148-4CD3-A56D-EDFF18A4E21B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C31EE6A-2148-4CD3-A56D-EDFF18A4E21B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,10 +10,10 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         private readonly RepositoryInMemoryBuilder<T, TKey> _builder;
-        private readonly InternalBehaviorSettings _internalBehaviorSettings;
+        private readonly BehaviorSettings _internalBehaviorSettings;
         public RepositoryInMemoryCreatorBuilder(
             RepositoryInMemoryBuilder<T, TKey> builder,
-            InternalBehaviorSettings internalBehaviorSettings)
+            BehaviorSettings internalBehaviorSettings)
         {
             _builder = builder;
             _internalBehaviorSettings = internalBehaviorSettings;

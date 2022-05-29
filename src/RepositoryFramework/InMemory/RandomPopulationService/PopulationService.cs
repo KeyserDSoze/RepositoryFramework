@@ -8,7 +8,7 @@ namespace RepositoryFramework.Population
         private readonly PopulationServiceSelector _selector;
         private readonly IRegexService _regexService;
         public IInstanceCreator InstanceCreator { get; }
-        public InternalBehaviorSettings Settings { get; set; } = null!;
+        public BehaviorSettings Settings { get; set; } = null!;
         public PopulationService(PopulationServiceSelector selector,
             IRegexService regexService,
             IInstanceCreator instanceCreator)
