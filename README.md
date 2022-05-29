@@ -4,7 +4,7 @@
 
 **Rystem.RepositoryFramework allows you to use correctly concepts like repository pattern, CQRS and DDD. You have interfaces for your domains, auto-generated api, auto-generated HttpClient to simplify connection "api to front-end", a functionality for auto-population in memory of your models, a functionality to simulate exceptions and waiting time from external sources to improve your implementation/business test and load test.**
 
-**Document to read before to use this library:**
+**Document to read before using this library:**
 - Repository pattern, useful links: 
   -   [Microsoft docs](https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application)
   -   [Repository pattern explained](https://codewithshadman.com/repository-pattern-csharp/)
@@ -84,6 +84,7 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
             throw new NotImplementedException();
         }
     }
+    
 #### Alltogether as repository pattern 
 if you don't have CQRS infrastructure (usually it's correct to use CQRS when you have minimum two infrastructures one for write and delete and at least one for read)
 
@@ -211,6 +212,61 @@ Below an example from unit test.
         }
     }
 
+## Api auto-generated
+In your web application you have only to add one row.
+
+    app.AddApiForRepositoryFramework();
+    
+### Startup example
+In the example below you may find the DI for repository with string key for User model, populated with random data in memory, swagger to test the solution, the population method just after the build and the configuration of your API based on repository framework.
+
+    using RepositoryFramework.WebApi.Models;
+
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Services
+        .AddRepositoryInMemoryStorageWithStringKey<User>()
+        .PopulateWithRandomData(x => x.Email!, 120, 5);
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+    
+    var app = builder.Build();
+    app.Services.Populate();
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+    app.UseHttpsRedirection();
+    app.AddApiForRepositoryFramework();
+    app.Run();
+    
+### HttpClient to use your API (example)
+You can add a client for a specific url
+
+    .AddRepositoryClient<User, string>("localhost:7058");
+    
+and use it in DI with
+    
+    IRepositoryClient<User, string>
+    
+#### Integration for specific key
+Here an example for Guid, you may find the same Client for Int, Long, String
+
+    .AddRepositoryClientWithGuidKey<User>("localhost:7058");
+
+that injects
+
+    IGuidableRepositoryClient<User>
+    
+### Integration for Command or Query
+
+    .AddCommandClient<User, string>("localhost:7058");
+
+or
+
+    .AddQueryClient<User, string>("localhost:7058");
+    
 ## In memory integration by default
 With this library you can add in memory integration with the chance to create random data with random values, random based on regular expressions and delegated methods
 
