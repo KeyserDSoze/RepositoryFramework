@@ -14,7 +14,7 @@ using Rystem;
 ServiceLocator
     .Create()
     //.AddRepositoryClient<User, string>("localhost:7058");
-    //.AddRepositoryInMemoryStorage<User, string>()
+    //.AddRepositoryPatternInMemoryStorage<User, string>()
     //.PopulateWithRandomData(x => x.Id!)
     //.WithPattern(x => x.Email, "[a-z]{4,5}")
     //.And()

@@ -19,13 +19,11 @@ namespace RepositoryFramework
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-
         public Task<bool> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-
         public Task<bool> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
@@ -39,7 +37,6 @@ namespace RepositoryFramework
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-
         public Task<IEnumerable<User>> QueryAsync(Expression<Func<User, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             //get a list of items by a predicate with top and skip from DB or storage context

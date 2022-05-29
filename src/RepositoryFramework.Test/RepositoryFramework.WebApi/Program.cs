@@ -1,14 +1,8 @@
 using RepositoryFramework.WebApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddRepositoryInMemoryStorageWithStringKey<User>(x =>
-{
-
-})
-    .PopulateWithRandomData(x => x.Email!, 120, 5);
+builder.Services.AddRepositoryInMemoryStorageWithStringKey<User>()
+.PopulateWithRandomData(x => x.Email!, 120, 5);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
