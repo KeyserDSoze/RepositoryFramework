@@ -33,7 +33,7 @@ namespace RepositoryFramework
                 dictionary.Add(nameOfProperty, regex);
             return this;
         }
-        public RepositoryPatternInMemoryCreatorBuilder<T, TKey> WithSpecificNumberOfElements<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, int numberOfElements) 
+        public RepositoryPatternInMemoryCreatorBuilder<T, TKey> WithSpecificNumberOfElements<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, int numberOfElements)
         {
             string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.NumberOfElements;
@@ -75,7 +75,7 @@ namespace RepositoryFramework
         }
         public RepositoryPatternInMemoryCreatorBuilder<T, TKey> WithImplementation<TProperty, TEntity>(Expression<Func<T, TProperty>> navigationPropertyPath)
             => WithImplementation(navigationPropertyPath, typeof(TEntity));
-        public RepositoryPatternInMemoryBuilder<T, TKey> And() 
+        public RepositoryPatternInMemoryBuilder<T, TKey> And()
             => _builder;
     }
 }

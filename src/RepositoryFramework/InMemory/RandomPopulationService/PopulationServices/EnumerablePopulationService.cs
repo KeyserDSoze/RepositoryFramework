@@ -2,8 +2,9 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class EnumerablePopulationService : IEnumerablePopulationService
+    internal class EnumerablePopulationService : IRandomPopulationService
     {
+        public int Priority => 2;
         public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
             var valueType = type.GetGenericArguments().First();
@@ -15,6 +16,17 @@ namespace RepositoryFramework.Population
                 entity!.Add(newValue);
             }
             return entity!;
+        }
+
+        public bool IsValid(Type type)
+        {
+            if (!type.IsArray)
+            {
+                var interfaces = type.GetInterfaces();
+                if (type.Name.Contains("IEnumerable`1") || interfaces.Any(x => x.Name.Contains("IEnumerable`1")))
+                    return true;
+            }
+            return false;
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface IRegexService
     {
-        string GetRandomString(string pattern);
+        dynamic GetRandomValue(Type type, string[] pattern);
     }
 }

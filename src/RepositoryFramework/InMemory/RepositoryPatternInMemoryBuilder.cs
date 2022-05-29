@@ -26,25 +26,22 @@ namespace RepositoryFramework
         public RepositoryPatternInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(Expression<Func<T, TKey>> navigationKey, int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
         {
             _services.AddSingleton<IPopulationService, PopulationService>();
-            _services.AddSingleton<IPopulationServiceFactory, PopulationServiceFactory>();
             _services.AddSingleton<IInstanceCreator, InstanceCreator>();
             _services.AddSingleton<IRegexService, RegexService>();
-            _services.AddSingleton<IAbstractPopulationService, AbstractPopulationService>();
-            _services.AddSingleton<IArrayPopulationService, ArrayPopulationService>();
-            _services.AddSingleton<IBoolPopulationService, BoolPopulationService>();
-            _services.AddSingleton<IBytePopulationService, BytePopulationService>();
-            _services.AddSingleton<ICharPopulationService, CharPopulationService>();
-            _services.AddSingleton<IClassPopulationService, ObjectPopulationService>();
-            _services.AddSingleton<IDelegatedPopulationService, DelegatedPopulationService>();
-            _services.AddSingleton<IDictionaryPopulationService, DictionaryPopulationService>();
-            _services.AddSingleton<IEnumerablePopulationService, EnumerablePopulationService>();
-            _services.AddSingleton<IGuidPopulationService, GuidPopulationService>();
-            _services.AddSingleton<IConcretizationPopulationService, ConcretizationPopulationService>();
-            _services.AddSingleton<INumberPopulationService, NumberPopulationService>();
-            _services.AddSingleton<IRangePopulationService, RangePopulationService>();
-            _services.AddSingleton<IRegexPopulationService, RegexPopulationService>();
-            _services.AddSingleton<IStringPopulationService, StringPopulationService>();
-            _services.AddSingleton<ITimePopulationService, TimePopulationService>();
+            PopulationServiceSelector.Instance.TryAdd(new AbstractPopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new ArrayPopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new BoolPopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new BytePopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new CharPopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new ObjectPopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new DictionaryPopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new EnumerablePopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new GuidPopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new NumberPopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new RangePopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new StringPopulationService());
+            PopulationServiceSelector.Instance.TryAdd(new TimePopulationService());
+            _services.AddSingleton(PopulationServiceSelector.Instance);
             ServiceProviderExtensions.AllPopulationServiceSettings.Add(new PopulationServiceSettings
             {
                 PopulationServiceType = typeof(IPopulationService),

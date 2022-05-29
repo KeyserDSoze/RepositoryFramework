@@ -1,22 +1,22 @@
-﻿namespace RepositoryFramework.Population
+﻿using RepositoryFramework.Services;
+
+namespace RepositoryFramework.Population
 {
     internal class PopulationService : IPopulationService
     {
-        private readonly IPopulationServiceFactory _factory;
-        private readonly IDelegatedPopulationService _delegatedPopulationService;
-        private readonly IConcretizationPopulationService _implementationPopulationService;
-        private readonly IRegexPopulationService _regexPopulationService;
+        private readonly PopulationServiceSelector _selector;
+        private readonly IRegexService _regexService;
+        public IInstanceCreator InstanceCreator { get; }
 
-        public PopulationService(IPopulationServiceFactory factory,
-            IDelegatedPopulationService delegatedPopulationService,
-            IRegexPopulationService regexPopulationService,
-            IConcretizationPopulationService implementationPopulationService)
+        public PopulationService(PopulationServiceSelector selector,
+            IRegexService regexService,
+            IInstanceCreator instanceCreator)
         {
-            _factory = factory;
-            _delegatedPopulationService = delegatedPopulationService;
-            _implementationPopulationService = implementationPopulationService;
-            _regexPopulationService = regexPopulationService;
+            _selector = selector;
+            _regexService = regexService;
+            InstanceCreator = instanceCreator;
         }
+
         public dynamic? Construct(Type type, int numberOfEntities, string treeName, string propertyName, InternalBehaviorSettings settings)
         {
             treeName = string.IsNullOrWhiteSpace(treeName) ? propertyName :
@@ -29,24 +29,20 @@
             numberOfEntities = overridedNumberOfEntities ?? numberOfEntities;
 
             if (settings.DelegatedMethodForValueCreation.ContainsKey(treeName))
-                return _delegatedPopulationService.GetValue(type, this, numberOfEntities, treeName,
-                    settings,
-                    settings.DelegatedMethodForValueCreation[treeName]);
+                return settings.DelegatedMethodForValueCreation[treeName].Invoke();
 
             if (settings.RegexForValueCreation.ContainsKey(treeName))
-                return _regexPopulationService.GetValue(type, this, numberOfEntities, treeName,
-                    settings,
+                return _regexService.GetRandomValue(type,
                     settings.RegexForValueCreation[treeName]);
 
             if (settings.AutoIncrementations.ContainsKey(treeName))
                 return settings.AutoIncrementations[treeName]++;
 
             if (settings.ImplementationForValueCreation.ContainsKey(treeName) && !string.IsNullOrWhiteSpace(propertyName))
-                return _implementationPopulationService.GetValue(type, this, numberOfEntities, treeName,
-                    settings,
-                    settings.ImplementationForValueCreation[treeName]);
+                return Construct(settings.ImplementationForValueCreation[treeName], numberOfEntities,
+                    treeName, string.Empty, settings);
 
-            var service = _factory.GetService(type, treeName);
+            var service = _selector.GetRightService(type);
             if (service != default)
                 return service.GetValue(type, this, numberOfEntities, treeName, settings, null!);
             return default;

@@ -2,11 +2,11 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class RangePopulationService : IRangePopulationService
+    internal class RangePopulationService : IRandomPopulationService
     {
+        public int Priority => 1;
         public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
-
             int firstNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
             int secondNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
             if (firstNumber < 0)
@@ -19,5 +19,8 @@ namespace RepositoryFramework.Population
                 secondNumber++;
             return new Range(new Index(firstNumber), new Index(secondNumber));
         }
+
+        public bool IsValid(Type type) 
+            => type == typeof(Range) || type == typeof(Range?);
     }
 }

@@ -2,8 +2,10 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class TimePopulationService : ITimePopulationService
+    internal class TimePopulationService : IRandomPopulationService
     {
+        public int Priority => 1;
+
         public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
             if (type == typeof(DateTime) || type == typeof(DateTime?))
@@ -13,5 +15,9 @@ namespace RepositoryFramework.Population
             else
                 return DateTimeOffset.UtcNow;
         }
+
+        public bool IsValid(Type type) 
+            => type == typeof(DateTime) || type == typeof(DateTime?) || type == typeof(TimeSpan)
+            || type == typeof(TimeSpan?) || type == typeof(DateTimeOffset) || type == typeof(DateTimeOffset?);
     }
 }

@@ -2,19 +2,15 @@
 
 namespace RepositoryFramework.Population
 {
-    internal class ObjectPopulationService : IClassPopulationService
+    internal class ObjectPopulationService : IRandomPopulationService
     {
-        private readonly IInstanceCreator _instanceCreator;
+        public int Priority => 0;
 
-        public ObjectPopulationService(IInstanceCreator instanceCreator)
-        {
-            _instanceCreator = instanceCreator;
-        }
         public dynamic GetValue(Type type, IPopulationService populationService, int numberOfEntities, string treeName, InternalBehaviorSettings settings, dynamic args)
         {
             if (!type.IsInterface && !type.IsAbstract)
             {
-                var entity = _instanceCreator.CreateInstance(type, populationService, numberOfEntities, treeName, settings);
+                var entity = populationService.InstanceCreator.CreateInstance(type, populationService, numberOfEntities, treeName, settings);
                 try
                 {
                     var properties = type.GetProperties();
@@ -28,5 +24,8 @@ namespace RepositoryFramework.Population
             }
             return default!;
         }
+
+        public bool IsValid(Type type)
+            => !type.IsInterface && !type.IsAbstract;
     }
 }
