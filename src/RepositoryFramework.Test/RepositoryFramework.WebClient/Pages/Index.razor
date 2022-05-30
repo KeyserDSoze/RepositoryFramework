@@ -19,7 +19,7 @@ Welcome to your new app.
 
     protected override async Task OnParametersSetAsync()
     {
-        Users = await UserClient.QueryAsync();
+        Users = await UserClient.QueryAsync(x => x.Email.Contains("&%d%52kjas8909dasn2τæ▓⌐"));
         await base.OnParametersSetAsync();
     }
 }

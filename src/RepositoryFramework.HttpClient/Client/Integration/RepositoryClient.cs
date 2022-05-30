@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Net.Http.Json;
 using System.Text;
+using System.Web;
 
 namespace RepositoryFramework.Client
 {
@@ -11,7 +12,7 @@ namespace RepositoryFramework.Client
         private readonly HttpClient _httpClient;
         private readonly IRepositoryClientInterceptor? _clientInterceptor;
         private readonly IRepositoryClientInterceptor<T, TKey>? _specificClientInterceptor;
-        
+
         public RepositoryClient(IHttpClientFactory httpClientFactory,
             IRepositoryClientInterceptor clientInterceptor = null!,
             IRepositoryClientInterceptor<T, TKey> specificClientInterceptor = null!)
@@ -56,7 +57,7 @@ namespace RepositoryFramework.Client
             if (predicate != null || top != null || skip != null)
                 query.Append('?');
             if (predicate != null)
-                query.Append($"query={predicate}");
+                query.Append($"query={HttpUtility.UrlEncode(predicate.ToString())}");
             if (top != null)
                 query.Append($"{(predicate == null ? string.Empty : LogicAnd)}top={top}");
             if (skip != null)
