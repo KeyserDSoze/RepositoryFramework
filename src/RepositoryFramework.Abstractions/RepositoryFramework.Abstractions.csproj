@@ -12,7 +12,7 @@
 		<PackageIcon>repositoryframework.png</PackageIcon>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
 		<PackageId>Rystem.RepositoryFramework.Abstractions</PackageId>
-		<Version>0.8.1</Version>
+		<Version>0.8.2</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>

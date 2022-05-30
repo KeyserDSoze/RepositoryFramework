@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 _ = app.AddApiForRepository(service.Key, startingPath, authorizationPolicy);
             return app;
         }
-        private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, AuthorizationForApi authorization, AuthorizationPath path)
+        private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, AuthorizationForApi authorization, ApiName path)
         {
             if (authorization != null && authorization.Path.HasFlag(path))
             {
@@ -69,17 +69,17 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddGet<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name.ToLower()}/get", async (TKey key, TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(ApiName.Get)}", async (TKey key, TService service) =>
                {
                    var queryService = service as IQuery<T, TKey>;
                    return await queryService!.GetAsync(key);
-               }).WithName($"Get{name}")
-               .AddAuthorization(authorization, AuthorizationPath.Get);
+               }).WithName($"{nameof(ApiName.Get)}{name}")
+               .AddAuthorization(authorization, ApiName.Get);
         }
         private static void AddQuery<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
            where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name.ToLower()}/list", async (string? query, int? top, int? skip, TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(ApiName.Search)}", async (string? query, int? top, int? skip, TService service) =>
               {
                   dynamic? expression = null;
                   if (!string.IsNullOrWhiteSpace(query))
@@ -89,38 +89,38 @@ namespace Microsoft.Extensions.DependencyInjection
                   }
                   var queryService = service as IQuery<T, TKey>;
                   return await queryService!.QueryAsync(expression, top, skip);
-              }).WithName($"List{name}")
-              .AddAuthorization(authorization, AuthorizationPath.Query);
+              }).WithName($"{nameof(ApiName.Search)}{name}")
+              .AddAuthorization(authorization, ApiName.Search);
         }
         private static void AddInsert<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
           where TKey : notnull
         {
-            _ = app.MapPost($"{startingPath}/{name.ToLower()}/insert", async (TKey key, T entity, TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(ApiName.Insert)}", async (TKey key, T entity, TService service) =>
             {
                 var commandService = service as ICommand<T, TKey>;
                 return await commandService!.InsertAsync(key, entity);
-            }).WithName($"Insert{name}")
-            .AddAuthorization(authorization, AuthorizationPath.Insert);
+            }).WithName($"{nameof(ApiName.Insert)}{name}")
+            .AddAuthorization(authorization, ApiName.Insert);
         }
         private static void AddUpdate<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
           where TKey : notnull
         {
-            _ = app.MapPost($"{startingPath}/{name.ToLower()}/update", async (TKey key, T entity, TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(ApiName.Update)}", async (TKey key, T entity, TService service) =>
             {
                 var commandService = service as ICommand<T, TKey>;
                 return await commandService!.UpdateAsync(key, entity);
-            }).WithName($"Update{name}")
-            .AddAuthorization(authorization, AuthorizationPath.Update);
+            }).WithName($"{nameof(ApiName.Update)}{name}")
+            .AddAuthorization(authorization, ApiName.Update);
         }
         private static void AddDelete<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
           where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name.ToLower()}/delete", async (TKey key, TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(ApiName.Delete)}", async (TKey key, TService service) =>
             {
                 var commandService = service as ICommand<T, TKey>;
                 return await commandService!.DeleteAsync(key);
-            }).WithName($"Delete{name}")
-            .AddAuthorization(authorization, AuthorizationPath.Delete);
+            }).WithName($"{nameof(ApiName.Delete)}{name}")
+            .AddAuthorization(authorization, ApiName.Delete);
         }
     }
 }

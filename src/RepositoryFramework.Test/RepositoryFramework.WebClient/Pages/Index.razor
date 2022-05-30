@@ -1,0 +1,25 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+@if (Users != null)
+{
+    foreach (var user in Users)
+    {
+        <div style="position:relative;float:left;width:100%">@user.Email</div>
+    }
+}
+@code {
+    private IEnumerable<User>? Users;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Users = await UserClient.QueryAsync();
+        await base.OnParametersSetAsync();
+    }
+}

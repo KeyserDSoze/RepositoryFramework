@@ -2,7 +2,7 @@
 {
     public class AuthorizationForApi
     {
-        public AuthorizationPath Path { get; set; } = AuthorizationPath.Get | AuthorizationPath.Query | AuthorizationPath.Insert | AuthorizationPath.Update | AuthorizationPath.Delete;
+        public ApiName Path { get; set; } = ApiName.Get | ApiName.Search | ApiName.Insert | ApiName.Update | ApiName.Delete;
         public string[]? Policies { get; set; }
     }
 }

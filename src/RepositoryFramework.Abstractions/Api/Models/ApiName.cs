@@ -1,12 +1,12 @@
 ﻿namespace RepositoryFramework
 {
     [Flags]
-    public enum AuthorizationPath
+    public enum ApiName
     {
         Insert,
         Update,
         Delete,
         Get,
-        Query
+        Search
     }
 }

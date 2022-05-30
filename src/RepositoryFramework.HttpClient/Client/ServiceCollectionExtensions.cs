@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddHttpClient($"{typeof(T).Name}{HttpClientName}", options =>
             {
                 configureClient?.Invoke(options);
-                options.BaseAddress = new Uri($"https://{domain}/{startingPath}/{typeof(T).Name.ToLower()}/");
+                options.BaseAddress = new Uri($"https://{domain}/{startingPath}/{typeof(T).Name}/");
             });
             Type keyType = typeof(TKey);
             if (clientType == ClientType.Query)
