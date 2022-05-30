@@ -4,6 +4,8 @@
 
 ## [Showcase (youtube)](https://www.youtube.com/watch?v=xxZO5anN5xg)
 
+## [Showcase (code)](https://github.com/KeyserDSoze/RepositoryFramework.Showcase)
+
 **Rystem.RepositoryFramework allows you to use correctly concepts like repository pattern, CQRS and DDD. You have interfaces for your domains, auto-generated api, auto-generated HttpClient to simplify connection "api to front-end", a functionality for auto-population in memory of your models, a functionality to simulate exceptions and waiting time from external sources to improve your implementation/business test and load test.**
 
 **Document to read before using this library:**
