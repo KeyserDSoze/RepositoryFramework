@@ -1,4 +1,4 @@
-name: Repository Framework publish to nuget
+name: Infrastructure.Abastractions.Nuget
 on:
   push:
     branches:

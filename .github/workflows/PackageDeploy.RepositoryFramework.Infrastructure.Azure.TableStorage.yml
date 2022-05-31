@@ -1,4 +1,4 @@
-name: Repository Framework publish to nuget
+name: Infrastructure.Azure.TableStorage.Nuget
 on:
   push:
     branches:
