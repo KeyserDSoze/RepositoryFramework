@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<Authors>Alessandro Rapiti</Authors>
 		<Company>Alessandro Rapiti</Company>
-		<Product>Rystem.RepositoryFramework.HttpClient</Product>
+		<Product>Rystem.RepositoryFramework</Product>
 		<Description>Rystem.RepositoryFramework allows you to use correctly concepts like repository pattern, CQRS and DDD. You have interfaces for your domains, auto-generated api, auto-generated HttpClient to simplify connection "api to front-end", a functionality for auto-population in memory of your models, a functionality to simulate exceptions and waiting time from external sources to improve your implementation/business test and load test.</Description>
 		<Copyright>2022</Copyright>
 		<PackageIcon>repositoryframework.png</PackageIcon>
@@ -19,7 +19,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\RepositoryFramework\repositoryframework.png">
+		<None Include="..\RepositoryFramework.Abstractions\repositoryframework.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>

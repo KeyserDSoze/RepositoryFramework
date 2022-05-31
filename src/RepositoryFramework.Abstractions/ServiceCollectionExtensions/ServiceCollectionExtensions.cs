@@ -36,7 +36,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             return null;
         }
-
         private static IServiceCollection AddServiceWithLifeTime<TInterface, TImplementation>(this IServiceCollection services,
           ServiceLifetime serviceLifetime)
             where TImplementation : class, TInterface
@@ -71,17 +70,43 @@ namespace Microsoft.Extensions.DependencyInjection
                 _ => services.AddScoped(typeof(TInterface), typeof(TImplementation))
             };
         }
-
+        /// <summary>
+        /// Add repository storage, inject the IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
+        /// </summary>
+        /// <typeparam name="T">Model used for your repository</typeparam>
+        /// <typeparam name="TKey">Key to retrieve, update or delete your data from repository</typeparam>
+        /// <typeparam name="TStorage">Repository pattern storage</typeparam>
+        /// <param name="services">IServiceCollection</param>
+        /// <param name="serviceLifetime">Service Lifetime</param>
+        /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddRepository<T, TKey, TStorage>(this IServiceCollection services,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
           where TStorage : class, IRepository<T, TKey>
           where TKey : notnull
               => services.AddServiceWithLifeTime<IRepository<T, TKey>, TStorage>(serviceLifetime);
+        /// <summary>
+        /// Add Command storage for your CQRS, inject the ICommand<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
+        /// </summary>
+        /// <typeparam name="T">Model used for your command</typeparam>
+        /// <typeparam name="TKey">Key to store, update or delete your data</typeparam>
+        /// <typeparam name="TStorage">Command pattern storage</typeparam>
+        /// <param name="services">IServiceCollection</param>
+        /// <param name="serviceLifetime">Service Lifetime</param>
+        /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddCommand<T, TKey, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TStorage : class, ICommand<T, TKey>
             where TKey : notnull
               => services.AddServiceWithLifeTime<ICommand<T, TKey>, TStorage>(serviceLifetime);
+        /// <summary>
+        /// Add Query storage for your CQRS, inject the IQuery<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
+        /// </summary>
+        /// <typeparam name="T">Model used for your query</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
+        /// <typeparam name="TStorage">Query pattern storage</typeparam>
+        /// <param name="services">IServiceCollection</param>
+        /// <param name="serviceLifetime">Service Lifetime</param>
+        /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddQuery<T, TKey, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TStorage : class, IQuery<T, TKey>

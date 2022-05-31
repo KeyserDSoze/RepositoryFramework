@@ -2,6 +2,11 @@
 
 namespace RepositoryFramework
 {
+    /// <summary>
+    /// Interface for your CQRS pattern, with Get and Query methods.
+    /// </summary>
+    /// <typeparam name="T">Model used for your repository</typeparam>
+    /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
     public interface IQuery<T, TKey> : IQueryPattern
         where TKey : notnull
     {

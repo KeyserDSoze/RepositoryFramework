@@ -1,5 +1,8 @@
 ﻿namespace RepositoryFramework
 {
+    /// <summary>
+    /// Model for your repository service registry.
+    /// </summary>
     public class RepositoryFrameworkService
     {
         public Type? RepositoryType { get; set; }
