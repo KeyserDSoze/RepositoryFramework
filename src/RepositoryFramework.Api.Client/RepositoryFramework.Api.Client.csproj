@@ -11,9 +11,10 @@
 		<Description>Rystem.RepositoryFramework allows you to use correctly concepts like repository pattern, CQRS and DDD. You have interfaces for your domains, auto-generated api, auto-generated HttpClient to simplify connection "api to front-end", a functionality for auto-population in memory of your models, a functionality to simulate exceptions and waiting time from external sources to improve your implementation/business test and load test.</Description>
 		<Copyright>2022</Copyright>
 		<PackageIcon>repositoryframework.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
 		<PackageId>Rystem.RepositoryFramework.Api.Client</PackageId>
-		<Version>0.9.0</Version>
+		<Version>0.9.1</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
@@ -23,6 +24,7 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
+		<None Include="README.md" Pack="true" PackagePath="\"/>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -38,7 +40,7 @@
 		</When>
 		<When Condition=" '$(Configuration)'!='Debug' ">
 			<ItemGroup>
-				<PackageReference Include="Rystem.RepositoryFramework.Api.Abstractions" Version="0.9.0" />
+				<PackageReference Include="Rystem.RepositoryFramework.Api.Abstractions" Version="0.9.1" />
 			</ItemGroup>
 		</When>
 	</Choose>
