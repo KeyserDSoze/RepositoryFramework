@@ -1,4 +1,4 @@
-name: Infrastructure.Abastractions.Nuget
+name: Abastractions.Nuget
 on:
   push:
     branches:

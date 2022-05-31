@@ -1,4 +1,4 @@
-name: Infrastructure.Api.Abstractions.Nuget
+name: Api.Abstractions.Nuget
 on:
   push:
     branches:

@@ -1,4 +1,4 @@
-name: Infrastructure.Api.Server.Nuget
+name: Api.Server.Nuget
 on:
   push:
     branches:
