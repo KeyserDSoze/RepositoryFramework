@@ -21,7 +21,7 @@ jobs:
         uses: rohith/publish-nuget@v2
         with:
           PROJECT_FILE_PATH: src/RepositoryFramework.Abstractions/RepositoryFramework.Abstractions.csproj
-          PACKAGE_NAME: Rystem
+          PACKAGE_NAME: Rystem.RepositoryFramework.Abstractions
           VERSION_FILE_PATH: src/RepositoryFramework.Abstractions/RepositoryFramework.Abstractions.csproj
           VERSION_REGEX: <Version>(.*)<\/Version>
           TAG_COMMIT: true
