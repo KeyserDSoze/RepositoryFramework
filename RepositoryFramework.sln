@@ -25,6 +25,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.Infrast
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{166D9CDD-8137-4A52-8FCF-9C2F34F5C557}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.InMemory.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.InMemory.yml
+		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Abstractions.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Abstractions.yml
+		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Abstractions.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Abstractions.yml
+		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Client.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Client.yml
+		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Server.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Server.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
