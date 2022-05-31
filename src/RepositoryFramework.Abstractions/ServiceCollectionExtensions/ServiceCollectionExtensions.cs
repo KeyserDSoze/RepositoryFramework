@@ -1,4 +1,5 @@
-﻿using RepositoryFramework;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var service = type.GetInterfaces()
                 .OrderByDescending(x => x.GetGenericArguments().Length)
                 .FirstOrDefault(x => x.Name.Contains("IRepository") || x.Name.Contains("IQuery") || x.Name.Contains("ICommand"));
-            if(service != null && type.GetGenericArguments().Length > index)
+            if (service != null && type.GetGenericArguments().Length > index)
                 return type.GetGenericArguments()[index];
             if (service != null && service.GetGenericArguments().Length > index)
                 return service.GetGenericArguments()[index];
@@ -46,16 +47,21 @@ namespace Microsoft.Extensions.DependencyInjection
             var keyType = GetTypeOfKey<TInterface>();
             if (keyType == null)
                 throw new ArgumentNullException($"Key for {typeof(TInterface).FullName} not found. Check if your object {typeof(TInterface).Name} extends IRepository, IQuery or ICommand.");
-            if (!EndpointRouteBuilderExtensions.Services.ContainsKey(entityType))
-                EndpointRouteBuilderExtensions.Services.Add(entityType, new());
-            EndpointRouteBuilderExtensions.Services[entityType].KeyType = keyType;
+            var service = RepositoryFrameworkServices.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
+            if (service == null)
+            {
+                service = new RepositoryFrameworkService { ModelType = entityType };
+                RepositoryFrameworkServices.Instance.Services.Add(service);
+                services.AddSingleton(RepositoryFrameworkServices.Instance);
+            }
+            service.KeyType = keyType;
 
             if (IsThatInterface<TInterface, IRepositoryPattern>())
-                EndpointRouteBuilderExtensions.Services[entityType].RepositoryType = typeof(TInterface);
+                service.RepositoryType = typeof(TInterface);
             else if (IsThatInterface<TInterface, ICommandPattern>())
-                EndpointRouteBuilderExtensions.Services[entityType].CommandType = typeof(TInterface);
+                service.CommandType = typeof(TInterface);
             else if (IsThatInterface<TInterface, IQueryPattern>())
-                EndpointRouteBuilderExtensions.Services[entityType].QueryType = typeof(TInterface);
+                service.QueryType = typeof(TInterface);
 
             return serviceLifetime switch
             {

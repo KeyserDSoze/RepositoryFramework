@@ -17,7 +17,7 @@ namespace RepositoryFramework.Client
             IRepositoryClientInterceptor clientInterceptor = null!,
             IRepositoryClientInterceptor<T, TKey> specificClientInterceptor = null!)
         {
-            _httpClient = httpClientFactory.CreateClient($"{typeof(T).Name}{ServiceCollectionExtensions.HttpClientName}");
+            _httpClient = httpClientFactory.CreateClient($"{typeof(T).Name}{Const.HttpClientName}");
             _clientInterceptor = clientInterceptor;
             _specificClientInterceptor = specificClientInterceptor;
         }

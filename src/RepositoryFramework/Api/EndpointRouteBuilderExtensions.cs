@@ -9,14 +9,15 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class EndpointRouteBuilderExtensions
     {
-        internal static Dictionary<Type, RepositoryFrameworkService> Services = new();
         public static IEndpointRouteBuilder AddApiForRepository<T>(this IEndpointRouteBuilder app, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
             => app.AddApiForRepository(typeof(T), startingPath, authorizationPolicy);
-        public static IEndpointRouteBuilder AddApiForRepository(this IEndpointRouteBuilder app, Type modelType, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
+        public static TEndpointRouteBuilder AddApiForRepository<TEndpointRouteBuilder>(this TEndpointRouteBuilder app, Type modelType, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
+            where TEndpointRouteBuilder : IEndpointRouteBuilder
         {
-            if (!Services.ContainsKey(modelType))
+            var services = app.ServiceProvider.GetService<RepositoryFrameworkServices>();
+            var serviceValue = services!.Services.FirstOrDefault(x => x.ModelType == modelType);
+            if (serviceValue == null)
                 throw new ArgumentException($"Please check if your {modelType.Name} model has a service injected for IRepository, IQuery, ICommand.");
-            var serviceValue = Services[modelType];
             if (serviceValue.QueryType != null || serviceValue.RepositoryType != null)
             {
                 _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddGet), BindingFlags.NonPublic | BindingFlags.Static)!
@@ -49,10 +50,12 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             return app;
         }
-        public static IEndpointRouteBuilder AddApiForRepositoryFramework(this IEndpointRouteBuilder app, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
+        public static TEndpointRouteBuilder AddApiForRepositoryFramework<TEndpointRouteBuilder>(this TEndpointRouteBuilder app, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
+            where TEndpointRouteBuilder : IEndpointRouteBuilder
         {
-            foreach (var service in Services)
-                _ = app.AddApiForRepository(service.Key, startingPath, authorizationPolicy);
+            var services = app.ServiceProvider.GetService<RepositoryFrameworkServices>();
+            foreach (var service in services!.Services)
+                _ = app.AddApiForRepository(service.ModelType, startingPath, authorizationPolicy);
             return app;
         }
         private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, AuthorizationForApi authorization, ApiName path)

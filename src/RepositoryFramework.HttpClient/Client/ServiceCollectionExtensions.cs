@@ -23,7 +23,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 _ => services.AddScoped(typeof(TInterface), typeof(TImplementation))
             };
         }
-        internal const string HttpClientName = "RepositoryClient";
         private static IServiceCollection AddRepositoryClient<T, TKey>(this IServiceCollection services,
             bool specificClient,
             ClientType clientType,
@@ -33,7 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
             ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
         where TKey : notnull
         {
-            services.AddHttpClient($"{typeof(T).Name}{HttpClientName}", options =>
+            services.AddHttpClient($"{typeof(T).Name}{Const.HttpClientName}", options =>
             {
                 configureClient?.Invoke(options);
                 options.BaseAddress = new Uri($"https://{domain}/{startingPath}/{typeof(T).Name}/");
