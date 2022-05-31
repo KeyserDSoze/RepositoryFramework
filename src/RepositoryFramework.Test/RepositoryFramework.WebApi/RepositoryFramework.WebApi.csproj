@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>0eae079a-3560-4eeb-a034-096ca47480b1</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\RepositoryFramework.Api.Server\RepositoryFramework.Api.Server.csproj" />
     <ProjectReference Include="..\..\RepositoryFramework.Infrastructure.InMemory\RepositoryFramework.Infrastructure.InMemory.csproj" />
+    <ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.TableStorage\RepositoryFramework.Infrastructure.TableStorage.csproj" />
   </ItemGroup>
 
 </Project>
