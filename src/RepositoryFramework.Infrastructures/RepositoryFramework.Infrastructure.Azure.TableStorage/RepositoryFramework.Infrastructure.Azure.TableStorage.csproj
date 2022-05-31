@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,7 +13,7 @@
 		<PackageIcon>repositoryframework.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
-		<PackageId>Rystem.RepositoryFramework.Infrastructure.TableStorage</PackageId>
+		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.TableStorage</PackageId>
 		<Version>0.9.1</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -45,5 +45,5 @@
 		</None>
 		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
-	
+
 </Project>

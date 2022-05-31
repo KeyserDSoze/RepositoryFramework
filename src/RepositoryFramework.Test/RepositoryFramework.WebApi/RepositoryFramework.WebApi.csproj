@@ -14,7 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\RepositoryFramework.Api.Server\RepositoryFramework.Api.Server.csproj" />
     <ProjectReference Include="..\..\RepositoryFramework.Infrastructure.InMemory\RepositoryFramework.Infrastructure.InMemory.csproj" />
-    <ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.TableStorage\RepositoryFramework.Infrastructure.TableStorage.csproj" />
+    <ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.TableStorage\RepositoryFramework.Infrastructure.Azure.TableStorage.csproj" />
   </ItemGroup>
 
 </Project>

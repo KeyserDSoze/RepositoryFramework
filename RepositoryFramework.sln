@@ -25,8 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.Infrast
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{166D9CDD-8137-4A52-8FCF-9C2F34F5C557}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.TableStorage.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.TableStorage.yml
 		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.InMemory.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.InMemory.yml
-		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.TableStorage.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.TableStorage.yml
 		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Abstractions.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Abstractions.yml
 		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Abstractions.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Abstractions.yml
 		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Client.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Client.yml
@@ -34,9 +34,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.Infrastructure.TableStorage", "src\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.TableStorage\RepositoryFramework.Infrastructure.TableStorage.csproj", "{D3267F90-31BA-4049-812A-9E0DC20DADD0}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RepositoryFramework.Infrastructures", "RepositoryFramework.Infrastructures", "{9547851D-6AEF-40BE-B71B-ECC0C0DFD156}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.Infrastructure.Azure.TableStorage", "src\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.TableStorage\RepositoryFramework.Infrastructure.Azure.TableStorage.csproj", "{4FD3776D-FC4F-4081-B442-E2F94B75C90C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,10 +80,10 @@ Global
 		{209D75DF-B0A0-4584-BC62-509C96F08D42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{209D75DF-B0A0-4584-BC62-509C96F08D42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{209D75DF-B0A0-4584-BC62-509C96F08D42}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3267F90-31BA-4049-812A-9E0DC20DADD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3267F90-31BA-4049-812A-9E0DC20DADD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3267F90-31BA-4049-812A-9E0DC20DADD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3267F90-31BA-4049-812A-9E0DC20DADD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FD3776D-FC4F-4081-B442-E2F94B75C90C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FD3776D-FC4F-4081-B442-E2F94B75C90C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FD3776D-FC4F-4081-B442-E2F94B75C90C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FD3776D-FC4F-4081-B442-E2F94B75C90C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,7 +93,7 @@ Global
 		{DDD9149D-FCDC-4357-87EF-48B8AF12394D} = {1C3E945D-92FF-46AF-ABA7-DF0B3655C9FF}
 		{41A01404-6E05-4D7F-AE25-2C8DEA168D0F} = {1C3E945D-92FF-46AF-ABA7-DF0B3655C9FF}
 		{7AEFB905-FDE0-4C02-85A7-13D1F9867FC6} = {1C3E945D-92FF-46AF-ABA7-DF0B3655C9FF}
-		{D3267F90-31BA-4049-812A-9E0DC20DADD0} = {9547851D-6AEF-40BE-B71B-ECC0C0DFD156}
+		{4FD3776D-FC4F-4081-B442-E2F94B75C90C} = {9547851D-6AEF-40BE-B71B-ECC0C0DFD156}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15846BE9-69D7-49D6-8E61-F58E9927D291}

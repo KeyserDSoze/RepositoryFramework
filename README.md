@@ -35,3 +35,6 @@ You may find the documentation at [this link](https://github.com/KeyserDSoze/Rep
 
 ### Api.Client (Application for http client integration of api endpoint for your repository or CQRS)
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Api.Client)
+
+### Azure TableStorage integration (default integration)
+You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructure.TableStorage)
