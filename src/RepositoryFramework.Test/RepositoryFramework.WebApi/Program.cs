@@ -3,8 +3,13 @@ using RepositoryFramework.WebApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddRepositoryInMemoryStorageWithStringKey<User>()
 //.PopulateWithRandomData(x => x.Email!, 120, 5);
+//builder.Services
+//    .AddRepositoryInTableStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
 builder.Services
-    .AddRepositoryInTableStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
+    .AddRepositoryInCosmosSql<User, string>(
+    x => x.Email!,
+    builder.Configuration["CosmosSql:ConnectionString"],
+    "BigDatabase");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

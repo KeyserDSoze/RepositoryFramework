@@ -1,5 +1,4 @@
-﻿using RepositoryFramework.Infrastructure.TableStorage;
-using RepositoryFramework.Infrastructure.TableStorage.TableStorage;
+﻿using RepositoryFramework.Infrastructure.Azure.TableStorage;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

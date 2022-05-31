@@ -1,6 +1,6 @@
 ﻿using Azure.Data.Tables;
 
-namespace RepositoryFramework.Infrastructure.TableStorage
+namespace RepositoryFramework.Infrastructure.Azure.TableStorage
 {
     public class TableServiceClientFactory
     {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,14 +13,14 @@
 		<PackageIcon>repositoryframework.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
-		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.TableStorage</PackageId>
+		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.CosmosSql</PackageId>
 		<Version>0.9.1</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Azure.Data.Tables" Version="12.5.0" />
+		<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.27.1" />
 	</ItemGroup>
 
 	<Choose>

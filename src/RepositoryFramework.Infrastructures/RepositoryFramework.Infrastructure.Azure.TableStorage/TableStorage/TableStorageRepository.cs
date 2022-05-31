@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Text.Json;
 
-namespace RepositoryFramework.Infrastructure.TableStorage.TableStorage
+namespace RepositoryFramework.Infrastructure.Azure.TableStorage
 {
     internal sealed class TableStorageRepository<T, TKey> : IRepository<T, TKey>
         where TKey : notnull
@@ -18,8 +18,8 @@ namespace RepositoryFramework.Infrastructure.TableStorage.TableStorage
             public string PartitionKey { get; set; }
             public string RowKey { get; set; }
             public DateTimeOffset? Timestamp { get; set; }
-            public Azure.ETag ETag { get; set; }
             public string Value { get; set; }
+            public global::Azure.ETag ETag { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         }
         public async Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
