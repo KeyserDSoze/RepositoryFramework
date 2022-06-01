@@ -4,11 +4,6 @@ using System.Reflection;
 
 namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
 {
-    public sealed class CosmosOptions
-    {
-        public ThroughputProperties? ThroughputProperties { get; set; }
-        public RequestOptions? RequestOptions { get; set; }
-    }
     public class CosmosSqlServiceClientFactory
     {
         public static CosmosSqlServiceClientFactory Instance { get; } = new CosmosSqlServiceClientFactory();
@@ -33,7 +28,8 @@ namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
                                 Id = name,
                                 PartitionKeyPath = $"/{keyName}"
                             },
-                            containerOptions?.ThroughputProperties, containerOptions?.RequestOptions)
+                            containerOptions?.ThroughputProperties,
+                            containerOptions?.RequestOptions)
                                 .ConfigureAwait(false).GetAwaiter().GetResult();
                     if (containerResponse.StatusCode == HttpStatusCode.OK || containerResponse.StatusCode == HttpStatusCode.Created)
                         _containerServices.Add(name, (containerResponse.Container, typeof(T).GetProperties()));
