@@ -1,4 +1,5 @@
 ﻿using Azure.Data.Tables;
+using Azure.Identity;
 
 namespace RepositoryFramework.Infrastructure.Azure.TableStorage
 {
@@ -9,17 +10,26 @@ namespace RepositoryFramework.Infrastructure.Azure.TableStorage
         private readonly Dictionary<string, TableClient> _tableServiceClientFactories = new();
         public TableClient Get(string name)
             => _tableServiceClientFactories[name];
-        internal TableServiceClientFactory Add(string name, string connectionString)
+        internal TableServiceClientFactory Add(string name, string connectionString, TableClientOptions? clientOptions)
+        {
+            var serviceClient = new TableServiceClient(connectionString, clientOptions);
+            var tableClient = new TableClient(connectionString, name, clientOptions);
+            return Add(name, serviceClient, tableClient);
+        }
+        internal TableServiceClientFactory Add(string name, Uri endpointUri, TableClientOptions? clientOptions)
+        {
+            var defaultCredential = new DefaultAzureCredential();
+            var serviceClient = new TableServiceClient(endpointUri, defaultCredential, clientOptions);
+            var tableClient = new TableClient(endpointUri, name, defaultCredential, clientOptions);
+            return Add(name, serviceClient, tableClient);
+        }
+        private TableServiceClientFactory Add(string name, TableServiceClient serviceClient, TableClient tableClient)
         {
             if (!_tableServiceClientFactories.ContainsKey(name))
             {
-                var serviceClient = new TableServiceClient(connectionString);
                 _ = serviceClient.CreateTableIfNotExistsAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
-                var tableClient = new TableClient(connectionString, name);
                 _tableServiceClientFactories.Add(name, tableClient);
             }
-            else
-                throw new ArgumentException($"{name} client already added.");
             return this;
         }
     }

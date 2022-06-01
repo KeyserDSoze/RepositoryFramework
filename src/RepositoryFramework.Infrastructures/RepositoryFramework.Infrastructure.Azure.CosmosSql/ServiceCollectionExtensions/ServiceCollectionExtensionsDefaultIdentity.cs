@@ -13,9 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <param name="services">IServiceCollection</param>
         /// <param name="navigationKey">Select the property that represents your key.</param>
-        /// <param name="connectionString">A connection string includes the authentication information required for your
-        //     application to access data in an Azure Storage account at runtime. For more information,
-        //     Configure Azure Storage connection strings.</param>
+        /// <param name="endpointUri">Uri of your cosmos db.</param>
         /// <param name="databaseName">Name for your database, it will be created automatically if not exists.</param>
         /// <param name="containerName">Name for your container, if you omit it the name will be the model name,
         //     it will be created automatically if not exists.</param>
@@ -26,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddRepositoryInCosmosSql<T, TKey>(
            this IServiceCollection services,
            Expression<Func<T, TKey>> navigationKey,
-           string connectionString,
+           Uri endpointUri,
            string databaseName,
            string? containerName = null,
            CosmosClientOptions? clientOptions = null,
@@ -38,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .Add<T>(databaseName,
                         containerName ?? typeof(T).Name,
                         navigationKey.ToString().Split('.').Last(),
-                        connectionString,
+                        endpointUri,
                         clientOptions,
                         databaseOptions,
                         containerOptions);
@@ -53,9 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <param name="services">IServiceCollection</param>
         /// <param name="navigationKey">Select the property that represents your key.</param>
-        /// <param name="connectionString">A connection string includes the authentication information required for your
-        //     application to access data in an Azure Storage account at runtime. For more information,
-        //     Configure Azure Storage connection strings.</param>
+        /// <param name="endpointUri">Uri of your cosmos db.</param>
         /// <param name="databaseName">Name for your database, it will be created automatically if not exists.</param>
         /// <param name="containerName">Name for your container, if you omit it the name will be the model name,
         //     it will be created automatically if not exists.</param>
@@ -66,7 +62,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddCommandInCosmosSql<T, TKey>(
            this IServiceCollection services,
            Expression<Func<T, TKey>> navigationKey,
-           string connectionString,
+           Uri endpointUri,
            string databaseName,
            string? containerName = null,
            CosmosClientOptions? clientOptions = null,
@@ -78,7 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .Add<T>(databaseName,
                         containerName ?? typeof(T).Name,
                         navigationKey.ToString().Split('.').Last(),
-                        connectionString,
+                        endpointUri,
                         clientOptions,
                         databaseOptions,
                         containerOptions);
@@ -93,9 +89,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <param name="services">IServiceCollection</param>
         /// <param name="navigationKey">Select the property that represents your key.</param>
-        /// <param name="connectionString">A connection string includes the authentication information required for your
-        //     application to access data in an Azure Storage account at runtime. For more information,
-        //     Configure Azure Storage connection strings.</param>
+        /// <param name="endpointUri">Uri of your cosmos db.</param>
         /// <param name="databaseName">Name for your database, it will be created automatically if not exists.</param>
         /// <param name="containerName">Name for your container, if you omit it the name will be the model name,
         //     it will be created automatically if not exists.</param>
@@ -106,7 +100,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddQueryInCosmosSql<T, TKey>(
            this IServiceCollection services,
            Expression<Func<T, TKey>> navigationKey,
-           string connectionString,
+           Uri endpointUri,
            string databaseName,
            string? containerName = null,
            CosmosClientOptions? clientOptions = null,
@@ -118,7 +112,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .Add<T>(databaseName,
                         containerName ?? typeof(T).Name,
                         navigationKey.ToString().Split('.').Last(),
-                        connectionString,
+                        endpointUri,
                         clientOptions,
                         databaseOptions,
                         containerOptions);
