@@ -2,7 +2,6 @@
 
 namespace RepositoryFramework.Population
 {
-
     internal class PopulationService : IPopulationService
     {
         private readonly PopulationServiceSelector _selector;

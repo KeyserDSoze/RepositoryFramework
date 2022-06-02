@@ -6,7 +6,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceProviderExtensions
     {
-        internal static List<PopulationServiceSettings> AllPopulationServiceSettings { get; } = new();
         /// <summary>
         /// It populates every object in memory storage injected. You have to use it after service collection build in your startup.
         /// </summary>
@@ -14,27 +13,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IServiceProvider</returns>
         public static IServiceProvider Populate(this IServiceProvider serviceProvider)
         {
-            var populationService = serviceProvider.GetService<IPopulationService>();
-            if (populationService != null)
+            foreach (var service in ServiceInstall.PopulationStrategyRetriever)
             {
-                foreach (var populationServiceSetting in AllPopulationServiceSettings)
-                {
-                    populationService.Settings = populationServiceSetting.BehaviorSettings;
-                    var instanceCreator = serviceProvider.GetService<IInstanceCreator>();
-                    var properties = populationServiceSetting.EntityType.GetProperties();
-                    for (int i = 0; i < populationServiceSetting.NumberOfElements; i++)
-                    {
-                        var entity = instanceCreator!.CreateInstance(new RandomPopulationOptions(populationServiceSetting.EntityType,
-                            populationService!, populationServiceSetting.NumberOfElementsWhenEnumerableIsFound, string.Empty));
-                        foreach (var property in properties.Where(x => x.CanWrite))
-                            property.SetValue(entity, populationService!.Construct(property.PropertyType,
-                                populationServiceSetting.NumberOfElementsWhenEnumerableIsFound, string.Empty,
-                                property.Name));
-
-                        var key = properties.First(x => x.Name == populationServiceSetting.KeyName).GetValue(entity);
-                        populationServiceSetting.AddElementToMemory(key!, entity!);
-                    }
-                }
+                var populationStrategy = service.Invoke(serviceProvider);
+                if (populationStrategy != null)
+                    populationStrategy.Populate();
             }
             return serviceProvider;
         }

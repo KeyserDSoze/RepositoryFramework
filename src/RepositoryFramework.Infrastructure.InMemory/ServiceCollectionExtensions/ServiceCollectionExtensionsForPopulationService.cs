@@ -7,6 +7,19 @@ namespace RepositoryFramework.Customization
     public static partial class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Override the population strategy default service.
+        /// </summary>
+        /// <typeparam name="T">Model used for your repository</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
+        /// <typeparam name="TService">your IPopulationService</typeparam>
+        /// <param name="services">IServiceCollection</param>
+        /// <returns>IServiceCollection</returns>
+        public static IServiceCollection AddPopulationStrategyService<T, TKey, TService>(
+          this IServiceCollection services)
+          where TService : class, IPopulationStrategy<T, TKey>
+          where TKey : notnull
+          => services.AddSingleton<IPopulationStrategy<T, TKey>, TService>();
+        /// <summary>
         /// Override the population default service.
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>

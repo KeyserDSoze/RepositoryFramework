@@ -2,6 +2,7 @@
 using RepositoryFramework.Population;
 using RepositoryFramework.Services;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace RepositoryFramework
 {
@@ -23,7 +24,29 @@ namespace RepositoryFramework
             => _services!.AddRepositoryInMemoryStorageWithLongKey(settings);
         public RepositoryInMemoryBuilder<TNext, int> AddRepositoryInMemoryStorageWithIntKey<TNext>(Action<RepositoryBehaviorSettings<TNext, int>>? settings = default)
             => _services!.AddRepositoryInMemoryStorageWithIntKey(settings);
-        public RepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(Expression<Func<T, TKey>> navigationKey, int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
+        public RepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
+            Expression<Func<T, TKey>> navigationKey,
+            string json)
+        {
+            string keyName = navigationKey.ToString().Split('.').Last();
+            var keyType = typeof(T).GetProperties().First(x => x.Name == keyName);
+            var elements = JsonSerializer.Deserialize<IEnumerable<T>>(json);
+            if (elements != null)
+                return PopulateWithDataInjection(navigationKey, elements);
+            return this;
+        }
+        public RepositoryInMemoryBuilder<T, TKey> PopulateWithDataInjection(
+            Expression<Func<T, TKey>> navigationKey,
+            IEnumerable<T> elements)
+        {
+            string keyName = navigationKey.ToString().Split('.').Last();
+            var keyType = typeof(T).GetProperties().First(x => x.Name == keyName);
+            foreach (var element in elements)
+                InMemoryStorage<T, TKey>.Values.Add((TKey)keyType.GetValue(element)!, element);
+            return this;
+        }
+        public RepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(
+            Expression<Func<T, TKey>> navigationKey, int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
         {
             _services.AddSingleton<IPopulationService, PopulationService>();
             _services.AddSingleton<IInstanceCreator, InstanceCreator>();
@@ -42,15 +65,16 @@ namespace RepositoryFramework
             PopulationServiceSelector.Instance.TryAdd(new StringPopulationService());
             PopulationServiceSelector.Instance.TryAdd(new TimePopulationService());
             _services.AddSingleton(PopulationServiceSelector.Instance);
-            ServiceProviderExtensions.AllPopulationServiceSettings.Add(new PopulationServiceSettings
-            {
-                EntityType = typeof(T),
-                NumberOfElements = numberOfElements,
-                BehaviorSettings = _internalBehaviorSettings,
-                NumberOfElementsWhenEnumerableIsFound = numberOfElementsWhenEnumerableIsFound,
-                AddElementToMemory = (key, entity) => InMemoryStorage<T, TKey>.Values.Add((TKey)key, (T)entity),
-                KeyName = navigationKey.ToString().Split('.').Last()
-            });
+            _services.AddSingleton<IPopulationStrategy<T, TKey>, RandomPopulationStrategy<T, TKey>>();
+            _ = _services.AddSingleton(
+                new PopulationServiceSettings<T, TKey>
+                {
+                    NumberOfElements = numberOfElements,
+                    BehaviorSettings = _internalBehaviorSettings,
+                    NumberOfElementsWhenEnumerableIsFound = numberOfElementsWhenEnumerableIsFound,
+                    AddElementToMemory = (key, entity) => InMemoryStorage<T, TKey>.Values.Add(key, entity),
+                    KeyName = navigationKey.ToString().Split('.').Last()
+                });
             return new(this, _internalBehaviorSettings);
         }
         public IServiceCollection Finalize()

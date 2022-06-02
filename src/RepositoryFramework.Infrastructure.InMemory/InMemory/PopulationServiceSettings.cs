@@ -1,12 +1,10 @@
 ﻿namespace RepositoryFramework
 {
-    internal class PopulationServiceSettings
+    public class PopulationServiceSettings<T, TKey>
+        where TKey : notnull
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public Type EntityType { get; init; }
-        public Action<object, object> AddElementToMemory { get; init; }
-        public BehaviorSettings BehaviorSettings { get; init; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public Action<TKey, T>? AddElementToMemory { get; init; }
+        public BehaviorSettings? BehaviorSettings { get; init; }
         public string? KeyName { get; init; }
         public int NumberOfElements { get; init; }
         public int NumberOfElementsWhenEnumerableIsFound { get; init; }
