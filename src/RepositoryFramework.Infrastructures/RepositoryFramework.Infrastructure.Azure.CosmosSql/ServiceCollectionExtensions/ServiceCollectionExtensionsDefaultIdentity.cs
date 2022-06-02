@@ -7,7 +7,8 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Add a default cosmos sql service for your repository pattern.
+        /// Add a default cosmos sql service for your repository pattern
+        // with default credential integration (managed identity)
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
@@ -16,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your cosmos db.</param>
         /// <param name="databaseName">Name for your database, it will be created automatically if not exists.</param>
         /// <param name="containerName">Name for your container, if you omit it the name will be the model name,
-        //     it will be created automatically if not exists.</param>
+        ///     it will be created automatically if not exists.</param>
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
@@ -46,6 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         /// <summary>
         /// Add a default cosmos sql service for your command pattern.
+        /// with default credential integration (managed identity)
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
@@ -54,7 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your cosmos db.</param>
         /// <param name="databaseName">Name for your database, it will be created automatically if not exists.</param>
         /// <param name="containerName">Name for your container, if you omit it the name will be the model name,
-        //     it will be created automatically if not exists.</param>
+        ///     it will be created automatically if not exists.</param>
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
@@ -84,6 +86,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         /// <summary>
         /// Add a default cosmos sql service for your query pattern.
+        /// with default credential integration (managed identity)
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
@@ -92,7 +95,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your cosmos db.</param>
         /// <param name="databaseName">Name for your database, it will be created automatically if not exists.</param>
         /// <param name="containerName">Name for your container, if you omit it the name will be the model name,
-        //     it will be created automatically if not exists.</param>
+        ///     it will be created automatically if not exists.</param>
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>

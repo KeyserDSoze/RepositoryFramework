@@ -14,11 +14,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="navigationKey">Select the property that represents your key.</param>
         /// <param name="connectionString">A connection string includes the authentication information required for your
-        //     application to access data in an Azure Storage account at runtime. For more information,
-        //     Configure Azure Storage connection strings.</param>
+        ///     application to access data in an Azure Storage account at runtime. For more information,
+        ///     Configure Azure Storage connection strings.</param>
         /// <param name="databaseName">Name for your database, it will be created automatically if not exists.</param>
         /// <param name="containerName">Name for your container, if you omit it the name will be the model name,
-        //     it will be created automatically if not exists.</param>
+        ///     it will be created automatically if not exists.</param>
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
@@ -54,8 +54,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="navigationKey">Select the property that represents your key.</param>
         /// <param name="connectionString">A connection string includes the authentication information required for your
-        //     application to access data in an Azure Storage account at runtime. For more information,
-        //     Configure Azure Storage connection strings.</param>
+        ///     application to access data in an Azure Storage account at runtime. For more information,
+        ///     Configure Azure Storage connection strings.</param>
         /// <param name="databaseName">Name for your database, it will be created automatically if not exists.</param>
         /// <param name="containerName">Name for your container, if you omit it the name will be the model name,
         //     it will be created automatically if not exists.</param>
@@ -94,11 +94,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="navigationKey">Select the property that represents your key.</param>
         /// <param name="connectionString">A connection string includes the authentication information required for your
-        //     application to access data in an Azure Storage account at runtime. For more information,
-        //     Configure Azure Storage connection strings.</param>
+        ///     application to access data in an Azure Storage account at runtime. For more information,
+        ///     Configure Azure Storage connection strings.</param>
         /// <param name="databaseName">Name for your database, it will be created automatically if not exists.</param>
         /// <param name="containerName">Name for your container, if you omit it the name will be the model name,
-        //     it will be created automatically if not exists.</param>
+        ///     it will be created automatically if not exists.</param>
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
