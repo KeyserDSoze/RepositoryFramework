@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
           where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
-            service.RepositoryType = typeof(TStorage);
+            service.RepositoryType = typeof(IRepositoryPattern<T, TKey>);
             return serviceLifetime switch
             {
                 ServiceLifetime.Transient => services
@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
-            service.CommandType = typeof(TStorage);
+            service.CommandType = typeof(ICommandPattern<T, TKey>);
             return serviceLifetime switch
             {
                 ServiceLifetime.Transient => services
@@ -80,7 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
            where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
-            service.QueryType = typeof(TStorage);
+            service.QueryType = typeof(IQueryPattern<T, TKey>);
             return serviceLifetime switch
             {
                 ServiceLifetime.Transient => services

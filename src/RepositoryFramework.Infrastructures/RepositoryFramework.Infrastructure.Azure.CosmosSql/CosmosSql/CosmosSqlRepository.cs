@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Extensions.Logging;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Net;
@@ -12,76 +13,105 @@ namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
     {
         private readonly Container _client;
         private readonly PropertyInfo[] _properties;
-        public CosmosSqlRepository(CosmosSqlServiceClientFactory clientFactory)
+        private readonly ILogger<CosmosSqlRepository<T, TKey>> _logger;
+
+        public CosmosSqlRepository(CosmosSqlServiceClientFactory clientFactory, ILogger<CosmosSqlRepository<T, TKey>> logger = null)
         {
             (_client, _properties) = clientFactory.Get(typeof(T).Name);
+            _logger = logger;
         }
-        public async Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        private async Task<TReponse> ExecuteAsync<TReponse>(TKey key, RepositoryMethod method, Func<Task<TReponse>> action)
         {
-            var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
-            return response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent;
-        }
-
-        public async Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default)
-        {
-            var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
-            return response.StatusCode == HttpStatusCode.OK;
-        }
-
-        public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
-        {
-            var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
-            if (response.StatusCode == HttpStatusCode.OK)
-                return response.Resource;
-            else
-                return default;
-        }
-        public async Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
-        {
-            var flexible = new ExpandoObject();
-            flexible.TryAdd("id", key.ToString());
-            foreach (var property in _properties)
-                flexible.TryAdd(property.Name, property.GetValue(value));
-            var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
-            return response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created;
-        }
-
-        public async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
-        {
-            IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
-            if (predicate != null)
-                queryable = queryable
-                    .Where(predicate);
-            if (top != null && top > 0)
-                queryable = queryable.Take(top.Value);
-            if (skip != null && skip > 0)
-                queryable = queryable.Skip(skip.Value);
-            List<T> items = new();
-            using (FeedIterator<T> iterator = queryable.ToFeedIterator())
+            if (_logger != null)
             {
-                while (iterator.HasMoreResults)
+                EventId eventId = new();
+                try
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                        return items;
-                    foreach (var item in await iterator.ReadNextAsync(cancellationToken))
-                    {
-                        items.Add(item);
-                        if (cancellationToken.IsCancellationRequested)
-                            return items;
-                    }
+                    _logger?.LogInformation(eventId, $"{method} for {key}");
+                    return await action();
+                }
+                catch (Exception exception)
+                {
+                    _logger?.LogError(eventId, exception.Message);
+                    return default;
                 }
             }
-            return items;
+            else
+                return await action();
         }
+        public Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+            => ExecuteAsync(key, RepositoryMethod.Delete, async () =>
+            {
+                var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                return response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent;
+            });
 
-        public async Task<bool> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
-        {
-            var flexible = new ExpandoObject();
-            flexible.TryAdd("id", key.ToString());
-            foreach (var property in _properties)
-                flexible.TryAdd(property.Name, property.GetValue(value));
-            var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
-            return response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created;
-        }
+
+        public Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+            => ExecuteAsync(key, RepositoryMethod.Exist, async () =>
+                {
+                    var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                    return response.StatusCode == HttpStatusCode.OK;
+                });
+
+        public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
+        => ExecuteAsync(key, RepositoryMethod.Get, async () =>
+            {
+                var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                if (response.StatusCode == HttpStatusCode.OK)
+                    return response.Resource;
+                else
+                    return default;
+            });
+        public Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+            => ExecuteAsync(key, RepositoryMethod.Insert, async () =>
+            {
+                var flexible = new ExpandoObject();
+                flexible.TryAdd("id", key.ToString());
+                foreach (var property in _properties)
+                    flexible.TryAdd(property.Name, property.GetValue(value));
+                var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                return response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created;
+            });
+
+        public Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+            => ExecuteAsync(default(TKey), RepositoryMethod.Query, async () =>
+            {
+                IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
+                if (predicate != null)
+                    queryable = queryable
+                        .Where(predicate);
+                if (top != null && top > 0)
+                    queryable = queryable.Take(top.Value);
+                if (skip != null && skip > 0)
+                    queryable = queryable.Skip(skip.Value);
+                List<T> items = new();
+                using (FeedIterator<T> iterator = queryable.ToFeedIterator())
+                {
+                    while (iterator.HasMoreResults)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            return items;
+                        foreach (var item in await iterator.ReadNextAsync(cancellationToken))
+                        {
+                            items.Add(item);
+                            if (cancellationToken.IsCancellationRequested)
+                                return items;
+                        }
+                    }
+                }
+                return items.Select(x => x);
+            });
+
+        public Task<bool> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+            => ExecuteAsync(key, RepositoryMethod.Update, async () =>
+            {
+                var flexible = new ExpandoObject();
+                flexible.TryAdd("id", key.ToString());
+                foreach (var property in _properties)
+                    flexible.TryAdd(property.Name, property.GetValue(value));
+                var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                return response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created;
+            });
     }
 }
