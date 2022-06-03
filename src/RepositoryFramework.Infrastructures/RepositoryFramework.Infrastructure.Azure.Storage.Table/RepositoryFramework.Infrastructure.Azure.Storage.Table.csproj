@@ -14,7 +14,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
 		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Table</PackageId>
-		<Version>0.9.3</Version>
+		<Version>0.9.5</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
