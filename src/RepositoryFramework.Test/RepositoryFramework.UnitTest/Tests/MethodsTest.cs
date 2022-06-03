@@ -7,8 +7,8 @@ namespace RepositoryFramework.UnitTest
 {
     public class MethodsTest
     {
-        private readonly IRepository<User, string> _user;
-        public MethodsTest(IRepository<User, string> user)
+        private readonly IRepositoryPattern<User, string> _user;
+        public MethodsTest(IRepositoryPattern<User, string> user)
         {
             _user = user;
         }

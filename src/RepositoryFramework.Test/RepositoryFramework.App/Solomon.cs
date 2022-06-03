@@ -12,7 +12,7 @@ namespace RepositoryFramework
             Email = email;
         }
     }
-    public class UserWriter : ICommand<User, string>
+    public class UserWriter : ICommandPattern<User, string>
     {
         public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
@@ -30,7 +30,7 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
     }
-    public class UserReader : IQuery<User, string>
+    public class UserReader : IQueryPattern<User, string>
     {
         public Task<User?> GetAsync(string key, CancellationToken cancellationToken = default)
         {
@@ -43,7 +43,7 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
     }
-    public class UserRepository : IRepository<User, string>, IQuery<User, string>, ICommand<User, string>
+    public class UserRepository : IRepositoryPattern<User, string>, IQueryPattern<User, string>, ICommandPattern<User, string>
     {
         public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {

@@ -1,12 +1,14 @@
-﻿namespace RepositoryFramework
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RepositoryFramework
 {
-    /// <summary>
-    /// Interface for your Repository pattern, with Command and Query methods.
-    /// </summary>
-    /// <typeparam name="T">Model used for your repository</typeparam>
-    /// <typeparam name="TKey">Key to insert, update, delete, get or query your data from repository</typeparam>
-    public interface IRepository<T, TKey> : ICommand<T, TKey>, IQuery<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
+    public interface IRepository<T, TKey> : IRepositoryPattern<T, TKey>, ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
         where TKey : notnull
     {
+
     }
 }

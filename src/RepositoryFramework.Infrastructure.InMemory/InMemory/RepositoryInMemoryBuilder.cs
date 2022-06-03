@@ -46,7 +46,9 @@ namespace RepositoryFramework
             return this;
         }
         public RepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(
-            Expression<Func<T, TKey>> navigationKey, int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
+            Expression<Func<T, TKey>> navigationKey,
+            int numberOfElements = 100,
+            int numberOfElementsWhenEnumerableIsFound = 10)
         {
             _services.AddSingleton<IPopulationService, PopulationService>();
             _services.AddSingleton<IInstanceCreator, InstanceCreator>();

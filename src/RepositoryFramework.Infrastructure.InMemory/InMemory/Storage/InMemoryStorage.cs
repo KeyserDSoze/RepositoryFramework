@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace RepositoryFramework
 {
-    internal class InMemoryStorage<T, TKey> : IRepository<T, TKey>
+    internal class InMemoryStorage<T, TKey> : IRepositoryPattern<T, TKey>
         where TKey : notnull
     {
         private readonly RepositoryBehaviorSettings<T, TKey> _settings;

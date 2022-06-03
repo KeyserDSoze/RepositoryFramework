@@ -5,71 +5,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
-        private static bool IsThatInterface<TEntity, TInterface>()
-            => typeof(TEntity).GetInterfaces().Any(x => x == typeof(TInterface));
-        private static Type? GetTypeOfModel<TEntity>()
-            => GetType(typeof(TEntity), 0);
-        private static Type? GetTypeOfKey<TEntity>()
-            => GetType(typeof(TEntity), 1);
-        private static Type? GetType(Type type, int index)
-        {
-            var service = type.GetInterfaces()
-                .OrderByDescending(x => x.GetGenericArguments().Length)
-                .FirstOrDefault(x => x.Name.Contains("IRepository") || x.Name.Contains("IQuery") || x.Name.Contains("ICommand"));
-            if (service != null && type.GetGenericArguments().Length > index)
-                return type.GetGenericArguments()[index];
-            if (service != null && service.GetGenericArguments().Length > index)
-                return service.GetGenericArguments()[index];
-            else
-            {
-                Type? nextType = null;
-                foreach (var interfaceType in type.GetInterfaces())
-                {
-                    nextType = GetType(interfaceType, index);
-                    if (nextType != null)
-                        return nextType;
-                }
-                if (type.BaseType != null && type.BaseType != typeof(object))
-                    nextType = GetType(type.BaseType, index);
-                if (nextType != null)
-                    return nextType;
-            }
-            return null;
-        }
-        private static IServiceCollection AddServiceWithLifeTime<TInterface, TImplementation>(this IServiceCollection services,
-          ServiceLifetime serviceLifetime)
-            where TImplementation : class, TInterface
-        {
-            var entityType = GetTypeOfModel<TInterface>();
-            if (entityType == null)
-                throw new ArgumentNullException($"Model for {typeof(TInterface).FullName} not found. Check if your object {typeof(TInterface).Name} extends IRepository, IQuery or ICommand.");
-            var keyType = GetTypeOfKey<TInterface>();
-            if (keyType == null)
-                throw new ArgumentNullException($"Key for {typeof(TInterface).FullName} not found. Check if your object {typeof(TInterface).Name} extends IRepository, IQuery or ICommand.");
-            var service = RepositoryFrameworkServices.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
-            if (service == null)
-            {
-                service = new RepositoryFrameworkService { ModelType = entityType };
-                RepositoryFrameworkServices.Instance.Services.Add(service);
-                services.AddSingleton(RepositoryFrameworkServices.Instance);
-            }
-            service.KeyType = keyType;
-
-            if (IsThatInterface<TInterface, IRepositoryPattern>())
-                service.RepositoryType = typeof(TInterface);
-            else if (IsThatInterface<TInterface, ICommandPattern>())
-                service.CommandType = typeof(TInterface);
-            else if (IsThatInterface<TInterface, IQueryPattern>())
-                service.QueryType = typeof(TInterface);
-
-            return serviceLifetime switch
-            {
-                ServiceLifetime.Scoped => services.AddScoped(typeof(TInterface), typeof(TImplementation)),
-                ServiceLifetime.Transient => services.AddTransient(typeof(TInterface), typeof(TImplementation)),
-                ServiceLifetime.Singleton => services.AddSingleton(typeof(TInterface), typeof(TImplementation)),
-                _ => services.AddScoped(typeof(TInterface), typeof(TImplementation))
-            };
-        }
         /// <summary>
         /// Add repository storage, inject the IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
         /// </summary>
@@ -81,9 +16,25 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddRepository<T, TKey, TStorage>(this IServiceCollection services,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-          where TStorage : class, IRepository<T, TKey>
+          where TStorage : class, IRepositoryPattern<T, TKey>
           where TKey : notnull
-              => services.AddServiceWithLifeTime<IRepository<T, TKey>, TStorage>(serviceLifetime);
+        {
+            var service = services.SetService<T, TKey>();
+            service.RepositoryType = typeof(TStorage);
+            return serviceLifetime switch
+            {
+                ServiceLifetime.Transient => services
+                    .AddTransient<IRepositoryPattern<T, TKey>, TStorage>()
+                    .AddTransient<IRepository<T, TKey>, Repository<T, TKey>>(),
+                ServiceLifetime.Singleton => services
+                    .AddSingleton<IRepositoryPattern<T, TKey>, TStorage>()
+                    .AddSingleton<IRepository<T, TKey>, Repository<T, TKey>>(),
+                _ => services
+                    .AddScoped<IRepositoryPattern<T, TKey>, TStorage>()
+                    .AddScoped<IRepository<T, TKey>, Repository<T, TKey>>(),
+            };
+        }
+
         /// <summary>
         /// Add Command storage for your CQRS, inject the ICommand<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
         /// </summary>
@@ -95,9 +46,25 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddCommand<T, TKey, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TStorage : class, ICommand<T, TKey>
+            where TStorage : class, ICommandPattern<T, TKey>
             where TKey : notnull
-              => services.AddServiceWithLifeTime<ICommand<T, TKey>, TStorage>(serviceLifetime);
+        {
+            var service = services.SetService<T, TKey>();
+            service.CommandType = typeof(TStorage);
+            return serviceLifetime switch
+            {
+                ServiceLifetime.Transient => services
+                    .AddTransient<ICommandPattern<T, TKey>, TStorage>()
+                    .AddTransient<ICommand<T, TKey>, Command<T, TKey>>(),
+                ServiceLifetime.Singleton => services
+                    .AddSingleton<ICommandPattern<T, TKey>, TStorage>()
+                    .AddSingleton<ICommand<T, TKey>, Command<T, TKey>>(),
+                _ => services
+                    .AddScoped<ICommandPattern<T, TKey>, TStorage>()
+                    .AddScoped<ICommand<T, TKey>, Command<T, TKey>>(),
+            };
+        }
+
         /// <summary>
         /// Add Query storage for your CQRS, inject the IQuery<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
         /// </summary>
@@ -109,8 +76,38 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddQuery<T, TKey, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-           where TStorage : class, IQuery<T, TKey>
+           where TStorage : class, IQueryPattern<T, TKey>
            where TKey : notnull
-               => services.AddServiceWithLifeTime<IQuery<T, TKey>, TStorage>(serviceLifetime);
+        {
+            var service = services.SetService<T, TKey>();
+            service.QueryType = typeof(TStorage);
+            return serviceLifetime switch
+            {
+                ServiceLifetime.Transient => services
+                    .AddTransient<IQueryPattern<T, TKey>, TStorage>()
+                    .AddTransient<IQuery<T, TKey>, Query<T, TKey>>(),
+                ServiceLifetime.Singleton => services
+                    .AddSingleton<IQueryPattern<T, TKey>, TStorage>()
+                    .AddSingleton<IQuery<T, TKey>, Query<T, TKey>>(),
+                _ => services
+                    .AddScoped<IQueryPattern<T, TKey>, TStorage>()
+                    .AddScoped<IQuery<T, TKey>, Query<T, TKey>>(),
+            };
+        }
+        private static RepositoryFrameworkService SetService<T, TKey>(this IServiceCollection services)
+            where TKey : notnull
+        {
+            Type entityType = typeof(T);
+            Type keyType = typeof(TKey);
+            var service = RepositoryFrameworkRegistry.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
+            if (service == null)
+            {
+                service = new RepositoryFrameworkService { ModelType = entityType };
+                RepositoryFrameworkRegistry.Instance.Services.Add(service);
+                services.AddSingleton(RepositoryFrameworkRegistry.Instance);
+            }
+            service.KeyType = keyType;
+            return service;
+        }
     }
 }

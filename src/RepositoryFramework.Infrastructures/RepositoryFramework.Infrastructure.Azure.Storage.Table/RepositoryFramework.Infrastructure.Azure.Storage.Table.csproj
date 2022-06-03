@@ -13,7 +13,7 @@
 		<PackageIcon>repositoryframework.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
-		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.TableStorage</PackageId>
+		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Table</PackageId>
 		<Version>0.9.3</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>

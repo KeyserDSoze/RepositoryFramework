@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace RepositoryFramework.Infrastructure.Azure.TableStorage
 {
-    internal sealed class TableStorageRepository<T, TKey> : IRepository<T, TKey>
+    internal sealed class TableStorageRepository<T, TKey> : IRepositoryPattern<T, TKey>, IQueryPattern<T, TKey>, ICommandPattern<T, TKey>
         where TKey : notnull
     {
         private readonly TableClient _client;

@@ -7,8 +7,8 @@ namespace RepositoryFramework.UnitTest
 {
     public class Exceptions
     {
-        private readonly IRepository<Car, string> _car;
-        public Exceptions(IRepository<Car, string> car)
+        private readonly IRepositoryPattern<Car, string> _car;
+        public Exceptions(IRepositoryPattern<Car, string> car)
         {
             _car = car;
         }

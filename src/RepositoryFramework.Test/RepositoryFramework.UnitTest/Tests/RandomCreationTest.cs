@@ -10,13 +10,13 @@ namespace RepositoryFramework.UnitTest
     //https://github.com/moodmosaic/Fare/tree/master/Src/Fare
     public class RandomCreationTest
     {
-        private readonly IRepository<PopulationTest, string> _test;
-        private readonly IRepository<RegexPopulationTest, string> _population;
-        private readonly IQuery<DelegationPopulation , string> _delegation;
+        private readonly IRepositoryPattern<PopulationTest, string> _test;
+        private readonly IRepositoryPattern<RegexPopulationTest, string> _population;
+        private readonly IQueryPattern<DelegationPopulation , string> _delegation;
 
-        public RandomCreationTest(IRepository<PopulationTest, string> test,
-            IRepository<RegexPopulationTest, string> population,
-            IQuery<DelegationPopulation, string> delegation)
+        public RandomCreationTest(IRepositoryPattern<PopulationTest, string> test,
+            IRepositoryPattern<RegexPopulationTest, string> population,
+            IQueryPattern<DelegationPopulation, string> delegation)
         {
             _test = test;
             _population = population;

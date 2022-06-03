@@ -32,8 +32,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static TEndpointRouteBuilder AddApiForRepository<TEndpointRouteBuilder>(this TEndpointRouteBuilder app, Type modelType, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
             where TEndpointRouteBuilder : IEndpointRouteBuilder
         {
-            var services = app.ServiceProvider.GetService<RepositoryFrameworkServices>();
-            var serviceValue = services!.Services.FirstOrDefault(x => x.ModelType == modelType);
+            var registry = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
+            var serviceValue = registry!.Services.FirstOrDefault(x => x.ModelType == modelType);
             if (serviceValue == null)
                 throw new ArgumentException($"Please check if your {modelType.Name} model has a service injected for IRepository, IQuery, ICommand.");
             if (serviceValue.QueryType != null || serviceValue.RepositoryType != null)
@@ -79,7 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static TEndpointRouteBuilder AddApiForRepositoryFramework<TEndpointRouteBuilder>(this TEndpointRouteBuilder app, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
             where TEndpointRouteBuilder : IEndpointRouteBuilder
         {
-            var services = app.ServiceProvider.GetService<RepositoryFrameworkServices>();
+            var services = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
             foreach (var service in services!.Services)
                 _ = app.AddApiForRepository(service.ModelType, startingPath, authorizationPolicy);
             return app;
@@ -100,7 +100,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             _ = app.MapGet($"{startingPath}/{name}/{nameof(ApiName.Get)}", async (TKey key, TService service) =>
                {
-                   var queryService = service as IQuery<T, TKey>;
+                   var queryService = service as IQueryPattern<T, TKey>;
                    return await queryService!.GetAsync(key);
                }).WithName($"{nameof(ApiName.Get)}{name}")
                .AddAuthorization(authorization, ApiName.Get);
@@ -116,7 +116,7 @@ namespace Microsoft.Extensions.DependencyInjection
                       var parameter = Expression.Parameter(typeof(T), query.Split(' ').First());
                       expression = DynamicExpressionParser.ParseLambda<T, bool>(ParsingConfig.Default, false, query);
                   }
-                  var queryService = service as IQuery<T, TKey>;
+                  var queryService = service as IQueryPattern<T, TKey>;
                   return await queryService!.QueryAsync(expression, top, skip);
               }).WithName($"{nameof(ApiName.Search)}{name}")
               .AddAuthorization(authorization, ApiName.Search);
@@ -126,7 +126,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(ApiName.Insert)}", async (TKey key, T entity, TService service) =>
             {
-                var commandService = service as ICommand<T, TKey>;
+                var commandService = service as ICommandPattern<T, TKey>;
                 return await commandService!.InsertAsync(key, entity);
             }).WithName($"{nameof(ApiName.Insert)}{name}")
             .AddAuthorization(authorization, ApiName.Insert);
@@ -136,7 +136,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(ApiName.Update)}", async (TKey key, T entity, TService service) =>
             {
-                var commandService = service as ICommand<T, TKey>;
+                var commandService = service as ICommandPattern<T, TKey>;
                 return await commandService!.UpdateAsync(key, entity);
             }).WithName($"{nameof(ApiName.Update)}{name}")
             .AddAuthorization(authorization, ApiName.Update);
@@ -146,7 +146,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             _ = app.MapGet($"{startingPath}/{name}/{nameof(ApiName.Delete)}", async (TKey key, TService service) =>
             {
-                var commandService = service as ICommand<T, TKey>;
+                var commandService = service as ICommandPattern<T, TKey>;
                 return await commandService!.DeleteAsync(key);
             }).WithName($"{nameof(ApiName.Delete)}{name}")
             .AddAuthorization(authorization, ApiName.Delete);

@@ -31,12 +31,12 @@
 	<Choose>
 		<When Condition=" '$(Configuration)'=='Debug' ">
 			<ItemGroup>
-				<ProjectReference Include="..\RepositoryFramework.Api.Abstractions\RepositoryFramework.Api.Abstractions.csproj" />
+				<ProjectReference Include="..\RepositoryFramework.Abstractions\RepositoryFramework.Abstractions.csproj" />
 			</ItemGroup>
 		</When>
 		<When Condition=" '$(Configuration)'!='Debug' ">
 			<ItemGroup>
-				<PackageReference Include="Rystem.RepositoryFramework.Api.Abstractions" Version="0.9.2" />
+				<PackageReference Include="Rystem.RepositoryFramework.Abstractions" Version="0.9.2" />
 			</ItemGroup>
 		</When>
 	</Choose>

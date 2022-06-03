@@ -8,9 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddRepositoryClientWithStringKey<User>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryClient<User, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryClientInterceptor<Interceptor>();
-builder.Services.AddRepositoryClientSpecificInterceptorForStringKey<User, SpecificInterceptor>();
+builder.Services.AddRepositoryClientSpecificInterceptor<User, string, SpecificInterceptor>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

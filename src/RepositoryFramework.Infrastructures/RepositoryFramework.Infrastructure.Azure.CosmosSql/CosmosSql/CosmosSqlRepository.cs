@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
 {
-    internal sealed class CosmosSqlRepository<T, TKey> : IRepository<T, TKey>
+    internal sealed class CosmosSqlRepository<T, TKey> : IRepositoryPattern<T, TKey>
         where TKey : notnull
     {
         private readonly Container _client;
