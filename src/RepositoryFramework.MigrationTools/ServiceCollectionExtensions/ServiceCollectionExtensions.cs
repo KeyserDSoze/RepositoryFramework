@@ -27,18 +27,9 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new MigrationOptions<T, TKey>();
             settings?.Invoke(options);
             services.AddSingleton(options);
-
-            return serviceLifetime switch
-            {
-                ServiceLifetime.Transient => services
-                    .AddTransient<IMigrationSource<T, TKey>, TStorageToMigrate>()
-                    .AddTransient<IMigrationManager<T, TKey>, MigrationManager<T, TKey>>(),
-                ServiceLifetime.Singleton => services
-                    .AddSingleton<IMigrationSource<T, TKey>, TStorageToMigrate>()
-                    .AddSingleton<IMigrationManager<T, TKey>, MigrationManager<T, TKey>>(),
-                _ => services.AddScoped<IMigrationSource<T, TKey>, TStorageToMigrate>()
-                        .AddScoped<IMigrationManager<T, TKey>, MigrationManager<T, TKey>>()
-            };
+            return services
+                .AddService<IMigrationSource<T, TKey>, TStorageToMigrate>(serviceLifetime)
+                .AddService<IMigrationManager<T, TKey>, MigrationManager<T, TKey>>(serviceLifetime);
         }
     }
 }

@@ -21,18 +21,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var service = services.SetService<T, TKey>();
             service.RepositoryType = typeof(IRepositoryPattern<T, TKey>);
-            return serviceLifetime switch
-            {
-                ServiceLifetime.Transient => services
-                    .AddTransient<IRepositoryPattern<T, TKey>, TStorage>()
-                    .AddTransient<IRepository<T, TKey>, Repository<T, TKey>>(),
-                ServiceLifetime.Singleton => services
-                    .AddSingleton<IRepositoryPattern<T, TKey>, TStorage>()
-                    .AddSingleton<IRepository<T, TKey>, Repository<T, TKey>>(),
-                _ => services
-                    .AddScoped<IRepositoryPattern<T, TKey>, TStorage>()
-                    .AddScoped<IRepository<T, TKey>, Repository<T, TKey>>(),
-            };
+            return services
+                .AddService<IRepositoryPattern<T, TKey>, TStorage>(serviceLifetime)
+                .AddService<IRepository<T, TKey>, Repository<T, TKey>>(serviceLifetime);
         }
 
         /// <summary>
@@ -51,18 +42,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var service = services.SetService<T, TKey>();
             service.CommandType = typeof(ICommandPattern<T, TKey>);
-            return serviceLifetime switch
-            {
-                ServiceLifetime.Transient => services
-                    .AddTransient<ICommandPattern<T, TKey>, TStorage>()
-                    .AddTransient<ICommand<T, TKey>, Command<T, TKey>>(),
-                ServiceLifetime.Singleton => services
-                    .AddSingleton<ICommandPattern<T, TKey>, TStorage>()
-                    .AddSingleton<ICommand<T, TKey>, Command<T, TKey>>(),
-                _ => services
-                    .AddScoped<ICommandPattern<T, TKey>, TStorage>()
-                    .AddScoped<ICommand<T, TKey>, Command<T, TKey>>(),
-            };
+            return services
+                .AddService<ICommandPattern<T, TKey>, TStorage>(serviceLifetime)
+                .AddService<ICommand<T, TKey>, Command<T, TKey>>(serviceLifetime);
         }
 
         /// <summary>
@@ -81,18 +63,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var service = services.SetService<T, TKey>();
             service.QueryType = typeof(IQueryPattern<T, TKey>);
-            return serviceLifetime switch
-            {
-                ServiceLifetime.Transient => services
-                    .AddTransient<IQueryPattern<T, TKey>, TStorage>()
-                    .AddTransient<IQuery<T, TKey>, Query<T, TKey>>(),
-                ServiceLifetime.Singleton => services
-                    .AddSingleton<IQueryPattern<T, TKey>, TStorage>()
-                    .AddSingleton<IQuery<T, TKey>, Query<T, TKey>>(),
-                _ => services
-                    .AddScoped<IQueryPattern<T, TKey>, TStorage>()
-                    .AddScoped<IQuery<T, TKey>, Query<T, TKey>>(),
-            };
+            return services
+                .AddService<IQueryPattern<T, TKey>, TStorage>(serviceLifetime)
+                .AddService<IQuery<T, TKey>, Query<T, TKey>>(serviceLifetime);
         }
         private static RepositoryFrameworkService SetService<T, TKey>(this IServiceCollection services)
             where TKey : notnull
@@ -109,5 +82,15 @@ namespace Microsoft.Extensions.DependencyInjection
             service.KeyType = keyType;
             return service;
         }
+        public static IServiceCollection AddService<TService, TImplementation>(this IServiceCollection services,
+            ServiceLifetime lifetime)
+            where TImplementation : class, TService
+            where TService : class
+            => lifetime switch
+            {
+                ServiceLifetime.Transient => services.AddTransient<TService, TImplementation>(),
+                ServiceLifetime.Singleton => services.AddSingleton<TService, TImplementation>(),
+                _ => services.AddScoped<TService, TImplementation>()
+            };
     }
 }

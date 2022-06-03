@@ -15,13 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddRepositoryClientInterceptor<TInterceptor>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TInterceptor : class, IRepositoryClientInterceptor
-            => serviceLifetime switch
-            {
-                ServiceLifetime.Scoped => services.AddScoped<IRepositoryClientInterceptor, TInterceptor>(),
-                ServiceLifetime.Transient => services.AddTransient<IRepositoryClientInterceptor, TInterceptor>(),
-                ServiceLifetime.Singleton => services.AddSingleton<IRepositoryClientInterceptor, TInterceptor>(),
-                _ => services.AddScoped<IRepositoryClientInterceptor, TInterceptor>()
-            };
+            => services.AddService<IRepositoryClientInterceptor, TInterceptor>(serviceLifetime);
         /// <summary>
         /// Add specific interceptor for your <typeparamref name="T"/>, <typeparamref name="TKey"/> client. Interceptor works before every request.
         /// For example you can add here your JWT retrieve for authorized requests.
@@ -36,12 +30,6 @@ namespace Microsoft.Extensions.DependencyInjection
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TInterceptor : class, IRepositoryClientInterceptor<T, TKey>
             where TKey : notnull
-            => serviceLifetime switch
-            {
-                ServiceLifetime.Scoped => services.AddScoped<IRepositoryClientInterceptor<T, TKey>, TInterceptor>(),
-                ServiceLifetime.Transient => services.AddTransient<IRepositoryClientInterceptor<T, TKey>, TInterceptor>(),
-                ServiceLifetime.Singleton => services.AddSingleton<IRepositoryClientInterceptor<T, TKey>, TInterceptor>(),
-                _ => services.AddScoped<IRepositoryClientInterceptor<T, TKey>, TInterceptor>()
-            };
+            => services.AddService<IRepositoryClientInterceptor<T, TKey>, TInterceptor>(serviceLifetime);
     }
 }
