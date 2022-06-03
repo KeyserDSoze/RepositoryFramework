@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    public class BehaviorSettings
+    public class CreationSettings
     {
         public Dictionary<string, string[]> RegexForValueCreation { get; set; } = new();
         public Dictionary<string, Func<dynamic>> DelegatedMethodForValueCreation { get; set; } = new();

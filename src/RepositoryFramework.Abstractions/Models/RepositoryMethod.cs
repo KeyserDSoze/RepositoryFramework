@@ -3,13 +3,14 @@
     /// <summary>
     /// Mapping for Api endpoint.
     /// </summary>
-    [Flags]
-    public enum ApiName
+    public enum RepositoryMethod
     {
+        All,
         Insert,
         Update,
         Delete,
         Get,
-        Search
+        Query,
+        Exist
     }
 }

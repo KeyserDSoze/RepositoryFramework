@@ -7,7 +7,7 @@
     /// </summary>
     public class AuthorizationForApi
     {
-        public ApiName Path { get; set; } = ApiName.Get | ApiName.Search | ApiName.Insert | ApiName.Update | ApiName.Delete;
+        public RepositoryMethod Path { get; set; } = RepositoryMethod.Get | RepositoryMethod.Query | RepositoryMethod.Insert | RepositoryMethod.Update | RepositoryMethod.Delete;
         public string[]? Policies { get; set; }
     }
 }

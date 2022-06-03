@@ -46,13 +46,14 @@ namespace RepositoryFramework
         }
         public async Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitForDelete), cancellationToken);
+            var settings = _settings.Get(RepositoryMethod.Delete);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
             if (!cancellationToken.IsCancellationRequested)
             {
-                var exception = GetException(_settings.ExceptionOddsForDelete);
+                var exception = GetException(settings.ExceptionOdds);
                 if (exception != null)
                 {
-                    await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitBeforeExceptionForDelete), cancellationToken);
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
                     throw exception;
                 }
                 if (!cancellationToken.IsCancellationRequested)
@@ -70,13 +71,14 @@ namespace RepositoryFramework
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitForGet), cancellationToken);
+            var settings = _settings.Get(RepositoryMethod.Get);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
             if (!cancellationToken.IsCancellationRequested)
             {
-                var exception = GetException(_settings.ExceptionOddsForGet);
+                var exception = GetException(settings.ExceptionOdds);
                 if (exception != null)
                 {
-                    await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitBeforeExceptionForGet), cancellationToken);
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
                     throw exception;
                 }
                 if (!cancellationToken.IsCancellationRequested)
@@ -92,13 +94,14 @@ namespace RepositoryFramework
 
         public async Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitForInsert), cancellationToken);
+            var settings = _settings.Get(RepositoryMethod.Insert);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
             if (!cancellationToken.IsCancellationRequested)
             {
-                var exception = GetException(_settings.ExceptionOddsForInsert);
+                var exception = GetException(settings.ExceptionOdds);
                 if (exception != null)
                 {
-                    await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitBeforeExceptionForInsert), cancellationToken);
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
                     throw exception;
                 }
                 if (!cancellationToken.IsCancellationRequested)
@@ -119,13 +122,14 @@ namespace RepositoryFramework
         }
         public async Task<bool> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitForUpdate), cancellationToken);
+            var settings = _settings.Get(RepositoryMethod.Update);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
             if (!cancellationToken.IsCancellationRequested)
             {
-                var exception = GetException(_settings.ExceptionOddsForUpdate);
+                var exception = GetException(settings.ExceptionOdds);
                 if (exception != null)
                 {
-                    await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitBeforeExceptionForUpdate), cancellationToken);
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
                     throw exception;
                 }
                 if (!cancellationToken.IsCancellationRequested)
@@ -147,13 +151,14 @@ namespace RepositoryFramework
 
         public async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitForQuery), cancellationToken);
+            var settings = _settings.Get(RepositoryMethod.Query);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
             if (!cancellationToken.IsCancellationRequested)
             {
-                var exception = GetException(_settings.ExceptionOddsForQuery);
+                var exception = GetException(settings.ExceptionOdds);
                 if (exception != null)
                 {
-                    await Task.Delay(GetRandomNumber(_settings.MillisecondsOfWaitBeforeExceptionForQuery), cancellationToken);
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
                     throw exception;
                 }
                 if (!cancellationToken.IsCancellationRequested)
@@ -166,6 +171,29 @@ namespace RepositoryFramework
                     if (skip != null && skip > 0)
                         values = values.Skip(skip.Value);
                     return values;
+                }
+                else
+                    throw new TaskCanceledException();
+            }
+            else
+                throw new TaskCanceledException();
+        }
+
+        public async Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            var settings = _settings.Get(RepositoryMethod.Exist);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                var exception = GetException(settings.ExceptionOdds);
+                if (exception != null)
+                {
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
+                    throw exception;
+                }
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    return Values.ContainsKey(key);
                 }
                 else
                     throw new TaskCanceledException();

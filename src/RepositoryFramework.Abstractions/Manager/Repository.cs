@@ -14,6 +14,9 @@ namespace RepositoryFramework
         public Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => _repository.DeleteAsync(key, cancellationToken);
 
+        public Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default) 
+            => _repository.ExistAsync(key, cancellationToken);
+
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _repository.GetAsync(key, cancellationToken);
 

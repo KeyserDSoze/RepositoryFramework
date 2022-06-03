@@ -21,7 +21,7 @@ namespace RepositoryFramework.Client
             _clientInterceptor = clientInterceptor;
             _specificClientInterceptor = specificClientInterceptor;
         }
-        private Task<HttpClient> EnrichedClientAsync(ApiName api)
+        private Task<HttpClient> EnrichedClientAsync(RepositoryMethod api)
         {
             if (_specificClientInterceptor != null)
                 return _specificClientInterceptor.EnrichAsync(_httpClient, api);
@@ -32,28 +32,32 @@ namespace RepositoryFramework.Client
         }
         public async Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(ApiName.Delete);
-            return await client.GetFromJsonAsync<bool>($"{nameof(ApiName.Delete)}?key={key}", cancellationToken);
+            var client = await EnrichedClientAsync(RepositoryMethod.Delete);
+            return await client.GetFromJsonAsync<bool>($"{nameof(RepositoryMethod.Delete)}?key={key}", cancellationToken);
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(ApiName.Get);
-            return await client.GetFromJsonAsync<T>($"{nameof(ApiName.Get)}?key={key}", cancellationToken);
+            var client = await EnrichedClientAsync(RepositoryMethod.Get);
+            return await client.GetFromJsonAsync<T>($"{nameof(RepositoryMethod.Get)}?key={key}", cancellationToken);
         }
-
+        public async Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            var client = await EnrichedClientAsync(RepositoryMethod.Exist);
+            return await client.GetFromJsonAsync<bool>($"{nameof(RepositoryMethod.Exist)}?key={key}", cancellationToken);
+        }
         public async Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(ApiName.Insert);
-            var response = await client.PostAsJsonAsync($"{nameof(ApiName.Insert)}?key={key}", value, cancellationToken);
+            var client = await EnrichedClientAsync(RepositoryMethod.Insert);
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Insert)}?key={key}", value, cancellationToken);
             response.EnsureSuccessStatusCode();
             return await response!.Content.ReadFromJsonAsync<bool>(cancellationToken: cancellationToken);
         }
         private const string LogicAnd = "&";
         public async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(ApiName.Search);
-            var query = new StringBuilder(nameof(ApiName.Search));
+            var client = await EnrichedClientAsync(RepositoryMethod.Query);
+            var query = new StringBuilder(nameof(RepositoryMethod.Query));
             if (predicate != null || top != null || skip != null)
                 query.Append('?');
             if (predicate != null)
@@ -67,8 +71,8 @@ namespace RepositoryFramework.Client
 
         public async Task<bool> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(ApiName.Update);
-            var response = await client.PostAsJsonAsync($"{nameof(ApiName.Update)}?key={key}", value, cancellationToken);
+            var client = await EnrichedClientAsync(RepositoryMethod.Update);
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Update)}?key={key}", value, cancellationToken);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<bool>(cancellationToken: cancellationToken);
         }

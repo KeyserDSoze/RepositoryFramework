@@ -24,11 +24,13 @@ namespace Microsoft.Extensions.DependencyInjection
             ServiceInstall.PopulationStrategyRetriever.Add((serviceProvider) => serviceProvider.GetService<IPopulationStrategy<T, TKey>>());
             var options = new RepositoryBehaviorSettings<T, TKey>();
             settings?.Invoke(options);
-            Check(options.ExceptionOddsForQuery);
-            Check(options.ExceptionOddsForInsert);
-            Check(options.ExceptionOddsForUpdate);
-            Check(options.ExceptionOddsForGet);
-            Check(options.ExceptionOddsForDelete);
+            Check(options.Get(RepositoryMethod.Insert).ExceptionOdds);
+            Check(options.Get(RepositoryMethod.Update).ExceptionOdds);
+            Check(options.Get(RepositoryMethod.Delete).ExceptionOdds);
+            Check(options.Get(RepositoryMethod.Get).ExceptionOdds);
+            Check(options.Get(RepositoryMethod.Query).ExceptionOdds);
+            Check(options.Get(RepositoryMethod.Exist).ExceptionOdds);
+            Check(options.Get(RepositoryMethod.All).ExceptionOdds);
             services.AddSingleton(options);
             Type keyType = typeof(TKey);
             services.AddRepository<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);

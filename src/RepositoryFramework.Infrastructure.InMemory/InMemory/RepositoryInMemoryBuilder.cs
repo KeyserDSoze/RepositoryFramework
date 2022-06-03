@@ -10,7 +10,7 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         private readonly IServiceCollection _services;
-        private readonly BehaviorSettings _internalBehaviorSettings = new();
+        private readonly CreationSettings _internalBehaviorSettings = new();
         public RepositoryInMemoryBuilder(IServiceCollection services)
             => _services = services;
         public RepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
@@ -28,8 +28,6 @@ namespace RepositoryFramework
             Expression<Func<T, TKey>> navigationKey,
             string json)
         {
-            string keyName = navigationKey.ToString().Split('.').Last();
-            var keyType = typeof(T).GetProperties().First(x => x.Name == keyName);
             var elements = JsonSerializer.Deserialize<IEnumerable<T>>(json);
             if (elements != null)
                 return PopulateWithDataInjection(navigationKey, elements);
@@ -39,8 +37,7 @@ namespace RepositoryFramework
             Expression<Func<T, TKey>> navigationKey,
             IEnumerable<T> elements)
         {
-            string keyName = navigationKey.ToString().Split('.').Last();
-            var keyType = typeof(T).GetProperties().First(x => x.Name == keyName);
+            var keyType = navigationKey.GetPropertyBasedOnKey();
             foreach (var element in elements)
                 InMemoryStorage<T, TKey>.Values.Add((TKey)keyType.GetValue(element)!, element);
             return this;

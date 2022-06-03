@@ -22,6 +22,12 @@ namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
             return response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent;
         }
 
+        public async Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+            return response.StatusCode == HttpStatusCode.OK;
+        }
+
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);

@@ -32,6 +32,11 @@ namespace RepositoryFramework
     }
     public class UserReader : IQueryPattern<User, string>
     {
+        public Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<User?> GetAsync(string key, CancellationToken cancellationToken = default)
         {
             //get an item by key from DB or storage context
@@ -71,6 +76,11 @@ namespace RepositoryFramework
             var x = predicate!.ToString();
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
             //get a list of items by a predicate with top and skip from DB or storage context
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default)
+        {
             throw new NotImplementedException();
         }
     }

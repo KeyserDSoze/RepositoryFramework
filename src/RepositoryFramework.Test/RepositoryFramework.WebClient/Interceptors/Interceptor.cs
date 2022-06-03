@@ -5,12 +5,12 @@ namespace RepositoryFramework.WebClient.Interceptors
 {
     public class Interceptor : IRepositoryClientInterceptor
     {
-        public Task<HttpClient> EnrichAsync(HttpClient client, ApiName path)
+        public Task<HttpClient> EnrichAsync(HttpClient client, RepositoryMethod path)
             => Task.FromResult(client);
     }
     public class SpecificInterceptor : IRepositoryClientInterceptor<User, string>
     {
-        public Task<HttpClient> EnrichAsync(HttpClient client, ApiName path) 
+        public Task<HttpClient> EnrichAsync(HttpClient client, RepositoryMethod path) 
             => Task.FromResult(client);
     }
 }

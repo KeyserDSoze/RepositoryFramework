@@ -24,13 +24,16 @@ namespace RepositoryFramework.UnitTest
                 {
                     var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
                         int.Parse(configuration["data_creation:delay_in_write_to"]));
-                    options.MillisecondsOfWaitForDelete = writingRange;
-                    options.MillisecondsOfWaitForInsert = writingRange;
-                    options.MillisecondsOfWaitForUpdate = writingRange;
+                    options.AddForCommandPattern(new MethodBehaviorSetting
+                    {
+                        MillisecondsOfWait = writingRange,
+                    });
                     var readingRange = new Range(int.Parse(configuration["data_creation:delay_in_read_from"]),
                         int.Parse(configuration["data_creation:delay_in_read_to"]));
-                    options.MillisecondsOfWaitForGet = readingRange;
-                    options.MillisecondsOfWaitForQuery = readingRange;
+                    options.AddForQueryPattern(new MethodBehaviorSetting
+                    {
+                        MillisecondsOfWait = readingRange
+                    });
                 })
                 .PopulateWithRandomData(x => x.Id!, 100)
                 .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com")
@@ -55,11 +58,10 @@ namespace RepositoryFramework.UnitTest
                             Percentage = 40.548
                         }
                     };
-                    options.ExceptionOddsForDelete.AddRange(customExceptions);
-                    options.ExceptionOddsForGet.AddRange(customExceptions);
-                    options.ExceptionOddsForInsert.AddRange(customExceptions);
-                    options.ExceptionOddsForUpdate.AddRange(customExceptions);
-                    options.ExceptionOddsForQuery.AddRange(customExceptions);
+                    options.AddForRepositoryPattern(new MethodBehaviorSetting
+                    {
+                        ExceptionOdds = customExceptions
+                    });
                 })
                 .AddRepositoryInMemoryStorageWithStringKey<PopulationTest>()
                 .PopulateWithRandomData(x => x.P)
@@ -171,7 +173,7 @@ namespace RepositoryFramework.UnitTest
                 .And()
                 .Finalize()
                 .FinalizeWithoutDependencyInjection();
-                ServiceLocator.GetService<IServiceProvider>().Populate();
+            ServiceLocator.GetService<IServiceProvider>().Populate();
         }
     }
 }

@@ -41,10 +41,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddGet), BindingFlags.NonPublic | BindingFlags.Static)!
                     .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
                     .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
-            }
-            if (serviceValue.QueryType != null || serviceValue.RepositoryType != null)
-            {
+
                 _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddQuery), BindingFlags.NonPublic | BindingFlags.Static)!
+                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
+                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
+
+                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddGet), BindingFlags.NonPublic | BindingFlags.Static)!
                     .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
                     .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
             }
@@ -53,15 +55,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddInsert), BindingFlags.NonPublic | BindingFlags.Static)!
                     .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
                     .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
-            }
-            if (serviceValue.CommandType != null || serviceValue.RepositoryType != null)
-            {
+
                 _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddUpdate), BindingFlags.NonPublic | BindingFlags.Static)!
                     .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
                     .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
-            }
-            if (serviceValue.CommandType != null || serviceValue.RepositoryType != null)
-            {
+
                 _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddDelete), BindingFlags.NonPublic | BindingFlags.Static)!
                     .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
                     .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
@@ -84,7 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 _ = app.AddApiForRepository(service.ModelType, startingPath, authorizationPolicy);
             return app;
         }
-        private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, AuthorizationForApi authorization, ApiName path)
+        private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, AuthorizationForApi authorization, RepositoryMethod path)
         {
             if (authorization != null && authorization.Path.HasFlag(path))
             {
@@ -98,17 +96,17 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddGet<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(ApiName.Get)}", async (TKey key, TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Get)}", async (TKey key, TService service) =>
                {
                    var queryService = service as IQueryPattern<T, TKey>;
                    return await queryService!.GetAsync(key);
-               }).WithName($"{nameof(ApiName.Get)}{name}")
-               .AddAuthorization(authorization, ApiName.Get);
+               }).WithName($"{nameof(RepositoryMethod.Get)}{name}")
+               .AddAuthorization(authorization, RepositoryMethod.Get);
         }
         private static void AddQuery<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
            where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(ApiName.Search)}", async (string? query, int? top, int? skip, TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Query)}", async (string? query, int? top, int? skip, TService service) =>
               {
                   dynamic? expression = null;
                   if (!string.IsNullOrWhiteSpace(query))
@@ -118,38 +116,48 @@ namespace Microsoft.Extensions.DependencyInjection
                   }
                   var queryService = service as IQueryPattern<T, TKey>;
                   return await queryService!.QueryAsync(expression, top, skip);
-              }).WithName($"{nameof(ApiName.Search)}{name}")
-              .AddAuthorization(authorization, ApiName.Search);
+              }).WithName($"{nameof(RepositoryMethod.Query)}{name}")
+              .AddAuthorization(authorization, RepositoryMethod.Query);
+        }
+        private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
+            where TKey : notnull
+        {
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Exist)}", async (TKey key, TService service) =>
+            {
+                var queryService = service as IQueryPattern<T, TKey>;
+                return await queryService!.ExistAsync(key);
+            }).WithName($"{nameof(RepositoryMethod.Exist)}{name}")
+               .AddAuthorization(authorization, RepositoryMethod.Exist);
         }
         private static void AddInsert<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
           where TKey : notnull
         {
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(ApiName.Insert)}", async (TKey key, T entity, TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Insert)}", async (TKey key, T entity, TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
                 return await commandService!.InsertAsync(key, entity);
-            }).WithName($"{nameof(ApiName.Insert)}{name}")
-            .AddAuthorization(authorization, ApiName.Insert);
+            }).WithName($"{nameof(RepositoryMethod.Insert)}{name}")
+            .AddAuthorization(authorization, RepositoryMethod.Insert);
         }
         private static void AddUpdate<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
           where TKey : notnull
         {
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(ApiName.Update)}", async (TKey key, T entity, TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Update)}", async (TKey key, T entity, TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
                 return await commandService!.UpdateAsync(key, entity);
-            }).WithName($"{nameof(ApiName.Update)}{name}")
-            .AddAuthorization(authorization, ApiName.Update);
+            }).WithName($"{nameof(RepositoryMethod.Update)}{name}")
+            .AddAuthorization(authorization, RepositoryMethod.Update);
         }
         private static void AddDelete<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
           where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(ApiName.Delete)}", async (TKey key, TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Delete)}", async (TKey key, TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
                 return await commandService!.DeleteAsync(key);
-            }).WithName($"{nameof(ApiName.Delete)}{name}")
-            .AddAuthorization(authorization, ApiName.Delete);
+            }).WithName($"{nameof(RepositoryMethod.Delete)}{name}")
+            .AddAuthorization(authorization, RepositoryMethod.Delete);
         }
     }
 }

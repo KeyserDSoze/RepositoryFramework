@@ -7,7 +7,7 @@ namespace RepositoryFramework.Population
     /// </summary>
     public interface IPopulationService
     {
-        BehaviorSettings Settings { get; set; }
+        CreationSettings Settings { get; set; }
         IInstanceCreator InstanceCreator { get; }
         dynamic? Construct(Type type, int numberOfEntities, string treeName, string name);
     }

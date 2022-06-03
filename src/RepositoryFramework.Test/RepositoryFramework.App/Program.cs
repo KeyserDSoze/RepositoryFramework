@@ -21,16 +21,6 @@ ServiceLocator
     .AddRepositoryInMemoryStorage<Solomon, string>(options =>
     {
         var customRange = new Range(1000, 2000);
-        options.MillisecondsOfWaitForDelete = customRange;
-        options.MillisecondsOfWaitForInsert = customRange;
-        options.MillisecondsOfWaitForUpdate = customRange;
-        options.MillisecondsOfWaitForGet = customRange;
-        options.MillisecondsOfWaitForQuery = new Range(3000, 7000);
-        options.MillisecondsOfWaitBeforeExceptionForDelete = customRange;
-        options.MillisecondsOfWaitBeforeExceptionForInsert = customRange;
-        options.MillisecondsOfWaitBeforeExceptionForUpdate = customRange;
-        options.MillisecondsOfWaitBeforeExceptionForGet = customRange;
-        options.MillisecondsOfWaitBeforeExceptionForQuery = new Range(3000, 7000);
         var customExceptions = new List<ExceptionOdds>
         {
             new ExceptionOdds()
@@ -49,11 +39,18 @@ ServiceLocator
                 Percentage = 0.548
             }
         };
-        options.ExceptionOddsForDelete.AddRange(customExceptions);
-        options.ExceptionOddsForGet.AddRange(customExceptions);
-        options.ExceptionOddsForInsert.AddRange(customExceptions);
-        options.ExceptionOddsForUpdate.AddRange(customExceptions);
-        options.ExceptionOddsForQuery.AddRange(customExceptions);
+        options.AddForRepositoryPattern(new MethodBehaviorSetting
+        {
+            MillisecondsOfWait = customRange,
+            MillisecondsOfWaitWhenException = customRange,
+            ExceptionOdds = customExceptions
+        });
+        options.AddForQueryPattern(new MethodBehaviorSetting
+        {
+            MillisecondsOfWait = new Range(3000, 5000),
+            MillisecondsOfWaitWhenException = new Range(3000, 5000),
+            ExceptionOdds = customExceptions
+        });
     })
     .PopulateWithRandomData(x => x.Key!, 20)
     .WithPattern(x => x.Key, "[a-z]{4,16}")
