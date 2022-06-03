@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework.UnitTest.Models;
+using RepositoryFramework.UnitTest.Storage;
 using Rystem;
 using System;
 using System.Collections.Generic;
@@ -63,7 +64,7 @@ namespace RepositoryFramework.UnitTest
                         ExceptionOdds = customExceptions
                     });
                 })
-                .AddRepositoryInMemoryStorageWithStringKey<PopulationTest>()
+                .AddRepositoryInMemoryStorage<PopulationTest, string>()
                 .PopulateWithRandomData(x => x.P)
                 .WithPattern(x => x.J!.First().A, "[a-z]{4,5}")
                 .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}")
@@ -72,7 +73,7 @@ namespace RepositoryFramework.UnitTest
                 .WithPattern(x => x.II!.A!, "[a-z]{4,5}")
                 .WithImplementation<IInnerInterface, MyInnerInterfaceImplementation>(x => x.I!)
                 .And()
-                .AddRepositoryInMemoryStorageWithStringKey<RegexPopulationTest>()
+                .AddRepositoryInMemoryStorage<RegexPopulationTest, string>()
                 .PopulateWithRandomData(x => x.P, 90, 8)
                 .WithPattern(x => x.A, "[1-9]{1,2}")
                 .WithPattern(x => x.AA, "[1-9]{1,2}")
@@ -116,7 +117,7 @@ namespace RepositoryFramework.UnitTest
                 .WithPattern(x => x.J!.First().A, "[a-z]{4,5}")
                 .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}")
                 .And()
-                .AddRepositoryInMemoryStorageWithStringKey<DelegationPopulation>()
+                .AddRepositoryInMemoryStorage<DelegationPopulation, string>()
                 .PopulateWithRandomData(x => x.P)
                 .WithValue(x => x.A, () => 2)
                 .WithValue(x => x.AA, () => 2)
@@ -172,6 +173,7 @@ namespace RepositoryFramework.UnitTest
                 })
                 .And()
                 .Finalize()
+                .AddMigration<MigrationUser, string, MigrationFrom, MigrationTo>(x => x.NumberOfConcurrentInserts = 2)
                 .FinalizeWithoutDependencyInjection();
             ServiceLocator.GetService<IServiceProvider>().Populate();
         }

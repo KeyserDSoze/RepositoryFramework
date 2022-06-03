@@ -37,7 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RepositoryFramework.Infrast
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.Infrastructure.Azure.CosmosSql", "src\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.CosmosSql\RepositoryFramework.Infrastructure.Azure.CosmosSql.csproj", "{992B5B73-3E0F-4D31-B33E-C1EB67163BEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.Infrastructure.Azure.Storage.Table", "src\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.Storage.Table\RepositoryFramework.Infrastructure.Azure.Storage.Table.csproj", "{E4AA02CC-7FB6-4310-86E3-8CB8A5D9F630}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.Infrastructure.Azure.Storage.Table", "src\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.Storage.Table\RepositoryFramework.Infrastructure.Azure.Storage.Table.csproj", "{6C42F96E-DFEF-4879-874E-7E1ACA940586}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,10 +81,10 @@ Global
 		{992B5B73-3E0F-4D31-B33E-C1EB67163BEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{992B5B73-3E0F-4D31-B33E-C1EB67163BEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{992B5B73-3E0F-4D31-B33E-C1EB67163BEF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E4AA02CC-7FB6-4310-86E3-8CB8A5D9F630}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4AA02CC-7FB6-4310-86E3-8CB8A5D9F630}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4AA02CC-7FB6-4310-86E3-8CB8A5D9F630}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4AA02CC-7FB6-4310-86E3-8CB8A5D9F630}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C42F96E-DFEF-4879-874E-7E1ACA940586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C42F96E-DFEF-4879-874E-7E1ACA940586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C42F96E-DFEF-4879-874E-7E1ACA940586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C42F96E-DFEF-4879-874E-7E1ACA940586}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,7 +95,7 @@ Global
 		{41A01404-6E05-4D7F-AE25-2C8DEA168D0F} = {1C3E945D-92FF-46AF-ABA7-DF0B3655C9FF}
 		{7AEFB905-FDE0-4C02-85A7-13D1F9867FC6} = {1C3E945D-92FF-46AF-ABA7-DF0B3655C9FF}
 		{992B5B73-3E0F-4D31-B33E-C1EB67163BEF} = {9547851D-6AEF-40BE-B71B-ECC0C0DFD156}
-		{E4AA02CC-7FB6-4310-86E3-8CB8A5D9F630} = {9547851D-6AEF-40BE-B71B-ECC0C0DFD156}
+		{6C42F96E-DFEF-4879-874E-7E1ACA940586} = {9547851D-6AEF-40BE-B71B-ECC0C0DFD156}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15846BE9-69D7-49D6-8E61-F58E9927D291}

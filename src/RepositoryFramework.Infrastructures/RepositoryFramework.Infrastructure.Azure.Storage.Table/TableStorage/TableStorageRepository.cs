@@ -1,4 +1,5 @@
 ﻿using Azure.Data.Tables;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
 
@@ -14,13 +15,11 @@ namespace RepositoryFramework.Infrastructure.Azure.TableStorage
         }
         private sealed class TableEntity : ITableEntity
         {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-            public string PartitionKey { get; set; }
-            public string RowKey { get; set; }
+            public string PartitionKey { get; set; } = null!;
+            public string RowKey { get; set; } = null!;
             public DateTimeOffset? Timestamp { get; set; }
-            public string Value { get; set; }
+            public string Value { get; set; } = null!;
             public global::Azure.ETag ETag { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         }
         public async Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
@@ -35,12 +34,31 @@ namespace RepositoryFramework.Infrastructure.Azure.TableStorage
                 return JsonSerializer.Deserialize<T>(response.Value.Value);
             return default;
         }
+        public async Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            var response = await _client.GetEntityAsync<TableEntity>(key!.ToString(), string.Empty, cancellationToken: cancellationToken);
+            return response?.Value != null;
+        }
 
         public Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
-        public Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
-            => throw new NotImplementedException("It's not easy to do with tablestorage. If you want to have a query more complex that only the partition key you have to implement another storage. TableStorage is not the right solution for you.");
+        public async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        {
+            List<T> entities = new();
+            await foreach (var item in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
+            {
+                entities.Add(JsonSerializer.Deserialize<T>(item.Value)!);
+            }
+            IEnumerable<T> results = entities;
+            if (predicate != null)
+                results = results.Where(predicate.Compile());
+            if (top != null)
+                results = results.Take(top.Value);
+            if (skip != null)
+                results = results.Skip(skip.Value);
+            return results;
+        }
 
         public async Task<bool> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {

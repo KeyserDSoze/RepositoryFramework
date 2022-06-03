@@ -5,20 +5,20 @@ namespace RepositoryFramework.Migration
     internal class MigrationManager<T, TKey> : IMigrationManager<T, TKey>
          where TKey : notnull
     {
-        private readonly IMigrateRepositoryPattern<T, TKey> _repository;
-        private readonly IQuery<T, TKey> _query;
+        private readonly IToMigrateRepositoryPattern<T, TKey> _from;
+        private readonly IRepositoryPattern<T, TKey> _to;
         private readonly MigrationOptions<T, TKey> _options;
 
-        public MigrationManager(IMigrateRepositoryPattern<T, TKey> repository, IQuery<T, TKey> query, MigrationOptions<T, TKey> options)
+        public MigrationManager(IToMigrateRepositoryPattern<T, TKey> from, IRepositoryPattern<T, TKey> to, MigrationOptions<T, TKey> options)
         {
-            _repository = repository;
-            _query = query;
+            _from = from;
+            _to = to;
             _options = options;
         }
         public async Task<bool> MigrateAsync(Expression<Func<T, TKey>> navigationKey, bool checkIfExist = false, CancellationToken cancellationToken = default)
         {
             List<Task> setAll = new();
-            var entities = await _query.QueryAsync();
+            var entities = await _from.QueryAsync(cancellationToken: cancellationToken);
             var keyProperty = navigationKey.GetPropertyBasedOnKey();
             foreach (var entity in entities)
             {
@@ -33,9 +33,9 @@ namespace RepositoryFramework.Migration
                 async Task TryToMigrate()
                 {
                     var key = (TKey)keyProperty!.GetValue(entity)!;
-                    if (checkIfExist && await _repository.ExistAsync(key, cancellationToken))
+                    if (checkIfExist && await _to.ExistAsync(key, cancellationToken))
                         return;
-                    await _repository.InsertAsync(key, entity!, cancellationToken);
+                    await _to.InsertAsync(key, entity!, cancellationToken);
                 }
             }
             return true;

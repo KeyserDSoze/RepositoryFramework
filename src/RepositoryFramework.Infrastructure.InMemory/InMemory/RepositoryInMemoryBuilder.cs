@@ -16,14 +16,6 @@ namespace RepositoryFramework
         public RepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
             where TNextKey : notnull
             => _services!.AddRepositoryInMemoryStorage(settings);
-        public RepositoryInMemoryBuilder<TNext, string> AddRepositoryInMemoryStorageWithStringKey<TNext>(Action<RepositoryBehaviorSettings<TNext, string>>? settings = default)
-            => _services!.AddRepositoryInMemoryStorageWithStringKey(settings);
-        public RepositoryInMemoryBuilder<TNext, Guid> AddRepositoryInMemoryStorageWithGuidKey<TNext>(Action<RepositoryBehaviorSettings<TNext, Guid>>? settings = default)
-            => _services!.AddRepositoryInMemoryStorageWithGuidKey(settings);
-        public RepositoryInMemoryBuilder<TNext, long> AddRepositoryInMemoryStorageWithLongKey<TNext>(Action<RepositoryBehaviorSettings<TNext, long>>? settings = default)
-            => _services!.AddRepositoryInMemoryStorageWithLongKey(settings);
-        public RepositoryInMemoryBuilder<TNext, int> AddRepositoryInMemoryStorageWithIntKey<TNext>(Action<RepositoryBehaviorSettings<TNext, int>>? settings = default)
-            => _services!.AddRepositoryInMemoryStorageWithIntKey(settings);
         public RepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,
             string json)
