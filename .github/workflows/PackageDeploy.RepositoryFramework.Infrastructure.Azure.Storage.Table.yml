@@ -1,4 +1,4 @@
-name: Api.Abstractions.Nuget
+name: Infrastructure.Azure.Storage.Table.Nuget
 on:
   push:
     branches:
@@ -20,9 +20,9 @@ jobs:
         id: publish_nuget
         uses: rohith/publish-nuget@v2
         with:
-          PROJECT_FILE_PATH: src/RepositoryFramework.Api.Abstractions/RepositoryFramework.Api.Abstractions.csproj
-          PACKAGE_NAME: Rystem.RepositoryFramework.Api.Abstractions
-          VERSION_FILE_PATH: src/RepositoryFramework.Api.Abstractions/RepositoryFramework.Api.Abstractions.csproj
+          PROJECT_FILE_PATH: src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Storage.Table/RepositoryFramework.Infrastructure.Azure.Storage.Table.csproj
+          PACKAGE_NAME: Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Table
+          VERSION_FILE_PATH: src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Storage.Table/RepositoryFramework.Infrastructure.Azure.Storage.Table.csproj
           VERSION_REGEX: <Version>(.*)<\/Version>
           TAG_COMMIT: true
           TAG_FORMAT: v*
