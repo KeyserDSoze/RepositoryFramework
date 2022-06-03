@@ -24,7 +24,7 @@ namespace RepositoryFramework.UnitTest
         {
             var migrationResult = await _migrationService.MigrateAsync(x => x.Id!, true);
             Assert.True(migrationResult);
-            Assert.Equal(120, (await _repository.QueryAsync()).Count());
+            Assert.Equal(4, (await _repository.QueryAsync()).Count());
             foreach (var user in await _from.QueryAsync())
             {
                 Assert.True(await _repository.ExistAsync(user.Id!));

@@ -7,6 +7,7 @@ In your web application you have only to add one row after service build.
         this TEndpointRouteBuilder app,
         string startingPath = "api",
         AuthorizationForApi? authorizationPolicy = null)
+        where TEndpointRouteBuilder : IEndpointRouteBuilder
     
 You may add api for each service by
 
@@ -21,7 +22,7 @@ In the example below you may find the DI for repository with string key for User
 
     var builder = WebApplication.CreateBuilder(args);
     builder.Services
-        .AddRepositoryInMemoryStorageWithStringKey<User>()
+        .AddRepositoryInMemoryStorage<User, string>()
         .PopulateWithRandomData(x => x.Email!, 120, 5);
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();

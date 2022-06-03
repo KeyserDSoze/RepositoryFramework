@@ -68,7 +68,7 @@ namespace RepositoryFramework
                 });
             return new(this, _internalBehaviorSettings);
         }
-        public IServiceCollection Finalize()
+        public IServiceCollection ToServiceCollection()
             => _services!;
     }
 }

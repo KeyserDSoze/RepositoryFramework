@@ -36,7 +36,18 @@ You can add a client for a specific url
     
 and use it in DI with
     
-    IRepositoryClient<User, string>
+    IRepository<User, string>
+
+### Query and Command
+In DI you install the services
+
+    services.AddCommandClient<User, string>("localhost:7058");
+    services.AddQueryClient<User, string>("localhost:7058");
+
+And you may inject the objects
+    
+    ICommand<User, string> command
+    IQuery<User, string> command
 
 ### Interceptors
 You may add a custom interceptor for every request

@@ -5,10 +5,6 @@ With this library you can add in memory integration with the chance to create ra
         this IServiceCollection services,
         Action<RepositoryBehaviorSettings<T, TKey>>? settings = default)
         where TKey : notnull 
-
-### Populate with specific key (example with Guid)
-
-    public RepositoryInMemoryBuilder<TNext, Guid> AddRepositoryInMemoryStorageWithGuidKey<TNext>(Action<RepositoryBehaviorSettings<TNext, Guid>>? settings = default)
         
 ### How to populate with random data?
 
@@ -16,7 +12,7 @@ With this library you can add in memory integration with the chance to create ra
 Populate your in memory storage with 120 users
 
     var builder = WebApplication.CreateBuilder(args);
-    builder.Services.AddRepositoryInMemoryStorageWithStringKey<User>()
+    builder.Services.AddRepositoryInMemoryStorage<User, string>()
     .PopulateWithRandomData(x => x.Email!, 120);
 
 and in app after build during startup of your application
@@ -101,13 +97,13 @@ and in app after build during startup of your application
 If you have an interface or abstraction in your model, you can specify an implementation type for population.
 You have two different methods, with typeof
 
-    .AddRepositoryInMemoryStorageWithStringKey<PopulationTest>()
+    .AddRepositoryInMemoryStorage<PopulationTest, string>()
     .PopulateWithRandomData(x => x.Id!, 100, )
     .WithImplementation(x => x.I, typeof(MyInnerInterfaceImplementation))
 
 or generics
 
-    .AddRepositoryInMemoryStorageWithStringKey<PopulationTest>()
+    .AddRepositoryInMemoryStorage<PopulationTest, string>()
     .PopulateWithRandomData(x => x.Id!, 100, )
     .WithImplementation<IInnerInterface, MyInnerInterfaceImplementation>(x => x.I!)
 

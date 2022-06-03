@@ -2,7 +2,7 @@
 Based on CQRS we could split our repository pattern in two main interfaces, one for update (write, delete) and one for read.
 
 #### Command (Write-Delete)
-    public interface ICommand<T, TKey> : ICommandPattern
+    public interface ICommandPattern<T, TKey> : ICommandPattern
         where TKey : notnull
     {
         Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
@@ -11,17 +11,18 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
     }
 
 #### Query (Read)
-    public interface IQuery<T, TKey> : IQueryPattern
+    public interface IQueryPattern<T, TKey> : IQueryPattern
         where TKey : notnull
     {
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default);
     }
 
 #### Repository Pattern (Write-Delete-Read)
 Repository pattern is a sum of CQRS interfaces.
 
-    public interface IRepository<T, TKey> : ICommand<T, TKey>, IQuery<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
+    public interface IRepositoryPattern<T, TKey> : ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
         where TKey : notnull
     {
     }
@@ -35,7 +36,7 @@ Repository pattern is a sum of CQRS interfaces.
         public string Email { get; set; }
     }
 #### Command
-    public class UserWriter : ICommand<User, string>
+    public class UserWriter : ICommandPattern<User, string>
     {
         public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
@@ -54,11 +55,16 @@ Repository pattern is a sum of CQRS interfaces.
         }
     }
 #### Query
-    public class UserReader : IQuery<User, string>
+    public class UserReader : IQueryPattern<User, string>
     {
         public Task<User?> GetAsync(string key, CancellationToken cancellationToken = default)
         {
             //get an item by key from DB or storage context
+            throw new NotImplementedException();
+        }
+        public Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default)
+        {
+            //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
         }
         public Task<IEnumerable<User>> QueryAsync(Expression<Func<User, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
@@ -71,7 +77,7 @@ Repository pattern is a sum of CQRS interfaces.
 #### Alltogether as repository pattern 
 if you don't have CQRS infrastructure (usually it's correct to use CQRS when you have minimum two infrastructures one for write and delete and at least one for read)
 
-    public class UserRepository : IRepository<User, string>, IQuery<User, string>, ICommand<User, string>
+    public class UserRepository : IRepositoryPattern<User, string>, IQueryPattern<User, string>, ICommandPattern<User, string>
     {
         public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
@@ -93,9 +99,34 @@ if you don't have CQRS infrastructure (usually it's correct to use CQRS when you
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
+        public Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default)
+        {
+            //check if an item by key exists in DB or storage context
+            throw new NotImplementedException();
+        }
         public Task<IEnumerable<User>> QueryAsync(Expression<Func<User, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             //get a list of items by a predicate with top and skip from DB or storage context
             throw new NotImplementedException();
         }
     }
+
+### How to use it
+In DI you install the service
+
+    services.AddRepository<User, string, UserRepository>();
+
+And you may inject the object
+    
+    IRepository<User, string> repository
+
+### Query and Command
+In DI you install the services
+
+    services.AddCommand<User, string, UserWriter>();
+    services.AddQuery<User, string, UserReader>();
+
+And you may inject the objects
+    
+    ICommand<User, string> command
+    IQuery<User, string> command
