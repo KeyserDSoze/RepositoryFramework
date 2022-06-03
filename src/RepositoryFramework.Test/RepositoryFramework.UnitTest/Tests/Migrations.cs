@@ -11,9 +11,9 @@ namespace RepositoryFramework.UnitTest
     {
         private readonly IMigrationManager<MigrationUser, string> _migrationService;
         private readonly IRepository<MigrationUser, string> _repository;
-        private readonly IToMigrateRepositoryPattern<MigrationUser, string> _from;
+        private readonly IMigrationSource<MigrationUser, string> _from;
 
-        public Migrations(IMigrationManager<MigrationUser, string> migrationService, IRepository<MigrationUser, string> repository, IToMigrateRepositoryPattern<MigrationUser, string> from)
+        public Migrations(IMigrationManager<MigrationUser, string> migrationService, IRepository<MigrationUser, string> repository, IMigrationSource<MigrationUser, string> from)
         {
             _migrationService = migrationService;
             _repository = repository;
@@ -24,7 +24,7 @@ namespace RepositoryFramework.UnitTest
         {
             var migrationResult = await _migrationService.MigrateAsync(x => x.Id!, true);
             Assert.True(migrationResult);
-            Assert.Equal(4, (await _repository.QueryAsync()).Count());
+            Assert.Equal(120, (await _repository.QueryAsync()).Count());
             foreach (var user in await _from.QueryAsync())
             {
                 Assert.True(await _repository.ExistAsync(user.Id!));

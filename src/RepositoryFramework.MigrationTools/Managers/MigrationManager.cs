@@ -5,11 +5,11 @@ namespace RepositoryFramework.Migration
     internal class MigrationManager<T, TKey> : IMigrationManager<T, TKey>
          where TKey : notnull
     {
-        private readonly IToMigrateRepositoryPattern<T, TKey> _from;
+        private readonly IMigrationSource<T, TKey> _from;
         private readonly IRepositoryPattern<T, TKey> _to;
         private readonly MigrationOptions<T, TKey> _options;
 
-        public MigrationManager(IToMigrateRepositoryPattern<T, TKey> from, IRepositoryPattern<T, TKey> to, MigrationOptions<T, TKey> options)
+        public MigrationManager(IMigrationSource<T, TKey> from, IRepositoryPattern<T, TKey> to, MigrationOptions<T, TKey> options)
         {
             _from = from;
             _to = to;

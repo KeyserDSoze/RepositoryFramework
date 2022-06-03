@@ -18,27 +18,25 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">Settings for migration.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddMigration<T, TKey, TStorageToMigrate, TFinalStorage>(this IServiceCollection services,
+        public static IServiceCollection AddMigrationSource<T, TKey, TStorageToMigrate>(this IServiceCollection services,
             Action<MigrationOptions<T, TKey>> settings,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-          where TStorageToMigrate : class, IToMigrateRepositoryPattern<T, TKey>
-          where TFinalStorage : class, IRepositoryPattern<T, TKey>
+          where TStorageToMigrate : class, IMigrationSource<T, TKey>
           where TKey : notnull
         {
             var options = new MigrationOptions<T, TKey>();
             settings?.Invoke(options);
-            _ = services.AddRepository<T, TKey, TFinalStorage>(serviceLifetime)
-                .AddSingleton(options);
+            services.AddSingleton(options);
 
             return serviceLifetime switch
             {
                 ServiceLifetime.Transient => services
-                    .AddTransient<IToMigrateRepositoryPattern<T, TKey>, TStorageToMigrate>()
+                    .AddTransient<IMigrationSource<T, TKey>, TStorageToMigrate>()
                     .AddTransient<IMigrationManager<T, TKey>, MigrationManager<T, TKey>>(),
                 ServiceLifetime.Singleton => services
-                    .AddSingleton<IToMigrateRepositoryPattern<T, TKey>, TStorageToMigrate>()
+                    .AddSingleton<IMigrationSource<T, TKey>, TStorageToMigrate>()
                     .AddSingleton<IMigrationManager<T, TKey>, MigrationManager<T, TKey>>(),
-                _ => services.AddScoped<IToMigrateRepositoryPattern<T, TKey>, TStorageToMigrate>()
+                _ => services.AddScoped<IMigrationSource<T, TKey>, TStorageToMigrate>()
                         .AddScoped<IMigrationManager<T, TKey>, MigrationManager<T, TKey>>()
             };
         }

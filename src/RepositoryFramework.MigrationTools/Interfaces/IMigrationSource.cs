@@ -5,7 +5,7 @@
     /// </summary>
     /// <typeparam name="T">Model used for your repository</typeparam>
     /// <typeparam name="TKey">Key to insert, update or delete your data from repository</typeparam>
-    public interface IToMigrateRepositoryPattern<T, TKey> : IRepositoryPattern<T, TKey>, ICommandPattern<T, TKey>, IQueryPattern<T, TKey>
+    public interface IMigrationSource<T, TKey> : IRepositoryPattern<T, TKey>, ICommandPattern<T, TKey>, IQueryPattern<T, TKey>
         where TKey : notnull
     {
     }

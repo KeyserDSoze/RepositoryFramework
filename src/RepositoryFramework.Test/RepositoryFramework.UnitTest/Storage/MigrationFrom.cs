@@ -10,15 +10,9 @@ using System.Threading.Tasks;
 
 namespace RepositoryFramework.UnitTest.Storage
 {
-    internal class MigrationFrom : IToMigrateRepositoryPattern<MigrationUser, string>
+    internal class MigrationFrom : IMigrationSource<MigrationUser, string>
     {
-        private readonly Dictionary<string, MigrationUser> _users = new()
-        {
-            { "1", new MigrationUser { Id = "1", Name = "Ale", Email = "Ale@gmail.com", IsAdmin = true } },
-            { "2", new MigrationUser { Id = "2", Name = "Alekud", Email = "Alu@gmail.com", IsAdmin = false } },
-            { "3", new MigrationUser { Id = "3", Name = "Alessia", Email = "Alo@gmail.com", IsAdmin = false } },
-            { "4", new MigrationUser { Id = "4", Name = "Alisandro", Email = "Ali@gmail.com", IsAdmin = false } },
-        };
+        private readonly Dictionary<string, MigrationUser> _users = new();
         public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             if (_users.ContainsKey(key))

@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\RepositoryFramework.Infrastructure.InMemory\RepositoryFramework.Infrastructure.InMemory.csproj" />
+    <ProjectReference Include="..\..\RepositoryFramework.MigrationTools\RepositoryFramework.MigrationTools.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -173,7 +173,11 @@ namespace RepositoryFramework.UnitTest
                 })
                 .And()
                 .Finalize()
-                .AddMigration<MigrationUser, string, MigrationFrom, MigrationTo>(x => x.NumberOfConcurrentInserts = 2)
+                    .AddRepositoryInMemoryStorage<MigrationUser, string>()
+                    .PopulateWithRandomData(x => x.Id, 120)
+                    .And()
+                    .Finalize()
+                    .AddMigrationSource<MigrationUser, string, MigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                 .FinalizeWithoutDependencyInjection();
             ServiceLocator.GetService<IServiceProvider>().Populate();
         }
