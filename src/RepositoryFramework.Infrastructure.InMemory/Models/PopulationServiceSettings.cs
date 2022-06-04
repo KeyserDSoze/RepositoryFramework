@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework
+﻿namespace RepositoryFramework.InMemory
 {
     public class PopulationServiceSettings<T, TKey>
         where TKey : notnull

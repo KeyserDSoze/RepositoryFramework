@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.Utility
+﻿namespace RepositoryFramework.InMemory.Utility
 {
     internal static class Naming
     {

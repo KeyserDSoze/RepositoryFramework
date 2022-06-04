@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.Population
+﻿namespace RepositoryFramework.InMemory.Population
 {
     internal class ArrayPopulationService : IRandomPopulationService
     {

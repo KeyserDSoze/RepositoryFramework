@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.Population
+﻿namespace RepositoryFramework.InMemory.Population
 {
     /// <summary>
     /// Model for random population service.

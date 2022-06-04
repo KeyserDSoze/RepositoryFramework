@@ -1,6 +1,4 @@
-﻿using RepositoryFramework;
-using RepositoryFramework.Population;
-using RepositoryFramework.Services;
+﻿using RepositoryFramework.InMemory.Population;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

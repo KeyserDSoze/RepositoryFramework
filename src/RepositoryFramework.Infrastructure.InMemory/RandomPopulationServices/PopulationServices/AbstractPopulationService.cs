@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
 
-namespace RepositoryFramework.Population
+namespace RepositoryFramework.InMemory.Population
 {
     internal class AbstractPopulationService : IRandomPopulationService
     {

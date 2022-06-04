@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework
+﻿namespace RepositoryFramework.InMemory
 {
     /// <summary>
     /// Mapping for your exception, you may use a percentage from 0.000000000000000000000000001% and 100% with

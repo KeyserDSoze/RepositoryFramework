@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.Population
+﻿namespace RepositoryFramework.InMemory.Population
 {
     /// <summary>
     /// Population service to allow the random creation of values.

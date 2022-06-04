@@ -1,6 +1,4 @@
-﻿using RepositoryFramework.Services;
-
-namespace RepositoryFramework.Population
+﻿namespace RepositoryFramework.InMemory.Population
 {
     internal class RandomPopulationStrategy<T, TKey> : IPopulationStrategy<T, TKey>
         where TKey : notnull

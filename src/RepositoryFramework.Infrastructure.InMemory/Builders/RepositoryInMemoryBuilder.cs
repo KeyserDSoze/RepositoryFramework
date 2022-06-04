@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.Population;
-using RepositoryFramework.Services;
+using RepositoryFramework.InMemory.Population;
 using System.Linq.Expressions;
 using System.Text.Json;
 
-namespace RepositoryFramework
+namespace RepositoryFramework.InMemory
 {
     public class RepositoryInMemoryBuilder<T, TKey>
         where TKey : notnull

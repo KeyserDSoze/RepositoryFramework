@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework
+﻿namespace RepositoryFramework.InMemory
 {
     /// <summary>
     /// You may set the milliseconds (in range) for each request to simulate a real external database or storage.

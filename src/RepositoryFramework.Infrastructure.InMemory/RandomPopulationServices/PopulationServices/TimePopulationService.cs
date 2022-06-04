@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace RepositoryFramework.Population
+namespace RepositoryFramework.InMemory.Population
 {
     internal class TimePopulationService : IRandomPopulationService
     {

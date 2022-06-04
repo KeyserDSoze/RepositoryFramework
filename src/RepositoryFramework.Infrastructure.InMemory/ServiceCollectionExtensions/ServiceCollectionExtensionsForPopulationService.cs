@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.Population;
-using RepositoryFramework.Services;
+using RepositoryFramework.InMemory.Population;
 
 namespace RepositoryFramework.Customization
 {

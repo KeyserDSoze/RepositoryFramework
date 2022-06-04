@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.Population
+﻿namespace RepositoryFramework.InMemory.Population
 {
     public interface IPopulationStrategy
     {

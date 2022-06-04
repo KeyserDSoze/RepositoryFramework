@@ -1,6 +1,4 @@
-﻿using RepositoryFramework.Services;
-
-namespace RepositoryFramework.Population
+﻿namespace RepositoryFramework.InMemory.Population
 {
     /// <summary>
     /// Population service to allow the in memory population.

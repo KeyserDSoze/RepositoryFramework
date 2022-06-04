@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.Services
+﻿namespace RepositoryFramework.InMemory.Population
 {
     /// <summary>
     /// Interface that helps the random generation of object based on regular expressions during random population.

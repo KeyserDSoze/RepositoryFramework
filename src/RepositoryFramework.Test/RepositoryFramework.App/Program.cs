@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework.Client;
 using RepositoryFramework;
 using Rystem;
+using RepositoryFramework.InMemory;
 
 //await new UserRepository().QueryAsync(x => x.Id == "A" && x.Email == "B");
 //string pattern = @"(?:2018|2019|2020|2021|2022)/(?:10|11|12)/(?:06|07|08) (00:00:00)";

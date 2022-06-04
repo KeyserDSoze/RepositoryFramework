@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Security.Cryptography;
 
-namespace RepositoryFramework
+namespace RepositoryFramework.InMemory
 {
     internal class InMemoryStorage<T, TKey> : IRepositoryPattern<T, TKey>
         where TKey : notnull

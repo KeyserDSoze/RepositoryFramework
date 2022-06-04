@@ -1,6 +1,4 @@
-﻿using RepositoryFramework.Population;
-
-namespace RepositoryFramework.Services
+﻿namespace RepositoryFramework.InMemory.Population
 {
     public class InstanceCreator : IInstanceCreator
     {

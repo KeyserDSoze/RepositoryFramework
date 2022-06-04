@@ -1,10 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.Population;
-using RepositoryFramework.Utility;
-using System.Collections;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
-namespace RepositoryFramework
+namespace RepositoryFramework.InMemory
 {
     public class RepositoryInMemoryCreatorBuilder<T, TKey>
         where TKey : notnull

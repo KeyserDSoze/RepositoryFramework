@@ -1,6 +1,6 @@
 ﻿using Fare;
 
-namespace RepositoryFramework.Services
+namespace RepositoryFramework.InMemory.Population
 {
     internal class RegexService : IRegexService
     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.InMemory;
 using RepositoryFramework.UnitTest.Models;
 using RepositoryFramework.UnitTest.Storage;
 using Rystem;
