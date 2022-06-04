@@ -6,16 +6,16 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 
-namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
+namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
 {
     internal sealed class CosmosSqlRepository<T, TKey> : IRepositoryPattern<T, TKey>
         where TKey : notnull
     {
         private readonly Container _client;
         private readonly PropertyInfo[] _properties;
-        private readonly ILogger<CosmosSqlRepository<T, TKey>> _logger;
+        private readonly ILogger<CosmosSqlRepository<T, TKey>>? _logger;
 
-        public CosmosSqlRepository(CosmosSqlServiceClientFactory clientFactory, ILogger<CosmosSqlRepository<T, TKey>> logger = null)
+        public CosmosSqlRepository(CosmosSqlServiceClientFactory clientFactory, ILogger<CosmosSqlRepository<T, TKey>>? logger = null)
         {
             (_client, _properties) = clientFactory.Get(typeof(T).Name);
             _logger = logger;
@@ -27,13 +27,13 @@ namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
                 EventId eventId = new();
                 try
                 {
-                    _logger?.LogInformation(eventId, $"{method} for {key}");
+                    _logger?.LogInformation(eventId, message: $"{method} for {key}");
                     return await action();
                 }
                 catch (Exception exception)
                 {
-                    _logger?.LogError(eventId, exception.Message);
-                    return default;
+                    _logger?.LogError(eventId, message: exception.Message);
+                    return default!;
                 }
             }
             else
@@ -75,7 +75,7 @@ namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
             });
 
         public Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
-            => ExecuteAsync(default(TKey), RepositoryMethod.Query, async () =>
+            => ExecuteAsync(default!, RepositoryMethod.Query, async () =>
             {
                 IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
                 if (predicate != null)

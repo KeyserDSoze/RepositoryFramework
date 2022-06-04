@@ -1,6 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos;
 
-namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
+namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
 {
     /// <summary>
     /// Options used for database creation and container creation.

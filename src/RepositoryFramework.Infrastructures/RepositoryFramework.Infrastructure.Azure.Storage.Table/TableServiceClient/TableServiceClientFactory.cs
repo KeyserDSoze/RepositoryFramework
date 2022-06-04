@@ -1,7 +1,7 @@
 ﻿using Azure.Data.Tables;
 using Azure.Identity;
 
-namespace RepositoryFramework.Infrastructure.Azure.TableStorage
+namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
     public class TableServiceClientFactory
     {

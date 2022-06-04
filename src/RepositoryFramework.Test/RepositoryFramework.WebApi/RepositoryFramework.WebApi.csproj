@@ -14,7 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\RepositoryFramework.Api.Server\RepositoryFramework.Api.Server.csproj" />
     <ProjectReference Include="..\..\RepositoryFramework.Infrastructure.InMemory\RepositoryFramework.Infrastructure.InMemory.csproj" />
-    <ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.CosmosSql\RepositoryFramework.Infrastructure.Azure.CosmosSql.csproj" />
+    <ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.Cosmos.Sql\RepositoryFramework.Infrastructure.Azure.Cosmos.Sql.csproj" />
+    <ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.Storage.Table\RepositoryFramework.Infrastructure.Azure.Storage.Table.csproj" />
   </ItemGroup>
 
 </Project>

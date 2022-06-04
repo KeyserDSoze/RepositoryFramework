@@ -1,5 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
-using RepositoryFramework.Infrastructure.Azure.CosmosSql;
+using RepositoryFramework.Infrastructure.Azure.Cosmos.Sql;
 using System.Linq.Expressions;
 
 namespace Microsoft.Extensions.DependencyInjection

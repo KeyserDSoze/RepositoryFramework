@@ -2,7 +2,7 @@
 
 namespace RepositoryFramework.Migration
 {
-    internal class MigrationManager<T, TKey> : IMigrationManager<T, TKey>
+    internal sealed class MigrationManager<T, TKey> : IMigrationManager<T, TKey>
          where TKey : notnull
     {
         private readonly IMigrationSource<T, TKey> _from;

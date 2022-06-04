@@ -13,7 +13,7 @@
 		<PackageIcon>repositoryframework.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
-		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.CosmosSql</PackageId>
+		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.Cosmos.Sql</PackageId>
 		<Version>0.9.5</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>

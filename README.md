@@ -27,8 +27,8 @@ You may find the documentation at [this link](https://github.com/KeyserDSoze/Rep
 ### In memory integration (Infrastructure for test purpose, load tests or functionality tests)
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructure.InMemory)
 
-### Api.Abstractions (Domain for api integration)
-You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Api.Abstractions)
+### Migration tools (Tool to help during a data migration)
+You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.MigrationTools)
 
 ### Api.Server (Application for automatic integration of api endpoint for your repository or CQRS)
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Api.Server)
@@ -37,4 +37,7 @@ You may find the documentation at [this link](https://github.com/KeyserDSoze/Rep
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Api.Client)
 
 ### Azure TableStorage integration (default integration)
-You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructure.TableStorage)
+You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructure.Azure.Storage.Table)
+
+### Azure CosmosDB SQL integration (default integration)
+You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructure.Azure.Cosmos.Sql)

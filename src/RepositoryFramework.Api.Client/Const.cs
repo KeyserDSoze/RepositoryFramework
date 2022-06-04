@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework.Client
 {
-    internal class Const
+    internal static class Const
     {
         public const string HttpClientName = "RepositoryClient";
     }

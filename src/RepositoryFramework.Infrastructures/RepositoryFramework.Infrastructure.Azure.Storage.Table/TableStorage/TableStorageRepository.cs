@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
 
-namespace RepositoryFramework.Infrastructure.Azure.TableStorage
+namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
     internal sealed class TableStorageRepository<T, TKey> : IRepositoryPattern<T, TKey>, IQueryPattern<T, TKey>, ICommandPattern<T, TKey>
         where TKey : notnull

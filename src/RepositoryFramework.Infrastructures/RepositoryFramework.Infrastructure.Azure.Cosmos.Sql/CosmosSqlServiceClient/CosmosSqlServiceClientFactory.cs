@@ -3,7 +3,7 @@ using Microsoft.Azure.Cosmos;
 using System.Net;
 using System.Reflection;
 
-namespace RepositoryFramework.Infrastructure.Azure.CosmosSql
+namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
 {
     public class CosmosSqlServiceClientFactory
     {

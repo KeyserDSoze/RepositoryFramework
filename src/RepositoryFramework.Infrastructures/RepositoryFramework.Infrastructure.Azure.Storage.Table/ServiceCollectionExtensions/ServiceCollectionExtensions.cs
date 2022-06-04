@@ -1,5 +1,5 @@
 ﻿using Azure.Data.Tables;
-using RepositoryFramework.Infrastructure.Azure.TableStorage;
+using RepositoryFramework.Infrastructure.Azure.Storage.Table;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    internal class Command<T, TKey> : ICommand<T, TKey>, ICommandPattern<T, TKey>, ICommandPattern
+    internal sealed class Command<T, TKey> : ICommand<T, TKey>, ICommandPattern<T, TKey>, ICommandPattern
          where TKey : notnull
     {
         private readonly ICommandPattern<T, TKey> _command;

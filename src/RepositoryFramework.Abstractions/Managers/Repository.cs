@@ -2,7 +2,7 @@
 
 namespace RepositoryFramework
 {
-    internal class Repository<T, TKey> : IRepository<T, TKey>, IRepositoryPattern<T, TKey>, ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
+    internal sealed class Repository<T, TKey> : IRepository<T, TKey>, IRepositoryPattern<T, TKey>, ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
          where TKey : notnull
     {
         private readonly IRepositoryPattern<T, TKey> _repository;
