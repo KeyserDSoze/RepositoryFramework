@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework;
+﻿using RepositoryFramework;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -7,6 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         /// <summary>
         /// Add repository storage, inject the IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
+        /// with a bool as state.
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to retrieve, update or delete your data from repository</typeparam>
@@ -28,6 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         /// Add Command storage for your CQRS, inject the ICommand<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
+        /// with a bool as state.
         /// </summary>
         /// <typeparam name="T">Model used for your command</typeparam>
         /// <typeparam name="TKey">Key to store, update or delete your data</typeparam>
@@ -49,6 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         /// Add Query storage for your CQRS, inject the IQuery<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
+        /// with a bool as state.
         /// </summary>
         /// <typeparam name="T">Model used for your query</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
@@ -67,30 +69,5 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddService<IQueryPattern<T, TKey>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T, TKey>, Query<T, TKey>>(serviceLifetime);
         }
-        private static RepositoryFrameworkService SetService<T, TKey>(this IServiceCollection services)
-            where TKey : notnull
-        {
-            Type entityType = typeof(T);
-            Type keyType = typeof(TKey);
-            var service = RepositoryFrameworkRegistry.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
-            if (service == null)
-            {
-                service = new RepositoryFrameworkService { ModelType = entityType };
-                RepositoryFrameworkRegistry.Instance.Services.Add(service);
-                services.AddSingleton(RepositoryFrameworkRegistry.Instance);
-            }
-            service.KeyType = keyType;
-            return service;
-        }
-        public static IServiceCollection AddService<TService, TImplementation>(this IServiceCollection services,
-            ServiceLifetime lifetime)
-            where TImplementation : class, TService
-            where TService : class
-            => lifetime switch
-            {
-                ServiceLifetime.Transient => services.AddTransient<TService, TImplementation>(),
-                ServiceLifetime.Singleton => services.AddSingleton<TService, TImplementation>(),
-                _ => services.AddScoped<TService, TImplementation>()
-            };
     }
 }

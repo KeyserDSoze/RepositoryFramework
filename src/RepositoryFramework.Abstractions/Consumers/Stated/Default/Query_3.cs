@@ -2,17 +2,17 @@
 
 namespace RepositoryFramework
 {
-    internal sealed class Query<T, TKey> : IQuery<T, TKey>, IQueryPattern<T, TKey>, IQueryPattern
+    internal class Query<T, TKey, TState> : IQuery<T, TKey, TState>, IQueryPattern<T, TKey, TState>, IQueryPattern
          where TKey : notnull
     {
-        private readonly IQueryPattern<T, TKey> _query;
+        private readonly IQueryPattern<T, TKey, TState> _query;
 
-        public Query(IQueryPattern<T, TKey> repository)
+        public Query(IQueryPattern<T, TKey, TState> query)
         {
-            _query = repository;
+            _query = query;
         }
 
-        public Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default) 
+        public Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default) 
             => _query.ExistAsync(key, cancellationToken);
 
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)

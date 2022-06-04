@@ -5,17 +5,17 @@ using System.Text.Json;
 
 namespace RepositoryFramework.InMemory
 {
-    public class RepositoryInMemoryBuilder<T, TKey>
+    public class RepositoryInMemoryBuilder<T, TKey, TState>
         where TKey : notnull
     {
         private readonly IServiceCollection _services;
         private readonly CreationSettings _internalBehaviorSettings = new();
         public RepositoryInMemoryBuilder(IServiceCollection services)
             => _services = services;
-        public RepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
+        public RepositoryInMemoryBuilder<TNext, TNextKey, TState> AddRepositoryInMemoryStorage<TNext, TNextKey, TState>(Action<RepositoryBehaviorSettings<TNext, TNextKey, TState>>? settings = default)
             where TNextKey : notnull
             => _services!.AddRepositoryInMemoryStorage(settings);
-        public RepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
+        public RepositoryInMemoryBuilder<T, TKey, TState> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,
             string json)
         {
@@ -24,7 +24,7 @@ namespace RepositoryFramework.InMemory
                 return PopulateWithDataInjection(navigationKey, elements);
             return this;
         }
-        public RepositoryInMemoryBuilder<T, TKey> PopulateWithDataInjection(
+        public RepositoryInMemoryBuilder<T, TKey, TState> PopulateWithDataInjection(
             Expression<Func<T, TKey>> navigationKey,
             IEnumerable<T> elements)
         {
@@ -33,7 +33,7 @@ namespace RepositoryFramework.InMemory
                 InMemoryStorage<T, TKey>.Values.Add((TKey)keyType.GetValue(element)!, element);
             return this;
         }
-        public RepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(
+        public RepositoryInMemoryCreatorBuilder<T, TKey, TState> PopulateWithRandomData(
             Expression<Func<T, TKey>> navigationKey,
             int numberOfElements = 100,
             int numberOfElementsWhenEnumerableIsFound = 10)

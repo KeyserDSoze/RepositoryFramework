@@ -3,6 +3,7 @@
     /// <summary>
     /// Mapping for Api endpoint.
     /// </summary>
+    [Flags]
     public enum RepositoryMethod
     {
         All,
