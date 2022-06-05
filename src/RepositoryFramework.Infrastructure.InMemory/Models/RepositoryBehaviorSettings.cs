@@ -4,12 +4,14 @@
     /// You may set the milliseconds (in range) for each request to simulate a real external database or storage.
     /// You may set a list of exceptions with a random percentage of throwing.
     /// </summary>
-    /// <typeparam name="T">Model used for your repository</typeparam>
-    /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
-    public class RepositoryBehaviorSettings<T, TKey>
+    /// <typeparam name="T">Model used for your repository.</typeparam>
+    /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
+    /// <typeparam name="TState">Returning state.</typeparam>
+    public class RepositoryBehaviorSettings<T, TKey, TState>
         where TKey : notnull
     {
         private readonly Dictionary<RepositoryMethod, MethodBehaviorSetting> _settings = new();
+        internal Func<bool, Exception, TState>? PopulationOfState { get; set; }
         private void Add(RepositoryMethod method, MethodBehaviorSetting methodSettings)
         {
             if (!_settings.ContainsKey(method))

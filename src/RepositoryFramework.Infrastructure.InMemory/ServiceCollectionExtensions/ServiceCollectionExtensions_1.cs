@@ -14,9 +14,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// You may set a list of exceptions with a random percentage of throwing.
         /// </param>
         /// <returns>RepositoryInMemoryBuilder</returns>
-        public static RepositoryInMemoryBuilder<T, string> AddRepositoryInMemoryStorage<T>(
+        public static RepositoryInMemoryBuilder<T, string, bool> AddRepositoryInMemoryStorage<T>(
             this IServiceCollection services,
-            Action<RepositoryBehaviorSettings<T, string>>? settings = default)
+            Action<RepositoryBehaviorSettings<T, string, bool>>? settings = default)
         {
             services.AddRepository<T, InMemoryStorage<T>>(ServiceLifetime.Singleton);
             services.AddCommand<T, InMemoryStorage<T>>(ServiceLifetime.Singleton);

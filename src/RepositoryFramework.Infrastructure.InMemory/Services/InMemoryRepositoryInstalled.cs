@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework.InMemory.Population
 {
-    internal class ServiceInstall
+    internal class InMemoryRepositoryInstalled
     {
         public static List<Func<IServiceProvider, IPopulationStrategy?>> PopulationStrategyRetriever { get; } = new();
     }

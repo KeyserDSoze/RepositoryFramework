@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IServiceProvider</returns>
         public static IServiceProvider Populate(this IServiceProvider serviceProvider)
         {
-            foreach (var service in ServiceInstall.PopulationStrategyRetriever)
+            foreach (var service in InMemoryRepositoryInstalled.PopulationStrategyRetriever)
             {
                 var populationStrategy = service.Invoke(serviceProvider);
                 if (populationStrategy != null)

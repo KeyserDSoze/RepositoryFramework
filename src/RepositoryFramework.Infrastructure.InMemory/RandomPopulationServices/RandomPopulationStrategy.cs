@@ -7,7 +7,8 @@
         private readonly IInstanceCreator _instanceCreator;
         private readonly PopulationServiceSettings<T, TKey> _settings;
 
-        public RandomPopulationStrategy(IPopulationService populationService, IInstanceCreator instanceCreator,
+        public RandomPopulationStrategy(IPopulationService populationService, 
+            IInstanceCreator instanceCreator,
             PopulationServiceSettings<T, TKey> settings)
         {
             _populationService = populationService;

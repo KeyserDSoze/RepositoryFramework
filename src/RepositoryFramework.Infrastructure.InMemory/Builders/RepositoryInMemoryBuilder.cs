@@ -5,19 +5,23 @@ using System.Text.Json;
 
 namespace RepositoryFramework.InMemory
 {
-    public class RepositoryInMemoryBuilder<T, TKey>
+    public class RepositoryInMemoryBuilder<T, TKey, TState>
         where TKey : notnull
     {
         private readonly IServiceCollection _services;
         private readonly CreationSettings _internalBehaviorSettings = new();
         public RepositoryInMemoryBuilder(IServiceCollection services)
             => _services = services;
-        public RepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
+        public RepositoryInMemoryBuilder<TNext, TNextKey, TState> AddRepositoryInMemoryStorage<TNext, TNextKey, TState>(
+            Func<bool, Exception, TState>? populationOfState,
+            Action<RepositoryBehaviorSettings<TNext, TNextKey, TState>>? settings = default)
             where TNextKey : notnull
+            => _services!.AddRepositoryInMemoryStorage(populationOfState, settings);
+        public RepositoryInMemoryBuilder<TNext, TNextKey, bool> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey, bool>>? settings = default)
             => _services!.AddRepositoryInMemoryStorage(settings);
-        public RepositoryInMemoryBuilder<TNext, string> AddRepositoryInMemoryStorage<TNext>(Action<RepositoryBehaviorSettings<TNext, string>>? settings = default)
+        public RepositoryInMemoryBuilder<TNext, string, bool> AddRepositoryInMemoryStorage<TNext>(Action<RepositoryBehaviorSettings<TNext, string, bool>>? settings = default)
             => _services!.AddRepositoryInMemoryStorage(settings);
-        public RepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
+        public RepositoryInMemoryBuilder<T, TKey, TState> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,
             string json)
         {
@@ -26,7 +30,7 @@ namespace RepositoryFramework.InMemory
                 return PopulateWithDataInjection(navigationKey, elements);
             return this;
         }
-        public RepositoryInMemoryBuilder<T, TKey> PopulateWithDataInjection(
+        public RepositoryInMemoryBuilder<T, TKey, TState> PopulateWithDataInjection(
             Expression<Func<T, TKey>> navigationKey,
             IEnumerable<T> elements)
         {
@@ -35,7 +39,7 @@ namespace RepositoryFramework.InMemory
                 InMemoryStorage<T, TKey>.Values.Add((TKey)keyType.GetValue(element)!, element);
             return this;
         }
-        public RepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(
+        public RepositoryInMemoryCreatorBuilder<T, TKey, TState> PopulateWithRandomData(
             Expression<Func<T, TKey>> navigationKey,
             int numberOfElements = 100,
             int numberOfElementsWhenEnumerableIsFound = 10)
@@ -64,7 +68,15 @@ namespace RepositoryFramework.InMemory
                     NumberOfElements = numberOfElements,
                     BehaviorSettings = _internalBehaviorSettings,
                     NumberOfElementsWhenEnumerableIsFound = numberOfElementsWhenEnumerableIsFound,
-                    AddElementToMemory = (key, entity) => InMemoryStorage<T, TKey>.Values.Add(key, entity),
+                    AddElementToMemory = (key, entity) =>
+                    {
+                        if (typeof(TState) == typeof(bool) && typeof(TKey) == typeof(string))
+                            InMemoryStorage<T>.Values.Add(key.ToString(), entity);
+                        else if (typeof(TState) == typeof(bool))
+                            InMemoryStorage<T, TKey>.Values.Add(key, entity);
+                        else
+                            InMemoryStorage<T, TKey, TState>.Values.Add(key, entity);
+                    },
                     KeyName = navigationKey.ToString().Split('.').Last()
                 });
             return new(this, _internalBehaviorSettings);

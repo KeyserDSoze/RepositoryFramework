@@ -17,39 +17,25 @@ namespace Microsoft.Extensions.DependencyInjection
         /// You may set a list of exceptions with a random percentage of throwing.
         /// </param>
         /// <returns>RepositoryInMemoryBuilder</returns>
-        public static RepositoryInMemoryBuilder<T, TKey> AddRepositoryInMemoryStorage<T, TKey>(
+        public static RepositoryInMemoryBuilder<T, TKey, bool> AddRepositoryInMemoryStorage<T, TKey>(
             this IServiceCollection services,
-            Action<RepositoryBehaviorSettings<T, TKey>>? settings = default)
+            Action<RepositoryBehaviorSettings<T, TKey, bool>>? settings = default)
             where TKey : notnull
         {
-            ServiceInstall.PopulationStrategyRetriever.Add((serviceProvider) => serviceProvider.GetService<IPopulationStrategy<T, TKey>>());
-            var options = new RepositoryBehaviorSettings<T, TKey>();
-            settings?.Invoke(options);
-            Check(options.Get(RepositoryMethod.Insert).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Update).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Delete).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Get).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Query).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Exist).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.All).ExceptionOdds);
-            services.AddSingleton(options);
-            Type keyType = typeof(TKey);
             services.AddRepository<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             services.AddCommand<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             services.AddQuery<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
 
-            return new RepositoryInMemoryBuilder<T, TKey>(services);
-
-            static void Check(List<ExceptionOdds> odds)
-            {
-                var total = odds.Sum(x => x.Percentage);
-                if (odds.Where(x => x.Percentage <= 0 || x.Percentage > 100).Any())
+            return services.AddRepositoryInMemoryStorage(
+                (x, y) =>
                 {
-                    throw new ArgumentException("Some percentages are wrong, greater than 100% or lesser than 0.");
-                }
-                if (total > 100)
-                    throw new ArgumentException("Your total percentage is greater than 100.");
-            }
+                    if (x)
+                        return true;
+                    else if (y != null)
+                        throw y;
+                    return false;
+                },
+                settings);
         }
     }
 }
