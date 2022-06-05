@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.App", "src\RepositoryFramework.Test\RepositoryFramework.App\RepositoryFramework.App.csproj", "{0E3D7D2B-4113-412F-91E5-891F9493A482}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.WebApp", "src\RepositoryFramework.Test\RepositoryFramework.App\RepositoryFramework.WebApp.csproj", "{0E3D7D2B-4113-412F-91E5-891F9493A482}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RepositoryFramework.Test", "RepositoryFramework.Test", "{1C3E945D-92FF-46AF-ABA7-DF0B3655C9FF}"
 EndProject
