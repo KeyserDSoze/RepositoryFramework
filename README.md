@@ -10,8 +10,8 @@
 
 **Document to read before using this library:**
 - Repository pattern, useful links: 
-  -   [Microsoft docs](https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application)
-  -   [Repository pattern explained](https://codewithshadman.com/repository-pattern-csharp/)
+  - [Microsoft docs](https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application)
+  - [Repository pattern explained](https://codewithshadman.com/repository-pattern-csharp/)
 - CQRS, useful links:
   - [Microsoft docs](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)
   - [Martin Fowler](https://martinfowler.com/bliki/CQRS.html)
