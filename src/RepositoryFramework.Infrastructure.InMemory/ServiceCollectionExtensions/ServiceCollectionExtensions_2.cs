@@ -9,8 +9,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Add in memory integration (for test purpose) with bool as state.
         /// </summary>
-        /// <typeparam name="T">Model used for your repository</typeparam>
-        /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
+        /// <typeparam name="T">Model used for your repository.</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="services">IServiceCollection</param>
         /// <param name="settings">
         /// You may set the milliseconds (in range) for each request to simulate a real external database or storage.
@@ -26,16 +26,15 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddCommand<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             services.AddQuery<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
 
-            return services.AddRepositoryInMemoryStorage(
-                (x, y) =>
-                {
-                    if (x)
-                        return true;
-                    else if (y != null)
-                        throw y;
-                    return false;
-                },
-                settings);
+            return services.AddRepositoryInMemoryStorage(PopulationOfState, settings);
+        }
+        private static bool PopulationOfState(bool result, Exception exception)
+        {
+            if (result)
+                return true;
+            else if (exception != null)
+                throw exception;
+            return false;
         }
     }
 }

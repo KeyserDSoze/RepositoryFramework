@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Add in memory integration (for test purpose) with key as string and bool as state.
+        /// Add in memory integration (for test purpose) with string as key and bool as state.
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <param name="services">IServiceCollection</param>

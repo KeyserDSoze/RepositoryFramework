@@ -33,7 +33,7 @@ namespace RepositoryFramework.Migration
                 async Task TryToMigrate()
                 {
                     var key = (TKey)keyProperty!.GetValue(entity)!;
-                    if (checkIfExist && _options?.CheckIfIsAnOkState(await _to.ExistAsync(key, cancellationToken)) == true)
+                    if (checkIfExist && _options?.CheckIfIsAnOkState?.Invoke(await _to.ExistAsync(key, cancellationToken)) == true)
                         return;
                     await _to.InsertAsync(key, entity!, cancellationToken);
                 }

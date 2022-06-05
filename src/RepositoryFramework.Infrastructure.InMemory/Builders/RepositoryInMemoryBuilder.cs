@@ -12,12 +12,13 @@ namespace RepositoryFramework.InMemory
         private readonly CreationSettings _internalBehaviorSettings = new();
         public RepositoryInMemoryBuilder(IServiceCollection services)
             => _services = services;
-        public RepositoryInMemoryBuilder<TNext, TNextKey, TState> AddRepositoryInMemoryStorage<TNext, TNextKey, TState>(
-            Func<bool, Exception, TState>? populationOfState,
-            Action<RepositoryBehaviorSettings<TNext, TNextKey, TState>>? settings = default)
+        public RepositoryInMemoryBuilder<TNext, TNextKey, TNextState> AddRepositoryInMemoryStorage<TNext, TNextKey, TNextState>(
+            Func<bool, Exception, TNextState>? populationOfState,
+            Action<RepositoryBehaviorSettings<TNext, TNextKey, TNextState>>? settings = default)
             where TNextKey : notnull
             => _services!.AddRepositoryInMemoryStorage(populationOfState, settings);
         public RepositoryInMemoryBuilder<TNext, TNextKey, bool> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey, bool>>? settings = default)
+            where TNextKey : notnull
             => _services!.AddRepositoryInMemoryStorage(settings);
         public RepositoryInMemoryBuilder<TNext, string, bool> AddRepositoryInMemoryStorage<TNext>(Action<RepositoryBehaviorSettings<TNext, string, bool>>? settings = default)
             => _services!.AddRepositoryInMemoryStorage(settings);
@@ -71,7 +72,7 @@ namespace RepositoryFramework.InMemory
                     AddElementToMemory = (key, entity) =>
                     {
                         if (typeof(TState) == typeof(bool) && typeof(TKey) == typeof(string))
-                            InMemoryStorage<T>.Values.Add(key.ToString(), entity);
+                            InMemoryStorage<T>.Values.Add(key.ToString()!, entity);
                         else if (typeof(TState) == typeof(bool))
                             InMemoryStorage<T, TKey>.Values.Add(key, entity);
                         else
