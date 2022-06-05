@@ -26,7 +26,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddCommand<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             services.AddQuery<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
 
-            return services.AddRepositoryInMemoryStorage(PopulationOfState, settings);
+            return services.AddRepositoryInMemoryStorage<T, TKey, bool>(PopulationOfState, options =>
+            {
+                settings?.Invoke(options);
+                options.NumberOfParameters ??= 2;
+            });
         }
         private static bool PopulationOfState(bool result, Exception exception)
         {

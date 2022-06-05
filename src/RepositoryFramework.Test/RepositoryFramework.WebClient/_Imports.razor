@@ -11,4 +11,6 @@
 @using RepositoryFramework.WebClient.Shared
 @using RepositoryFramework.WebClient.Data
 
-@inject IRepository<User, string> UserClient
+@inject IRepository<User> UserClient1
+@inject IRepository<SuperUser, string> UserClient2
+@inject IRepository<IperUser, string, bool> UserClient3

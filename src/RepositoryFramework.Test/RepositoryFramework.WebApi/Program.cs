@@ -1,8 +1,16 @@
 using RepositoryFramework.WebApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddRepositoryInMemoryStorage<User, string>()
-.PopulateWithRandomData(x => x.Email!, 120, 5);
+builder.Services.AddRepositoryInMemoryStorage<User>()
+.PopulateWithRandomData(x => x.Email!, 120, 5)
+.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
+builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
+.PopulateWithRandomData(x => x.Email!, 120, 5)
+.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
+builder.Services.AddRepositoryInMemoryStorage<IperUser, string, bool>(
+    (x, y) => x)
+.PopulateWithRandomData(x => x.Email!, 120, 5)
+.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
 //builder.Services
 //    .AddRepositoryInTableStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
 //builder.Services
@@ -14,7 +22,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-//app.Services.Populate();
+app.Services.Populate();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

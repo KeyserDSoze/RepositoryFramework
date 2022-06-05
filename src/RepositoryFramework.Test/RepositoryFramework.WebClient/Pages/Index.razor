@@ -7,19 +7,40 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
-@if (Users != null)
+<h1>User client manager 1</h1>
+@if (Users1 != null)
 {
-    foreach (var user in Users)
+    foreach (var user in Users1)
+    {
+        <div style="position:relative;float:left;width:100%">@user.Email</div>
+    }
+}
+<h1>User client manager 2</h1>
+@if (Users2 != null)
+{
+    foreach (var user in Users2)
+    {
+        <div style="position:relative;float:left;width:100%">@user.Email</div>
+    }
+}
+<h1>User client manager 3</h1>
+@if (Users3 != null)
+{
+    foreach (var user in Users3)
     {
         <div style="position:relative;float:left;width:100%">@user.Email</div>
     }
 }
 @code {
-    private IEnumerable<User>? Users;
+    private IEnumerable<User>? Users1;
+    private IEnumerable<User>? Users2;
+    private IEnumerable<User>? Users3;
 
     protected override async Task OnParametersSetAsync()
     {
-        Users = await UserClient.QueryAsync(x => x.Email!.Contains("x"));
+        Users1 = await UserClient1.QueryAsync(x => x.Email!.Contains("@"));
+        Users2 = await UserClient2.QueryAsync(x => x.Email!.Contains("@"));
+        Users3 = await UserClient3.QueryAsync(x => x.Email!.Contains("@"));
         await base.OnParametersSetAsync();
     }
 }

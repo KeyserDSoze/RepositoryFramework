@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddCommand<T, TKey, TState, InMemoryStorage<T, TKey, TState>>(ServiceLifetime.Singleton);
             services.AddQuery<T, TKey, TState, InMemoryStorage<T, TKey, TState>>(ServiceLifetime.Singleton);
 
-            return new RepositoryInMemoryBuilder<T, TKey, TState>(services);
+            return new RepositoryInMemoryBuilder<T, TKey, TState>(services, options.NumberOfParameters ?? 3);
 
             static void Check(List<ExceptionOdds> odds)
             {

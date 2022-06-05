@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using RepositoryFramework.WebClient.Data;
 using RepositoryFramework.WebClient.Interceptors;
 
@@ -8,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddRepositoryClient<User, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryClient<User>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryClient<SuperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryClient<IperUser, string, bool>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryClientInterceptor<Interceptor>();
 builder.Services.AddRepositoryClientSpecificInterceptor<User, SpecificInterceptor>();
 var app = builder.Build();

@@ -10,8 +10,13 @@ namespace RepositoryFramework.InMemory
     {
         private readonly IServiceCollection _services;
         private readonly CreationSettings _internalBehaviorSettings = new();
-        public RepositoryInMemoryBuilder(IServiceCollection services)
-            => _services = services;
+        private readonly int _numberOfParameters;
+        internal RepositoryInMemoryBuilder(IServiceCollection services, int numberOfParameters)
+        {
+            _services = services;
+            _numberOfParameters = numberOfParameters;
+        }
+
         public RepositoryInMemoryBuilder<TNext, TNextKey, TNextState> AddRepositoryInMemoryStorage<TNext, TNextKey, TNextState>(
             Func<bool, Exception, TNextState>? populationOfState,
             Action<RepositoryBehaviorSettings<TNext, TNextKey, TNextState>>? settings = default)
@@ -71,9 +76,9 @@ namespace RepositoryFramework.InMemory
                     NumberOfElementsWhenEnumerableIsFound = numberOfElementsWhenEnumerableIsFound,
                     AddElementToMemory = (key, entity) =>
                     {
-                        if (typeof(TState) == typeof(bool) && typeof(TKey) == typeof(string))
+                        if (_numberOfParameters == 1)
                             InMemoryStorage<T>.Values.Add(key.ToString()!, entity);
-                        else if (typeof(TState) == typeof(bool))
+                        else if (_numberOfParameters == 2)
                             InMemoryStorage<T, TKey>.Values.Add(key, entity);
                         else
                             InMemoryStorage<T, TKey, TState>.Values.Add(key, entity);

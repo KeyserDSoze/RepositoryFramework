@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
         private static RepositoryFrameworkService SetService<T>(this IServiceCollection services)
             => services.SetService<T, string, bool>();
         private static RepositoryFrameworkService SetService<T, TKey>(this IServiceCollection services)
-            where TKey : notnull 
+            where TKey : notnull
             => services.SetService<T, TKey, bool>();
         private static RepositoryFrameworkService SetService<T, TKey, TState>(this IServiceCollection services)
             where TKey : notnull
@@ -24,6 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton(RepositoryFrameworkRegistry.Instance);
             }
             service.KeyType = keyType;
+            service.StateType = stateType;
             return service;
         }
         public static IServiceCollection AddService<TService, TImplementation>(this IServiceCollection services,

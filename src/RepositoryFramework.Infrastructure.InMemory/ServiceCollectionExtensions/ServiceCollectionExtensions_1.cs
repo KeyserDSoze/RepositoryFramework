@@ -22,7 +22,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddCommand<T, InMemoryStorage<T>>(ServiceLifetime.Singleton);
             services.AddQuery<T, InMemoryStorage<T>>(ServiceLifetime.Singleton);
 
-            return services.AddRepositoryInMemoryStorage<T, string>(settings);
+            return services.AddRepositoryInMemoryStorage<T, string>(options =>
+            {
+                settings?.Invoke(options);
+                options.NumberOfParameters = 1;
+            });
         }
     }
 }

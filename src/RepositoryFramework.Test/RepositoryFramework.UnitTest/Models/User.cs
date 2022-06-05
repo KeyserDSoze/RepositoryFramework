@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace RepositoryFramework.UnitTest.Models
 {
+    public class IperUser : SuperUser { }
+    public class SuperUser : User { }
     public class User
     {
         public string? Id { get; set; }

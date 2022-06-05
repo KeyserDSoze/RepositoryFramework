@@ -12,6 +12,7 @@
     {
         private readonly Dictionary<RepositoryMethod, MethodBehaviorSetting> _settings = new();
         internal Func<bool, Exception, TState>? PopulationOfState { get; set; }
+        internal int? NumberOfParameters { get; set; }
         private void Add(RepositoryMethod method, MethodBehaviorSetting methodSettings)
         {
             if (!_settings.ContainsKey(method))

@@ -11,9 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// to set up the data migration methods.
         /// </summary>
         /// <typeparam name="T">Model used for your repository.</typeparam>
-        /// <typeparam name="TKey">Key to retrieve, update or delete your data from repository.</typeparam>
         /// <typeparam name="TMigrationSource">Repository pattern for storage that you have to migrate.</typeparam>
-        /// <typeparam name="TFinalStorage">Repository pattern for storage where the data migrates on.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="settings">Settings for migration.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
