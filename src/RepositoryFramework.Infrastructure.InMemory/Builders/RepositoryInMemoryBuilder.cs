@@ -5,17 +5,19 @@ using System.Text.Json;
 
 namespace RepositoryFramework.InMemory
 {
-    public class RepositoryInMemoryBuilder<T, TKey, TState>
+    public class RepositoryInMemoryBuilder<T, TKey>
         where TKey : notnull
     {
         private readonly IServiceCollection _services;
         private readonly CreationSettings _internalBehaviorSettings = new();
         public RepositoryInMemoryBuilder(IServiceCollection services)
             => _services = services;
-        public RepositoryInMemoryBuilder<TNext, TNextKey, TState> AddRepositoryInMemoryStorage<TNext, TNextKey, TState>(Action<RepositoryBehaviorSettings<TNext, TNextKey, TState>>? settings = default)
+        public RepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
             where TNextKey : notnull
             => _services!.AddRepositoryInMemoryStorage(settings);
-        public RepositoryInMemoryBuilder<T, TKey, TState> PopulateWithJsonData(
+        public RepositoryInMemoryBuilder<TNext, string> AddRepositoryInMemoryStorage<TNext>(Action<RepositoryBehaviorSettings<TNext, string>>? settings = default)
+            => _services!.AddRepositoryInMemoryStorage(settings);
+        public RepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,
             string json)
         {
@@ -24,7 +26,7 @@ namespace RepositoryFramework.InMemory
                 return PopulateWithDataInjection(navigationKey, elements);
             return this;
         }
-        public RepositoryInMemoryBuilder<T, TKey, TState> PopulateWithDataInjection(
+        public RepositoryInMemoryBuilder<T, TKey> PopulateWithDataInjection(
             Expression<Func<T, TKey>> navigationKey,
             IEnumerable<T> elements)
         {
@@ -33,7 +35,7 @@ namespace RepositoryFramework.InMemory
                 InMemoryStorage<T, TKey>.Values.Add((TKey)keyType.GetValue(element)!, element);
             return this;
         }
-        public RepositoryInMemoryCreatorBuilder<T, TKey, TState> PopulateWithRandomData(
+        public RepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(
             Expression<Func<T, TKey>> navigationKey,
             int numberOfElements = 100,
             int numberOfElementsWhenEnumerableIsFound = 10)

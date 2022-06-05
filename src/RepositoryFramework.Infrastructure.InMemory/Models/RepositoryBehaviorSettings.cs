@@ -6,7 +6,7 @@
     /// </summary>
     /// <typeparam name="T">Model used for your repository</typeparam>
     /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
-    public class RepositoryBehaviorSettings<T, TKey, TState>
+    public class RepositoryBehaviorSettings<T, TKey>
         where TKey : notnull
     {
         private readonly Dictionary<RepositoryMethod, MethodBehaviorSetting> _settings = new();

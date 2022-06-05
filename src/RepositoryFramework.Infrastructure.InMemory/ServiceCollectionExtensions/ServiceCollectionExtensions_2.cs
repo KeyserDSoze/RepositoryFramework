@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Add in memory integration (for test purpose).
+        /// Add in memory integration (for test purpose) with bool as state.
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>

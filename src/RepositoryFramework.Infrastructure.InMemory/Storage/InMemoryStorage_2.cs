@@ -44,7 +44,7 @@ namespace RepositoryFramework.InMemory
             }
             return default;
         }
-        public async Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethod.Delete);
             await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);

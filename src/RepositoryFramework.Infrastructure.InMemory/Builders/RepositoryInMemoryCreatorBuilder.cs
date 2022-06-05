@@ -2,13 +2,13 @@
 
 namespace RepositoryFramework.InMemory
 {
-    public class RepositoryInMemoryCreatorBuilder<T, TKey, TState>
+    public class RepositoryInMemoryCreatorBuilder<T, TKey>
         where TKey : notnull
     {
-        private readonly RepositoryInMemoryBuilder<T, TKey, TState> _builder;
+        private readonly RepositoryInMemoryBuilder<T, TKey> _builder;
         private readonly CreationSettings _internalBehaviorSettings;
         public RepositoryInMemoryCreatorBuilder(
-            RepositoryInMemoryBuilder<T, TKey, TState> builder,
+            RepositoryInMemoryBuilder<T, TKey> builder,
             CreationSettings internalBehaviorSettings)
         {
             _builder = builder;
@@ -19,7 +19,7 @@ namespace RepositoryFramework.InMemory
                 .Replace("First().Value.", "Value.")
                 .Replace("First().Key.", "Key.")
                 .Replace("First().", string.Empty);
-        public RepositoryInMemoryCreatorBuilder<T, TKey, TState> WithPattern<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, params string[] regex)
+        public RepositoryInMemoryCreatorBuilder<T, TKey> WithPattern<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, params string[] regex)
         {
             string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.RegexForValueCreation;
@@ -29,7 +29,7 @@ namespace RepositoryFramework.InMemory
                 dictionary.Add(nameOfProperty, regex);
             return this;
         }
-        public RepositoryInMemoryCreatorBuilder<T, TKey, TState> WithSpecificNumberOfElements<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, int numberOfElements)
+        public RepositoryInMemoryCreatorBuilder<T, TKey> WithSpecificNumberOfElements<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, int numberOfElements)
         {
             string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.NumberOfElements;
@@ -39,7 +39,7 @@ namespace RepositoryFramework.InMemory
                 dictionary.Add(nameOfProperty, numberOfElements);
             return this;
         }
-        public RepositoryInMemoryCreatorBuilder<T, TKey, TState> WithValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Func<TProperty> creator)
+        public RepositoryInMemoryCreatorBuilder<T, TKey> WithValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Func<TProperty> creator)
         {
             string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.DelegatedMethodForValueCreation;
@@ -49,7 +49,7 @@ namespace RepositoryFramework.InMemory
                 dictionary.Add(nameOfProperty, () => creator.Invoke()!);
             return this;
         }
-        public RepositoryInMemoryCreatorBuilder<T, TKey, TState> WithAutoIncrement<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, TProperty start)
+        public RepositoryInMemoryCreatorBuilder<T, TKey> WithAutoIncrement<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, TProperty start)
         {
             string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.AutoIncrementations;
@@ -59,7 +59,7 @@ namespace RepositoryFramework.InMemory
                 dictionary.Add(nameOfProperty, start!);
             return this;
         }
-        public RepositoryInMemoryCreatorBuilder<T, TKey, TState> WithImplementation<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Type implementationType)
+        public RepositoryInMemoryCreatorBuilder<T, TKey> WithImplementation<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Type implementationType)
         {
             string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.ImplementationForValueCreation;
@@ -69,9 +69,9 @@ namespace RepositoryFramework.InMemory
                 dictionary.Add(nameOfProperty, implementationType);
             return this;
         }
-        public RepositoryInMemoryCreatorBuilder<T, TKey, TState> WithImplementation<TProperty, TEntity>(Expression<Func<T, TProperty>> navigationPropertyPath)
+        public RepositoryInMemoryCreatorBuilder<T, TKey> WithImplementation<TProperty, TEntity>(Expression<Func<T, TProperty>> navigationPropertyPath)
             => WithImplementation(navigationPropertyPath, typeof(TEntity));
-        public RepositoryInMemoryBuilder<T, TKey, TState> And()
+        public RepositoryInMemoryBuilder<T, TKey> And()
             => _builder;
     }
 }

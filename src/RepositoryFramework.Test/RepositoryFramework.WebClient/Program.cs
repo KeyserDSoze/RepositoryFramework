@@ -10,7 +10,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddRepositoryClient<User, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryClientInterceptor<Interceptor>();
-builder.Services.AddRepositoryClientSpecificInterceptor<User, string, SpecificInterceptor>();
+builder.Services.AddRepositoryClientSpecificInterceptor<User, SpecificInterceptor>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
