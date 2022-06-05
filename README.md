@@ -37,7 +37,7 @@ You may find the documentation at [this link](https://github.com/KeyserDSoze/Rep
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Api.Client)
 
 ### Azure TableStorage integration (default integration)
-You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructure.Azure.Storage.Table)
+You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Storage.Table)
 
 ### Azure CosmosDB SQL integration (default integration)
-You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructure.Azure.Cosmos.Sql)
+You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Cosmos.Sql)
