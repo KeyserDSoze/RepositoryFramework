@@ -2,7 +2,34 @@
 Based on CQRS we could split our repository pattern in two main interfaces, one for update (write, delete) and one for read.
 
 #### Command (Write-Delete)
-    public interface ICommandPattern<T, TKey> : ICommandPattern
+    public interface ICommandPattern<T, TKey, TState> : ICommandPattern
+        where TKey : notnull
+    {
+        Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+    }
+
+#### Query (Read)
+    public interface IQueryPattern<T, TKey, TState> : IQueryPattern
+        where TKey : notnull
+    {
+        Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default);
+    }
+
+#### Repository Pattern (Write-Delete-Read)
+Repository pattern is a sum of CQRS interfaces.
+
+    public interface IRepositoryPattern<T, TKey, TState> : ICommandPattern<T, TKey, TState>, IQueryPattern<T, TKey, TState>, IRepositoryPattern, ICommandPattern, IQueryPattern
+        where TKey : notnull
+    {
+    }
+
+### With bool as TState 
+#### Command (Write-Delete)
+    public interface ICommandPattern<T, TKey> : ICommandPattern<T, TKey, bool>, ICommandPattern
         where TKey : notnull
     {
         Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
@@ -11,7 +38,7 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
     }
 
 #### Query (Read)
-    public interface IQueryPattern<T, TKey> : IQueryPattern
+    public interface IQueryPattern<T, TKey> : IQueryPattern<T, TKey, bool>, IQueryPattern
         where TKey : notnull
     {
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
@@ -22,11 +49,36 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
 #### Repository Pattern (Write-Delete-Read)
 Repository pattern is a sum of CQRS interfaces.
 
-    public interface IRepositoryPattern<T, TKey> : ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
+    public interface IRepositoryPattern<T, TKey> : IRepositoryPattern<T, TKey, bool>, ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
         where TKey : notnull
     {
     }
-    
+
+### With bool as TState and string as TKey
+#### Command (Write-Delete)
+    public interface ICommandPattern<T> : ICommandPattern<T, string>, ICommandPattern
+    {
+        Task<bool> InsertAsync(string key, T value, CancellationToken cancellationToken = default);
+        Task<bool> UpdateAsync(string key, T value, CancellationToken cancellationToken = default);
+        Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default);
+    }
+
+#### Query (Read)
+    public interface IQueryPattern<T> : IQueryPattern<T, string>, IQueryPattern
+    {
+        Task<T?> GetAsync(string key, CancellationToken cancellationToken = default);
+        Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default);
+        Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default);
+    }
+
+#### Repository Pattern (Write-Delete-Read)
+Repository pattern is a sum of CQRS interfaces.
+
+    public interface IRepositoryPattern<T> : IRepositoryPattern<T, string>, ICommandPattern<T>, IQueryPattern<T>, IRepositoryPattern, ICommandPattern, IQueryPattern
+        where TKey : notnull
+    {
+    }    
+
 ### Examples
 #### Model
     public class User
@@ -130,3 +182,29 @@ And you may inject the objects
     
     ICommand<User, string> command
     IQuery<User, string> command
+
+### Example with default key
+In DI you install the services
+
+    services.AddRepository<User, UserRepository>();
+    services.AddCommand<User, UserWriter>();
+    services.AddQuery<User, UserReader>();
+
+And you may inject the objects
+    
+    IRepository<User> repository
+    ICommand<User> command
+    IQuery<User> command
+
+### Example with TState
+In DI you install the services, in example we are using a Result class instead the default integration with a return type bool.
+
+    services.AddRepository<User, string, Result, UserRepository>();
+    services.AddCommand<User, string, Result, UserWriter>();
+    services.AddQuery<User, string, Result, UserReader>();
+
+And you may inject the objects
+    
+    IRepository<User, string, Result> repository
+    ICommand<User, string, Result> command
+    IQuery<User, string, Result> command

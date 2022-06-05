@@ -22,7 +22,7 @@ In the example below you may find the DI for repository with string key for User
 
     var builder = WebApplication.CreateBuilder(args);
     builder.Services
-        .AddRepositoryInMemoryStorage<User, string>()
+        .AddRepositoryInMemoryStorage<User>()
         .PopulateWithRandomData(x => x.Email!, 120, 5);
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();

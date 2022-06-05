@@ -32,11 +32,11 @@ and query
 ### HttpClient to use your API (example)
 You can add a client for a specific url
 
-    .AddRepositoryClient<User, string>("localhost:7058");
+    services.AddRepositoryClient<User, string>("localhost:7058");
     
 and use it in DI with
     
-    IRepository<User, string>
+    IRepository<User, string> repository
 
 ### Query and Command
 In DI you install the services
@@ -49,6 +49,32 @@ And you may inject the objects
     ICommand<User, string> command
     IQuery<User, string> command
 
+### With TState
+In DI you install the services, We're using a class Result as TState.
+
+    services.AddRepositoryClient<User, string, Result>("localhost:7058");
+    services.AddCommandClient<User, string, Result>("localhost:7058");
+    services.AddQueryClient<User, string, Result>("localhost:7058");
+
+And you may inject the objects
+    
+    IRepository<User, string, Result> repository
+    ICommand<User, string, Result> command
+    IQuery<User, string, Result> command
+
+### With string as default TKey 
+In DI you install the services
+
+    services.AddRepositoryClient<User>("localhost:7058");
+    services.AddCommandClient<User>("localhost:7058");
+    services.AddQueryClient<User>("localhost:7058");
+
+And you may inject the objects
+    
+    IRepository<User> repository
+    ICommand<User> command
+    IQuery<User> command
+
 ### Interceptors
 You may add a custom interceptor for every request
 
@@ -58,13 +84,9 @@ You may add a custom interceptor for every request
 
 or a specific interceptor for every model
     
-    public static IServiceCollection AddRepositoryClientSpecificInterceptor<T, TKey, TInterceptor>(this IServiceCollection services,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where TInterceptor : class, IRepositoryClientInterceptor<T, TKey>
-        where TKey : notnull
-
-or a specific interceptor for every model with a object type key (default key)
-    
     public static IServiceCollection AddRepositoryClientSpecificInterceptor<T, TInterceptor>(this IServiceCollection services,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where TInterceptor : class, IRepositoryClientInterceptor<T, object>
+        where TInterceptor : class, IRepositoryClientInterceptor<T>
+        where TKey : notnull
+
+Maybe you can use it to add a token as JWT o another pre-request things.
