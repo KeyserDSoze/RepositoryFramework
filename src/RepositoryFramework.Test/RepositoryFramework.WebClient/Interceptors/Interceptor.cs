@@ -1,4 +1,4 @@
-﻿using RepositoryFramework.Client;
+﻿using RepositoryFramework.ApiClient;
 using RepositoryFramework.WebClient.Data;
 
 namespace RepositoryFramework.WebClient.Interceptors

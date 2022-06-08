@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Web;
 
-namespace RepositoryFramework.Client
+namespace RepositoryFramework.ApiClient
 {
     internal class RepositoryClient<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>, IQueryPattern<T, TKey, TState>, ICommandPattern<T, TKey, TState>
         where TKey : notnull

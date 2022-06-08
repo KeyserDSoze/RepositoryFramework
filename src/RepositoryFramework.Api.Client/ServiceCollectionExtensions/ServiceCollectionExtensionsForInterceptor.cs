@@ -1,4 +1,5 @@
-﻿using RepositoryFramework.Client;
+﻿using RepositoryFramework;
+using RepositoryFramework.ApiClient;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -12,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddRepositoryClientInterceptor<TInterceptor>(this IServiceCollection services,
+        public static IServiceCollection AddRepositoryApiClientInterceptor<TInterceptor>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TInterceptor : class, IRepositoryClientInterceptor
             => services.AddService<IRepositoryClientInterceptor, TInterceptor>(serviceLifetime);
@@ -25,9 +26,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddRepositoryClientSpecificInterceptor<T, TInterceptor>(this IServiceCollection services,
+        public static IServiceCollection AddRepositoryApiClientSpecificInterceptor<T, TKey, TState, TInterceptor>(this RepositoryBuilder<T, TKey, TState> services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TInterceptor : class, IRepositoryClientInterceptor<T>
-            => services.AddService<IRepositoryClientInterceptor<T>, TInterceptor>(serviceLifetime);
+            where TKey : notnull
+            => services
+                .ToServiceCollection()
+                    .AddService<IRepositoryClientInterceptor<T>, TInterceptor>(serviceLifetime);
     }
 }

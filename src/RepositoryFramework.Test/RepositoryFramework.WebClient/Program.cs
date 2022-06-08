@@ -6,11 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddRepositoryClient<User>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryClient<SuperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryClient<IperUser, string, bool>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryClientInterceptor<Interceptor>();
-builder.Services.AddRepositoryClientSpecificInterceptor<User, SpecificInterceptor>();
+builder.Services.AddRepositoryApiClient<User>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryApiClient<SuperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryApiClient<IperUser, string, bool>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryApiClientInterceptor<Interceptor>();
+builder.Services.AddRepositoryApiClientSpecificInterceptor<User, SpecificInterceptor>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

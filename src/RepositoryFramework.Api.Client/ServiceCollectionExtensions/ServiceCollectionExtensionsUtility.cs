@@ -1,4 +1,4 @@
-﻿using RepositoryFramework.Client;
+﻿using RepositoryFramework.ApiClient;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

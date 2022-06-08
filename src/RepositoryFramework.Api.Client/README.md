@@ -1,7 +1,7 @@
 ﻿## Services extensions
 You may add a repository client for your model. You may choose the domain (domain where the api is), and the custom path by default is "api", you may add custom configuration to the HttpClient and the service lifetime with singleton as default. The api url will be https://{domain}/{startingPath}/{ModelName}/{Type of Api (from Insert, Update, Delete, Get, Query, Exist)}
 
-    public static IServiceCollection AddRepositoryClient<T, TKey>(this IServiceCollection services,
+    public static IServiceCollection AddRepositoryApiClient<T, TKey>(this IServiceCollection services,
         string domain,
         string startingPath = "api",
         Action<HttpClient>? configureClient = null,
@@ -13,7 +13,7 @@ You may add a repository client for your model. You may choose the domain (domai
 
 You have the same client for CQRS, with command
     
-     public static IServiceCollection AddCommandClient<T, TKey>(this IServiceCollection services,
+     public static IServiceCollection AddCommandApiClient<T, TKey>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
@@ -22,7 +22,7 @@ You have the same client for CQRS, with command
 
 and query
     
-     public static IServiceCollection AddQueryClient<T, TKey>(this IServiceCollection services,
+     public static IServiceCollection AddQueryApiClient<T, TKey>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
@@ -32,7 +32,7 @@ and query
 ### HttpClient to use your API (example)
 You can add a client for a specific url
 
-    services.AddRepositoryClient<User, string>("localhost:7058");
+    services.AddRepositoryApiClient<User, string>("localhost:7058");
     
 and use it in DI with
     
@@ -41,8 +41,8 @@ and use it in DI with
 ### Query and Command
 In DI you install the services
 
-    services.AddCommandClient<User, string>("localhost:7058");
-    services.AddQueryClient<User, string>("localhost:7058");
+    services.AddCommandApiClient<User, string>("localhost:7058");
+    services.AddQueryApiClient<User, string>("localhost:7058");
 
 And you may inject the objects
     
@@ -52,9 +52,9 @@ And you may inject the objects
 ### With TState
 In DI you install the services, We're using a class Result as TState.
 
-    services.AddRepositoryClient<User, string, Result>("localhost:7058");
-    services.AddCommandClient<User, string, Result>("localhost:7058");
-    services.AddQueryClient<User, string, Result>("localhost:7058");
+    services.AddRepositoryApiClient<User, string, Result>("localhost:7058");
+    services.AddCommandApiClient<User, string, Result>("localhost:7058");
+    services.AddQueryApiClient<User, string, Result>("localhost:7058");
 
 And you may inject the objects
     
@@ -65,9 +65,9 @@ And you may inject the objects
 ### With string as default TKey 
 In DI you install the services
 
-    services.AddRepositoryClient<User>("localhost:7058");
-    services.AddCommandClient<User>("localhost:7058");
-    services.AddQueryClient<User>("localhost:7058");
+    services.AddRepositoryApiClient<User>("localhost:7058");
+    services.AddCommandApiClient<User>("localhost:7058");
+    services.AddQueryApiClient<User>("localhost:7058");
 
 And you may inject the objects
     
@@ -78,13 +78,13 @@ And you may inject the objects
 ### Interceptors
 You may add a custom interceptor for every request
 
-    public static IServiceCollection AddRepositoryClientInterceptor<TInterceptor>(this IServiceCollection services,
+    public static IServiceCollection AddRepositoryApiClientInterceptor<TInterceptor>(this IServiceCollection services,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TInterceptor : class, IRepositoryClientInterceptor
 
 or a specific interceptor for every model
     
-    public static IServiceCollection AddRepositoryClientSpecificInterceptor<T, TInterceptor>(this IServiceCollection services,
+    public static IServiceCollection AddRepositoryApiClientSpecificInterceptor<T, TInterceptor>(this IServiceCollection services,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TInterceptor : class, IRepositoryClientInterceptor<T>
         where TKey : notnull

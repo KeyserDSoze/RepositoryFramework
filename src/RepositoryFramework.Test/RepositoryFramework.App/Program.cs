@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.Client;
+using RepositoryFramework.ApiClient;
 using RepositoryFramework;
 using Rystem;
 using RepositoryFramework.InMemory;
@@ -14,7 +14,7 @@ using RepositoryFramework.InMemory;
 
 ServiceLocator
     .Create()
-    //.AddRepositoryClient<User, string>("localhost:7058");
+    //.AddRepositoryApiClient<User, string>("localhost:7058");
     //.AddRepositoryPatternInMemoryStorage<User, string>()
     //.PopulateWithRandomData(x => x.Id!)
     //.WithPattern(x => x.Email, "[a-z]{4,5}")

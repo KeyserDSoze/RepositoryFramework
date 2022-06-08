@@ -14,16 +14,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddRepository<T, TKey, TStorage>(this IServiceCollection services,
+        public static RepositoryBuilder<T, TKey, bool> AddRepository<T, TKey, TStorage>(this IServiceCollection services,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
           where TStorage : class, IRepositoryPattern<T, TKey>
           where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
             service.RepositoryType = typeof(IRepositoryPattern<T, TKey>);
-            return services
+            services
                 .AddService<IRepositoryPattern<T, TKey>, TStorage>(serviceLifetime)
-                .AddService<IRepository<T, TKey>, Repository<T, TKey>>(serviceLifetime);
+                .AddService<IRepository<T, TKey>, Repository<T, TKey>>(serviceLifetime)
+                .AddService<IRepositoryFacade<T, TKey>, RepositoryFacade<T, TKey>>(serviceLifetime);
+            return new(services);
         }
 
         /// <summary>
@@ -36,16 +38,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddCommand<T, TKey, TStorage>(this IServiceCollection services,
+        public static RepositoryBuilder<T, TKey, bool> AddCommand<T, TKey, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TStorage : class, ICommandPattern<T, TKey>
             where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
             service.CommandType = typeof(ICommandPattern<T, TKey>);
-            return services
+            services
                 .AddService<ICommandPattern<T, TKey>, TStorage>(serviceLifetime)
-                .AddService<ICommand<T, TKey>, Command<T, TKey>>(serviceLifetime);
+                .AddService<ICommand<T, TKey>, Command<T, TKey>>(serviceLifetime)
+                .AddService<ICommandFacade<T, TKey>, CommandFacade<T, TKey>>(serviceLifetime);
+            return new(services);
         }
 
         /// <summary>
@@ -58,16 +62,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddQuery<T, TKey, TStorage>(this IServiceCollection services,
+        public static RepositoryBuilder<T, TKey, bool> AddQuery<T, TKey, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TStorage : class, IQueryPattern<T, TKey>
            where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
             service.QueryType = typeof(IQueryPattern<T, TKey>);
-            return services
+            services
                 .AddService<IQueryPattern<T, TKey>, TStorage>(serviceLifetime)
-                .AddService<IQuery<T, TKey>, Query<T, TKey>>(serviceLifetime);
+                .AddService<IQuery<T, TKey>, Query<T, TKey>>(serviceLifetime)
+                .AddService<IQueryFacade<T, TKey>, QueryFacade<T, TKey>>(serviceLifetime);
+            return new(services);
         }
     }
 }

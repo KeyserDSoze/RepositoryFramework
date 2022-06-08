@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.Client
+﻿namespace RepositoryFramework.ApiClient
 {
     /// <summary>
     /// Interface for specific interceptor request for your repository or CQRS client of <typeparamref name="T"/> and <typeparamref name="TKey"/>.

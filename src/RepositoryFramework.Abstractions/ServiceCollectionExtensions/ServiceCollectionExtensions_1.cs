@@ -13,15 +13,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddRepository<T, TStorage>(this IServiceCollection services,
+        public static RepositoryBuilder<T, string, bool> AddRepository<T, TStorage>(this IServiceCollection services,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
           where TStorage : class, IRepositoryPattern<T>
         {
             var service = services.SetService<T>();
             service.RepositoryType = typeof(IRepositoryPattern<T>);
-            return services
+            services
                 .AddService<IRepositoryPattern<T>, TStorage>(serviceLifetime)
-                .AddService<IRepository<T>, Repository<T>>(serviceLifetime);
+                .AddService<IRepository<T>, Repository<T>>(serviceLifetime)
+                .AddService<IRepositoryFacade<T>, RepositoryFacade<T>>(serviceLifetime);
+            return new(services);
         }
 
         /// <summary>
@@ -33,15 +35,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddCommand<T, TStorage>(this IServiceCollection services,
+        public static RepositoryBuilder<T, string, bool> AddCommand<T, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TStorage : class, ICommandPattern<T>
         {
             var service = services.SetService<T>();
             service.CommandType = typeof(ICommandPattern<T>);
-            return services
+            services
                 .AddService<ICommandPattern<T>, TStorage>(serviceLifetime)
-                .AddService<ICommand<T>, Command<T>>(serviceLifetime);
+                .AddService<ICommand<T>, Command<T>>(serviceLifetime)
+                .AddService<ICommandFacade<T>, CommandFacade<T>>(serviceLifetime);
+            return new(services);
         }
 
         /// <summary>
@@ -53,15 +57,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddQuery<T, TStorage>(this IServiceCollection services,
+        public static RepositoryBuilder<T, string, bool> AddQuery<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TStorage : class, IQueryPattern<T>
         {
             var service = services.SetService<T>();
             service.QueryType = typeof(IQueryPattern<T>);
-            return services
+            services
                 .AddService<IQueryPattern<T>, TStorage>(serviceLifetime)
-                .AddService<IQuery<T>, Query<T>>(serviceLifetime);
+                .AddService<IQuery<T>, Query<T>>(serviceLifetime)
+                .AddService<IQueryFacade<T>, QueryFacade<T>>(serviceLifetime);
+            return new(services);
         }
     }
 }
