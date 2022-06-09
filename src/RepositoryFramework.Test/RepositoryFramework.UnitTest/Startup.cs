@@ -221,10 +221,13 @@ namespace RepositoryFramework.UnitTest
                 .And()
                 .ToServiceCollection()
                     .AddRepository<MigrationUser, MigrationTo>()
+                    .ToServiceCollection()
                     .AddMigrationSource<MigrationUser, MigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                     .AddRepository<SuperMigrationUser, string, SuperMigrationTo>()
+                    .ToServiceCollection()
                     .AddMigrationSource<SuperMigrationUser, string, SuperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                     .AddRepository<IperMigrationUser, string, bool, IperMigrationTo>()
+                    .ToServiceCollection()
                     .AddMigrationSource<IperMigrationUser, string, bool, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2, x => x)
                 .FinalizeWithoutDependencyInjection();
             ServiceLocator.GetService<IServiceProvider>().Populate();

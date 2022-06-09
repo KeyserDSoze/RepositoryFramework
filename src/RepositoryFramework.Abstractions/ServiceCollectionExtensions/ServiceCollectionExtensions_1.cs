@@ -21,8 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.RepositoryType = typeof(IRepositoryPattern<T>);
             services
                 .AddService<IRepositoryPattern<T>, TStorage>(serviceLifetime)
-                .AddService<IRepository<T>, Repository<T>>(serviceLifetime)
-                .AddService<IRepositoryFacade<T>, RepositoryFacade<T>>(serviceLifetime);
+                .AddService<IRepository<T>, Repository<T>>(serviceLifetime);
             return new(services);
         }
 
@@ -43,8 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.CommandType = typeof(ICommandPattern<T>);
             services
                 .AddService<ICommandPattern<T>, TStorage>(serviceLifetime)
-                .AddService<ICommand<T>, Command<T>>(serviceLifetime)
-                .AddService<ICommandFacade<T>, CommandFacade<T>>(serviceLifetime);
+                .AddService<ICommand<T>, Command<T>>(serviceLifetime);
             return new(services);
         }
 
@@ -65,8 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.QueryType = typeof(IQueryPattern<T>);
             services
                 .AddService<IQueryPattern<T>, TStorage>(serviceLifetime)
-                .AddService<IQuery<T>, Query<T>>(serviceLifetime)
-                .AddService<IQueryFacade<T>, QueryFacade<T>>(serviceLifetime);
+                .AddService<IQuery<T>, Query<T>>(serviceLifetime);
             return new(services);
         }
     }

@@ -1,9 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.ApiClient;
 using RepositoryFramework;
-using Rystem;
 using RepositoryFramework.InMemory;
+using Rystem;
 
 //await new UserRepository().QueryAsync(x => x.Id == "A" && x.Email == "B");
 //string pattern = @"(?:2018|2019|2020|2021|2022)/(?:10|11|12)/(?:06|07|08) (00:00:00)";

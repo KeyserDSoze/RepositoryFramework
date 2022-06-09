@@ -23,8 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.RepositoryType = typeof(IRepositoryPattern<T, TKey, TState>);
             services
                 .AddService<IRepositoryPattern<T, TKey, TState>, TStorage>(serviceLifetime)
-                .AddService<IRepository<T, TKey, TState>, Repository<T, TKey, TState>>(serviceLifetime)
-                .AddService<IRepositoryFacade<T, TKey, TState>, RepositoryFacade<T, TKey, TState>>(serviceLifetime);
+                .AddService<IRepository<T, TKey, TState>, Repository<T, TKey, TState>>(serviceLifetime);
             return new(services);
         }
 
@@ -47,8 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.CommandType = typeof(ICommandPattern<T, TKey, TState>);
             services
                 .AddService<ICommandPattern<T, TKey, TState>, TStorage>(serviceLifetime)
-                .AddService<ICommand<T, TKey, TState>, Command<T, TKey, TState>>(serviceLifetime)
-                .AddService<ICommandFacade<T, TKey, TState>, CommandFacade<T, TKey, TState>>(serviceLifetime);
+                .AddService<ICommand<T, TKey, TState>, Command<T, TKey, TState>>(serviceLifetime);
             return new(services);
         }
 
@@ -71,8 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.QueryType = typeof(IQueryPattern<T, TKey, TState>);
             services
                 .AddService<IQueryPattern<T, TKey, TState>, TStorage>(serviceLifetime)
-                .AddService<IQuery<T, TKey, TState>, Query<T, TKey, TState>>(serviceLifetime)
-                .AddService<IQueryFacade<T, TKey, TState>, QueryFacade<T, TKey, TState>>(serviceLifetime);
+                .AddService<IQuery<T, TKey, TState>, Query<T, TKey, TState>>(serviceLifetime);
             return new(services);
         }
     }

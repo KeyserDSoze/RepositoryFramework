@@ -1,5 +1,4 @@
 ﻿using Azure.Data.Tables;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
 

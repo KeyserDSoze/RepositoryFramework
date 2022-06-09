@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <param name="services">IServiceCollection</param>
-        /// <param name="endpointUri">Uri of your tablestorage.</param>
+        /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
         /// <returns>IServiceCollection</returns>
@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <param name="services">IServiceCollection</param>
-        /// <param name="endpointUri">Uri of your tablestorage.</param>
+        /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
         /// <returns>IServiceCollection</returns>
@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <param name="services">IServiceCollection</param>
-        /// <param name="endpointUri">Uri of your tablestorage.</param>
+        /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
         /// <returns>IServiceCollection</returns>
