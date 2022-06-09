@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using RepositoryFramework;
 using RepositoryFramework.Infrastructure.Azure.Storage.Blob;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -65,7 +66,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddQueryInBlobStorage<T, TKey>(
+        public static RepositoryBuilder<T, TKey, bool> AddQueryInBlobStorage<T, TKey>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,
@@ -74,8 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             BlobServiceClientFactory.Instance.Add(name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
-            services.AddQuery<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton);
-            return services;
+            return services.AddQuery<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton);
         }
     }
 }

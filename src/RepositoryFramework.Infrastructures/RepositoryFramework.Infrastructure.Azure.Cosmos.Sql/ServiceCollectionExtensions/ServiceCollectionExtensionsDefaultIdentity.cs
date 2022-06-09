@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using RepositoryFramework;
 using RepositoryFramework.Infrastructure.Azure.Cosmos.Sql;
 using System.Linq.Expressions;
 
@@ -22,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddRepositoryInCosmosSql<T, TKey>(
+        public static RepositoryBuilder<T, TKey, bool> AddRepositoryInCosmosSql<T, TKey>(
            this IServiceCollection services,
            Expression<Func<T, TKey>> navigationKey,
            Uri endpointUri,
@@ -42,8 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         databaseOptions,
                         containerOptions);
             services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            services.AddRepository<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
-            return services;
+            return services.AddRepository<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
         }
         /// <summary>
         /// Add a default cosmos sql service for your command pattern.
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddCommandInCosmosSql<T, TKey>(
+        public static RepositoryBuilder<T, TKey, bool> AddCommandInCosmosSql<T, TKey>(
            this IServiceCollection services,
            Expression<Func<T, TKey>> navigationKey,
            Uri endpointUri,
@@ -81,8 +81,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         databaseOptions,
                         containerOptions);
             services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            services.AddCommand<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
-            return services;
+            return services.AddCommand<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
         }
         /// <summary>
         /// Add a default cosmos sql service for your query pattern.
@@ -100,7 +99,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddQueryInCosmosSql<T, TKey>(
+        public static RepositoryBuilder<T, TKey, bool> AddQueryInCosmosSql<T, TKey>(
            this IServiceCollection services,
            Expression<Func<T, TKey>> navigationKey,
            Uri endpointUri,
@@ -120,8 +119,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         databaseOptions,
                         containerOptions);
             services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            services.AddQuery<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
-            return services;
+            return services.AddQuery<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
         }
     }
 }
