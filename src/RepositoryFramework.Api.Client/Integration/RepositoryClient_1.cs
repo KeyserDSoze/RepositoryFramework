@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.ApiClient
+﻿namespace RepositoryFramework.Api.Client
 {
     internal class RepositoryClient<T> : RepositoryClient<T, string>, IRepositoryPattern<T>, IQueryPattern<T>, ICommandPattern<T>
     {

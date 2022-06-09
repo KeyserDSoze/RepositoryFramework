@@ -1,6 +1,4 @@
-﻿using RepositoryFramework.ApiClient;
-
-namespace Microsoft.Extensions.DependencyInjection
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {

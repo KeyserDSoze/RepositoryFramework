@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.ApiClient
+﻿namespace RepositoryFramework.Api.Client
 {
     internal static class Const
     {
