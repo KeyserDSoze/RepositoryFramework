@@ -1,7 +1,7 @@
 ﻿namespace RepositoryFramework
 {
     /// <summary>
-    /// Mapping for any method in repository pattern or CQRS.
+    /// Mapping for methods in repository pattern or CQRS.
     /// </summary>
     [Flags]
     public enum RepositoryMethod

@@ -8,10 +8,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Add repository storage, inject the IRepository<<typeparamref name="T"/>>
         /// with a string as key and a bool as state.
         /// </summary>
-        /// <typeparam name="T">Model used for your repository</typeparam>
-        /// <typeparam name="TStorage">Repository pattern storage</typeparam>
-        /// <param name="services">IServiceCollection</param>
-        /// <param name="serviceLifetime">Service Lifetime</param>
+        /// <typeparam name="T">Model used for your repository.</typeparam>
+        /// <typeparam name="TStorage">Repository pattern storage.</typeparam>
+        /// <param name="services">IServiceCollection.</param>
+        /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
         public static RepositoryBuilder<T> AddRepository<T, TStorage>(this IServiceCollection services,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
@@ -29,10 +29,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Add Command storage for your CQRS, inject the ICommand<<typeparamref name="T"/>>
         /// with a string as key and a bool as state.
         /// </summary>
-        /// <typeparam name="T">Model used for your command</typeparam>
-        /// <typeparam name="TStorage">Command pattern storage</typeparam>
-        /// <param name="services">IServiceCollection</param>
-        /// <param name="serviceLifetime">Service Lifetime</param>
+        /// <typeparam name="T">Model used for your command.</typeparam>
+        /// <typeparam name="TStorage">Command pattern storage.</typeparam>
+        /// <param name="services">IServiceCollection.</param>
+        /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
         public static RepositoryBuilder<T> AddCommand<T, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
@@ -50,10 +50,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Add Query storage for your CQRS, inject the IQuery<<typeparamref name="T"/>>
         /// with a string as key and a bool as state.
         /// </summary>
-        /// <typeparam name="T">Model used for your query</typeparam>
-        /// <typeparam name="TStorage">Query pattern storage</typeparam>
-        /// <param name="services">IServiceCollection</param>
-        /// <param name="serviceLifetime">Service Lifetime</param>
+        /// <typeparam name="T">Model used for your query.</typeparam>
+        /// <typeparam name="TStorage">Query pattern storage.</typeparam>
+        /// <param name="services">IServiceCollection.</param>
+        /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
         public static RepositoryBuilder<T> AddQuery<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)

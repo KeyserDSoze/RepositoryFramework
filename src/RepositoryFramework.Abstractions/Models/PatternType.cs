@@ -1,7 +1,7 @@
 ﻿namespace RepositoryFramework
 {
     /// <summary>
-    /// Mapping for pattern used.
+    /// Mapping for pattern.
     /// </summary>
     public enum PatternType
     {
