@@ -15,8 +15,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T, TKey, bool> AddRepositoryInBlobStorage<T, TKey>(
+        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static RepositoryBuilder<T, TKey> AddRepositoryInBlobStorage<T, TKey>(
            this IServiceCollection services,
            Uri endpointUri,
            string? name = null,
@@ -36,8 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T, TKey, bool> AddCommandInBlobStorage<T, TKey>(
+        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static RepositoryBuilder<T, TKey> AddCommandInBlobStorage<T, TKey>(
            this IServiceCollection services,
            Uri endpointUri,
            string? name = null,
@@ -57,8 +57,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T, TKey, bool> AddQueryInBlobStorage<T, TKey>(
+        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static RepositoryBuilder<T, TKey> AddQueryInBlobStorage<T, TKey>(
            this IServiceCollection services,
            Uri endpointUri,
            string? name = null,
