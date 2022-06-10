@@ -1,10 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework;
+﻿using RepositoryFramework;
 using RepositoryFramework.Migration;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class ServiceCollectionExtensions
+    public static partial class RepositoryBuilderExtensions
     {
         /// <summary>
         /// Add migration service, inject the IMigrationManager<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
