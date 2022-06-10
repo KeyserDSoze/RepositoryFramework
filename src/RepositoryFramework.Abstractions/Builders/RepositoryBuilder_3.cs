@@ -5,14 +5,12 @@ namespace RepositoryFramework
     public class RepositoryBuilder<T, TKey, TState>
         where TKey : notnull
     {
-        private readonly IServiceCollection _services;
+        public IServiceCollection Services { get; }
         public PatternType Type { get; }
         public RepositoryBuilder(IServiceCollection services, PatternType type)
         {
-            _services = services;
+            Services = services;
             Type = type;
         }
-        public IServiceCollection ToServiceCollection()
-            => _services;
     }
 }

@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             builder
-              .ToServiceCollection()
+              .Services
               .AddService<IRepositoryClientInterceptor<T>, TInterceptor>(serviceLifetime);
             return builder;
         }
@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             builder
-                .ToServiceCollection()
+                .Services
                 .AddService<IRepositoryClientInterceptor<T>, TInterceptor>(serviceLifetime);
             return builder;
         }
@@ -74,7 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TInterceptor : class, IRepositoryClientInterceptor<T>
         {
             builder
-               .ToServiceCollection()
+               .Services
                .AddService<IRepositoryClientInterceptor<T>, TInterceptor>(serviceLifetime);
             return builder;
         }

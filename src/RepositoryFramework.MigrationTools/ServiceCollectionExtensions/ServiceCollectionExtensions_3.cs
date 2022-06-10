@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new MigrationOptions<T, TKey, TState>();
             settings?.Invoke(options);
             options.CheckIfIsAnOkState = checkIfIsAnOkState;
-            builder.ToServiceCollection()
+            builder.Services
                 .AddSingleton(options)
                 .AddService<IMigrationSource<T, TKey, TState>, TMigrationSource>(serviceLifetime)
                 .AddService<IMigrationManager<T, TKey, TState>, MigrationManager<T, TKey, TState>>(serviceLifetime);
