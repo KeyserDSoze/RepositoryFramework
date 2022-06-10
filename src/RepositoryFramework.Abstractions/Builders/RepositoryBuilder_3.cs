@@ -2,13 +2,15 @@
 
 namespace RepositoryFramework
 {
-    public sealed class RepositoryBuilder<T, TKey, TState>
+    public class RepositoryBuilder<T, TKey, TState>
         where TKey : notnull
     {
         private readonly IServiceCollection _services;
-        public RepositoryBuilder(IServiceCollection services)
+        public PatternType Type { get; }
+        public RepositoryBuilder(IServiceCollection services, PatternType type)
         {
             _services = services;
+            Type = type;
         }
         public IServiceCollection ToServiceCollection()
             => _services;

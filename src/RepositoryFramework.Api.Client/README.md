@@ -1,33 +1,30 @@
 ﻿## Services extensions
 You may add a repository client for your model. You may choose the domain (domain where the api is), and the custom path by default is "api", you may add custom configuration to the HttpClient and the service lifetime with singleton as default. The api url will be https://{domain}/{startingPath}/{ModelName}/{Type of Api (from Insert, Update, Delete, Get, Query, Exist)}
 
-    public static IServiceCollection AddRepositoryApiClient<T, TKey>(this IServiceCollection services,
+    public static RepositoryBuilder<T, TKey> AddRepositoryApiClient<T, TKey>(this IServiceCollection services,
         string domain,
         string startingPath = "api",
         Action<HttpClient>? configureClient = null,
         ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
         where TKey : notnull
-        {
-
-        }
 
 You have the same client for CQRS, with command
     
-     public static IServiceCollection AddCommandApiClient<T, TKey>(this IServiceCollection services,
-            string domain,
-            string startingPath = "api",
-            Action<HttpClient>? configureClient = null,
-           ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-           where TKey : notnull
+     public static RepositoryBuilder<T, TKey> AddCommandApiClient<T, TKey>(this IServiceCollection services,
+        string domain,
+        string startingPath = "api",
+        Action<HttpClient>? configureClient = null,
+        ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
+        where TKey : notnull
 
 and query
     
-     public static IServiceCollection AddQueryApiClient<T, TKey>(this IServiceCollection services,
-            string domain,
-            string startingPath = "api",
-            Action<HttpClient>? configureClient = null,
-           ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-           where TKey : notnull
+      public static RepositoryBuilder<T, TKey> AddQueryApiClient<T, TKey>(this IServiceCollection services,
+        string domain,
+        string startingPath = "api",
+        Action<HttpClient>? configureClient = null,
+        ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
+        where TKey : notnull
 
 ### HttpClient to use your API (example)
 You can add a client for a specific url
@@ -84,9 +81,22 @@ You may add a custom interceptor for every request
 
 or a specific interceptor for every model
     
-    public static IServiceCollection AddRepositoryApiClientSpecificInterceptor<T, TInterceptor>(this IServiceCollection services,
+     public static RepositoryBuilder<T, TKey, TState> AddApiClientSpecificInterceptor<T, TKey, TState, TInterceptor>(this RepositoryBuilder<T, TKey, TState> builder,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TInterceptor : class, IRepositoryClientInterceptor<T>
         where TKey : notnull
+
+or for a bool as default TState 
+
+    public static RepositoryBuilder<T, TKey> AddApiClientSpecificInterceptor<T, TKey, TInterceptor>(this RepositoryBuilder<T, TKey> builder,
+        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where TInterceptor : class, IRepositoryClientInterceptor<T>
+        where TKey : notnull
+
+or for a bool as default TState and string as default TKey
+
+    public static RepositoryBuilder<T> AddApiClientSpecificInterceptor<T, TInterceptor>(this RepositoryBuilder<T> builder,
+        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where TInterceptor : class, IRepositoryClientInterceptor<T>   
 
 Maybe you can use it to add a token as JWT o another pre-request things.

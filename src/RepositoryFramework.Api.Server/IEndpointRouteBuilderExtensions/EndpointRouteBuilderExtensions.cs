@@ -10,7 +10,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class EndpointRouteBuilderExtensions
     {
-
         /// <summary>
         /// Add repository or CQRS service injected as api for your <typeparamref name="T"/> model.
         /// </summary>

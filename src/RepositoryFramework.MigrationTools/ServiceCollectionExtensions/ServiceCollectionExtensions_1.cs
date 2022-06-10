@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework;
+﻿using RepositoryFramework;
 using RepositoryFramework.Migration;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -12,11 +11,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TMigrationSource">Repository pattern for storage that you have to migrate.</typeparam>
-        /// <param name="services">IServiceCollection.</param>
+        /// <param name="builder">IServiceCollection.</param>
         /// <param name="settings">Settings for migration.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddMigrationSource<T, TMigrationSource>(this IServiceCollection services,
+        /// <returns>RepositoryBuilder<T></returns>
+        public static RepositoryBuilder<T> AddMigrationSource<T, TMigrationSource>(this RepositoryBuilder<T> builder,
             Action<MigrationOptions<T, string, bool>> settings,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
           where TMigrationSource : class, IMigrationSource<T>
@@ -24,10 +23,11 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new MigrationOptions<T, string, bool>();
             settings?.Invoke(options);
             options.CheckIfIsAnOkState = x => x;
-            services.AddSingleton(options);
-            return services
+            builder.ToServiceCollection()
+                .AddSingleton(options)
                 .AddService<IMigrationSource<T>, TMigrationSource>(serviceLifetime)
                 .AddService<IMigrationManager<T>, MigrationManager<T>>(serviceLifetime);
+            return builder;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class ServiceCollectionExtensions
     {
         private static RepositoryBuilder<T, TKey, TState> AddApiClient<T, TKey, TState>(this IServiceCollection services,
-            ClientType clientType,
+            PatternType clientType,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
@@ -20,8 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
             });
             return clientType switch
             {
-                ClientType.Query => services.AddQuery<T, TKey, TState, RepositoryClient<T, TKey, TState>>(serviceLifetime),
-                ClientType.Command => services.AddCommand<T, TKey, TState, RepositoryClient<T, TKey, TState>>(serviceLifetime),
+                PatternType.Query => services.AddQuery<T, TKey, TState, RepositoryClient<T, TKey, TState>>(serviceLifetime),
+                PatternType.Command => services.AddCommand<T, TKey, TState, RepositoryClient<T, TKey, TState>>(serviceLifetime),
                 _ => services.AddRepository<T, TKey, TState, RepositoryClient<T, TKey, TState>>(serviceLifetime),
             };
         }
@@ -37,14 +37,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="startingPath">Path after domain to compose the final api url</param>
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
-        /// <returns>IServiceCollection</returns>
+        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddRepositoryApiClient<T, TKey, TState>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-           where TKey : notnull
-            => services.AddApiClient<T, TKey, TState>(ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
+           where TKey : notnull 
+            => services.AddApiClient<T, TKey, TState>(PatternType.Repository, domain, startingPath, configureClient, serviceLifetime);
+
         /// <summary>
         /// Add a Command Client as ICommand<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>> with a domain and a starting path
         /// and with a bool as state.
@@ -58,14 +59,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="startingPath">Path after domain to compose the final api url</param>
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
-        /// <returns>IServiceCollection</returns>
+        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddCommandApiClient<T, TKey, TState>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-           where TKey : notnull
-            => services.AddApiClient<T, TKey, TState>(ClientType.Command, domain, startingPath, configureClient, serviceLifetime);
+           where TKey : notnull 
+            => services.AddApiClient<T, TKey, TState>(PatternType.Command, domain, startingPath, configureClient, serviceLifetime);
+
         /// <summary>
         /// Add a Command Client as IQuery<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>> with a domain and a starting path
         /// and with a bool as state.
@@ -79,13 +81,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="startingPath">Path after domain to compose the final api url</param>
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
-        /// <returns>IServiceCollection</returns>
+        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddQueryApiClient<T, TKey, TState>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
            where TKey : notnull
-            => services.AddApiClient<T, TKey, TState>(ClientType.Query, domain, startingPath, configureClient, serviceLifetime);
+            => services.AddApiClient<T, TKey, TState>(PatternType.Query, domain, startingPath, configureClient, serviceLifetime);
     }
 }

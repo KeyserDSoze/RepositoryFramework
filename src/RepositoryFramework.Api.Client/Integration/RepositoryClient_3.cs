@@ -13,8 +13,8 @@ namespace RepositoryFramework.Api.Client
         private readonly IRepositoryClientInterceptor<T>? _specificClientInterceptor;
 
         public RepositoryClient(IHttpClientFactory httpClientFactory,
-            IRepositoryClientInterceptor clientInterceptor = null!,
-            IRepositoryClientInterceptor<T> specificClientInterceptor = null!)
+            IRepositoryClientInterceptor? clientInterceptor = null,
+            IRepositoryClientInterceptor<T>? specificClientInterceptor = null)
         {
             _httpClient = httpClientFactory.CreateClient($"{typeof(T).Name}{Const.HttpClientName}");
             _clientInterceptor = clientInterceptor;

@@ -5,8 +5,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
-        private static RepositoryBuilder<T, string, bool> AddApiClient<T>(this IServiceCollection services,
-            ClientType clientType,
+        private static RepositoryBuilder<T> AddApiClient<T>(this IServiceCollection services,
+            PatternType clientType,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
@@ -19,8 +19,8 @@ namespace Microsoft.Extensions.DependencyInjection
             });
             return clientType switch
             {
-                ClientType.Query => services.AddQuery<T, RepositoryClient<T>>(serviceLifetime),
-                ClientType.Command => services.AddCommand<T, RepositoryClient<T>>(serviceLifetime),
+                PatternType.Query => services.AddQuery<T, RepositoryClient<T>>(serviceLifetime),
+                PatternType.Command => services.AddCommand<T, RepositoryClient<T>>(serviceLifetime),
                 _ => services.AddRepository<T, RepositoryClient<T>>(serviceLifetime),
             };
         }
@@ -36,12 +36,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T, string, bool> AddRepositoryApiClient<T>(this IServiceCollection services,
+        public static RepositoryBuilder<T> AddApiClient<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-            => services.AddApiClient<T>(ClientType.Repository, domain, startingPath, configureClient, serviceLifetime);
+            => services.AddApiClient<T>(PatternType.Repository, domain, startingPath, configureClient, serviceLifetime);
         /// <summary>
         /// Add a Command Client as ICommand<<typeparamref name="T"/>> with a domain and a starting path
         /// and with a string as key and a bool as state.
@@ -54,12 +54,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T, string, bool> AddCommandApiClient<T>(this IServiceCollection services,
+        public static RepositoryBuilder<T> AddCommandApiClient<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-            => services.AddApiClient<T>(ClientType.Command, domain, startingPath, configureClient, serviceLifetime);
+            => services.AddApiClient<T>(PatternType.Command, domain, startingPath, configureClient, serviceLifetime);
         /// <summary>
         /// Add a Command Client as IQuery<<typeparamref name="T"/>> with a domain and a starting path
         /// and with a string as key and a bool as state.
@@ -72,11 +72,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T, string, bool> AddQueryApiClient<T>(this IServiceCollection services,
+        public static RepositoryBuilder<T> AddQueryApiClient<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
-            => services.AddApiClient<T>(ClientType.Query, domain, startingPath, configureClient, serviceLifetime);
+            => services.AddApiClient<T>(PatternType.Query, domain, startingPath, configureClient, serviceLifetime);
     }
 }
