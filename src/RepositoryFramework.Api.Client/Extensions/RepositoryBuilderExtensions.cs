@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <typeparam name="TState">Returning state.</typeparam>
-        /// <param name="builder">/// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></param></param>
+        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddApiClientSpecificInterceptor<T, TKey, TState, TInterceptor>(this RepositoryBuilder<T, TKey, TState> builder,
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="TInterceptor">Interceptor service.</typeparam>
         /// <typeparam name="T">Model used for your repository.</typeparam>
-        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>></param></param>
+        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>></param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
         public static RepositoryBuilder<T> AddApiClientSpecificInterceptor<T, TInterceptor>(this RepositoryBuilder<T> builder,

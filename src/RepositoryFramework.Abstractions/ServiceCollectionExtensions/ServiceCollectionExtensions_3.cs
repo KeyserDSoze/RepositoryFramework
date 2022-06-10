@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <typeparam name="TState">Returning state.</typeparam>
         /// <typeparam name="TStorage">Repository pattern storage.</typeparam>
-        /// <param name="services">IServiceCollection</param>
+        /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddRepository<T, TKey, TState, TStorage>(this IServiceCollection services,
@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services
                 .AddService<IRepositoryPattern<T, TKey, TState>, TStorage>(serviceLifetime)
                 .AddService<IRepository<T, TKey, TState>, Repository<T, TKey, TState>>(serviceLifetime);
-            return new(services, PatternType.Repository);
+            return new(services, PatternType.Repository, serviceLifetime);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services
                 .AddService<ICommandPattern<T, TKey, TState>, TStorage>(serviceLifetime)
                 .AddService<ICommand<T, TKey, TState>, Command<T, TKey, TState>>(serviceLifetime);
-            return new(services, PatternType.Command);
+            return new(services, PatternType.Command, serviceLifetime);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services
                 .AddService<IQueryPattern<T, TKey, TState>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T, TKey, TState>, Query<T, TKey, TState>>(serviceLifetime);
-            return new(services, PatternType.Query);
+            return new(services, PatternType.Query, serviceLifetime);
         }
     }
 }

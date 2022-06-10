@@ -10,7 +10,8 @@ namespace RepositoryFramework
     public class RepositoryBuilder<T, TKey> : RepositoryBuilder<T, TKey, bool>
         where TKey : notnull
     {
-        public RepositoryBuilder(IServiceCollection services, PatternType type) : base(services, type)
+        public RepositoryBuilder(IServiceCollection services, PatternType type, ServiceLifetime serviceLifetime)
+            : base(services, type, serviceLifetime)
         {
         }
     }

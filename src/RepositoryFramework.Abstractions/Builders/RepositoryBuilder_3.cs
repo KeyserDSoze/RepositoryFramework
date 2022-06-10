@@ -13,10 +13,12 @@ namespace RepositoryFramework
     {
         public IServiceCollection Services { get; }
         public PatternType Type { get; }
-        public RepositoryBuilder(IServiceCollection services, PatternType type)
+        public ServiceLifetime ServiceLifetime { get; }
+        public RepositoryBuilder(IServiceCollection services, PatternType type, ServiceLifetime serviceLifetime)
         {
             Services = services;
             Type = type;
+            ServiceLifetime = serviceLifetime;
         }
     }
 }

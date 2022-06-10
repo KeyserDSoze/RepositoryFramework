@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services
                 .AddService<IRepositoryPattern<T>, TStorage>(serviceLifetime)
                 .AddService<IRepository<T>, Repository<T>>(serviceLifetime);
-            return new(services, PatternType.Repository);
+            return new(services, PatternType.Repository, serviceLifetime);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services
                 .AddService<ICommandPattern<T>, TStorage>(serviceLifetime)
                 .AddService<ICommand<T>, Command<T>>(serviceLifetime);
-            return new(services, PatternType.Command);
+            return new(services, PatternType.Command, serviceLifetime);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services
                 .AddService<IQueryPattern<T>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T>, Query<T>>(serviceLifetime);
-            return new(services, PatternType.Query);
+            return new(services, PatternType.Query, serviceLifetime);
         }
     }
 }
