@@ -13,14 +13,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TStorage">Repository pattern storage.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
+        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddRepository<T, TKey, TState, TStorage>(this IServiceCollection services,
-          ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+          ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+          bool isPrivate = false)
           where TStorage : class, IRepositoryPattern<T, TKey, TState>
           where TKey : notnull
         {
             var service = services.SetService<T, TKey, TState>();
-            service.RepositoryType = typeof(IRepositoryPattern<T, TKey, TState>);
+            service.RepositoryType = typeof(IRepository<T, TKey, TState>);
+            service.IsPrivate = isPrivate;
             services
                 .AddService<IRepositoryPattern<T, TKey, TState>, TStorage>(serviceLifetime)
                 .AddService<IRepository<T, TKey, TState>, Repository<T, TKey, TState>>(serviceLifetime);
@@ -36,14 +40,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TStorage">Command pattern storage.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
+        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddCommand<T, TKey, TState, TStorage>(this IServiceCollection services,
-            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+            bool isPrivate = false)
             where TStorage : class, ICommandPattern<T, TKey, TState>
             where TKey : notnull
         {
             var service = services.SetService<T, TKey, TState>();
-            service.CommandType = typeof(ICommandPattern<T, TKey, TState>);
+            service.CommandType = typeof(ICommand<T, TKey, TState>);
+            service.IsPrivate = isPrivate;
             services
                 .AddService<ICommandPattern<T, TKey, TState>, TStorage>(serviceLifetime)
                 .AddService<ICommand<T, TKey, TState>, Command<T, TKey, TState>>(serviceLifetime);
@@ -59,14 +67,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TStorage">Query pattern storage.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
+        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddQuery<T, TKey, TState, TStorage>(this IServiceCollection services,
-           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+           bool isPrivate = false)
            where TStorage : class, IQueryPattern<T, TKey, TState>
            where TKey : notnull
         {
             var service = services.SetService<T, TKey, TState>();
-            service.QueryType = typeof(IQueryPattern<T, TKey, TState>);
+            service.QueryType = typeof(IQuery<T, TKey, TState>);
+            service.IsPrivate = isPrivate;
             services
                 .AddService<IQueryPattern<T, TKey, TState>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T, TKey, TState>, Query<T, TKey, TState>>(serviceLifetime);

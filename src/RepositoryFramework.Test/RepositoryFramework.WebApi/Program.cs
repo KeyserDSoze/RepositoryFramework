@@ -1,3 +1,4 @@
+using RepositoryFramework;
 using RepositoryFramework.WebApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,17 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services
 //    .AddRepositoryInTableStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
 builder.Services
-    .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
+    .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"])
+    .WithInMemoryCache(x =>
+    {
+        x.RefreshTime = TimeSpan.FromSeconds(20);
+        x.Methods = RepositoryMethod.All;
+    })
+    .WithBlobStorageCache(builder.Configuration["Storage:ConnectionString"], settings: x =>
+    {
+        x.RefreshTime = TimeSpan.FromSeconds(120);
+        x.Methods = RepositoryMethod.All;
+    });
 //builder.Services
 //    .AddRepositoryInCosmosSql<User, string>(
 //    x => x.Email!,

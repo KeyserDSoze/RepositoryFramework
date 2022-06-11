@@ -78,7 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TEndpointRouteBuilder : IEndpointRouteBuilder
         {
             var services = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
-            foreach (var service in services!.Services)
+            foreach (var service in services!.Services.Where(x => !x.IsPrivate))
                 _ = app.AddApiForRepository(service.ModelType, startingPath, authorizationPolicy);
             return app;
         }

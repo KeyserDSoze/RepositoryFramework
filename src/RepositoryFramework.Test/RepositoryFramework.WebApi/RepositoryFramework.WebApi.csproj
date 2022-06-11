@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\RepositoryFramework.Api.Server\RepositoryFramework.Api.Server.csproj" />
+    <ProjectReference Include="..\..\RepositoryFramework.Cache\RepositoryFramework.Cache.Azure.Storage.Blob\RepositoryFramework.Cache.Azure.Storage.Blob.csproj" />
+    <ProjectReference Include="..\..\RepositoryFramework.Cache\RepositoryFramework.Cache\RepositoryFramework.Cache.csproj" />
     <ProjectReference Include="..\..\RepositoryFramework.Infrastructure.InMemory\RepositoryFramework.Infrastructure.InMemory.csproj" />
     <ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.Cosmos.Sql\RepositoryFramework.Infrastructure.Azure.Cosmos.Sql.csproj" />
     <ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.Storage.Blob\RepositoryFramework.Infrastructure.Azure.Storage.Blob.csproj" />

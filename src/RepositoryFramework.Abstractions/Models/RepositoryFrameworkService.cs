@@ -5,6 +5,7 @@
     /// </summary>
     public class RepositoryFrameworkService
     {
+        public bool IsPrivate { get; set; }
         public Type? RepositoryType { get; set; }
         public Type? CommandType { get; set; }
         public Type? QueryType { get; set; }

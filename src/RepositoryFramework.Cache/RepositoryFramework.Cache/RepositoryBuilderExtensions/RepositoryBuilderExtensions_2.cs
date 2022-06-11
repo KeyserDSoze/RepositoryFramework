@@ -35,6 +35,9 @@ namespace Microsoft.Extensions.DependencyInjection
             else if (builder.Type == PatternType.Query)
                 builder.Services
                     .AddService<IQuery<T, TKey>, CachedQuery<T, TKey>>(builder.ServiceLifetime);
+            else if (options.HasCommandPattern)
+                builder.Services
+                    .AddService<ICommand<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
             return builder;
         }
         /// <summary>
@@ -67,6 +70,9 @@ namespace Microsoft.Extensions.DependencyInjection
             else if (builder.Type == PatternType.Query)
                 builder.Services
                     .AddService<IQuery<T, TKey>, CachedQuery<T, TKey>>(builder.ServiceLifetime);
+            else if (options.HasCommandPattern)
+                builder.Services
+                    .AddService<ICommand<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
             return builder;
         }
     }

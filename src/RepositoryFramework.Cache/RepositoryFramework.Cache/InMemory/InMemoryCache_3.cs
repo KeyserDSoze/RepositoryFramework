@@ -16,7 +16,7 @@ namespace RepositoryFramework.Cache
             if (_cache.ContainsKey(key))
             {
                 var cached = _cache[key];
-                if (cached.ExpiringTime < DateTime.UtcNow)
+                if (DateTime.UtcNow < cached.ExpiringTime)
                     return Task.FromResult((true, cached.Value == null ? default! : (TValue)cached.Value));
             }
             return Task.FromResult((false, default(TValue)!));
@@ -31,6 +31,13 @@ namespace RepositoryFramework.Cache
             };
             if (!_cache.TryAdd(key, cached))
                 _cache[key] = cached;
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        {
+            if (!_cache.ContainsKey(key))
+                return Task.FromResult(_cache.TryRemove(key, out _));
             return Task.FromResult(true);
         }
     }
