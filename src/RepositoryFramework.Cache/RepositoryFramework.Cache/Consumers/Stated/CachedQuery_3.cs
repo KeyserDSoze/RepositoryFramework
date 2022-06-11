@@ -30,13 +30,17 @@ namespace RepositoryFramework.Cache
             List<Task> toDelete = new();
             if (inMemory && _cache != null)
             {
-                toDelete.Add(_cache.DeleteAsync(getKeyAsString, cancellationToken));
-                toDelete.Add(_cache.DeleteAsync(existKeyAsString, cancellationToken));
+                if (_cacheOptions.HasCache(RepositoryMethod.Get))
+                    toDelete.Add(_cache.DeleteAsync(getKeyAsString, cancellationToken));
+                if (_cacheOptions.HasCache(RepositoryMethod.Exist))
+                    toDelete.Add(_cache.DeleteAsync(existKeyAsString, cancellationToken));
             }
             if (inDistributed && _distributed != null)
             {
-                toDelete.Add(_distributed.DeleteAsync(getKeyAsString, cancellationToken));
-                toDelete.Add(_distributed.DeleteAsync(existKeyAsString, cancellationToken));
+                if (_distributedCacheOptions.HasCache(RepositoryMethod.Get))
+                    toDelete.Add(_distributed.DeleteAsync(getKeyAsString, cancellationToken));
+                if (_distributedCacheOptions.HasCache(RepositoryMethod.Exist))
+                    toDelete.Add(_distributed.DeleteAsync(existKeyAsString, cancellationToken));
             }
             return Task.WhenAll(toDelete);
         }
@@ -44,13 +48,19 @@ namespace RepositoryFramework.Cache
         {
             string existKeyAsString = $"{nameof(RepositoryMethod.Exist)}_{key}";
             string getKeyAsString = $"{nameof(RepositoryMethod.Get)}_{key}";
-            List<Task> toDelete = new();
+            List<Task> toUpdate = new();
             if (_cache != null || _distributed != null)
             {
-                toDelete.Add(SaveOnCacheAsync(getKeyAsString, value, Source.Repository, inMemory, inDistributed, cancellationToken));
-                toDelete.Add(SaveOnCacheAsync(existKeyAsString, state, Source.Repository, inMemory, inDistributed, cancellationToken));
+                toUpdate.Add(SaveOnCacheAsync(getKeyAsString, value, Source.Repository,
+                    inMemory && _cacheOptions?.HasCache(RepositoryMethod.Get) == true,
+                    inDistributed && _distributedCacheOptions?.HasCache(RepositoryMethod.Get) == true,
+                    cancellationToken));
+                toUpdate.Add(SaveOnCacheAsync(existKeyAsString, state, Source.Repository,
+                    inMemory && _cacheOptions?.HasCache(RepositoryMethod.Exist) == true,
+                    inDistributed && _distributedCacheOptions?.HasCache(RepositoryMethod.Exist) == true,
+                    cancellationToken));
             }
-            return Task.WhenAll(toDelete);
+            return Task.WhenAll(toUpdate);
         }
         public async Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {

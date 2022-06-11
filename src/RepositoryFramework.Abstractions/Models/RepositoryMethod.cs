@@ -6,12 +6,12 @@
     [Flags]
     public enum RepositoryMethod
     {
-        All,
-        Insert,
-        Update,
-        Delete,
-        Get,
-        Query,
-        Exist
+        Insert = 1,
+        Update = 2,
+        Delete = 4,
+        Exist = 8,
+        Get = 16,
+        Query = 32,
+        All = 64,
     }
 }

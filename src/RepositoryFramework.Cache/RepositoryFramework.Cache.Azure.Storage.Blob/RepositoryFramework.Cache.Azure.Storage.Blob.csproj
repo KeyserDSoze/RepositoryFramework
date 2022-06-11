@@ -28,8 +28,8 @@
 		</When>
 		<When Condition=" '$(Configuration)'!='Debug' ">
 			<ItemGroup>
-				<PackageReference Include="Rystem.RepositoryFramework.Cache" Version="0.9.7" />
-				<PackageReference Include="Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Blob" Version="0.9.7" />
+				<PackageReference Include="Rystem.RepositoryFramework.Cache" Version="0.9.9" />
+				<PackageReference Include="Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Blob" Version="0.9.9" />
 			</ItemGroup>
 		</When>
 	</Choose>

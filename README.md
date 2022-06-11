@@ -41,3 +41,12 @@ You may find the documentation at [this link](https://github.com/KeyserDSoze/Rep
 
 ### Azure CosmosDB SQL integration (default integration)
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Cosmos.Sql)
+
+### Azure BlobStorage integration (default integration)
+You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Storage.Blob)
+
+### Cache integration (with in memory default integration)
+You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Cache/RepositoryFramework.Cache)
+
+### Cache with Azure BlobStorage integration (default integration)
+You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Cache/RepositoryFramework.Cache.Azure.Storage.Blob)

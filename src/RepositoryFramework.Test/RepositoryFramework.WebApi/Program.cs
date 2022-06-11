@@ -18,8 +18,8 @@ builder.Services
     .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"])
     .WithInMemoryCache(x =>
     {
-        x.RefreshTime = TimeSpan.FromSeconds(20);
-        x.Methods = RepositoryMethod.All;
+        x.RefreshTime = TimeSpan.FromSeconds(60);
+        x.Methods = RepositoryMethod.Get | RepositoryMethod.Insert | RepositoryMethod.Update | RepositoryMethod.Delete;
     })
     .WithBlobStorageCache(builder.Configuration["Storage:ConnectionString"], settings: x =>
     {
