@@ -21,7 +21,7 @@
 
 ## Basic knowledge
 
-
+![Framework design](https://raw.githubusercontent.com/KeyserDSoze/RepositoryFramework/master/RepositoryFramework.png)
 
 ### Abstractions (Domain)
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Abstractions)
