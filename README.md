@@ -21,7 +21,13 @@
 
 ## Basic knowledge
 
+### Design and nuget map
+
 ![Framework design](https://raw.githubusercontent.com/KeyserDSoze/RepositoryFramework/master/RepositoryFramework.png)
+
+### Logic design and flow
+
+![Framework login](https://raw.githubusercontent.com/KeyserDSoze/RepositoryFramework/master/RepositoryFramework.CacheFlow.png)
 
 ### Abstractions (Domain)
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Abstractions)

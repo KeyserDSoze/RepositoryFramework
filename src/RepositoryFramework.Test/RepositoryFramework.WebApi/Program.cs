@@ -14,6 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 //.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
 //builder.Services
 //    .AddRepositoryInTableStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis:ConnectionString"];
+    options.InstanceName = "SampleInstance";
+});
 builder.Services
     .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"])
     .WithInMemoryCache(x =>
@@ -21,11 +26,16 @@ builder.Services
         x.RefreshTime = TimeSpan.FromSeconds(60);
         x.Methods = RepositoryMethod.Get | RepositoryMethod.Insert | RepositoryMethod.Update | RepositoryMethod.Delete;
     })
-    .WithBlobStorageCache(builder.Configuration["Storage:ConnectionString"], settings: x =>
+    .WithDistributedCache(x =>
     {
         x.RefreshTime = TimeSpan.FromSeconds(120);
         x.Methods = RepositoryMethod.All;
     });
+//.WithBlobStorageCache(builder.Configuration["Storage:ConnectionString"], settings: x =>
+//{
+//    x.RefreshTime = TimeSpan.FromSeconds(120);
+//    x.Methods = RepositoryMethod.All;
+//});
 //builder.Services
 //    .AddRepositoryInCosmosSql<User, string>(
 //    x => x.Email!,
