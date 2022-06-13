@@ -36,7 +36,9 @@ The same flow is valid for ICommand/ICommandPattern and IQuery/IQueryPattern
 
 ## Important!!!
 Extends IRepositoryPattern<T>, IRepositoryPattern<T, TKey>, IRepositoryPattern<T, TKey, TState> but use during injection IRepository<T>, IRepository<T, TKey>, IRepository<T, TKey, TState>.
+
 Extends IQueryPattern<T>, IQueryPattern<T, TKey>, IQueryPattern<T, TKey, TState> but use during injection IQuery<T>, IQuery<T, TKey>, IQuery<T, TKey, TState>.
+
 Extends ICommandPattern<T>, ICommandPattern<T, TKey>, ICommandPattern<T, TKey, TState> but use during injection ICommand<T>, ICommand<T, TKey>, ICommand<T, TKey, TState>.
 
 ### Abstractions (Domain)
