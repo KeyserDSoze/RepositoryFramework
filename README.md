@@ -21,13 +21,23 @@
 
 ## Basic knowledge
 
+### CQRS and Repository are two sides of the same coin.
+
+![Framework abstractions](https://raw.githubusercontent.com/KeyserDSoze/RepositoryFramework/master/RepositoryFramework.Abstractions.png)
+
 ### Design and nuget map
 
 ![Framework design](https://raw.githubusercontent.com/KeyserDSoze/RepositoryFramework/master/RepositoryFramework.png)
 
 ### Logic design and flow
+The same flow is valid for ICommand/ICommandPattern and IQuery/IQueryPattern
 
-![Framework login](https://raw.githubusercontent.com/KeyserDSoze/RepositoryFramework/master/RepositoryFramework.CacheFlow.png)
+![Framework logic](https://raw.githubusercontent.com/KeyserDSoze/RepositoryFramework/master/RepositoryFramework.CacheFlow.png)
+
+## Important!!!
+Extends IRepositoryPattern<T>, IRepositoryPattern<T, TKey>, IRepositoryPattern<T, TKey, TState> but use during injection IRepository<T>, IRepository<T, TKey>, IRepository<T, TKey, TState>.
+Extends IQueryPattern<T>, IQueryPattern<T, TKey>, IQueryPattern<T, TKey, TState> but use during injection IQuery<T>, IQuery<T, TKey>, IQuery<T, TKey, TState>.
+Extends ICommandPattern<T>, ICommandPattern<T, TKey>, ICommandPattern<T, TKey, TState> but use during injection ICommand<T>, ICommand<T, TKey>, ICommand<T, TKey, TState>.
 
 ### Abstractions (Domain)
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Abstractions)
