@@ -21,6 +21,8 @@
 
 ## Basic knowledge
 
+
+
 ### Abstractions (Domain)
 You may find the documentation at [this link](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Abstractions)
 

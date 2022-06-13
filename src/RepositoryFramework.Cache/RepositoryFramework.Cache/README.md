@@ -45,3 +45,24 @@ or if you added a query pattern or command pattern
 
     IQuery<User, string> query 
     ICommand<User, string> command
+
+### Distributed Cache
+Based on this [link](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed) you may use the standard interface IDistributedCache instead of create a custom IDistributedCache<T, TKey, TState>.
+For instance you may choose between three libraries: Distributed SQL Server cache, Distributed Redis cache, Distributed NCache cache.
+You need to add the cache
+
+    builder.Services.AddStackExchangeRedisCache(options =>
+     {
+         options.Configuration = builder.Configuration.GetConnectionString("MyRedisConStr");
+         options.InstanceName = "SampleInstance";
+     });
+
+then you add the IDistributedCache implementation to your repository patterns or CQRS.
+
+    builder.Services.
+        AddRepository<User, UserRepository>()
+        WithDistributedCache();
+
+and as always you will use the standard interface that is automatically integrated in the repository flow.
+    
+    IRepository<User> repository;
