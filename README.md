@@ -35,7 +35,7 @@ The same flow is valid for ICommand/ICommandPattern and IQuery/IQueryPattern
 ![Framework logic](https://raw.githubusercontent.com/KeyserDSoze/RepositoryFramework/master/RepositoryFramework.CacheFlow.png)
 
 ## Important!!!
-Extends IRepositoryPattern<T> or IRepositoryPattern<T, TKey> or IRepositoryPattern<T, TKey, TState> but use during injection IRepository<T> or IRepository<T, TKey> or IRepository<T, TKey, TState>.
+Extends IRepositoryPattern``<T>`` or IRepositoryPattern<T, TKey> or IRepositoryPattern<T, TKey, TState> but use during injection IRepository<T> or IRepository<T, TKey> or IRepository<T, TKey, TState>.
 
 Extends IQueryPattern<T> or IQueryPattern<T, TKey> or IQueryPattern<T, TKey, TState> but use during injection IQuery<T> or IQuery<T, TKey> or IQuery<T, TKey, TState>.
 
