@@ -5,6 +5,7 @@ namespace RepositoryFramework.UnitTest.Models
 {
     public class RegexPopulationTest
     {
+        public int Id { get; set; }
         public int A { get; set; }
         public int? AA { get; set; }
         public uint B { get; set; }

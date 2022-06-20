@@ -84,7 +84,8 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, AuthorizationForApi authorization, RepositoryMethod path)
         {
-            if (authorization != null && authorization.Path.HasFlag(path))
+            if (authorization != null &&
+                (authorization.Path.HasFlag(RepositoryMethod.All) || authorization.Path.HasFlag(path)))
             {
                 if (authorization.Policies != null)
                     router.RequireAuthorization(authorization.Policies);
@@ -110,10 +111,7 @@ namespace Microsoft.Extensions.DependencyInjection
               {
                   dynamic? expression = null;
                   if (!string.IsNullOrWhiteSpace(query))
-                  {
-                      var parameter = Expression.Parameter(typeof(T), query.Split(' ').First());
                       expression = DynamicExpressionParser.ParseLambda<T, bool>(ParsingConfig.Default, false, query);
-                  }
                   var queryService = service as IQueryPattern<T, TKey, TState>;
                   return await queryService!.QueryAsync(expression, top, skip);
               }).WithName($"{nameof(RepositoryMethod.Query)}{name}")

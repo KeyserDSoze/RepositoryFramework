@@ -7,7 +7,13 @@ namespace RepositoryFramework.InMemory.Population
         public int Priority => 1;
         public dynamic GetValue(RandomPopulationOptions options)
         {
-            if (options.Type == typeof(int) || options.Type == typeof(int?))
+            if (options.Type.IsEnum)
+            {
+                var chances = Enum.GetValues(options.Type);
+                int randomValue = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
+                return chances.GetValue(randomValue % chances.Length)!;
+            }
+            else if (options.Type == typeof(int) || options.Type == typeof(int?))
                 return BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
             else if (options.Type == typeof(uint) || options.Type == typeof(uint?))
                 return BitConverter.ToUInt32(RandomNumberGenerator.GetBytes(4));
@@ -41,6 +47,6 @@ namespace RepositoryFramework.InMemory.Population
                 || type == typeof(long) || type == typeof(long?) || type == typeof(ulong) || type == typeof(ulong?)
                 || type == typeof(nint) || type == typeof(nint?) || type == typeof(nuint) || type == typeof(nuint?)
                 || type == typeof(float) || type == typeof(float?) || type == typeof(double) || type == typeof(double?)
-                || type == typeof(decimal) || type == typeof(decimal?);
+                || type == typeof(decimal) || type == typeof(decimal?) || type.IsEnum;
     }
 }

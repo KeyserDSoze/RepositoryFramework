@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T> AddApiClient<T>(this IServiceCollection services,
+        public static RepositoryBuilder<T> AddRepositoryApiClient<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,

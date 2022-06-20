@@ -122,6 +122,7 @@ namespace RepositoryFramework.UnitTest
                 .And()
                 .AddRepositoryInMemoryStorage<RegexPopulationTest, string>()
                 .PopulateWithRandomData(x => x.P, 90, 8)
+                .WithAutoIncrement(x => x.Id, 0)
                 .WithPattern(x => x.A, "[1-9]{1,2}")
                 .WithPattern(x => x.AA, "[1-9]{1,2}")
                 .WithPattern(x => x.B, "[1-9]{1,2}")
