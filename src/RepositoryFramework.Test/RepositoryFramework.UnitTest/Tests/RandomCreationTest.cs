@@ -12,15 +12,21 @@ namespace RepositoryFramework.UnitTest
     {
         private readonly IRepositoryPattern<PopulationTest, string> _test;
         private readonly IRepositoryPattern<RegexPopulationTest, string> _population;
-        private readonly IQueryPattern<DelegationPopulation , string> _delegation;
+        private readonly IQueryPattern<DelegationPopulation, string> _delegation;
+        private readonly IRepository<AutoincrementModel, int> _autoincrementRepository;
+        private readonly IRepository<AutoincrementModel2, int> _autoincrementRepository2;
 
         public RandomCreationTest(IRepositoryPattern<PopulationTest, string> test,
             IRepositoryPattern<RegexPopulationTest, string> population,
-            IQueryPattern<DelegationPopulation, string> delegation)
+            IQueryPattern<DelegationPopulation, string> delegation,
+            IRepository<AutoincrementModel, int> autoincrementRepository,
+            IRepository<AutoincrementModel2, int> autoincrementRepository2)
         {
             _test = test;
             _population = population;
             _delegation = delegation;
+            _autoincrementRepository = autoincrementRepository;
+            _autoincrementRepository2 = autoincrementRepository2;
         }
         [Fact]
         public async Task TestWithoutRegexAsync()
@@ -234,6 +240,16 @@ namespace RepositoryFramework.UnitTest
                 Assert.Equal(counter, check.B);
                 counter++;
             }
+        }
+        [Fact]
+        public async Task TestWithAutoincrementAsync()
+        {
+            var all = await _autoincrementRepository.QueryAsync();
+            var all2 = await _autoincrementRepository2.QueryAsync();
+            Assert.Equal(0, all.First().Id);
+            Assert.Equal(99, all.Last().Id);
+            Assert.Equal(1, all2.First().Id);
+            Assert.Equal(100, all2.Last().Id);
         }
     }
 }

@@ -7,7 +7,7 @@
         private readonly IInstanceCreator _instanceCreator;
         private readonly PopulationServiceSettings<T, TKey> _settings;
 
-        public RandomPopulationStrategy(IPopulationService populationService, 
+        public RandomPopulationStrategy(IPopulationService populationService,
             IInstanceCreator instanceCreator,
             PopulationServiceSettings<T, TKey> settings)
         {
@@ -25,13 +25,24 @@
                 var entity = _instanceCreator!.CreateInstance(new RandomPopulationOptions(typeof(T),
                     _populationService!, _settings.NumberOfElementsWhenEnumerableIsFound, string.Empty));
                 foreach (var property in properties.Where(x => x.CanWrite))
-                    property.SetValue(entity, _populationService!.Construct(property.PropertyType,
-                        _settings.NumberOfElementsWhenEnumerableIsFound, string.Empty,
-                        property.Name));
+                    if (property.PropertyType == typeof(Range) ||
+                            GetDefault(property.PropertyType) == (property.GetValue(entity) as dynamic))
+                        property.SetValue(entity, _populationService!.Construct(property.PropertyType,
+                            _settings.NumberOfElementsWhenEnumerableIsFound, string.Empty,
+                            property.Name));
 
                 var key = properties.First(x => x.Name == _settings.KeyName).GetValue(entity);
                 _settings.AddElementToMemory?.Invoke((TKey)key!, (T)entity!);
             }
+        }
+        private static dynamic GetDefault(Type type)
+        {
+            if (type.IsValueType)
+            {
+                var t = Activator.CreateInstance(type);
+                return t;
+            }
+            return null;
         }
     }
 }
