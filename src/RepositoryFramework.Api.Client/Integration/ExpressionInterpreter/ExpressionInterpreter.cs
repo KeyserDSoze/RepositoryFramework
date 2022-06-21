@@ -71,8 +71,11 @@ namespace RepositoryFramework.Api.Client
                 throw new NotImplementedException($"{nameof(MemberInitExpression)} not implemented.");
             else if (expression is MethodCallExpression methodCallExpression)
             {
-                foreach (var argument in methodCallExpression.Arguments)
-                    Compile(argument, ref predicateAsString);
+                if (methodCallExpression.Arguments.Count > 0)
+                    foreach (var argument in methodCallExpression.Arguments)
+                        Compile(argument, ref predicateAsString);
+                else
+                    Compile(methodCallExpression, ref predicateAsString);
             }
             else if (expression is NewArrayExpression newArrayExpression)
                 throw new NotImplementedException($"{nameof(NewArrayExpression)} not implemented.");
@@ -96,12 +99,15 @@ namespace RepositoryFramework.Api.Client
                 throw new NotImplementedException($"{nameof(UnaryExpression)} not implemented.");
             return expressions;
 
-            static void Compile(Expression argument, ref string predicateAsString, object? value = null)
+            static void Compile(Expression argument, ref string predicateAsString)
             {
                 var argumentKey = argument.ToString();
-                if (value == null)
-                    value = Expression.Lambda(argument).Compile().DynamicInvoke();
-                Evaluate(ref predicateAsString, argumentKey, value!);
+                try
+                {
+                    var value = Expression.Lambda(argument).Compile().DynamicInvoke();
+                    Evaluate(ref predicateAsString, argumentKey, value!);
+                }
+                catch { }
             }
             static void Evaluate(ref string predicateAsString, string key, object value)
             {
