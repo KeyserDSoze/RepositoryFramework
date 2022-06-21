@@ -65,7 +65,7 @@ ServiceLocator
 ServiceLocator.GetService<IServiceProvider>()
     .Populate();
 
-var storage = ServiceLocator.GetService<IRepositoryPattern<Solomon, string>>();
+var storage = ServiceLocator.GetService<IRepository<Solomon, string>>();
 //var storage = ServiceLocator.GetService<IRepositoryClient<User, string>>();
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0059 // Unnecessary assignment of a value

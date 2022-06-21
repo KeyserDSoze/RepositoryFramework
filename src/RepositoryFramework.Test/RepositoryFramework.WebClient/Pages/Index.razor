@@ -20,7 +20,7 @@ Welcome to your new app.
 {
     foreach (var user in Users2)
     {
-        <div style="position:relative;float:left;width:100%">@user.Email</div>
+        <div style="position:relative;float:left;width:100%">@user.Email -- @user.Name -- @user.GroupId</div>
     }
 }
 <h1>User client manager 3</h1>
@@ -28,19 +28,24 @@ Welcome to your new app.
 {
     foreach (var user in Users3)
     {
-        <div style="position:relative;float:left;width:100%">@user.Email</div>
+        <div style="position:relative;float:left;width:100%">@user.Email -- @user.Name -- @user.GroupId</div>
     }
 }
 @code {
     private IEnumerable<User>? Users1;
     private IEnumerable<User>? Users2;
     private IEnumerable<User>? Users3;
+    private static int X = 2;
+    private Guid Alfa = Guid.Parse("6bc37e30-2c27-44ae-9e9c-78b24dddbe89");
 
     protected override async Task OnParametersSetAsync()
     {
-        Users1 = await UserClient1.QueryAsync(x => x.Email!.Contains("@"));
-        Users2 = await UserClient2.QueryAsync(x => x.Email!.Contains("@"));
-        Users3 = await UserClient3.QueryAsync(x => x.Email!.Contains("@"));
+        var user = new User("@gmail.com");
+
+        var sasso = "a";
+        //Users1 = await UserClient1.QueryAsync(x => x.Email!.Contains(user.Email) && x.Email!.Contains("@"));
+        Users2 = await UserClient2.QueryAsync(x => x.Email!.Contains(user.Email) && x.IsAdmin && x.GroupId == Alfa);
+        //Users3 = await UserClient3.QueryAsync(x => x.Port > X && x.IsAdmin);
         await base.OnParametersSetAsync();
     }
 }

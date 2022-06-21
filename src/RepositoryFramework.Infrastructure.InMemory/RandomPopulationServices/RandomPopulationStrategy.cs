@@ -38,11 +38,8 @@
         private static dynamic GetDefault(Type type)
         {
             if (type.IsValueType)
-            {
-                var t = Activator.CreateInstance(type);
-                return t;
-            }
-            return null;
+                return Activator.CreateInstance(type)!;
+            return null!;
         }
     }
 }

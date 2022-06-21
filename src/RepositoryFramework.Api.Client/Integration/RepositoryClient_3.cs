@@ -1,6 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections;
+using System.Linq.Expressions;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 
 namespace RepositoryFramework.Api.Client
@@ -60,7 +62,10 @@ namespace RepositoryFramework.Api.Client
             if (predicate != null || top != null || skip != null)
                 query.Append('?');
             if (predicate != null)
-                query.Append($"query={HttpUtility.UrlEncode(predicate.ToString())}");
+            {
+                var predicateAsString = ExpressionInterpreter.Setup(predicate.ToString(), new(predicate));
+                query.Append($"query={HttpUtility.UrlEncode(predicateAsString)}");
+            }
             if (top != null)
                 query.Append($"{(predicate == null ? string.Empty : LogicAnd)}top={top}");
             if (skip != null)

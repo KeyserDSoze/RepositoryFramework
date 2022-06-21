@@ -113,6 +113,7 @@ namespace Microsoft.Extensions.DependencyInjection
                       expression = DynamicExpressionParser.ParseLambda<T, bool>(ParsingConfig.Default, false, query);
                   var queryService = service as IQueryPattern<T, TKey, TState>;
                   return await queryService!.QueryAsync(expression, top, skip);
+              
               }).WithName($"{nameof(RepositoryMethod.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethod.Query);
         }
