@@ -63,7 +63,7 @@ namespace RepositoryFramework.Api.Client
                 query.Append('?');
             if (predicate != null)
             {
-                var predicateAsString = ExpressionInterpreter.Setup(predicate.ToString(), new(predicate));
+                var predicateAsString = predicate.Serialize();
                 query.Append($"query={HttpUtility.UrlEncode(predicateAsString)}");
             }
             if (top != null)

@@ -14,7 +14,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
 		<PackageId>Rystem.RepositoryFramework.Api.Server</PackageId>
-		<Version>0.9.10</Version>
+		<Version>0.9.11</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
@@ -24,8 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Collections" Version="4.3.0" />
-		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.18" />
+		<PackageReference Include="Rystem" Version="4.0.1" />
 	</ItemGroup>
 
 	<Choose>
@@ -46,7 +45,7 @@
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
-		<None Include="README.md" Pack="true" PackagePath="\"/>
+		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 </Project>

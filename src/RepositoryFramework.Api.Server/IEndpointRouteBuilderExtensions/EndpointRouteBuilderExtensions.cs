@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using RepositoryFramework;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -110,10 +111,10 @@ namespace Microsoft.Extensions.DependencyInjection
               {
                   dynamic? expression = null;
                   if (!string.IsNullOrWhiteSpace(query))
-                      expression = DynamicExpressionParser.ParseLambda<T, bool>(ParsingConfig.Default, false, query);
+                      expression = query.Deserialize<T, bool>();
                   var queryService = service as IQueryPattern<T, TKey, TState>;
                   return await queryService!.QueryAsync(expression, top, skip);
-              
+
               }).WithName($"{nameof(RepositoryMethod.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethod.Query);
         }

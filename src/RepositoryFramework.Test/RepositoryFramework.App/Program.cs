@@ -11,8 +11,7 @@ using Rystem;
 //var generatedString = xeger.Generate();
 //Console.WriteLine(generatedString);
 
-ServiceLocator
-    .Create()
+var services = new ServiceCollection()
     //.AddRepositoryApiClient<User, string>("localhost:7058");
     //.AddRepositoryPatternInMemoryStorage<User, string>()
     //.PopulateWithRandomData(x => x.Id!)
@@ -61,11 +60,10 @@ ServiceLocator
     .WithAutoIncrement(x => x.S, 0)
     .And()
     .ToServiceCollection()
-    .FinalizeWithoutDependencyInjection();
-ServiceLocator.GetService<IServiceProvider>()
-    .Populate();
+    .BuildServiceProvider();
+services.CreateScope().ServiceProvider.Populate();
 
-var storage = ServiceLocator.GetService<IRepository<Solomon, string>>();
+var storage = services.GetService<IRepository<Solomon, string>>();
 //var storage = ServiceLocator.GetService<IRepositoryClient<User, string>>();
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0059 // Unnecessary assignment of a value

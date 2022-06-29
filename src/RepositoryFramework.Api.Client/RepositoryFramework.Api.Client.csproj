@@ -14,7 +14,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
 		<PackageId>Rystem.RepositoryFramework.Api.Client</PackageId>
-		<Version>0.9.11</Version>
+		<Version>0.9.12</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
@@ -31,6 +31,7 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Identity.Web" Version="1.25.0" />
+		<PackageReference Include="Rystem" Version="4.0.1" />
 	</ItemGroup>
 	
 	<Choose>

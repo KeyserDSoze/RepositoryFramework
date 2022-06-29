@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Rystem" Version="3.0.2" />
+    <PackageReference Include="Rystem" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
