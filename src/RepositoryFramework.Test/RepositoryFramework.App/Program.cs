@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework;
 using RepositoryFramework.InMemory;
-using Rystem;
 
 //await new UserRepository().QueryAsync(x => x.Id == "A" && x.Email == "B");
 //string pattern = @"(?:2018|2019|2020|2021|2022)/(?:10|11|12)/(?:06|07|08) (00:00:00)";
@@ -67,7 +66,7 @@ var storage = services.GetService<IRepository<Solomon, string>>();
 //var storage = ServiceLocator.GetService<IRepositoryClient<User, string>>();
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
-var all = (await storage.QueryAsync()).ToList();
+var all = (await storage!.QueryAsync()).ToList();
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 //await storage.InsertAsync("aaa", new("aaa") { Id = "a", Name = "b" });
 //await storage.UpdateAsync("aaa", new("aaa") { Id = "a3", Name = "b3" });

@@ -20,8 +20,7 @@ namespace RepositoryFramework.UnitTest
                 .AddEnvironmentVariables()
                 .Build();
             services.AddSingleton(configuration);
-            services
-                .AddRystem()
+            var serviceProvider = services
                 .AddRepositoryInMemoryStorage<User>(options =>
                 {
                     var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
@@ -238,8 +237,8 @@ namespace RepositoryFramework.UnitTest
                     .AddRepository<IperMigrationUser, string, bool, IperMigrationTo>()
                     .AddMigrationSource<IperMigrationUser, string, bool, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2, x => x)
                     .Services
-                .FinalizeWithoutDependencyInjection();
-            ServiceLocator.GetService<IServiceProvider>().Populate();
+                .BuildServiceProvider();
+            serviceProvider.CreateScope().ServiceProvider.Populate();
         }
     }
 }
