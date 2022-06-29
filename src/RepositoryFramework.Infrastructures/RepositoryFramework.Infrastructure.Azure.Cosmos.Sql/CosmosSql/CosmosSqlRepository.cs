@@ -27,7 +27,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 EventId eventId = new();
                 try
                 {
-                    _logger?.LogInformation(eventId, message: $"{method} for {key}");
+                    string message = $"{method} for {key}";
+                    _logger?.LogInformation(eventId, message: message);
                     return await action();
                 }
                 catch (Exception exception)
