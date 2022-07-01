@@ -119,7 +119,7 @@ namespace RepositoryFramework.InMemory
                     return false;
             }, cancellationToken);
 
-        public async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethod.Query);
             await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
@@ -133,13 +133,7 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    IEnumerable<T> values = Values.Select(x => x.Value);
-                    if (predicate != null)
-                        values = values.Where(predicate.Compile());
-                    if (top != null && top > 0)
-                        values = values.Take(top.Value);
-                    if (skip != null && skip > 0)
-                        values = values.Skip(skip.Value);
+                    IEnumerable<T> values = Values.Select(x => x.Value).Filter(options);
                     return values;
                 }
                 else

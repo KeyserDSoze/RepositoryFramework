@@ -23,8 +23,8 @@ namespace RepositoryFramework
         public Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.InsertAsync(key, value, cancellationToken);
 
-        public Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
-            => _repository.QueryAsync(predicate, top, skip, cancellationToken);
+        public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+            => _repository.QueryAsync(options, cancellationToken);
 
         public Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.UpdateAsync(key, value, cancellationToken);

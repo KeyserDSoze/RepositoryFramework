@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
 using System.Web;
 
 namespace RepositoryFramework.Api.Client
@@ -54,23 +52,12 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response!.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken))!;
         }
-        private const string LogicAnd = "&";
-        public async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+
+        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Query);
-            var query = new StringBuilder(nameof(RepositoryMethod.Query));
-            if (predicate != null || top != null || skip != null)
-                query.Append('?');
-            if (predicate != null)
-            {
-                var predicateAsString = predicate.Serialize();
-                query.Append($"query={HttpUtility.UrlEncode(predicateAsString)}");
-            }
-            if (top != null)
-                query.Append($"{(predicate == null ? string.Empty : LogicAnd)}top={top}");
-            if (skip != null)
-                query.Append($"{(predicate == null && top == null ? string.Empty : LogicAnd)}skip={skip}");
-            return (await client.GetFromJsonAsync<IEnumerable<T>>(query.ToString(), cancellationToken))!;
+            var query = $"{nameof(RepositoryMethod.Query)}{options?.ToQuery()}";
+            return (await client.GetFromJsonAsync<IEnumerable<T>>(query, cancellationToken))!;
         }
 
         public async Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)

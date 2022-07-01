@@ -31,7 +31,6 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Identity.Web" Version="1.25.0" />
-		<PackageReference Include="Rystem" Version="4.0.1" />
 	</ItemGroup>
 	
 	<Choose>

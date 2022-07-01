@@ -75,17 +75,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 return response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created;
             });
 
-        public Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
             => ExecuteAsync(default!, RepositoryMethod.Query, async () =>
             {
                 IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
-                if (predicate != null)
-                    queryable = queryable
-                        .Where(predicate);
-                if (top != null && top > 0)
-                    queryable = queryable.Take(top.Value);
-                if (skip != null && skip > 0)
-                    queryable = queryable.Skip(skip.Value);
+                //if (options != null)
+                //    queryable = queryable.Filter(options);
+                
                 List<T> items = new();
                 using (FeedIterator<T> iterator = queryable.ToFeedIterator())
                 {

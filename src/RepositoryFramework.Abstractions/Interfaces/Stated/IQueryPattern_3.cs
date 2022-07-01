@@ -14,6 +14,12 @@ namespace RepositoryFramework
     {
         Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
+    }
+    public static class QueryPatternExtensions
+    {
+        public static QueryBuilder<T, TKey, TState> Filter<T, TKey, TState>(this IQueryPattern<T, TKey, TState> entity)
+            where TKey : notnull
+            => new(entity);
     }
 }

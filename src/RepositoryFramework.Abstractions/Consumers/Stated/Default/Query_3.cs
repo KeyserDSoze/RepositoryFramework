@@ -18,7 +18,7 @@ namespace RepositoryFramework
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.GetAsync(key, cancellationToken);
 
-        public Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
-            => _query.QueryAsync(predicate, top, skip, cancellationToken);
+        public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+            => _query.QueryAsync(options, cancellationToken);
     }
 }

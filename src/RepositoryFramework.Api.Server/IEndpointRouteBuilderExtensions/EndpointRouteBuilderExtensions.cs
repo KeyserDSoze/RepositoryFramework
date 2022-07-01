@@ -111,13 +111,11 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddQuery<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
            where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Query)}", async (string? query, int? top, int? skip, [FromServices] TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Query)}", async (string? query, int? top, int? skip, string? order, bool? asc, [FromServices] TService service) =>
               {
-                  dynamic? expression = null;
-                  if (!string.IsNullOrWhiteSpace(query))
-                      expression = query.Deserialize<T, bool>();
+                  var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, order, asc);
                   var queryService = service as IQueryPattern<T, TKey, TState>;
-                  return await queryService!.QueryAsync(expression, top, skip);
+                  return await queryService!.QueryAsync(options);
 
               }).WithName($"{nameof(RepositoryMethod.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethod.Query);

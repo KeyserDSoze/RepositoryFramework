@@ -38,15 +38,9 @@ namespace RepositoryFramework.UnitTest.Storage
             return Task.FromResult(true);
         }
 
-        public Task<IEnumerable<MigrationUser>> QueryAsync(Expression<Func<MigrationUser, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<MigrationUser>> QueryAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
-            var users = _users.Select(x => x.Value);
-            if (predicate != null)
-                users = users.Where(predicate.Compile());
-            if (top != null)
-                users = users.Take(top.Value);
-            if (skip != null)
-                users = users.Skip(skip.Value);
+            var users = _users.Select(x => x.Value).Filter(options);
             return Task.FromResult(users);
         }
 

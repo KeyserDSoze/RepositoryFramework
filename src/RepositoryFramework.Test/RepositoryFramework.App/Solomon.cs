@@ -42,7 +42,7 @@ namespace RepositoryFramework
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IEnumerable<User>> QueryAsync(Expression<Func<User, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
             //get a list of items by a predicate with top and skip from DB or storage context
             throw new NotImplementedException();
@@ -70,10 +70,10 @@ namespace RepositoryFramework
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IEnumerable<User>> QueryAsync(Expression<Func<User, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
-            var x = predicate!.ToString();
+            var x = options?.Predicate!.ToString();
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
             //get a list of items by a predicate with top and skip from DB or storage context
             throw new NotImplementedException();

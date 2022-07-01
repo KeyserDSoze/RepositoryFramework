@@ -42,20 +42,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
-        public async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             List<T> entities = new();
             await foreach (var item in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
             {
                 entities.Add(JsonSerializer.Deserialize<T>(item.Value)!);
             }
-            IEnumerable<T> results = entities;
-            if (predicate != null)
-                results = results.Where(predicate.Compile());
-            if (top != null)
-                results = results.Take(top.Value);
-            if (skip != null)
-                results = results.Skip(skip.Value);
+            IEnumerable<T> results = entities.Filter(options);
             return results;
         }
 

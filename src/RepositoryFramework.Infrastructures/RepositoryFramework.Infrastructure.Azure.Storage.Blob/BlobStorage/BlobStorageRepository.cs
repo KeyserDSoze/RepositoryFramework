@@ -41,7 +41,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return response.Value != null;
         }
 
-        public async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             List<T> items = new();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
@@ -50,13 +50,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken);
                 items.Add(JsonSerializer.Deserialize<T>(blobData.Value.Content)!);
             }
-            IEnumerable<T> results = items;
-            if (predicate != null)
-                results = results.Where(predicate.Compile());
-            if (top != null)
-                results = results.Take(top.Value);
-            if (skip != null)
-                results = results.Skip(skip.Value);
+            IEnumerable<T> results = items.Filter(options);
             return results;
         }
 

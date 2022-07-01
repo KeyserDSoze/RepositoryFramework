@@ -21,7 +21,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Fare" Version="2.2.0" />
-		<PackageReference Include="Rystem" Version="4.0.3" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
 	</ItemGroup>
 

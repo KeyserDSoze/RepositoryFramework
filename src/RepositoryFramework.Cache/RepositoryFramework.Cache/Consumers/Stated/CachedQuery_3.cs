@@ -92,12 +92,12 @@ namespace RepositoryFramework.Cache
             return value.Response;
         }
 
-        public async Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
-            string keyAsString = $"{nameof(RepositoryMethod.Query)}_{predicate}_{top}_{skip}";
+            string keyAsString = $"{nameof(RepositoryMethod.Query)}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
 
             var value = await RetrieveValueAsync<IEnumerable<T>>(RepositoryMethod.Query, keyAsString,
-                () => _query.QueryAsync(predicate, top, skip, cancellationToken)!, cancellationToken);
+                () => _query.QueryAsync(options, cancellationToken)!, cancellationToken);
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
