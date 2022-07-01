@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\RepositoryFramework.Api.Client\RepositoryFramework.Api.Client.csproj" />
     <ProjectReference Include="..\..\RepositoryFramework.Api.Server\RepositoryFramework.Api.Server.csproj" />
     <ProjectReference Include="..\..\RepositoryFramework.Infrastructure.InMemory\RepositoryFramework.Infrastructure.InMemory.csproj" />

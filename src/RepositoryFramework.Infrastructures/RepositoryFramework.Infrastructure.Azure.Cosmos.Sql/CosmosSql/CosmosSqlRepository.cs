@@ -2,7 +2,6 @@
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Logging;
 using System.Dynamic;
-using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 
@@ -24,11 +23,11 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         {
             if (_logger != null)
             {
+#pragma warning disable CA2254 // Template should be a static expression
                 EventId eventId = new();
                 try
                 {
-                    string message = $"{method} for {key}";
-                    _logger?.LogInformation(eventId, message: message);
+                    _logger?.LogInformation(eventId, message: $"{method} for {key}");
                     return await action();
                 }
                 catch (Exception exception)
@@ -36,6 +35,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                     _logger?.LogError(eventId, message: exception.Message);
                     return default!;
                 }
+#pragma warning restore CA2254 // Template should be a static expression
             }
             else
                 return await action();
