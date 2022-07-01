@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace RepositoryFramework
+﻿namespace RepositoryFramework
 {
     /// <summary>
     /// Interface for your CQRS pattern, with Get, Query and Exist methods.
@@ -15,11 +13,5 @@ namespace RepositoryFramework
         Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
         Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
-    }
-    public static class QueryPatternExtensions
-    {
-        public static QueryBuilder<T, TKey, TState> Filter<T, TKey, TState>(this IQueryPattern<T, TKey, TState> entity)
-            where TKey : notnull
-            => new(entity);
     }
 }
