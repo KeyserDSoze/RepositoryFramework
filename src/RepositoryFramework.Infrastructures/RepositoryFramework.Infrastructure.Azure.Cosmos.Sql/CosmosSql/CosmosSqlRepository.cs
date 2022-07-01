@@ -79,9 +79,19 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             => ExecuteAsync(default!, RepositoryMethod.Query, async () =>
             {
                 IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
-                //if (options != null)
-                //    queryable = queryable.Filter(options);
-                
+                if (options?.Predicate != null)
+                    queryable = queryable
+                        .Where(options.Predicate);
+                if (options?.Order != null)
+                    if (options.IsAscending)
+                        queryable = queryable.OrderBy(options.Order);
+                    else
+                        queryable = queryable.OrderByDescending(options.Order);
+                if (options?.Skip != null && options.Skip > 0)
+                    queryable = queryable.Skip(options.Skip.Value);
+                if (options?.Top != null && options.Top > 0)
+                    queryable = queryable.Take(options.Top.Value);
+
                 List<T> items = new();
                 using (FeedIterator<T> iterator = queryable.ToFeedIterator())
                 {

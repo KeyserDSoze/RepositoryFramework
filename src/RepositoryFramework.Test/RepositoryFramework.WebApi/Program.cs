@@ -19,28 +19,28 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration["Redis:ConnectionString"];
     options.InstanceName = "SampleInstance";
 });
-builder.Services
-    .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"])
-    .WithInMemoryCache(x =>
-    {
-        x.RefreshTime = TimeSpan.FromSeconds(60);
-        x.Methods = RepositoryMethod.Get | RepositoryMethod.Insert | RepositoryMethod.Update | RepositoryMethod.Delete;
-    })
-    .WithDistributedCache(x =>
-    {
-        x.RefreshTime = TimeSpan.FromSeconds(120);
-        x.Methods = RepositoryMethod.All;
-    });
+//builder.Services
+//    .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"])
+//    .WithInMemoryCache(x =>
+//    {
+//        x.RefreshTime = TimeSpan.FromSeconds(60);
+//        x.Methods = RepositoryMethod.Get | RepositoryMethod.Insert | RepositoryMethod.Update | RepositoryMethod.Delete;
+//    })
+//    .WithDistributedCache(x =>
+//    {
+//        x.RefreshTime = TimeSpan.FromSeconds(120);
+//        x.Methods = RepositoryMethod.All;
+//    });
 //.WithBlobStorageCache(builder.Configuration["Storage:ConnectionString"], settings: x =>
 //{
 //    x.RefreshTime = TimeSpan.FromSeconds(120);
 //    x.Methods = RepositoryMethod.All;
 //});
-//builder.Services
-//    .AddRepositoryInCosmosSql<User, string>(
-//    x => x.Email!,
-//    builder.Configuration["CosmosSql:ConnectionString"],
-//    "BigDatabase");
+builder.Services
+    .AddRepositoryInCosmosSql<User, string>(
+    x => x.Email!,
+    builder.Configuration["CosmosSql:ConnectionString"],
+    "BigDatabase");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

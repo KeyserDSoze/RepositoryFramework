@@ -26,13 +26,13 @@ namespace RepositoryFramework
             _options.Skip = skip;
             return this;
         }
-        public QueryBuilder<T, TKey, TState> OrderByDescending(Expression<Func<T, bool>> predicate)
+        public QueryBuilder<T, TKey, TState> OrderByDescending(Expression<Func<T, object>> predicate)
         {
             _options.Order = predicate;
             _options.IsAscending = false;
             return this;
         }
-        public QueryBuilder<T, TKey, TState> OrderByAscending(Expression<Func<T, bool>> predicate)
+        public QueryBuilder<T, TKey, TState> OrderBy(Expression<Func<T, object>> predicate)
         {
             _options.Order = predicate;
             _options.IsAscending = true;

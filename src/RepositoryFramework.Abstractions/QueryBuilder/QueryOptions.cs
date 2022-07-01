@@ -9,7 +9,7 @@ namespace RepositoryFramework
         public Expression<Func<T, bool>>? Predicate { get; internal set; }
         public int? Top { get; internal set; }
         public int? Skip { get; internal set; }
-        public Expression<Func<T, bool>>? Order { get; internal set; }
+        public Expression<Func<T, object>>? Order { get; internal set; }
         public bool IsAscending { get; internal set; }
         private const string LogicAnd = "&";
         private const string LogicQuery = "?";
@@ -58,7 +58,7 @@ namespace RepositoryFramework
             if (skip != null)
                 options.Skip = skip;
             if (orderAsString != null)
-                options.Order = orderAsString.Deserialize<T, bool>();
+                options.Order = orderAsString.Deserialize<T, object>();
             if (isAscending != null)
                 options.IsAscending = isAscending.HasValue && isAscending.Value;
             return options;
