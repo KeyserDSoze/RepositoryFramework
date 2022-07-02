@@ -31,6 +31,7 @@ namespace RepositoryFramework
                 var orderAsString = Order.Serialize();
                 query.Append($"{AddSeparator()}order={HttpUtility.UrlEncode(orderAsString)}&asc={IsAscending}");
             }
+
             return query.ToString();
 
             string AddSeparator()
@@ -61,6 +62,7 @@ namespace RepositoryFramework
                 options.Order = orderAsString.Deserialize<T, object>();
             if (isAscending != null)
                 options.IsAscending = isAscending.HasValue && isAscending.Value;
+            
             return options;
         }
     }

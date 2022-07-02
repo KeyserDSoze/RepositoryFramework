@@ -111,7 +111,8 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddQuery<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
            where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Query)}", async (string? query, int? top, int? skip, string? order, bool? asc, [FromServices] TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Query)}",
+                async (string? query, int? top, int? skip, string? order, bool? asc, [FromServices] TService service) =>
               {
                   var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, order, asc);
                   var queryService = service as IQueryPattern<T, TKey, TState>;
