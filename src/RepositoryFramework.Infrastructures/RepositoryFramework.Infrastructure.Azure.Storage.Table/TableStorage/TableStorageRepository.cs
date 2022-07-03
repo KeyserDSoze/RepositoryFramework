@@ -4,7 +4,13 @@ using System.Text.Json;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
-    internal sealed class TableStorageRepository<T, TKey> : IRepositoryPattern<T, TKey>, IQueryPattern<T, TKey>, ICommandPattern<T, TKey>
+    internal class TableStorageRepository<T> : TableStorageRepository<T, string>, IRepositoryPattern<T>, IQueryPattern<T>, ICommandPattern<T>
+    {
+        public TableStorageRepository(TableServiceClientFactory clientFactory) : base(clientFactory)
+        {
+        }
+    }
+    internal class TableStorageRepository<T, TKey> : IRepositoryPattern<T, TKey>, IQueryPattern<T, TKey>, ICommandPattern<T, TKey>
         where TKey : notnull
     {
         private readonly TableClient _client;

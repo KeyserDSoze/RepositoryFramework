@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
            bool isPrivate = false)
             where TKey : notnull
         {
-            BlobServiceClientFactory.Instance.Add(name ?? typeof(T).Name, connectionString, clientOptions);
+            BlobServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
             return services.AddRepository<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton, isPrivate);
         }
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
            bool isPrivate = false)
             where TKey : notnull
         {
-            BlobServiceClientFactory.Instance.Add(name ?? typeof(T).Name, connectionString, clientOptions);
+            BlobServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
             return services.AddCommand<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton, isPrivate);
         }
@@ -80,7 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
            bool isPrivate = false)
             where TKey : notnull
         {
-            BlobServiceClientFactory.Instance.Add(name ?? typeof(T).Name, connectionString, clientOptions);
+            BlobServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
             return services.AddQuery<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton, isPrivate);
         }

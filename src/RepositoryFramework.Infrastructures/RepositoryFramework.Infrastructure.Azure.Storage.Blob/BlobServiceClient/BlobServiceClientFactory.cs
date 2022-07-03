@@ -10,23 +10,23 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         private readonly Dictionary<string, BlobContainerClient> _containerClientFactories = new();
         public BlobContainerClient Get(string name)
             => _containerClientFactories[name];
-        internal BlobServiceClientFactory Add(string containerName, string connectionString,  BlobClientOptions? clientOptions)
+        internal BlobServiceClientFactory Add(string name, string containerName, string connectionString,  BlobClientOptions? clientOptions)
         {
             var containerClient = new BlobContainerClient(connectionString, containerName.ToLower(), clientOptions);
-            return Add(containerName, containerClient);
+            return Add(name, containerClient);
         }
-        internal BlobServiceClientFactory Add(string containerName, Uri endpointUri, BlobClientOptions? clientOptions)
+        internal BlobServiceClientFactory Add(string name, string containerName, Uri endpointUri, BlobClientOptions? clientOptions)
         {
             var defaultCredential = new DefaultAzureCredential();
             var containerClient = new BlobContainerClient(endpointUri, defaultCredential, clientOptions);
-            return Add(containerName, containerClient);
+            return Add(name, containerClient);
         }
-        private BlobServiceClientFactory Add(string containerName, BlobContainerClient containerClient)
+        private BlobServiceClientFactory Add(string name, BlobContainerClient containerClient)
         {
-            if (!_containerClientFactories.ContainsKey(containerName))
+            if (!_containerClientFactories.ContainsKey(name))
             {
                 _ = containerClient.CreateIfNotExistsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-                _containerClientFactories.Add(containerName, containerClient);
+                _containerClientFactories.Add(name, containerClient);
             }
             return this;
         }
