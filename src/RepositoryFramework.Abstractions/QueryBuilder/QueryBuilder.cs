@@ -43,6 +43,35 @@ namespace RepositoryFramework
             var items = await QueryAsync(cancellationToken);
             return items.AsQueryable().GroupBy(predicate);
         }
+        public async Task<bool> AnyAsync(CancellationToken cancellationToken = default)
+        {
+            _options.Top = 1;
+            return (await _query.QueryAsync(_options, cancellationToken).NoContext()).Any();
+        }
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        {
+            if (predicate != null)
+                _ = Where(predicate);
+            _options.Top = 1;
+            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
+            return query.FirstOrDefault();
+        }
+        public async Task<T> FirstAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        {
+            if (predicate != null)
+                _ = Where(predicate);
+            _options.Top = 1;
+            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
+            return query.First();
+        }
+        public async Task<List<T>> ToListAsync(CancellationToken cancellationToken = default)
+        {
+            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
+            if (query is List<T> list)
+                return list;
+            else
+                return query.ToList();
+        }
 
         public Task<IEnumerable<T>> QueryAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_options, cancellationToken);
