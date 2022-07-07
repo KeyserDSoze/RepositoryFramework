@@ -31,7 +31,7 @@
 		</When>
 		<When Condition=" '$(Configuration)'!='Debug' ">
 			<ItemGroup>
-				<PackageReference Include="Rystem.RepositoryFramework.Abstractions" Version="0.10.2" />
+				<PackageReference Include="Rystem.RepositoryFramework.Abstractions" Version="0.10.3" />
 			</ItemGroup>
 		</When>
 	</Choose>
