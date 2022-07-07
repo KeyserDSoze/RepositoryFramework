@@ -62,7 +62,7 @@ namespace RepositoryFramework.UnitTest
             Assert.NotNull(theFirst.QQ);
             Assert.NotEqual((char)0, theFirst.R);
             Assert.NotNull(theFirst.RR);
-            Assert.NotEqual(new Guid("00000000-0000-0000-0000-000000000000"), theFirst.S);
+            Assert.NotEqual(Guid.Empty, theFirst.S);
             Assert.NotNull(theFirst.SS);
             Assert.NotEqual(new DateTime(), theFirst.T);
             Assert.NotNull(theFirst.TT);
@@ -133,7 +133,7 @@ namespace RepositoryFramework.UnitTest
             Assert.NotNull(theFirst.QQ);
             Assert.NotEqual((char)0, theFirst.R);
             Assert.NotNull(theFirst.RR);
-            Assert.NotEqual(new Guid("00000000-0000-0000-0000-000000000000"), theFirst.S);
+            Assert.NotEqual(Guid.Empty, theFirst.S);
             Assert.NotNull(theFirst.SS);
             Assert.NotEqual(new DateTime(), theFirst.T);
             Assert.NotNull(theFirst.TT);
@@ -212,7 +212,7 @@ namespace RepositoryFramework.UnitTest
             Assert.Equal('a', theFirst.R);
             Assert.NotNull(theFirst.RR);
             Assert.Equal('a', theFirst.RR);
-            Assert.NotEqual(new Guid("00000000-0000-0000-0000-000000000000"), theFirst.S);
+            Assert.NotEqual(Guid.Empty, theFirst.S);
             Assert.NotNull(theFirst.SS);
             Assert.NotEqual(new DateTime(), theFirst.T);
             Assert.NotNull(theFirst.TT);

@@ -15,7 +15,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             var containerClient = new BlobContainerClient(connectionString, containerName.ToLower(), clientOptions);
             return Add(name, containerClient);
         }
-        internal BlobServiceClientFactory Add(string name, string containerName, Uri endpointUri, BlobClientOptions? clientOptions)
+        internal BlobServiceClientFactory Add(string name, Uri endpointUri, BlobClientOptions? clientOptions)
         {
             var defaultCredential = new DefaultAzureCredential();
             var containerClient = new BlobContainerClient(endpointUri, defaultCredential, clientOptions);

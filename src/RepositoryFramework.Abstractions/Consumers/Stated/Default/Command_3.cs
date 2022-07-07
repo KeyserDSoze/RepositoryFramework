@@ -1,7 +1,7 @@
 ﻿namespace RepositoryFramework
 {
-    internal class Command<T, TKey, TState> : ICommand<T, TKey, TState>, ICommandPattern<T, TKey, TState>, ICommandPattern
-         where TKey : notnull
+    internal class Command<T, TKey, TState> : ICommand<T, TKey, TState>
+        where TKey : notnull
     {
         private readonly ICommandPattern<T, TKey, TState> _command;
 

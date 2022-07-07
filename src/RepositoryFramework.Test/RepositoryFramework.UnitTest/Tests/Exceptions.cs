@@ -13,6 +13,7 @@ namespace RepositoryFramework.UnitTest
             _car = car;
         }
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "Test")]
         public async Task TestAsync()
         {
             try

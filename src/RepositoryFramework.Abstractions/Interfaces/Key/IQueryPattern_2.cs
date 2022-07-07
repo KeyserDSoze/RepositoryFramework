@@ -8,7 +8,7 @@ namespace RepositoryFramework
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to retrieve your data from repository.</typeparam>
-    public interface IQueryPattern<T, TKey> : IQueryPattern<T, TKey, bool>, IQueryPattern
+    public interface IQueryPattern<T, TKey> : IQueryPattern<T, TKey, bool>
         where TKey : notnull
     {
     }

@@ -7,7 +7,7 @@ namespace RepositoryFramework
     /// This is the interface that you need to extend if you want to create your query pattern.
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
-    public interface IQueryPattern<T> : IQueryPattern<T, string>, IQueryPattern
+    public interface IQueryPattern<T> : IQueryPattern<T, string>
     {
     }
 }

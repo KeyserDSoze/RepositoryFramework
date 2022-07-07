@@ -7,7 +7,7 @@
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to retrieve your data from repository.</typeparam>
     /// <typeparam name="TState">Returning state.</typeparam>
-    public interface IQuery<T, TKey, TState> : IQueryPattern<T, TKey, TState>, IQueryPattern
+    public interface IQuery<T, TKey, TState> : IQueryPattern<T, TKey, TState>
         where TKey : notnull
     {
 

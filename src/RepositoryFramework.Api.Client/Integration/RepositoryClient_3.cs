@@ -5,7 +5,7 @@ using System.Web;
 
 namespace RepositoryFramework.Api.Client
 {
-    internal class RepositoryClient<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>, IQueryPattern<T, TKey, TState>, ICommandPattern<T, TKey, TState>
+    internal class RepositoryClient<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>
         where TKey : notnull
     {
         private readonly HttpClient _httpClient;

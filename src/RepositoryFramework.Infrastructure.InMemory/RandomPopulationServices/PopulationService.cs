@@ -15,10 +15,12 @@
             InstanceCreator = instanceCreator;
         }
 
-        public dynamic? Construct(Type type, int numberOfEntities, string treeName, string propertyName)
+        public dynamic? Construct(Type type, int numberOfEntities, string treeName, string name)
         {
-            treeName = string.IsNullOrWhiteSpace(treeName) ? propertyName :
-                (string.IsNullOrWhiteSpace(propertyName) ? treeName : $"{treeName}.{propertyName}");
+            if (!string.IsNullOrWhiteSpace(treeName) && !string.IsNullOrWhiteSpace(name))
+                treeName = $"{treeName}.{name}";
+            else if(!string.IsNullOrWhiteSpace(name))
+                treeName = name;
 
             int? overridedNumberOfEntities = null;
             var numberOfEntitiesDictionary = Settings.NumberOfElements;
@@ -36,7 +38,7 @@
             if (Settings.AutoIncrementations.ContainsKey(treeName))
                 return Settings.AutoIncrementations[treeName]++;
 
-            if (Settings.ImplementationForValueCreation.ContainsKey(treeName) && !string.IsNullOrWhiteSpace(propertyName))
+            if (Settings.ImplementationForValueCreation.ContainsKey(treeName) && !string.IsNullOrWhiteSpace(name))
                 return Construct(Settings.ImplementationForValueCreation[treeName], numberOfEntities,
                     treeName, string.Empty);
 

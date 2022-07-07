@@ -60,7 +60,7 @@ namespace RepositoryFramework.UnitTest
                 .AddRepositoryInMemoryStorage<IperUser, string, bool>(
                 (result, exception) =>
                 {
-                    if (result == true)
+                    if (result)
                         return true;
                     else if (exception != null)
                         throw exception;

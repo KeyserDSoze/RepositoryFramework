@@ -54,15 +54,12 @@ namespace RepositoryFramework
             var options = new QueryOptions<T>();
             if (predicateAsString != null)
                 options.Predicate = predicateAsString.Deserialize<T, bool>();
-            if (top != null)
-                options.Top = top;
-            if (skip != null)
-                options.Skip = skip;
+            options.Top = top;
+            options.Skip = skip;
             if (orderAsString != null)
                 options.Order = orderAsString.Deserialize<T, object>();
-            if (isAscending != null)
-                options.IsAscending = isAscending.HasValue && isAscending.Value;
-            
+            options.IsAscending = isAscending.HasValue && isAscending.Value;
+
             return options;
         }
     }

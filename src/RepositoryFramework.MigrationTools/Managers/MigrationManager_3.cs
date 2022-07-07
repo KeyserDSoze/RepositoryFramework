@@ -15,7 +15,8 @@ namespace RepositoryFramework.Migration
             _to = to;
             _options = options;
         }
-        public async Task<bool> MigrateAsync(Expression<Func<T, TKey>> navigationKey, bool checkIfExist = false, CancellationToken cancellationToken = default)
+
+        public async Task<bool> MigrateAsync(Expression<Func<T, TKey>> navigationKey, bool checkIfExists = false, CancellationToken cancellationToken = default)
         {
             List<Task> setAll = new();
             var entities = await _from.QueryAsync(cancellationToken: cancellationToken);
@@ -33,7 +34,7 @@ namespace RepositoryFramework.Migration
                 async Task TryToMigrate()
                 {
                     var key = (TKey)keyProperty!.GetValue(entity)!;
-                    if (checkIfExist && _options?.CheckIfIsAnOkState?.Invoke(await _to.ExistAsync(key, cancellationToken)) == true)
+                    if (checkIfExists && _options?.CheckIfIsAnOkState?.Invoke(await _to.ExistAsync(key, cancellationToken)) == true)
                         return;
                     await _to.InsertAsync(key, entity!, cancellationToken);
                 }

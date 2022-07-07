@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework.Api.Client
 {
-    internal class RepositoryClient<T> : RepositoryClient<T, string>, IRepositoryPattern<T>, IQueryPattern<T>, ICommandPattern<T>
+    internal class RepositoryClient<T> : RepositoryClient<T, string>, IRepositoryPattern<T>
     {
         public RepositoryClient(IHttpClientFactory httpClientFactory,
             IRepositoryClientInterceptor? clientInterceptor = null ,

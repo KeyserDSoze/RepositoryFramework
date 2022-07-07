@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework;
 using RepositoryFramework.InMemory;
 
+#pragma warning disable S125
+// Sections of code should not be commented out
 //await new UserRepository().QueryAsync(x => x.Id == "A" && x.Email == "B");
 //string pattern = @"(?:2018|2019|2020|2021|2022)/(?:10|11|12)/(?:06|07|08) (00:00:00)";
 //string pattern = @"[a-z]{4,10}@gmail\.com";
@@ -60,6 +62,7 @@ var services = new ServiceCollection()
     .And()
     .ToServiceCollection()
     .BuildServiceProvider();
+
 services.CreateScope().ServiceProvider.Populate();
 
 var storage = services.GetService<IRepository<Solomon, string>>();
@@ -72,10 +75,13 @@ var all = (await storage!.QueryAsync()).ToList();
 //await storage.UpdateAsync("aaa", new("aaa") { Id = "a3", Name = "b3" });
 //all = await storage.QueryAsync(x => x.Name == "b3", 1);
 //all = await storage.QueryAsync(x => x.Name == "b3", 1, 1);
+#pragma warning disable S1481 // Unused local variables should be removed
 var q = await storage.GetAsync("aaa");
 await storage.DeleteAsync("aaa");
 all = (await storage.QueryAsync()).ToList();
 var olaf = string.Empty;
+#pragma warning restore S1481 // Unused local variables should be removed
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
 #pragma warning restore IDE0079 // Remove unnecessary suppression
+#pragma warning restore S125 // Sections of code should not be commented out

@@ -44,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
             static void Check(List<ExceptionOdds> odds)
             {
                 var total = odds.Sum(x => x.Percentage);
-                if (odds.Where(x => x.Percentage <= 0 || x.Percentage > 100).Any())
+                if (odds.Any(x => x.Percentage <= 0 || x.Percentage > 100))
                 {
                     throw new ArgumentException("Some percentages are wrong, greater than 100% or lesser than 0.");
                 }

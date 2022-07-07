@@ -2,8 +2,10 @@ using RepositoryFramework;
 using RepositoryFramework.WebApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+#pragma warning disable S125
 //builder.Services.AddRepositoryInMemoryStorage<User>()
 //.PopulateWithRandomData(x => x.Email!, 120, 5)
+// Sections of code should not be commented out
 //.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
 builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
@@ -43,6 +45,7 @@ builder.Services
     "BigDatabase");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+#pragma warning restore S125 // Sections of code should not be commented out
 
 var app = builder.Build();
 app.Services.Populate();

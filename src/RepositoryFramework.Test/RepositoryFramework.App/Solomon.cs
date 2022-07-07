@@ -48,7 +48,7 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
     }
-    public class UserRepository : IRepositoryPattern<User, string>, IQueryPattern<User, string>, ICommandPattern<User, string>
+    public class UserRepository : IRepositoryPattern<User, string>
     {
         public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
@@ -70,6 +70,8 @@ namespace RepositoryFramework
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "Test")]
         public Task<IEnumerable<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
 #pragma warning disable IDE0059 // Unnecessary assignment of a value

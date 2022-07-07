@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework.Cache
 {
-    internal class CachedQuery<T, TKey> : CachedQuery<T, TKey, bool>, IQuery<T, TKey>, IQueryPattern<T, TKey>, IQueryPattern
+    internal class CachedQuery<T, TKey> : CachedQuery<T, TKey, bool>, IQuery<T, TKey>
          where TKey : notnull
     {
         public CachedQuery(IQueryPattern<T, TKey> query,

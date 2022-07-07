@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework.Cache
 {
-    internal sealed class CachedQuery<T> : CachedQuery<T, string>, IQuery<T>, IQueryPattern<T>, IQueryPattern
+    internal sealed class CachedQuery<T> : CachedQuery<T, string>, IQuery<T>
     {
         public CachedQuery(IQueryPattern<T> query,
             ICache<T>? cache = null,

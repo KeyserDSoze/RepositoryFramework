@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
 {
-    internal class BlobStorageRepository<T> : BlobStorageRepository<T, string>, IRepositoryPattern<T>, IQueryPattern<T>, ICommandPattern<T>
+    internal class BlobStorageRepository<T> : BlobStorageRepository<T, string>, IRepositoryPattern<T>
     {
         public BlobStorageRepository(BlobServiceClientFactory clientFactory) : base(clientFactory)
         {

@@ -45,20 +45,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TState">Returning state.</typeparam>
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></param>
         /// <param name="endpointUri">Uri of your storage.</param>
-        /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
         /// <param name="settings">Settings for your cache.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> WithBlobStorageCache<T, TKey, TState>(
            this RepositoryBuilder<T, TKey, TState> builder,
            Uri endpointUri,
-           string? name = null,
            BlobClientOptions? clientOptions = null,
            Action<DistributedCacheOptions<T, TKey, TState>>? settings = null)
             where TKey : notnull
         {
             builder.Services
-                  .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(endpointUri, name, clientOptions, true);
+                  .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(endpointUri, clientOptions, true);
             return builder.WithDistributedCache<T, TKey, TState, BlobStorageCache<T, TKey, TState>>(settings, ServiceLifetime.Singleton);
         }
     }

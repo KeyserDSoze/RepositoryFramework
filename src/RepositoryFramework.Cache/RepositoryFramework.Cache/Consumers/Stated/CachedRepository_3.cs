@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework.Cache
 {
-    internal class CachedRepository<T, TKey, TState> : CachedQuery<T, TKey, TState>, IRepository<T, TKey, TState>, ICommand<T, TKey, TState>, IRepositoryPattern<T, TKey, TState>, ICommandPattern<T, TKey, TState>, IQueryPattern<T, TKey, TState>, IRepositoryPattern, ICommandPattern, IQueryPattern
+    internal class CachedRepository<T, TKey, TState> : CachedQuery<T, TKey, TState>, IRepository<T, TKey, TState>, ICommand<T, TKey, TState>
          where TKey : notnull
     {
         private readonly IRepositoryPattern<T, TKey, TState>? _repository;

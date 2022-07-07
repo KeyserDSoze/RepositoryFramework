@@ -12,6 +12,7 @@ namespace RepositoryFramework.WebClient.Pages
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Test")]
         private readonly ILogger<ErrorModel> _logger;
 
         public ErrorModel(ILogger<ErrorModel> logger)

@@ -2,8 +2,8 @@
 
 namespace RepositoryFramework
 {
-    internal class Query<T, TKey, TState> : IQuery<T, TKey, TState>, IQueryPattern<T, TKey, TState>, IQueryPattern
-         where TKey : notnull
+    internal class Query<T, TKey, TState> : IQuery<T, TKey, TState>
+        where TKey : notnull
     {
         private readonly IQueryPattern<T, TKey, TState> _query;
 

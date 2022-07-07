@@ -24,6 +24,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IEndpointRouteBuilder</returns>
         public static IEndpointRouteBuilder AddApiForRepository<T>(this IEndpointRouteBuilder app, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
             => app.AddApiForRepository(typeof(T), startingPath, authorizationPolicy);
+
+
         /// <summary>
         /// Add repository or CQRS service injected as api for your <paramref name="modelType"/> model.
         /// </summary>
@@ -33,6 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="startingPath">By default is "api", but you can choose your path. https://{your domain}/{startingPath}</param>
         /// <param name="authorizationPolicy">Add authorization to your api.</param>
         /// <returns>IEndpointRouteBuilder</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "I need reflection in this point to allow the creation of T methods at runtime.")]
         public static TEndpointRouteBuilder AddApiForRepository<TEndpointRouteBuilder>(this TEndpointRouteBuilder app, Type modelType, string startingPath = "api", AuthorizationForApi? authorizationPolicy = null)
             where TEndpointRouteBuilder : IEndpointRouteBuilder
         {

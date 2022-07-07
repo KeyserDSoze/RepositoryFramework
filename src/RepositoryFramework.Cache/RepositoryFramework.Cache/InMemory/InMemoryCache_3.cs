@@ -5,7 +5,7 @@ namespace RepositoryFramework.Cache
     internal class InMemoryCache<T, TKey, TState> : ICache<T, TKey, TState>
         where TKey : notnull
     {
-        private class InMemoryCacheValue
+        private sealed class InMemoryCacheValue
         {
             public object? Value { get; set; }
             public DateTime ExpiringTime { get; set; }

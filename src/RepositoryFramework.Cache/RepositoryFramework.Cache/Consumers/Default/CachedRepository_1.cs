@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework.Cache
 {
-    internal class CachedRepository<T> : CachedRepository<T, string>, IRepository<T>, IRepositoryPattern<T>, ICommandPattern<T>, IQueryPattern<T>, IRepositoryPattern, ICommandPattern, IQueryPattern
+    internal class CachedRepository<T> : CachedRepository<T, string>, IRepository<T>
     {
         public CachedRepository(IRepositoryPattern<T>? repository = null,
             ICommandPattern<T>? command = null,

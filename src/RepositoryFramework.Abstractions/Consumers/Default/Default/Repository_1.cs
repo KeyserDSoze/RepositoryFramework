@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    internal class Repository<T> : Repository<T, string>, IRepository<T>, IRepositoryPattern<T>, ICommandPattern<T>, IQueryPattern<T>, IRepositoryPattern, ICommandPattern, IQueryPattern
+    internal class Repository<T> : Repository<T, string>, IRepository<T>
     {
         public Repository(IRepositoryPattern<T> repository) : base(repository)
         {
