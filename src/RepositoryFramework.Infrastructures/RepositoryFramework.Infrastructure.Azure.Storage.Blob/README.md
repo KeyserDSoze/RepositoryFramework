@@ -4,6 +4,8 @@
         .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
 
 You found the IRepository<User, string> in DI to play with it.
+
+### Automated api with Rystem.RepositoryFramework.Api.Server package
 With automated api, you may have the api implemented with your blobstorage integration.
 You need only to add the AddApiForRepositoryFramework
 
