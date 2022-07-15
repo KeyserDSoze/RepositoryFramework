@@ -16,7 +16,7 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
     {
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
         Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default);
-         Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
         Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
     }
 
