@@ -38,3 +38,18 @@ In the example below you may find the DI for repository with string key for User
     app.UseHttpsRedirection();
     app.AddApiForRepositoryFramework();
     app.Run();
+
+
+### Sample of query usage when you use the api directly
+All the requests are basic requests, the strangest request is only the query and you must use the Linq query.
+You may find some examples down below:
+
+    ƒ => (((ƒ.X == "dasda") AndAlso ƒ.X.Contains("dasda")) AndAlso ((ƒ.E == Guid.Parse("bf46510b-b7e6-4ba2-88da-cef208aa81f2")) Or (ƒ.Id == 32)))
+    ƒ => ((((ƒ.X == "dasda") AndAlso ƒ.Sol) AndAlso ƒ.X.Contains("dasda")) AndAlso ((ƒ.E == Guid.Parse("bf46510b-b7e6-4ba2-88da-cef208aa81f2")) Or (ƒ.Id == 32)))
+    ƒ => (((((ƒ.X == "dasda") AndAlso ƒ.Sol) AndAlso ƒ.X.Contains("dasda")) AndAlso ((ƒ.E == Guid.Parse("bf46510b-b7e6-4ba2-88da-cef208aa81f2")) Or (ƒ.Id == 32))) AndAlso ((ƒ.Type == 1) OrElse (ƒ.Type == 2)))
+    ƒ => (ƒ.Type == 2)
+    ƒ => (((((ƒ.X == "dasda") AndAlso ƒ.Sol) AndAlso (ƒ.X.Contains("dasda") OrElse ƒ.Sol.Equals(True))) AndAlso ((ƒ.E == Guid.Parse("bf46510b-b7e6-4ba2-88da-cef208aa81f2")) Or (ƒ.Id == 32))) AndAlso ((ƒ.Type == 1) OrElse (ƒ.Type == 2)))
+    ƒ => ((((((ƒ.X == "dasda") AndAlso ƒ.Samules.Any(x => (x == "ccccde"))) AndAlso ƒ.Sol) AndAlso (ƒ.X.Contains("dasda") OrElse ƒ.Sol.Equals(True))) AndAlso ((ƒ.E == Guid.Parse("bf46510b-b7e6-4ba2-88da-cef208aa81f2")) Or (ƒ.Id == 32))) AndAlso ((ƒ.Type == 1) OrElse (ƒ.Type == 2)))
+    ƒ => (ƒ.ExpirationTime > Convert.ToDateTime("7/6/2022 9:48:56 AM"))
+    ƒ => (ƒ.TimeSpan > new TimeSpan(1000 as long))
+    ƒ => Not(ƒ.Inside.Inside.A.Equals("dasdad"))
