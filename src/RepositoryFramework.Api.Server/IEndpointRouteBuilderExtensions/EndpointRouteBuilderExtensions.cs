@@ -53,6 +53,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     .MakeGenericMethod(modelType, serviceValue.KeyType, serviceValue.StateType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
                     .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
 
+                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddCount), BindingFlags.NonPublic | BindingFlags.Static)!
+                    .MakeGenericMethod(modelType, serviceValue.KeyType, serviceValue.StateType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
+                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
+
                 _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddExist), BindingFlags.NonPublic | BindingFlags.Static)!
                     .MakeGenericMethod(modelType, serviceValue.KeyType, serviceValue.StateType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
                     .Invoke(null, new object[] { app, modelType.Name, startingPath, authorizationPolicy! });
@@ -123,6 +127,19 @@ namespace Microsoft.Extensions.DependencyInjection
 
               }).WithName($"{nameof(RepositoryMethod.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethod.Query);
+        }
+        private static void AddCount<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
+          where TKey : notnull
+        {
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Count)}",
+                async (string? query, int? top, int? skip, string? order, bool? asc, [FromServices] TService service) =>
+                {
+                    var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, order, asc);
+                    var queryService = service as IQueryPattern<T, TKey, TState>;
+                    return await queryService!.CountAsync(options);
+
+                }).WithName($"{nameof(RepositoryMethod.Count)}{name}")
+              .AddAuthorization(authorization, RepositoryMethod.Count);
         }
         private static void AddExist<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull

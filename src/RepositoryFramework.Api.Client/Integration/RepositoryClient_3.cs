@@ -59,7 +59,12 @@ namespace RepositoryFramework.Api.Client
             var query = $"{nameof(RepositoryMethod.Query)}{options?.ToQuery()}";
             return (await client.GetFromJsonAsync<IEnumerable<T>>(query, cancellationToken))!;
         }
-
+        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        {
+            var client = await EnrichedClientAsync(RepositoryMethod.Count);
+            var query = $"{nameof(RepositoryMethod.Count)}{options?.ToQuery()}";
+            return (await client.GetFromJsonAsync<long>(query, cancellationToken))!;
+        }
         public async Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Update);

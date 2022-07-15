@@ -60,5 +60,18 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             var response = await blobClient.UploadAsync(new BinaryData(JsonSerializer.Serialize(value)), true, cancellationToken);
             return response.Value != null;
         }
+
+        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        {
+            List<T> items = new();
+            await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
+            {
+                var blobClient = _client.GetBlobClient(blob.Name);
+                var blobData = await blobClient.DownloadContentAsync(cancellationToken);
+                items.Add(JsonSerializer.Deserialize<T>(blobData.Value.Content)!);
+            }
+            IEnumerable<T> results = items.Filter(options);
+            return results.Count();
+        }
     }
 }

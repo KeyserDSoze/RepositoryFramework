@@ -142,7 +142,29 @@ namespace RepositoryFramework.InMemory
             else
                 throw new TaskCanceledException();
         }
-
+        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        {
+            var settings = _settings.Get(RepositoryMethod.Count);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                var exception = GetException(settings.ExceptionOdds);
+                if (exception != null)
+                {
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
+                    throw exception;
+                }
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    IEnumerable<T> values = Values.Select(x => x.Value).Filter(options);
+                    return values.Count();
+                }
+                else
+                    throw new TaskCanceledException();
+            }
+            else
+                throw new TaskCanceledException();
+        }
         public Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethod.Update, () =>
             {

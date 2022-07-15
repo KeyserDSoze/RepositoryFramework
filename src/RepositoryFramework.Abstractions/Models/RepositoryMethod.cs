@@ -12,6 +12,7 @@
         Exist = 8,
         Get = 16,
         Query = 32,
-        All = 64,
+        Count = 64,
+        All = 128,
     }
 }

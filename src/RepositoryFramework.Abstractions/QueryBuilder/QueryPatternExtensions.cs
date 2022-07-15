@@ -44,5 +44,18 @@ namespace System.Linq
             CancellationToken cancellationToken = default)
            where TKey : notnull
            => new QueryBuilder<T, TKey, TState>(entity).ToListAsync(cancellationToken);
+        /// <summary>
+        /// Starting from page 1 you may page your query.
+        /// </summary>
+        /// <param name="page">Page of your request, starting from 1.</param>
+        /// <param name="pageSize">Number of elements for page. Minimum value is 1.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Paged results.</returns>
+        public static Task<IPage<T>> PageAsync<T, TKey, TState>(this IQueryPattern<T, TKey, TState> entity,
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken = default)
+           where TKey : notnull
+           => new QueryBuilder<T, TKey, TState>(entity).PageAsync(page, pageSize, cancellationToken);
     }
 }

@@ -32,6 +32,11 @@ namespace RepositoryFramework
     }
     public class UserReader : IQueryPattern<User, string>
     {
+        public Task<long> CountAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
@@ -82,6 +87,11 @@ namespace RepositoryFramework
         }
 
         public Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<long> CountAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

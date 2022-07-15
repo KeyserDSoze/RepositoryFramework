@@ -72,7 +72,40 @@ namespace RepositoryFramework
             else
                 return query.ToList();
         }
-
+        /// <summary>
+        /// Starting from page 1 you may page your query.
+        /// </summary>
+        /// <param name="page">Page of your request, starting from 1.</param>
+        /// <param name="pageSize">Number of elements for page. Minimum value is 1.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Paged results.</returns>
+        public Task<IPage<T>> PageAsync(
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken = default)
+        {
+            if (page < 1)
+                throw new ArgumentException($"Page parameter with value {page} is lesser than 1");
+            if (pageSize < 1)
+                throw new ArgumentException($"Page size parameter with value {pageSize} is lesser than 1");
+            return PageInternalAsync(page, pageSize, cancellationToken);
+        }
+        private async Task<IPage<T>> PageInternalAsync(
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken = default)
+        {
+            QueryOptions<T> countOptions = new()
+            {
+                Predicate = _options.Predicate
+            };
+            _options.Top = pageSize;
+            _options.Skip = (page - 1) * pageSize;
+            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
+            var count = await _query.CountAsync(countOptions, cancellationToken).NoContext();
+            long pages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
+            return new Page<T>(query, count, pages);
+        }
         public Task<IEnumerable<T>> QueryAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_options, cancellationToken);
     }

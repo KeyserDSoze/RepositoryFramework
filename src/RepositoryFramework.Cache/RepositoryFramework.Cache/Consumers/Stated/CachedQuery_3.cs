@@ -107,6 +107,21 @@ namespace RepositoryFramework.Cache
 
             return value.Response ?? new List<T>();
         }
+        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        {
+            string keyAsString = $"{nameof(RepositoryMethod.Count)}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
+
+            var value = await RetrieveValueAsync(RepositoryMethod.Count, keyAsString,
+                () => _query.CountAsync(options, cancellationToken)!, cancellationToken);
+
+            if (_cache != null || _distributed != null)
+                await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
+                    _cacheOptions.HasCache(RepositoryMethod.Query),
+                    _distributedCacheOptions.HasCache(RepositoryMethod.Query),
+                    cancellationToken);
+
+            return value.Response;
+        }
 
         private Task SaveOnCacheAsync<TResponse>(string key, TResponse response, Source source, bool inMemory, bool inDistributed, CancellationToken cancellationToken)
         {
@@ -133,6 +148,9 @@ namespace RepositoryFramework.Cache
             }
             return (Source.Repository, await action.Invoke());
         }
+
+        
+
         private enum Source
         {
             InMemory,

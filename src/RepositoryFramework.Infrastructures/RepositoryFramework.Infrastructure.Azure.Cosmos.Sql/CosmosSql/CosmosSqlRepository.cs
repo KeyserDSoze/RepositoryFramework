@@ -109,7 +109,40 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 }
                 return items.Select(x => x);
             });
+        public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+            => ExecuteAsync<long>(default!, RepositoryMethod.Count, async () =>
+            {
+                IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
+                if (options?.Predicate != null)
+                    queryable = queryable
+                        .Where(options.Predicate);
+                if (options?.Order != null)
+                    if (options.IsAscending)
+                        queryable = queryable.OrderBy(options.Order);
+                    else
+                        queryable = queryable.OrderByDescending(options.Order);
+                if (options?.Skip != null && options.Skip > 0)
+                    queryable = queryable.Skip(options.Skip.Value);
+                if (options?.Top != null && options.Top > 0)
+                    queryable = queryable.Take(options.Top.Value);
 
+                List<T> items = new();
+                using (FeedIterator<T> iterator = queryable.ToFeedIterator())
+                {
+                    while (iterator.HasMoreResults)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            return items.Count;
+                        foreach (var item in await iterator.ReadNextAsync(cancellationToken))
+                        {
+                            items.Add(item);
+                            if (cancellationToken.IsCancellationRequested)
+                                return items.Count;
+                        }
+                    }
+                }
+                return items.Count;
+            });
         public Task<bool> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => ExecuteAsync(key, RepositoryMethod.Update, async () =>
             {

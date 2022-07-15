@@ -49,7 +49,11 @@ namespace RepositoryFramework.UnitTest.Storage
             var users = _users.Select(x => x.Value).Filter(options);
             return Task.FromResult(users);
         }
-
+        public Task<long> CountAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
+        {
+            var users = _users.Select(x => x.Value).Filter(options);
+            return Task.FromResult((long)users.Count());
+        }
         public Task<bool> UpdateAsync(string key, MigrationUser value, CancellationToken cancellationToken = default)
         {
             _users[key] = value;

@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace RepositoryFramework
+﻿namespace RepositoryFramework
 {
     internal class Query<T, TKey, TState> : IQuery<T, TKey, TState>
         where TKey : notnull
@@ -20,5 +18,7 @@ namespace RepositoryFramework
 
         public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
             => _query.QueryAsync(options, cancellationToken);
+        public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+            => _query.CountAsync(options, cancellationToken);
     }
 }

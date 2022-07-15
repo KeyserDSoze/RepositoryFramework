@@ -16,7 +16,8 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
     {
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
         Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default);
+         Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
+        Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
     }
 
 #### Repository Pattern (Write-Delete-Read)
@@ -43,7 +44,8 @@ Repository pattern is a sum of CQRS interfaces.
     {
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
         Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
+        Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
     }
 
 #### Repository Pattern (Write-Delete-Read)
@@ -69,6 +71,8 @@ Repository pattern is a sum of CQRS interfaces.
         Task<T?> GetAsync(string key, CancellationToken cancellationToken = default);
         Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default);
         Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
+        Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
     }
 
 #### Repository Pattern (Write-Delete-Read)
@@ -119,9 +123,14 @@ Repository pattern is a sum of CQRS interfaces.
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IEnumerable<User>> QueryAsync(Expression<Func<User, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<User>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             //get a list of items by a predicate with top and skip from DB or storage context
+            throw new NotImplementedException();
+        }
+        public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        {
+            //get an items count by a predicate with top and skip from DB or storage context
             throw new NotImplementedException();
         }
     }
@@ -156,9 +165,14 @@ if you don't have CQRS infrastructure (usually it's correct to use CQRS when you
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IEnumerable<User>> QueryAsync(Expression<Func<User, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<User>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             //get a list of items by a predicate with top and skip from DB or storage context
+            throw new NotImplementedException();
+        }
+        public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        {
+            //get an items count by a predicate with top and skip from DB or storage context
             throw new NotImplementedException();
         }
     }

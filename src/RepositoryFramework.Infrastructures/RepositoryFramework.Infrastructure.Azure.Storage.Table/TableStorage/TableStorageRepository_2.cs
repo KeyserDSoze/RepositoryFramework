@@ -52,7 +52,16 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             IEnumerable<T> results = entities.Filter(options);
             return results;
         }
-
+        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        {
+            List<T> entities = new();
+            await foreach (var item in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
+            {
+                entities.Add(JsonSerializer.Deserialize<T>(item.Value)!);
+            }
+            IEnumerable<T> results = entities.Filter(options);
+            return results.Count();
+        }
         public async Task<bool> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var response = await _client.UpsertEntityAsync(new TableEntity

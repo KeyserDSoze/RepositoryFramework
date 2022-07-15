@@ -7,7 +7,7 @@
     /// </summary>
     public class AuthorizationForApi
     {
-        public RepositoryMethod Path { get; set; } = RepositoryMethod.Get | RepositoryMethod.Query | RepositoryMethod.Insert | RepositoryMethod.Update | RepositoryMethod.Delete;
+        public RepositoryMethod Path { get; set; } = RepositoryMethod.Get | RepositoryMethod.Exist | RepositoryMethod.Query | RepositoryMethod.Count | RepositoryMethod.Insert | RepositoryMethod.Update | RepositoryMethod.Delete;
         public string[]? Policies { get; set; }
         public static AuthorizationForApi Default { get; } = new();
     }
