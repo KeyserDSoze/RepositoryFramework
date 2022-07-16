@@ -9,10 +9,11 @@
         Insert = 1,
         Update = 2,
         Delete = 4,
-        Exist = 8,
-        Get = 16,
-        Query = 32,
-        Count = 64,
-        All = 128,
+        Batch = 8,
+        Exist = 16,
+        Get = 32,
+        Query = 64,
+        Count = 128,
+        All = 256,
     }
 }

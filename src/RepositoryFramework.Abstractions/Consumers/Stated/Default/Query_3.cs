@@ -2,6 +2,7 @@
 {
     internal class Query<T, TKey, TState> : IQuery<T, TKey, TState>
         where TKey : notnull
+        where TState : IState
     {
         private readonly IQueryPattern<T, TKey, TState> _query;
 
@@ -10,7 +11,7 @@
             _query = query;
         }
 
-        public Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default) 
+        public Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.ExistAsync(key, cancellationToken);
 
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)

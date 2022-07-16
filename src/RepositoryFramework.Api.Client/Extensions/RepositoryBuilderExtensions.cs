@@ -20,6 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TInterceptor : class, IRepositoryClientInterceptor<T>
             where TKey : notnull
+            where TState : IState
         {
             builder
               .Services

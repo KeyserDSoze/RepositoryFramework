@@ -17,10 +17,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddRepository<T, TKey, TState, TStorage>(this IServiceCollection services,
-          ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
-          bool isPrivate = false)
-          where TStorage : class, IRepositoryPattern<T, TKey, TState>
-          where TKey : notnull
+            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+            bool isPrivate = false)
+            where TStorage : class, IRepositoryPattern<T, TKey, TState>
+            where TKey : notnull
+            where TState : IState
         {
             var service = services.SetService<T, TKey, TState>();
             service.RepositoryType = typeof(IRepository<T, TKey, TState>);
@@ -48,6 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
             bool isPrivate = false)
             where TStorage : class, ICommandPattern<T, TKey, TState>
             where TKey : notnull
+            where TState : IState
         {
             var service = services.SetService<T, TKey, TState>();
             service.CommandType = typeof(ICommand<T, TKey, TState>);
@@ -71,10 +73,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
         public static RepositoryBuilder<T, TKey, TState> AddQuery<T, TKey, TState, TStorage>(this IServiceCollection services,
-           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
-           bool isPrivate = false)
-           where TStorage : class, IQueryPattern<T, TKey, TState>
-           where TKey : notnull
+            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+            bool isPrivate = false)
+            where TStorage : class, IQueryPattern<T, TKey, TState>
+            where TKey : notnull
+            where TState : IState
         {
             var service = services.SetService<T, TKey, TState>();
             service.QueryType = typeof(IQuery<T, TKey, TState>);

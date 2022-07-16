@@ -22,8 +22,9 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<MigrationOptions<T, TKey, TState>> settings,
             Func<TState, bool> checkIfIsAnOkState,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-          where TMigrationSource : class, IMigrationSource<T, TKey, TState>
-          where TKey : notnull
+            where TMigrationSource : class, IMigrationSource<T, TKey, TState>
+            where TKey : notnull
+            where TState : IState
         {
             var options = new MigrationOptions<T, TKey, TState>();
             settings?.Invoke(options);

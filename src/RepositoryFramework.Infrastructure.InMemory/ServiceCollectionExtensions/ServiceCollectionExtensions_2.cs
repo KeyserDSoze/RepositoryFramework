@@ -17,28 +17,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// You may set a list of exceptions with a random percentage of throwing.
         /// </param>
         /// <returns>RepositoryInMemoryBuilder</returns>
-        public static RepositoryInMemoryBuilder<T, TKey, bool> AddRepositoryInMemoryStorage<T, TKey>(
+        public static RepositoryInMemoryBuilder<T, TKey, State> AddRepositoryInMemoryStorage<T, TKey>(
             this IServiceCollection services,
-            Action<RepositoryBehaviorSettings<T, TKey, bool>>? settings = default)
+            Action<RepositoryBehaviorSettings<T, TKey, State>>? settings = default)
             where TKey : notnull
         {
             services.AddRepository<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             services.AddCommand<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             services.AddQuery<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
 
-            return services.AddRepositoryInMemoryStorage<T, TKey, bool>(PopulationOfState, options =>
+            return services.AddRepositoryInMemoryStorage<T, TKey, State>(options =>
             {
                 settings?.Invoke(options);
                 options.NumberOfParameters ??= 2;
             });
-        }
-        private static bool PopulationOfState(bool result, Exception exception)
-        {
-            if (result)
-                return true;
-            else if (exception != null)
-                throw exception;
-            return false;
         }
     }
 }

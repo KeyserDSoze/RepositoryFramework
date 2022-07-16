@@ -22,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
            Action<CacheOptions<T, TKey, TState>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
+            where TState : IState
             => builder.WithDistributedCache<T, TKey, TState, DistributedCache<T, TKey, TState>>(settings, lifetime);
     }
 }

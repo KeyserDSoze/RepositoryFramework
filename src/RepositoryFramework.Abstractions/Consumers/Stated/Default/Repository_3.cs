@@ -1,9 +1,8 @@
-﻿using System.Linq.Expressions;
-
-namespace RepositoryFramework
+﻿namespace RepositoryFramework
 {
     internal class Repository<T, TKey, TState> : IRepository<T, TKey, TState>
         where TKey : notnull
+        where TState : IState
     {
         private readonly IRepositoryPattern<T, TKey, TState> _repository;
 
@@ -15,7 +14,7 @@ namespace RepositoryFramework
         public Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => _repository.DeleteAsync(key, cancellationToken);
 
-        public Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default) 
+        public Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => _repository.ExistAsync(key, cancellationToken);
 
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
@@ -31,5 +30,8 @@ namespace RepositoryFramework
 
         public Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.UpdateAsync(key, value, cancellationToken);
+
+        public Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+            => _repository.BatchAsync(operations, cancellationToken);
     }
 }

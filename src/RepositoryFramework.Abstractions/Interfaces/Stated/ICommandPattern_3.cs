@@ -9,9 +9,11 @@
     /// <typeparam name="TState">Returning state.</typeparam>
     public interface ICommandPattern<T, TKey, TState> : ICommandPattern
         where TKey : notnull
+        where TState : IState
     {
         Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default);
     }
 }

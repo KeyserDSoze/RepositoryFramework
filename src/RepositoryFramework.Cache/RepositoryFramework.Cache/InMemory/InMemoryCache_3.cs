@@ -4,6 +4,7 @@ namespace RepositoryFramework.Cache
 {
     internal class InMemoryCache<T, TKey, TState> : ICache<T, TKey, TState>
         where TKey : notnull
+        where TState : IState
     {
         private sealed class InMemoryCacheValue
         {

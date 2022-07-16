@@ -19,16 +19,16 @@ namespace RepositoryFramework.UnitTest.Storage
             { "3", new MigrationUser { Id = "3", Name = "Alessia", Email = "Alo@gmail.com", IsAdmin = false } },
             { "4", new MigrationUser { Id = "4", Name = "Alisandro", Email = "Ali@gmail.com", IsAdmin = false } },
         };
-        public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             if (_users.ContainsKey(key))
-                return Task.FromResult(_users.Remove(key));
-            return Task.FromResult(true);
+                return Task.FromResult(new State(_users.Remove(key)));
+            return Task.FromResult(new State(true));
         }
 
-        public Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(_users.ContainsKey(key));
+            return Task.FromResult(new State(_users.ContainsKey(key)));
         }
 
         public Task<MigrationUser?> GetAsync(string key, CancellationToken cancellationToken = default)
@@ -38,10 +38,10 @@ namespace RepositoryFramework.UnitTest.Storage
             return Task.FromResult(default(MigrationUser));
         }
 
-        public Task<bool> InsertAsync(string key, MigrationUser value, CancellationToken cancellationToken = default)
+        public Task<State> InsertAsync(string key, MigrationUser value, CancellationToken cancellationToken = default)
         {
             _users.Add(key, value);
-            return Task.FromResult(true);
+            return Task.FromResult(new State(true));
         }
 
         public Task<IEnumerable<MigrationUser>> QueryAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
@@ -54,10 +54,15 @@ namespace RepositoryFramework.UnitTest.Storage
             var users = _users.Select(x => x.Value).Filter(options);
             return Task.FromResult((long)users.Count());
         }
-        public Task<bool> UpdateAsync(string key, MigrationUser value, CancellationToken cancellationToken = default)
+        public Task<State> UpdateAsync(string key, MigrationUser value, CancellationToken cancellationToken = default)
         {
             _users[key] = value;
-            return Task.FromResult(true);
+            return Task.FromResult(new State(true));
+        }
+
+        public Task<IEnumerable<BatchResult<string, State>>> BatchAsync(IEnumerable<BatchOperation<MigrationUser, string>> operations, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -33,9 +33,9 @@ Repository pattern is a sum of CQRS interfaces.
     public interface ICommandPattern<T, TKey> : ICommandPattern<T, TKey, bool>, ICommandPattern
         where TKey : notnull
     {
-        Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<bool> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<DefaultState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<DefaultState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<DefaultState> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
     }
 
 #### Query (Read)
@@ -43,7 +43,7 @@ Repository pattern is a sum of CQRS interfaces.
         where TKey : notnull
     {
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<DefaultState> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
         Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
     }
@@ -60,16 +60,16 @@ Repository pattern is a sum of CQRS interfaces.
 #### Command (Write-Delete)
     public interface ICommandPattern<T> : ICommandPattern<T, string>, ICommandPattern
     {
-        Task<bool> InsertAsync(string key, T value, CancellationToken cancellationToken = default);
-        Task<bool> UpdateAsync(string key, T value, CancellationToken cancellationToken = default);
-        Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default);
+        Task<DefaultState> InsertAsync(string key, T value, CancellationToken cancellationToken = default);
+        Task<DefaultState> UpdateAsync(string key, T value, CancellationToken cancellationToken = default);
+        Task<DefaultState> DeleteAsync(string key, CancellationToken cancellationToken = default);
     }
 
 #### Query (Read)
     public interface IQueryPattern<T> : IQueryPattern<T, string>, IQueryPattern
     {
         Task<T?> GetAsync(string key, CancellationToken cancellationToken = default);
-        Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default);
+        Task<DefaultState> ExistAsync(string key, CancellationToken cancellationToken = default);
         Task<IEnumerable<T>> QueryAsync(Expression<Func<T, bool>>? predicate = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default);
         Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
         Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
@@ -94,17 +94,17 @@ Repository pattern is a sum of CQRS interfaces.
 #### Command
     public class UserWriter : ICommandPattern<User, string>
     {
-        public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<DefaultState> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<bool> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<DefaultState> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<bool> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<DefaultState> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
@@ -118,7 +118,7 @@ Repository pattern is a sum of CQRS interfaces.
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<DefaultState> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
@@ -140,17 +140,17 @@ if you don't have CQRS infrastructure (usually it's correct to use CQRS when you
 
     public class UserRepository : IRepositoryPattern<User, string>, IQueryPattern<User, string>, ICommandPattern<User, string>
     {
-        public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<DefaultState> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<bool> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<DefaultState> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<bool> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<DefaultState> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
@@ -160,7 +160,7 @@ if you don't have CQRS infrastructure (usually it's correct to use CQRS when you
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<bool> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<DefaultState> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
