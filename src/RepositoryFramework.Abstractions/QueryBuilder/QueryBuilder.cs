@@ -4,6 +4,7 @@ namespace RepositoryFramework
 {
     public class QueryBuilder<T, TKey, TState>
         where TKey : notnull
+        where TState : IState
     {
         private readonly IQueryPattern<T, TKey, TState> _query;
         private readonly QueryOptions<T> _options = new();
@@ -43,7 +44,7 @@ namespace RepositoryFramework
             var items = await QueryAsync(cancellationToken);
             return items.AsQueryable().GroupBy(predicate);
         }
-        public async Task<bool> AnyAsync(CancellationToken cancellationToken = default)
+        public async Task<State> AnyAsync(CancellationToken cancellationToken = default)
         {
             _options.Top = 1;
             return (await _query.QueryAsync(_options, cancellationToken).NoContext()).Any();

@@ -5,6 +5,7 @@ namespace RepositoryFramework.InMemory
 {
     internal class InMemoryStorage<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>
         where TKey : notnull
+        where TState : IState
     {
         private readonly RepositoryBehaviorSettings<T, TKey, TState> _settings;
 
@@ -44,6 +45,8 @@ namespace RepositoryFramework.InMemory
             }
             return default;
         }
+        private static readonly TState False = (TState)Activator.CreateInstance(typeof(TState), new object[] { false })!;
+        private static readonly TState True = (TState)Activator.CreateInstance(typeof(TState), new object[] { true })!;
         private async Task<TState> ExecuteAsync(RepositoryMethod method, Func<bool> action, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(method);
@@ -54,15 +57,15 @@ namespace RepositoryFramework.InMemory
                 if (exception != null)
                 {
                     await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
-                    return _settings.PopulationOfState!.Invoke(false, exception)!;
+                    return False;
                 }
                 if (!cancellationToken.IsCancellationRequested)
-                    return _settings.PopulationOfState!.Invoke(action.Invoke(), null!)!;
+                    return action.Invoke() ? True : False;
                 else
-                    return _settings.PopulationOfState!.Invoke(false, new TaskCanceledException())!;
+                    return False;
             }
             else
-                return _settings.PopulationOfState!.Invoke(false, new TaskCanceledException())!;
+                return False;
         }
         public Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethod.Delete, () =>
@@ -166,9 +169,30 @@ namespace RepositoryFramework.InMemory
                 throw new TaskCanceledException();
         }
         public Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default)
-            => ExecuteAsync(RepositoryMethod.Update, () =>
+            => ExecuteAsync(RepositoryMethod.Exist, () =>
             {
                 return Values.ContainsKey(key);
             }, cancellationToken);
+
+        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        {
+            List<BatchResult<TKey, TState>> results = new();
+            foreach (var operation in operations)
+            {
+                switch (operation.Command)
+                {
+                    case CommandType.Delete:
+                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken)));
+                        break;
+                    case CommandType.Insert:
+                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken)));
+                        break;
+                    case CommandType.Update:
+                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken)));
+                        break;
+                }
+            }
+            return results;
+        }
     }
 }

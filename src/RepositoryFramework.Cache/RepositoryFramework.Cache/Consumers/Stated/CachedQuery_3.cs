@@ -3,7 +3,8 @@
 namespace RepositoryFramework.Cache
 {
     internal class CachedQuery<T, TKey, TState> : IQuery<T, TKey, TState>
-         where TKey : notnull
+        where TKey : notnull
+        where TState : IState
     {
         private protected readonly IQueryPattern<T, TKey, TState> _query;
         private protected readonly ICache<T, TKey, TState>? _cache;
@@ -149,7 +150,7 @@ namespace RepositoryFramework.Cache
             return (Source.Repository, await action.Invoke());
         }
 
-        
+
 
         private enum Source
         {

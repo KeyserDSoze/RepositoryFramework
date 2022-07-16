@@ -12,6 +12,7 @@
     /// <typeparam name="TState">Returning state.</typeparam>
     public class DistributedCacheOptions<T, TKey, TState> : CacheOptions<T, TKey, TState>
         where TKey : notnull
+        where TState : IState
     {
         internal static new DistributedCacheOptions<T, TKey, TState> Default { get; } =
             new DistributedCacheOptions<T, TKey, TState>()

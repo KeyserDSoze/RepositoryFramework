@@ -8,6 +8,7 @@
     /// <typeparam name="TState">Returning state.</typeparam>
     public interface IMigrationSource<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>
         where TKey : notnull
+        where TState : IState
     {
     }
 }

@@ -7,6 +7,7 @@ namespace RepositoryFramework.Cache
 {
     internal class DistributedCache<T, TKey, TState> : IDistributedCache<T, TKey, TState>
         where TKey : notnull
+        where TState : IState
     {
         private readonly IDistributedCache _distributedCache;
 

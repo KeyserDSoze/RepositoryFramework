@@ -7,6 +7,7 @@ namespace RepositoryFramework.Api.Client
 {
     internal class RepositoryClient<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>
         where TKey : notnull
+        where TState : IState
     {
         private readonly HttpClient _httpClient;
         private readonly IRepositoryClientInterceptor? _clientInterceptor;
@@ -71,6 +72,14 @@ namespace RepositoryFramework.Api.Client
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Update)}?key={key}", value, cancellationToken);
             response.EnsureSuccessStatusCode();
             return (await response.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken))!;
+        }
+
+        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        {
+            var client = await EnrichedClientAsync(RepositoryMethod.Batch);
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Batch)}", operations, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return (await response.Content.ReadFromJsonAsync<IEnumerable<BatchResult<TKey, TState>>>(cancellationToken: cancellationToken))!;
         }
     }
 }

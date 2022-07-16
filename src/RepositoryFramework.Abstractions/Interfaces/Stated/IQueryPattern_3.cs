@@ -9,6 +9,7 @@
     /// <typeparam name="TState">Returning state.</typeparam>
     public interface IQueryPattern<T, TKey, TState> : IQueryPattern
         where TKey : notnull
+        where TState : IState
     {
         Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);

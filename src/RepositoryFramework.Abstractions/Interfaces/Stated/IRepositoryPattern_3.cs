@@ -7,7 +7,9 @@
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
     /// <typeparam name="TState">Returning state.</typeparam>
-    public interface IRepositoryPattern<T, TKey, TState> : ICommandPattern<T, TKey, TState>, IQueryPattern<T, TKey, TState>, IRepositoryPattern where TKey : notnull
+    public interface IRepositoryPattern<T, TKey, TState> : ICommandPattern<T, TKey, TState>, IQueryPattern<T, TKey, TState>, IRepositoryPattern 
+        where TKey : notnull
+        where TState : IState
     {
     }
 }

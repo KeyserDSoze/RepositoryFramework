@@ -5,7 +5,7 @@
     /// </summary>
     /// <typeparam name="T">Model used for your repository</typeparam>
     /// <typeparam name="TKey">Key to insert, update or delete your data from repository</typeparam>
-    public interface IMigrationSource<T, TKey> : IMigrationSource<T, TKey, bool>, IRepositoryPattern<T, TKey>
+    public interface IMigrationSource<T, TKey> : IMigrationSource<T, TKey, State>, IRepositoryPattern<T, TKey>
         where TKey : notnull
     {
     }

@@ -19,20 +19,21 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>RepositoryInMemoryBuilder</returns>
         public static RepositoryInMemoryBuilder<T, TKey, TState> AddRepositoryInMemoryStorage<T, TKey, TState>(
             this IServiceCollection services,
-            Func<bool, Exception, TState>? populationOfState,
             Action<RepositoryBehaviorSettings<T, TKey, TState>>? settings = default)
             where TKey : notnull
+            where TState : IState
         {
             InMemoryRepositoryInstalled.PopulationStrategyRetriever.Add((serviceProvider) => serviceProvider.GetService<IPopulationStrategy<T, TKey>>());
             var options = new RepositoryBehaviorSettings<T, TKey, TState>();
             settings?.Invoke(options);
-            options.PopulationOfState = populationOfState;
             Check(options.Get(RepositoryMethod.Insert).ExceptionOdds);
             Check(options.Get(RepositoryMethod.Update).ExceptionOdds);
             Check(options.Get(RepositoryMethod.Delete).ExceptionOdds);
+            Check(options.Get(RepositoryMethod.Batch).ExceptionOdds);
             Check(options.Get(RepositoryMethod.Get).ExceptionOdds);
             Check(options.Get(RepositoryMethod.Query).ExceptionOdds);
             Check(options.Get(RepositoryMethod.Exist).ExceptionOdds);
+            Check(options.Get(RepositoryMethod.Count).ExceptionOdds);
             Check(options.Get(RepositoryMethod.All).ExceptionOdds);
             services.AddSingleton(options);
             services.AddRepository<T, TKey, TState, InMemoryStorage<T, TKey, TState>>(ServiceLifetime.Singleton);

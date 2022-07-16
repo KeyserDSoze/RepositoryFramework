@@ -20,7 +20,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             public string Value { get; set; } = null!;
             public global::Azure.ETag ETag { get; set; }
         }
-        public async Task<bool> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<State> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.DeleteEntityAsync(key!.ToString(), string.Empty, cancellationToken: cancellationToken);
             return !response.IsError;
@@ -33,13 +33,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                 return JsonSerializer.Deserialize<T>(response.Value.Value);
             return default;
         }
-        public async Task<bool> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<State> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.GetEntityAsync<TableEntity>(key!.ToString(), string.Empty, cancellationToken: cancellationToken);
             return response?.Value != null;
         }
 
-        public Task<bool> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<State> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
         public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
@@ -62,7 +62,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             IEnumerable<T> results = entities.Filter(options);
             return results.Count();
         }
-        public async Task<bool> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<State> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var response = await _client.UpsertEntityAsync(new TableEntity
             {
@@ -71,6 +71,27 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                 Value = JsonSerializer.Serialize(value)
             }, TableUpdateMode.Replace, cancellationToken);
             return !response.IsError;
+        }
+
+        public async Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        {
+            List<BatchResult<TKey, State>> results = new();
+            foreach (var operation in operations)
+            {
+                switch (operation.Command)
+                {
+                    case CommandType.Delete:
+                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken)));
+                        break;
+                    case CommandType.Insert:
+                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken)));
+                        break;
+                    case CommandType.Update:
+                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken)));
+                        break;
+                }
+            }
+            return results;
         }
     }
 }

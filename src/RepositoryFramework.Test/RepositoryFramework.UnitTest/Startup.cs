@@ -12,7 +12,7 @@ namespace RepositoryFramework.UnitTest
 {
     public class Startup
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "It needed for DI")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "DI for test")]
         public void ConfigureServices(IServiceCollection services)
         {
             IConfiguration configuration = new ConfigurationBuilder()
@@ -57,16 +57,7 @@ namespace RepositoryFramework.UnitTest
                 .PopulateWithRandomData(x => x.Id!, 100)
                 .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com")
                 .And()
-                .AddRepositoryInMemoryStorage<IperUser, string, bool>(
-                (result, exception) =>
-                {
-                    if (result)
-                        return true;
-                    else if (exception != null)
-                        throw exception;
-                    else
-                        return false;
-                },
+                .AddRepositoryInMemoryStorage<IperUser, string, State>(
                 options =>
                 {
                     var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
@@ -234,8 +225,8 @@ namespace RepositoryFramework.UnitTest
                     .AddRepository<SuperMigrationUser, string, SuperMigrationTo>()
                     .AddMigrationSource<SuperMigrationUser, string, SuperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                     .Services
-                    .AddRepository<IperMigrationUser, string, bool, IperMigrationTo>()
-                    .AddMigrationSource<IperMigrationUser, string, bool, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2, x => x)
+                    .AddRepository<IperMigrationUser, string, State, IperMigrationTo>()
+                    .AddMigrationSource<IperMigrationUser, string, State, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2, x => x)
                     .Services
                 .BuildServiceProvider();
             serviceProvider.CreateScope().ServiceProvider.Populate();
