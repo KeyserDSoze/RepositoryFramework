@@ -73,7 +73,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             return !response.IsError;
         }
 
-        public async Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             List<BatchResult<TKey, State>> results = new();
             foreach (var operation in operations)

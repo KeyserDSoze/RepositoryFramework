@@ -174,7 +174,7 @@ namespace RepositoryFramework.InMemory
                 return Values.ContainsKey(key);
             }, cancellationToken);
 
-        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             List<BatchResult<TKey, TState>> results = new();
             foreach (var operation in operations)

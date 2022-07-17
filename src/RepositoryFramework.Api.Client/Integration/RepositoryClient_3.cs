@@ -71,7 +71,7 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken))!;
         }
-        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Batch);
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Batch)}", operations, cancellationToken);

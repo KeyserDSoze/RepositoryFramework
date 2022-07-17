@@ -41,9 +41,9 @@ namespace RepositoryFramework.InMemory
             Expression<Func<T, TKey>> navigationKey,
             IEnumerable<T> elements)
         {
-            var keyType = navigationKey.GetPropertyBasedOnKey();
+            var keyProperty = navigationKey.GetPropertyBasedOnKey();
             foreach (var element in elements)
-                InMemoryStorage<T, TKey>.Values.Add((TKey)keyType.GetValue(element)!, element);
+                InMemoryStorage<T, TKey>.Values.Add((TKey)keyProperty.GetValue(element)!, element);
             return this;
         }
         public RepositoryInMemoryCreatorBuilder<T, TKey, TState> PopulateWithRandomData(

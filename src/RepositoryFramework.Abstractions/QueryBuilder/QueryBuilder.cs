@@ -41,7 +41,7 @@ namespace RepositoryFramework
         }
         public async Task<IEnumerable<IGrouping<TProperty, T>>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
         {
-            var items = await QueryAsync(cancellationToken);
+            var items = await QueryAsync(cancellationToken).NoContext();
             return items.AsQueryable().GroupBy(predicate);
         }
         public async Task<State> AnyAsync(CancellationToken cancellationToken = default)

@@ -153,7 +153,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
                 return new State(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created);
             });
-        public async Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             List<BatchResult<TKey, State>> results = new();
             foreach (var operation in operations)

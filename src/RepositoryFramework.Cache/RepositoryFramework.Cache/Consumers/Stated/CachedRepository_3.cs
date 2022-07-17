@@ -20,7 +20,7 @@
             _command = command;
         }
 
-        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             var results = await (_repository ?? _command!).BatchAsync(operations, cancellationToken);
             foreach (var result in results)

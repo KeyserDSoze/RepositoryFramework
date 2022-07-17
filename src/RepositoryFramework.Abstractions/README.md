@@ -9,7 +9,7 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
         Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default);
+        Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default);
     }
 
 #### Query (Read)
@@ -40,7 +40,7 @@ Repository pattern is a sum of CQRS interfaces.
         Task<State> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<State> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<State> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default);
+        Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default);
     }
 
 #### Query (Read)
