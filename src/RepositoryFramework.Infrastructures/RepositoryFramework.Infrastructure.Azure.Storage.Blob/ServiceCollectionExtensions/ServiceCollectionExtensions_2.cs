@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Configure Azure Storage connection strings.</param>
         /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// <param name="isInvisibleForApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static RepositoryBuilder<T, TKey> AddRepositoryInBlobStorage<T, TKey>(
@@ -25,12 +25,12 @@ namespace Microsoft.Extensions.DependencyInjection
            string connectionString,
            string? name = null,
            BlobClientOptions? clientOptions = null,
-           bool isPrivate = false)
+           bool isInvisibleForApi = false)
             where TKey : notnull
         {
             BlobServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
-            return services.AddRepository<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton, isPrivate);
+            return services.AddRepository<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton, isInvisibleForApi);
         }
         /// <summary>
         /// Add a default blob storage service for your command pattern.
@@ -43,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Configure Azure Storage connection strings.</param>
         /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// <param name="isInvisibleForApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static RepositoryBuilder<T, TKey> AddCommandInBlobStorage<T, TKey>(
@@ -51,12 +51,12 @@ namespace Microsoft.Extensions.DependencyInjection
            string connectionString,
            string? name = null,
            BlobClientOptions? clientOptions = null,
-           bool isPrivate = false)
+           bool isInvisibleForApi = false)
             where TKey : notnull
         {
             BlobServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
-            return services.AddCommand<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton, isPrivate);
+            return services.AddCommand<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton, isInvisibleForApi);
         }
         /// <summary>
         /// Add a default blob storage service for your query pattern.
@@ -69,7 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Configure Azure Storage connection strings.</param>
         /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// <param name="isInvisibleForApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static RepositoryBuilder<T, TKey> AddQueryInBlobStorage<T, TKey>(
@@ -77,12 +77,12 @@ namespace Microsoft.Extensions.DependencyInjection
            string connectionString,
            string? name = null,
            BlobClientOptions? clientOptions = null,
-           bool isPrivate = false)
+           bool isInvisibleForApi = false)
             where TKey : notnull
         {
             BlobServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
-            return services.AddQuery<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton, isPrivate);
+            return services.AddQuery<T, TKey, BlobStorageRepository<T, TKey>>(ServiceLifetime.Singleton, isInvisibleForApi);
         }
     }
 }

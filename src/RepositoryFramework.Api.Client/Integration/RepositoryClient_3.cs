@@ -7,7 +7,7 @@ namespace RepositoryFramework.Api.Client
 {
     internal class RepositoryClient<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
         private readonly HttpClient _httpClient;
         private readonly IRepositoryClientInterceptor? _clientInterceptor;
@@ -35,7 +35,6 @@ namespace RepositoryFramework.Api.Client
             var client = await EnrichedClientAsync(RepositoryMethod.Delete);
             return (await client.GetFromJsonAsync<TState>($"{nameof(RepositoryMethod.Delete)}?key={key}", cancellationToken))!;
         }
-
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Get);
@@ -53,7 +52,6 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response!.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken))!;
         }
-
         public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Query);
@@ -73,7 +71,6 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken))!;
         }
-
         public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(IEnumerable<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Batch);

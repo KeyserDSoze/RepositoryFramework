@@ -20,15 +20,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IServiceCollection</returns>
         public static RepositoryBuilder<T, TKey, TState> AddMigrationSource<T, TKey, TState, TMigrationSource>(this RepositoryBuilder<T, TKey, TState> builder,
             Action<MigrationOptions<T, TKey, TState>> settings,
-            Func<TState, bool> checkIfIsAnOkState,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TMigrationSource : class, IMigrationSource<T, TKey, TState>
             where TKey : notnull
-            where TState : IState
+            where TState : class, IState
         {
             var options = new MigrationOptions<T, TKey, TState>();
             settings?.Invoke(options);
-            options.CheckIfIsAnOkState = checkIfIsAnOkState;
             builder.Services
                 .AddSingleton(options)
                 .AddService<IMigrationSource<T, TKey, TState>, TMigrationSource>(serviceLifetime)

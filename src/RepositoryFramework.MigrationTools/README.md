@@ -16,14 +16,14 @@ and let the sorcery happen
 
     var migrationResult = await _migrationService.MigrateAsync(x => x.Id!, true);
 
-### Sample with a bool as TState and a string as TKey
+### Sample with a State as TState and a string as TKey
     
-    .AddRepository<IperMigrationUser, string, bool, IperMigrationTo>()
-    .AddMigrationSource<IperMigrationUser, string, bool, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2, x => x)
+    .AddRepository<IperMigrationUser, string, State, IperMigrationTo>()
+    .AddMigrationSource<IperMigrationUser, string, State, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2, x => x)
 
 Now you may use the interface in DI
 
-    IMigrationManager<MigrationUser, string, bool> migrationService
+    IMigrationManager<MigrationUser, string, State> migrationService
 
 and let the sorcery happen
 

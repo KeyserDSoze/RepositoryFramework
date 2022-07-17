@@ -79,7 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<AuthenticatorSettings<T>>? settings = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TKey : notnull
-            where TState : IState
+            where TState : class, IState
         {
             var options = new AuthenticatorSettings<T>();
             settings?.Invoke(options);

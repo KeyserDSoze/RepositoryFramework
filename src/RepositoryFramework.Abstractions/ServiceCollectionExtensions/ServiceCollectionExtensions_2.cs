@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         /// <summary>
         /// Add repository storage, inject the IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
-        /// with a bool as state.
+        /// with a State as TState.
         /// </summary>
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         /// Add Command storage for your CQRS, inject the ICommand<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
-        /// with a bool as state.
+        /// with a State as TState.
         /// </summary>
         /// <typeparam name="T">Model used for your command.</typeparam>
         /// <typeparam name="TKey">Key to store, update or delete your data.</typeparam>
@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         /// Add Query storage for your CQRS, inject the IQuery<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
-        /// with a bool as state.
+        /// with a State as TState.
         /// </summary>
         /// <typeparam name="T">Model used for your query.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>

@@ -86,14 +86,14 @@ or a specific interceptor for every model
         where TInterceptor : class, IRepositoryClientInterceptor<T>
         where TKey : notnull
 
-or for a bool as default TState 
+or for a State as default TState 
 
     public static RepositoryBuilder<T, TKey> AddApiClientSpecificInterceptor<T, TKey, TInterceptor>(this RepositoryBuilder<T, TKey> builder,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TInterceptor : class, IRepositoryClientInterceptor<T>
         where TKey : notnull
 
-or for a bool as default TState and string as default TKey
+or for a State as default TState and string as default TKey
 
     public static RepositoryBuilder<T> AddApiClientSpecificInterceptor<T, TInterceptor>(this RepositoryBuilder<T> builder,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)

@@ -9,7 +9,7 @@
     /// <typeparam name="TState">Returning state.</typeparam>
     public interface ICommandPattern<T, TKey, TState> : ICommandPattern
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
         Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);

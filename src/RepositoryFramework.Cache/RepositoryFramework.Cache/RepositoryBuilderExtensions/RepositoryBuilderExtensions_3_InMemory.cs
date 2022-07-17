@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
            this RepositoryBuilder<T, TKey, TState> builder,
            Action<CacheOptions<T, TKey, TState>>? settings = null)
             where TKey : notnull
-            where TState : IState
+            where TState : class, IState
             => builder.WithCache<T, TKey, TState, InMemoryCache<T, TKey, TState>>(settings, ServiceLifetime.Singleton);
     }
 }

@@ -9,7 +9,7 @@
     /// <typeparam name="TState">Returning state.</typeparam>
     public interface IRepository<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
 
     }

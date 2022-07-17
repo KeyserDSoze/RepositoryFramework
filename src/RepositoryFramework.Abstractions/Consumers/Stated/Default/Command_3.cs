@@ -2,7 +2,7 @@
 {
     internal class Command<T, TKey, TState> : ICommand<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
         private readonly ICommandPattern<T, TKey, TState> _command;
 
