@@ -10,6 +10,7 @@
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed", Justification = "It's not used but it's needed for the return methods that use this class.")]
     public class RepositoryBehaviorSettings<T, TKey, TState>
         where TKey : notnull
+        where TState : class, IState
     {
         private readonly Dictionary<RepositoryMethod, MethodBehaviorSetting> _settings = new();
         internal int? NumberOfParameters { get; set; }
@@ -27,12 +28,14 @@
             Add(RepositoryMethod.Insert, setting);
             Add(RepositoryMethod.Update, setting);
             Add(RepositoryMethod.Delete, setting);
+            Add(RepositoryMethod.Batch, setting);
         }
         public void AddForQueryPattern(MethodBehaviorSetting setting)
         {
             Add(RepositoryMethod.Get, setting);
             Add(RepositoryMethod.Query, setting);
             Add(RepositoryMethod.Exist, setting);
+            Add(RepositoryMethod.Count, setting);
         }
         public void AddForInsert(MethodBehaviorSetting setting)
             => Add(RepositoryMethod.Insert, setting);
@@ -40,12 +43,16 @@
             => Add(RepositoryMethod.Update, setting);
         public void AddForDelete(MethodBehaviorSetting setting)
             => Add(RepositoryMethod.Delete, setting);
+        public void AddForBatch(MethodBehaviorSetting setting)
+            => Add(RepositoryMethod.Batch, setting);
         public void AddForGet(MethodBehaviorSetting setting)
             => Add(RepositoryMethod.Get, setting);
         public void AddForQuery(MethodBehaviorSetting setting)
             => Add(RepositoryMethod.Query, setting);
         public void AddForExist(MethodBehaviorSetting setting)
             => Add(RepositoryMethod.Exist, setting);
+        public void AddForCount(MethodBehaviorSetting setting)
+            => Add(RepositoryMethod.Count, setting);
         public MethodBehaviorSetting Get(RepositoryMethod method)
         {
             if (_settings.ContainsKey(method))

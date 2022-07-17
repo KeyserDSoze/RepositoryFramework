@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<HttpClient>? configureClient = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : IState
+            where TState : class, IState
         {
             services.AddHttpClient($"{typeof(T).Name}{Const.HttpClientName}", options =>
             {
@@ -45,12 +45,12 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : IState
+            where TState : class, IState
             => services.AddApiClient<T, TKey, TState>(PatternType.Repository, domain, startingPath, configureClient, serviceLifetime);
 
         /// <summary>
         /// Add a Command Client as ICommand<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>> with a domain and a starting path
-        /// and with a bool as state.
+        /// and with a State as TState.
         /// The final url will be https://{domain}/{startingPath}/
         /// </summary>
         /// <typeparam name="T">Model used for your repository.</typeparam>
@@ -68,12 +68,12 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : IState
+            where TState : class, IState
             => services.AddApiClient<T, TKey, TState>(PatternType.Command, domain, startingPath, configureClient, serviceLifetime);
 
         /// <summary>
         /// Add a Command Client as IQuery<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>> with a domain and a starting path
-        /// and with a bool as state.
+        /// and with a State as TState.
         /// The final url will be https://{domain}/{startingPath}/
         /// </summary>
         /// <typeparam name="T">Model used for your repository.</typeparam>
@@ -91,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : IState
+            where TState : class, IState
             => services.AddApiClient<T, TKey, TState>(PatternType.Query, domain, startingPath, configureClient, serviceLifetime);
     }
 }

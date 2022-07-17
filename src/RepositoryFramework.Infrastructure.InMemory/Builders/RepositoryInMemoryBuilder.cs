@@ -7,7 +7,7 @@ namespace RepositoryFramework.InMemory
 {
     public class RepositoryInMemoryBuilder<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
         private readonly IServiceCollection _services;
         private readonly CreationSettings _internalBehaviorSettings = new();
@@ -21,7 +21,7 @@ namespace RepositoryFramework.InMemory
         public RepositoryInMemoryBuilder<TNext, TNextKey, TNextState> AddRepositoryInMemoryStorage<TNext, TNextKey, TNextState>(
             Action<RepositoryBehaviorSettings<TNext, TNextKey, TNextState>>? settings = default)
             where TNextKey : notnull
-            where TNextState : IState
+            where TNextState : class, IState
             => _services!.AddRepositoryInMemoryStorage(settings);
         public RepositoryInMemoryBuilder<TNext, TNextKey, State> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey, State>>? settings = default)
             where TNextKey : notnull

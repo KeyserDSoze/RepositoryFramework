@@ -3,7 +3,7 @@
 namespace RepositoryFramework
 {
     /// <summary>
-    /// Builder with string as default TKey and bool as default TState.
+    /// Builder with string as default TKey and State as default TState.
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
     public class RepositoryBuilder<T> : RepositoryBuilder<T, string>

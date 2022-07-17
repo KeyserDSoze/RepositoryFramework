@@ -2,7 +2,7 @@
 {
     public interface IDistributedCache<T, TKey, TState> : ICache<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
     }
 }

@@ -13,18 +13,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// <param name="isInvisibleForApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
         public static RepositoryBuilder<T> AddRepositoryInBlobStorage<T>(
            this IServiceCollection services,
            Uri endpointUri,
            BlobClientOptions? clientOptions = null,
-           bool isPrivate = false)
+           bool isInvisibleForApi = false)
         {
             BlobServiceClientFactory.Instance.Add(typeof(T).Name, endpointUri, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
-            return services.AddRepository<T, BlobStorageRepository<T>>(ServiceLifetime.Singleton, isPrivate);
+            return services.AddRepository<T, BlobStorageRepository<T>>(ServiceLifetime.Singleton, isInvisibleForApi);
         }
         /// <summary>
         /// Add a default blob storage service for your command pattern.
@@ -33,18 +33,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// <param name="isInvisibleForApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
         public static RepositoryBuilder<T> AddCommandInBlobStorage<T>(
            this IServiceCollection services,
            Uri endpointUri,
            BlobClientOptions? clientOptions = null,
-           bool isPrivate = false)
+           bool isInvisibleForApi = false)
         {
             BlobServiceClientFactory.Instance.Add(typeof(T).Name, endpointUri, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
-            return services.AddCommand<T, BlobStorageRepository<T>>(ServiceLifetime.Singleton, isPrivate);
+            return services.AddCommand<T, BlobStorageRepository<T>>(ServiceLifetime.Singleton, isInvisibleForApi);
         }
         /// <summary>
         /// Add a default blob storage service for your query pattern.
@@ -53,18 +53,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// <param name="isInvisibleForApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
         public static RepositoryBuilder<T> AddQueryInBlobStorage<T>(
            this IServiceCollection services,
            Uri endpointUri,
            BlobClientOptions? clientOptions = null,
-           bool isPrivate = false)
+           bool isInvisibleForApi = false)
         {
             BlobServiceClientFactory.Instance.Add(typeof(T).Name, endpointUri, clientOptions);
             services.AddSingleton(BlobServiceClientFactory.Instance);
-            return services.AddQuery<T, BlobStorageRepository<T>>(ServiceLifetime.Singleton, isPrivate);
+            return services.AddQuery<T, BlobStorageRepository<T>>(ServiceLifetime.Singleton, isInvisibleForApi);
         }
     }
 }

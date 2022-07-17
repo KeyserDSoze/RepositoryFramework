@@ -226,7 +226,7 @@ namespace RepositoryFramework.UnitTest
                     .AddMigrationSource<SuperMigrationUser, string, SuperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                     .Services
                     .AddRepository<IperMigrationUser, string, State, IperMigrationTo>()
-                    .AddMigrationSource<IperMigrationUser, string, State, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2, x => x)
+                    .AddMigrationSource<IperMigrationUser, string, State, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                     .Services
                 .BuildServiceProvider();
             serviceProvider.CreateScope().ServiceProvider.Populate();

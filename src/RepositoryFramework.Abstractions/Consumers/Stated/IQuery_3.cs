@@ -9,7 +9,7 @@
     /// <typeparam name="TState">Returning state.</typeparam>
     public interface IQuery<T, TKey, TState> : IQueryPattern<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
 
     }

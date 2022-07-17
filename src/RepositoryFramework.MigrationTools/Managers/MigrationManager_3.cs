@@ -4,7 +4,7 @@ namespace RepositoryFramework.Migration
 {
     internal class MigrationManager<T, TKey, TState> : IMigrationManager<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
         private readonly IMigrationSource<T, TKey, TState> _from;
         private readonly IRepositoryPattern<T, TKey, TState> _to;
@@ -35,7 +35,7 @@ namespace RepositoryFramework.Migration
                 async Task TryToMigrate()
                 {
                     var key = (TKey)keyProperty!.GetValue(entity)!;
-                    if (checkIfExists && _options?.CheckIfIsAnOkState?.Invoke(await _to.ExistAsync(key, cancellationToken)) == true)
+                    if (checkIfExists && (await _to.ExistAsync(key, cancellationToken)).IsOk)
                         return;
                     await _to.InsertAsync(key, entity!, cancellationToken);
                 }

@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         /// <summary>
         /// Add a Repository Client as IRepository<<typeparamref name="T"/>> with a domain and a starting path
-        /// and with a string as key and a bool as state.
+        /// and with a string as key and a State as TState.
         /// The final url will be https://{domain}/{startingPath}/
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
@@ -44,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
             => services.AddApiClient<T>(PatternType.Repository, domain, startingPath, configureClient, serviceLifetime);
         /// <summary>
         /// Add a Command Client as ICommand<<typeparamref name="T"/>> with a domain and a starting path
-        /// and with a string as key and a bool as state.
+        /// and with a string as key and a State as TState.
         /// The final url will be https://{domain}/{startingPath}/
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
@@ -62,7 +62,7 @@ namespace Microsoft.Extensions.DependencyInjection
             => services.AddApiClient<T>(PatternType.Command, domain, startingPath, configureClient, serviceLifetime);
         /// <summary>
         /// Add a Command Client as IQuery<<typeparamref name="T"/>> with a domain and a starting path
-        /// and with a string as key and a bool as state.
+        /// and with a string as key and a State as TState.
         /// The final url will be https://{domain}/{startingPath}/
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>

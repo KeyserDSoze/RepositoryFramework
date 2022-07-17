@@ -4,7 +4,7 @@ namespace RepositoryFramework.Cache
 {
     internal class CachedQuery<T, TKey, TState> : IQuery<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
         private protected readonly IQueryPattern<T, TKey, TState> _query;
         private protected readonly ICache<T, TKey, TState>? _cache;
@@ -123,7 +123,6 @@ namespace RepositoryFramework.Cache
 
             return value.Response;
         }
-
         private Task SaveOnCacheAsync<TResponse>(string key, TResponse response, Source source, bool inMemory, bool inDistributed, CancellationToken cancellationToken)
         {
             List<Task> cacheSaverTasks = new();

@@ -9,7 +9,7 @@
     /// <typeparam name="TState">Returning state.</typeparam>
     public interface ICommand<T, TKey, TState> : ICommandPattern<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
     }
 }

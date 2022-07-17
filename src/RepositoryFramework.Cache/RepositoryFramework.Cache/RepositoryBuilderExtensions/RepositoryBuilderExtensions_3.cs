@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
            Action<CacheOptions<T, TKey, TState>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : IState
+            where TState : class, IState
             where TCache : class, ICache<T, TKey, TState>
         {
             var options = new CacheOptions<T, TKey, TState>();
@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
            Action<DistributedCacheOptions<T, TKey, TState>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : IState
+            where TState : class, IState
             where TCache : class, IDistributedCache<T, TKey, TState>
         {
             var options = new DistributedCacheOptions<T, TKey, TState>();

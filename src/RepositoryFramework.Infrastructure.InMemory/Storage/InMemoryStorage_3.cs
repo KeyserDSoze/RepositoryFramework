@@ -5,7 +5,7 @@ namespace RepositoryFramework.InMemory
 {
     internal class InMemoryStorage<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>
         where TKey : notnull
-        where TState : IState
+        where TState : class, IState
     {
         private readonly RepositoryBehaviorSettings<T, TKey, TState> _settings;
 
