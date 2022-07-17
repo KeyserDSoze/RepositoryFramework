@@ -2,6 +2,10 @@
 
 # Repository Framework
 
+### Help the project
+
+Reach out us on [Discord](https://discord.gg/wUh2fppr)
+
 ### Contribute: https://www.buymeacoffee.com/keyserdsoze
 
 ## [Showcase (youtube)](https://www.youtube.com/watch?v=xxZO5anN5xg)
