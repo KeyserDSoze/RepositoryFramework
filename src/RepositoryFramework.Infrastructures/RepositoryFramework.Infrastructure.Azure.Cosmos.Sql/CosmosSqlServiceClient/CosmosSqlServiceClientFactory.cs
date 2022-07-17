@@ -28,8 +28,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             {
                 var databaseResponse = cosmosClient.CreateDatabaseIfNotExistsAsync(databaseName,
                     databaseOptions?.ThroughputProperties,
-                    databaseOptions?.RequestOptions)
-                        .ConfigureAwait(false).GetAwaiter().GetResult();
+                    databaseOptions?.RequestOptions).ToResult();
                 if (databaseResponse.StatusCode == HttpStatusCode.OK || databaseResponse.StatusCode == HttpStatusCode.Created)
                 {
                     var containerResponse = databaseResponse.Database.CreateContainerIfNotExistsAsync(

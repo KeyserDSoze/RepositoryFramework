@@ -22,20 +22,20 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         }
         public async Task<State> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var response = await _client.DeleteEntityAsync(key!.ToString(), string.Empty, cancellationToken: cancellationToken);
+            var response = await _client.DeleteEntityAsync(key!.ToString(), string.Empty, cancellationToken: cancellationToken).NoContext();
             return !response.IsError;
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var response = await _client.GetEntityAsync<TableEntity>(key!.ToString(), string.Empty, cancellationToken: cancellationToken);
+            var response = await _client.GetEntityAsync<TableEntity>(key!.ToString(), string.Empty, cancellationToken: cancellationToken).NoContext();
             if (response?.Value != null)
                 return JsonSerializer.Deserialize<T>(response.Value.Value);
             return default;
         }
         public async Task<State> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var response = await _client.GetEntityAsync<TableEntity>(key!.ToString(), string.Empty, cancellationToken: cancellationToken);
+            var response = await _client.GetEntityAsync<TableEntity>(key!.ToString(), string.Empty, cancellationToken: cancellationToken).NoContext();
             return response?.Value != null;
         }
 
@@ -69,11 +69,11 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                 PartitionKey = key!.ToString()!,
                 RowKey = string.Empty,
                 Value = JsonSerializer.Serialize(value)
-            }, TableUpdateMode.Replace, cancellationToken);
+            }, TableUpdateMode.Replace, cancellationToken).NoContext();
             return !response.IsError;
         }
 
-        public async Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<List<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             List<BatchResult<TKey, State>> results = new();
             foreach (var operation in operations)
@@ -81,13 +81,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                 switch (operation.Command)
                 {
                     case CommandType.Delete:
-                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken).NoContext()));
                         break;
                     case CommandType.Insert:
-                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
                         break;
                     case CommandType.Update:
-                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
                         break;
                 }
             }

@@ -27,7 +27,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         {
             if (!_tableServiceClientFactories.ContainsKey(name))
             {
-                _ = serviceClient.CreateTableIfNotExistsAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
+                _ = serviceClient.CreateTableIfNotExistsAsync(name).ToResult();
                 _tableServiceClientFactories.Add(name, tableClient);
             }
             return this;

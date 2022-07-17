@@ -29,13 +29,13 @@ namespace RepositoryFramework.UnitTest
             switch (numberOfParameters)
             {
                 case 1:
-                    users = await _user1.QueryAsync();
+                    users = await _user1.QueryAsync().NoContext();
                     break;
                 case 2:
-                    users = await _user2.QueryAsync();
+                    users = await _user2.QueryAsync().NoContext();
                     break;
                 case 3:
-                    users = await _user3.QueryAsync();
+                    users = await _user3.QueryAsync().NoContext();
                     break;
             }
             Assert.Equal(100, users.Count());

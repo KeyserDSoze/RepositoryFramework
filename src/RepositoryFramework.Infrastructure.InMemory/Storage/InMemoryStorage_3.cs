@@ -50,13 +50,13 @@ namespace RepositoryFramework.InMemory
         private async Task<TState> ExecuteAsync(RepositoryMethod method, Func<bool> action, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(method);
-            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
             if (!cancellationToken.IsCancellationRequested)
             {
                 var exception = GetException(settings.ExceptionOdds);
                 if (exception != null)
                 {
-                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken).NoContext();
                     return False;
                 }
                 if (!cancellationToken.IsCancellationRequested)
@@ -78,13 +78,13 @@ namespace RepositoryFramework.InMemory
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethod.Get);
-            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
             if (!cancellationToken.IsCancellationRequested)
             {
                 var exception = GetException(settings.ExceptionOdds);
                 if (exception != null)
                 {
-                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken).NoContext();
                     throw exception;
                 }
                 if (!cancellationToken.IsCancellationRequested)
@@ -125,13 +125,13 @@ namespace RepositoryFramework.InMemory
         public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethod.Query);
-            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
             if (!cancellationToken.IsCancellationRequested)
             {
                 var exception = GetException(settings.ExceptionOdds);
                 if (exception != null)
                 {
-                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken).NoContext();
                     throw exception;
                 }
                 if (!cancellationToken.IsCancellationRequested)
@@ -148,13 +148,13 @@ namespace RepositoryFramework.InMemory
         public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethod.Count);
-            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken);
+            await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
             if (!cancellationToken.IsCancellationRequested)
             {
                 var exception = GetException(settings.ExceptionOdds);
                 if (exception != null)
                 {
-                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken);
+                    await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken).NoContext();
                     throw exception;
                 }
                 if (!cancellationToken.IsCancellationRequested)
@@ -174,7 +174,7 @@ namespace RepositoryFramework.InMemory
                 return Values.ContainsKey(key);
             }, cancellationToken);
 
-        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<List<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             List<BatchResult<TKey, TState>> results = new();
             foreach (var operation in operations)
@@ -182,13 +182,13 @@ namespace RepositoryFramework.InMemory
                 switch (operation.Command)
                 {
                     case CommandType.Delete:
-                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken).NoContext()));
                         break;
                     case CommandType.Insert:
-                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
                         break;
                     case CommandType.Update:
-                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
                         break;
                 }
             }

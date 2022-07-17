@@ -29,13 +29,13 @@ namespace RepositoryFramework.Api.Client.DefaultInterceptor
         {
             try
             {
-                var token = await _tokenProvider.GetAccessTokenForUserAsync(_settings.Scopes!);
+                var token = await _tokenProvider.GetAccessTokenForUserAsync(_settings.Scopes!).NoContext();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
             catch (Exception exception)
             {
                 if (_settings.ExceptionHandler != null)
-                    await _settings.ExceptionHandler.Invoke(exception, _provider);
+                    await _settings.ExceptionHandler.Invoke(exception, _provider).NoContext();
             }
             return client;
         }

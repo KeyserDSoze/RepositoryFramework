@@ -31,7 +31,7 @@ namespace RepositoryFramework.UnitTest
         [Fact]
         public async Task TestWithoutRegexAsync()
         {
-            var all = await _test.QueryAsync();
+            var all = await _test.QueryAsync().NoContext();
             var theFirst = all.First();
             Assert.NotEqual(0, theFirst.A);
             Assert.NotNull(theFirst.AA);
@@ -99,7 +99,7 @@ namespace RepositoryFramework.UnitTest
         [Fact]
         public async Task TestWithRegexAsync()
         {
-            var all = await _population.QueryAsync();
+            var all = await _population.QueryAsync().NoContext();
             var theFirst = all.First();
             Assert.Equal(90, all.Count());
             Assert.Equal(0, all.First().Id);
@@ -166,7 +166,7 @@ namespace RepositoryFramework.UnitTest
         [Fact]
         public async Task TestWithDelegationAsync()
         {
-            var all = await _delegation.QueryAsync();
+            var all = await _delegation.QueryAsync().NoContext();
             var theFirst = all.First();
             Assert.Equal(2, theFirst.A);
             Assert.NotNull(theFirst.AA);
@@ -244,8 +244,8 @@ namespace RepositoryFramework.UnitTest
         [Fact]
         public async Task TestWithAutoincrementAsync()
         {
-            var all = await _autoincrementRepository.QueryAsync();
-            var all2 = await _autoincrementRepository2.QueryAsync();
+            var all = await _autoincrementRepository.QueryAsync().NoContext();
+            var all2 = await _autoincrementRepository2.QueryAsync().NoContext();
             Assert.Equal(0, all.First().Id);
             Assert.Equal(99, all.Last().Id);
             Assert.Equal(1, all2.First().Id);

@@ -43,7 +43,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         public Task<State> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(key, RepositoryMethod.Delete, async () =>
             {
-                var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
                 return new State(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent);
             });
 
@@ -51,14 +51,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         public Task<State> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(key, RepositoryMethod.Exist, async () =>
                 {
-                    var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                    var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
                     return new State(response.StatusCode == HttpStatusCode.OK);
                 });
 
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         => ExecuteAsync(key, RepositoryMethod.Get, async () =>
             {
-                var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
                 if (response.StatusCode == HttpStatusCode.OK)
                     return response.Resource;
                 else
@@ -71,7 +71,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 flexible.TryAdd("id", key.ToString());
                 foreach (var property in _properties)
                     flexible.TryAdd(property.Name, property.GetValue(value));
-                var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
                 return new State(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created);
             });
 
@@ -99,7 +99,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                     {
                         if (cancellationToken.IsCancellationRequested)
                             return items;
-                        foreach (var item in await iterator.ReadNextAsync(cancellationToken))
+                        foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
                         {
                             items.Add(item);
                             if (cancellationToken.IsCancellationRequested)
@@ -133,7 +133,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                     {
                         if (cancellationToken.IsCancellationRequested)
                             return items.Count;
-                        foreach (var item in await iterator.ReadNextAsync(cancellationToken))
+                        foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
                         {
                             items.Add(item);
                             if (cancellationToken.IsCancellationRequested)
@@ -150,10 +150,10 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 flexible.TryAdd("id", key.ToString());
                 foreach (var property in _properties)
                     flexible.TryAdd(property.Name, property.GetValue(value));
-                var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken);
+                var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
                 return new State(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created);
             });
-        public async Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<List<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             List<BatchResult<TKey, State>> results = new();
             foreach (var operation in operations)
@@ -161,13 +161,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 switch (operation.Command)
                 {
                     case CommandType.Delete:
-                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken).NoContext()));
                         break;
                     case CommandType.Insert:
-                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
                         break;
                     case CommandType.Update:
-                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
                         break;
                 }
             }

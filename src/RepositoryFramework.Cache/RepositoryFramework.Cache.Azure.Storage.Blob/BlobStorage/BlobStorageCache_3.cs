@@ -15,9 +15,9 @@ namespace RepositoryFramework.Cache.Azure.Storage.Blob
 
         public async Task<(bool IsPresent, TValue Response)> RetrieveAsync<TValue>(string key, CancellationToken cancellationToken = default)
         {
-            if (await _repository.ExistAsync(key, cancellationToken))
+            if (await _repository.ExistAsync(key, cancellationToken).NoContext())
             {
-                var result = await _repository.GetAsync(key, cancellationToken);
+                var result = await _repository.GetAsync(key, cancellationToken).NoContext();
                 if (DateTime.UtcNow < (result?.Expiration ?? DateTime.MaxValue))
                     return (true, result?.Value != null ? JsonSerializer.Deserialize<TValue>(result.Value)! : default!);
             }
@@ -29,11 +29,11 @@ namespace RepositoryFramework.Cache.Azure.Storage.Blob
             {
                 Expiration = DateTime.UtcNow.Add(options.RefreshTime),
                 Value = JsonSerializer.Serialize(value),
-            })).IsOk;
+            }).NoContext()).IsOk;
         public async Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
-            if (await _repository.ExistAsync(key, cancellationToken))
-                return await _repository.DeleteAsync(key, cancellationToken);
+            if (await _repository.ExistAsync(key, cancellationToken).NoContext())
+                return await _repository.DeleteAsync(key, cancellationToken).NoContext();
             return true;
         }
     }

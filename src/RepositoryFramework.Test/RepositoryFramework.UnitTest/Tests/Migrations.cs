@@ -49,12 +49,12 @@ namespace RepositoryFramework.UnitTest
             switch (numberOfParameters)
             {
                 case 1:
-                    migrationResult = await _migrationService1.MigrateAsync(x => x.Id!, true);
-                    Assert.Equal(4, (await _repository1.QueryAsync()).Count());
-                    foreach (var user in await _from1.QueryAsync())
+                    migrationResult = await _migrationService1.MigrateAsync(x => x.Id!, true).NoContext();
+                    Assert.Equal(4, (await _repository1.QueryAsync().NoContext()).Count());
+                    foreach (var user in await _from1.QueryAsync().NoContext())
                     {
-                        Assert.True(await _repository1.ExistAsync(user.Id!));
-                        var newUser = await _repository1.GetAsync(user.Id!);
+                        Assert.True(await _repository1.ExistAsync(user.Id!).NoContext());
+                        var newUser = await _repository1.GetAsync(user.Id!).NoContext();
                         Assert.NotNull(newUser);
                         Assert.True(newUser!.IsAdmin == user.IsAdmin);
                         Assert.True(newUser!.Email == user.Email);
@@ -62,12 +62,12 @@ namespace RepositoryFramework.UnitTest
                     }
                     break;
                 case 2:
-                    migrationResult = await _migrationService2.MigrateAsync(x => x.Id!, true);
-                    Assert.Equal(4, (await _repository2.QueryAsync()).Count());
-                    foreach (var user in await _from2.QueryAsync())
+                    migrationResult = await _migrationService2.MigrateAsync(x => x.Id!, true).NoContext();
+                    Assert.Equal(4, (await _repository2.QueryAsync().NoContext()).Count());
+                    foreach (var user in await _from2.QueryAsync().NoContext())
                     {
-                        Assert.True(await _repository2.ExistAsync(user.Id!));
-                        var newUser = await _repository2.GetAsync(user.Id!);
+                        Assert.True(await _repository2.ExistAsync(user.Id!).NoContext());
+                        var newUser = await _repository2.GetAsync(user.Id!).NoContext();
                         Assert.NotNull(newUser);
                         Assert.True(newUser!.IsAdmin == user.IsAdmin);
                         Assert.True(newUser!.Email == user.Email);
@@ -75,12 +75,12 @@ namespace RepositoryFramework.UnitTest
                     }
                     break;
                 case 3:
-                    migrationResult = await _migrationService3.MigrateAsync(x => x.Id!, true);
-                    Assert.Equal(4, (await _repository3.QueryAsync()).Count());
-                    foreach (var user in await _from3.QueryAsync())
+                    migrationResult = await _migrationService3.MigrateAsync(x => x.Id!, true).NoContext();
+                    Assert.Equal(4, (await _repository3.QueryAsync().NoContext()).Count());
+                    foreach (var user in await _from3.QueryAsync().NoContext())
                     {
-                        Assert.True(await _repository3.ExistAsync(user.Id!));
-                        var newUser = await _repository3.GetAsync(user.Id!);
+                        Assert.True(await _repository3.ExistAsync(user.Id!).NoContext());
+                        var newUser = await _repository3.GetAsync(user.Id!).NoContext();
                         Assert.NotNull(newUser);
                         Assert.True(newUser!.IsAdmin == user.IsAdmin);
                         Assert.True(newUser!.Email == user.Email);

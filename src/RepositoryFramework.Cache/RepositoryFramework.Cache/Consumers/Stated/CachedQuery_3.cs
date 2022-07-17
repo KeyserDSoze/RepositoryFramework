@@ -67,13 +67,13 @@ namespace RepositoryFramework.Cache
         {
             string keyAsString = $"{nameof(RepositoryMethod.Exist)}_{key}";
             var value = await RetrieveValueAsync(RepositoryMethod.Exist, keyAsString,
-                () => _query.ExistAsync(key, cancellationToken)!, cancellationToken);
+                () => _query.ExistAsync(key, cancellationToken)!, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
                     _cacheOptions.HasCache(RepositoryMethod.Exist),
                     _distributedCacheOptions.HasCache(RepositoryMethod.Exist),
-                    cancellationToken);
+                    cancellationToken).NoContext();
 
             return value.Response!;
         }
@@ -82,13 +82,13 @@ namespace RepositoryFramework.Cache
         {
             string keyAsString = $"{nameof(RepositoryMethod.Get)}_{key}";
             var value = await RetrieveValueAsync<T?>(RepositoryMethod.Get, keyAsString,
-                () => _query.GetAsync(key, cancellationToken), cancellationToken);
+                () => _query.GetAsync(key, cancellationToken), cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
                     _cacheOptions.HasCache(RepositoryMethod.Get),
                     _distributedCacheOptions.HasCache(RepositoryMethod.Get),
-                    cancellationToken);
+                    cancellationToken).NoContext();
 
             return value.Response;
         }
@@ -98,13 +98,13 @@ namespace RepositoryFramework.Cache
             string keyAsString = $"{nameof(RepositoryMethod.Query)}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
 
             var value = await RetrieveValueAsync<IEnumerable<T>>(RepositoryMethod.Query, keyAsString,
-                () => _query.QueryAsync(options, cancellationToken)!, cancellationToken);
+                () => _query.QueryAsync(options, cancellationToken)!, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
                     _cacheOptions.HasCache(RepositoryMethod.Query),
                     _distributedCacheOptions.HasCache(RepositoryMethod.Query),
-                    cancellationToken);
+                    cancellationToken).NoContext();
 
             return value.Response ?? new List<T>();
         }
@@ -113,13 +113,13 @@ namespace RepositoryFramework.Cache
             string keyAsString = $"{nameof(RepositoryMethod.Count)}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
 
             var value = await RetrieveValueAsync(RepositoryMethod.Count, keyAsString,
-                () => _query.CountAsync(options, cancellationToken)!, cancellationToken);
+                () => _query.CountAsync(options, cancellationToken)!, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
                     _cacheOptions.HasCache(RepositoryMethod.Query),
                     _distributedCacheOptions.HasCache(RepositoryMethod.Query),
-                    cancellationToken);
+                    cancellationToken).NoContext();
 
             return value.Response;
         }
@@ -136,17 +136,17 @@ namespace RepositoryFramework.Cache
         {
             if (_cache != null && _cacheOptions.HasCache(method))
             {
-                var (IsPresent, Response) = await _cache.RetrieveAsync<TValue>(key, cancellationToken);
+                var (IsPresent, Response) = await _cache.RetrieveAsync<TValue>(key, cancellationToken).NoContext();
                 if (IsPresent)
                     return (Source.InMemory, Response);
             }
             if (_distributed != null && _distributedCacheOptions.HasCache(method))
             {
-                var (IsPresent, Response) = await _distributed.RetrieveAsync<TValue>(key, cancellationToken);
+                var (IsPresent, Response) = await _distributed.RetrieveAsync<TValue>(key, cancellationToken).NoContext();
                 if (IsPresent)
                     return (Source.Distributed, Response);
             }
-            return (Source.Repository, await action.Invoke());
+            return (Source.Repository, await action.Invoke().NoContext());
         }
 
 

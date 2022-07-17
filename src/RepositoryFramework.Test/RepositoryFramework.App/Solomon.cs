@@ -14,7 +14,7 @@ namespace RepositoryFramework
     }
     public class UserWriter : ICommandPattern<User, string>
     {
-        public Task<IEnumerable<BatchResult<string, State>>> BatchAsync(IEnumerable<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
+        public Task<List<BatchResult<string, State>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
         {
             //insert, update or delete some items on DB or storage context
             throw new NotImplementedException();
@@ -102,7 +102,7 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<BatchResult<string, State>>> BatchAsync(IEnumerable<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
+        public Task<List<BatchResult<string, State>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

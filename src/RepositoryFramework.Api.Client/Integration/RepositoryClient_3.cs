@@ -32,51 +32,51 @@ namespace RepositoryFramework.Api.Client
         }
         public async Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethod.Delete);
-            return (await client.GetFromJsonAsync<TState>($"{nameof(RepositoryMethod.Delete)}?key={key}", cancellationToken))!;
+            var client = await EnrichedClientAsync(RepositoryMethod.Delete).NoContext();
+            return (await client.GetFromJsonAsync<TState>($"{nameof(RepositoryMethod.Delete)}?key={key}", cancellationToken).NoContext())!;
         }
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethod.Get);
-            return await client.GetFromJsonAsync<T>($"{nameof(RepositoryMethod.Get)}?key={key}", cancellationToken);
+            var client = await EnrichedClientAsync(RepositoryMethod.Get).NoContext();
+            return await client.GetFromJsonAsync<T>($"{nameof(RepositoryMethod.Get)}?key={key}", cancellationToken).NoContext();
         }
         public async Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethod.Exist);
-            return (await client.GetFromJsonAsync<TState>($"{nameof(RepositoryMethod.Exist)}?key={key}", cancellationToken))!;
+            var client = await EnrichedClientAsync(RepositoryMethod.Exist).NoContext();
+            return (await client.GetFromJsonAsync<TState>($"{nameof(RepositoryMethod.Exist)}?key={key}", cancellationToken).NoContext())!;
         }
         public async Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethod.Insert);
-            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Insert)}?key={key}", value, cancellationToken);
+            var client = await EnrichedClientAsync(RepositoryMethod.Insert).NoContext();
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Insert)}?key={key}", value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            return (await response!.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken))!;
+            return (await response!.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken).NoContext())!;
         }
         public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethod.Query);
+            var client = await EnrichedClientAsync(RepositoryMethod.Query).NoContext();
             var query = $"{nameof(RepositoryMethod.Query)}{options?.ToQuery()}";
-            return (await client.GetFromJsonAsync<IEnumerable<T>>(query, cancellationToken))!;
+            return (await client.GetFromJsonAsync<IEnumerable<T>>(query, cancellationToken).NoContext())!;
         }
         public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethod.Count);
+            var client = await EnrichedClientAsync(RepositoryMethod.Count).NoContext();
             var query = $"{nameof(RepositoryMethod.Count)}{options?.ToQuery()}";
-            return (await client.GetFromJsonAsync<long>(query, cancellationToken))!;
+            return (await client.GetFromJsonAsync<long>(query, cancellationToken).NoContext())!;
         }
         public async Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethod.Update);
-            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Update)}?key={key}", value, cancellationToken);
+            var client = await EnrichedClientAsync(RepositoryMethod.Update).NoContext();
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Update)}?key={key}", value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            return (await response.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken))!;
+            return (await response.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken).NoContext())!;
         }
-        public async Task<IEnumerable<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<List<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethod.Batch);
-            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Batch)}", operations, cancellationToken);
+            var client = await EnrichedClientAsync(RepositoryMethod.Batch).NoContext();
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Batch)}", operations, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            return (await response.Content.ReadFromJsonAsync<IEnumerable<BatchResult<TKey, TState>>>(cancellationToken: cancellationToken))!;
+            return (await response.Content.ReadFromJsonAsync<List<BatchResult<TKey, TState>>>(cancellationToken: cancellationToken).NoContext())!;
         }
     }
 }

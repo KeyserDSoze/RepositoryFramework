@@ -25,7 +25,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         {
             if (!_containerClientFactories.ContainsKey(name))
             {
-                _ = containerClient.CreateIfNotExistsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                _ = containerClient.CreateIfNotExistsAsync().ToResult();
                 _containerClientFactories.Add(name, containerClient);
             }
             return this;

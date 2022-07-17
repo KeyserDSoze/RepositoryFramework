@@ -14,16 +14,16 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         }
         public async Task<State> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var response = await _client.DeleteBlobAsync(key!.ToString(), cancellationToken: cancellationToken);
+            var response = await _client.DeleteBlobAsync(key!.ToString(), cancellationToken: cancellationToken).NoContext();
             return !response.IsError;
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            if (await blobClient.ExistsAsync(cancellationToken))
+            if (await blobClient.ExistsAsync(cancellationToken).NoContext())
             {
-                var blobData = await blobClient.DownloadContentAsync(cancellationToken);
+                var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
                 return JsonSerializer.Deserialize<T>(blobData.Value.Content);
             }
             return default;
@@ -31,13 +31,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         public async Task<State> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            return new State(await blobClient.ExistsAsync(cancellationToken));
+            return new State(await blobClient.ExistsAsync(cancellationToken).NoContext());
         }
 
         public async Task<State> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            var response = await blobClient.UploadAsync(new BinaryData(JsonSerializer.Serialize(value)), cancellationToken);
+            var response = await blobClient.UploadAsync(new BinaryData(JsonSerializer.Serialize(value)), cancellationToken).NoContext();
             return response.Value != null;
         }
 
@@ -47,7 +47,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
             {
                 var blobClient = _client.GetBlobClient(blob.Name);
-                var blobData = await blobClient.DownloadContentAsync(cancellationToken);
+                var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
                 items.Add(JsonSerializer.Deserialize<T>(blobData.Value.Content)!);
             }
             IEnumerable<T> results = items.Filter(options);
@@ -57,7 +57,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         public async Task<State> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            var response = await blobClient.UploadAsync(new BinaryData(JsonSerializer.Serialize(value)), true, cancellationToken);
+            var response = await blobClient.UploadAsync(new BinaryData(JsonSerializer.Serialize(value)), true, cancellationToken).NoContext();
             return response.Value != null;
         }
 
@@ -67,13 +67,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
             {
                 var blobClient = _client.GetBlobClient(blob.Name);
-                var blobData = await blobClient.DownloadContentAsync(cancellationToken);
+                var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
                 items.Add(JsonSerializer.Deserialize<T>(blobData.Value.Content)!);
             }
             IEnumerable<T> results = items.Filter(options);
             return results.Count();
         }
-        public async Task<IEnumerable<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<List<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
         {
             List<BatchResult<TKey, State>> results = new();
             foreach (var operation in operations)
@@ -81,13 +81,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
                 switch (operation.Command)
                 {
                     case CommandType.Delete:
-                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken).NoContext()));
                         break;
                     case CommandType.Insert:
-                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
                         break;
                     case CommandType.Update:
-                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken)));
+                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
                         break;
                 }
             }

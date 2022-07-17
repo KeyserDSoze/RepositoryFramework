@@ -116,7 +116,7 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Get)}", async (TKey key, [FromServices] TService service) =>
                {
                    var queryService = service as IQueryPattern<T, TKey, TState>;
-                   return await queryService!.GetAsync(key);
+                   return await queryService!.GetAsync(key).NoContext();
                }).WithName($"{nameof(RepositoryMethod.Get)}{name}")
                .AddAuthorization(authorization, RepositoryMethod.Get);
         }
@@ -129,7 +129,7 @@ namespace Microsoft.Extensions.DependencyInjection
               {
                   var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, order, asc);
                   var queryService = service as IQueryPattern<T, TKey, TState>;
-                  return await queryService!.QueryAsync(options);
+                  return await queryService!.QueryAsync(options).NoContext();
 
               }).WithName($"{nameof(RepositoryMethod.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethod.Query);
@@ -143,7 +143,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, order, asc);
                     var queryService = service as IQueryPattern<T, TKey, TState>;
-                    return await queryService!.CountAsync(options);
+                    return await queryService!.CountAsync(options).NoContext();
 
                 }).WithName($"{nameof(RepositoryMethod.Count)}{name}")
               .AddAuthorization(authorization, RepositoryMethod.Count);
@@ -155,7 +155,7 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Exist)}", async (TKey key, [FromServices] TService service) =>
             {
                 var queryService = service as IQueryPattern<T, TKey, TState>;
-                return await queryService!.ExistAsync(key);
+                return await queryService!.ExistAsync(key).NoContext();
             }).WithName($"{nameof(RepositoryMethod.Exist)}{name}")
                .AddAuthorization(authorization, RepositoryMethod.Exist);
         }
@@ -166,7 +166,7 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Insert)}", async (TKey key, T entity, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey, TState>;
-                return await commandService!.InsertAsync(key, entity);
+                return await commandService!.InsertAsync(key, entity).NoContext();
             }).WithName($"{nameof(RepositoryMethod.Insert)}{name}")
             .AddAuthorization(authorization, RepositoryMethod.Insert);
         }
@@ -177,7 +177,7 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Update)}", async (TKey key, T entity, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey, TState>;
-                return await commandService!.UpdateAsync(key, entity);
+                return await commandService!.UpdateAsync(key, entity).NoContext();
             }).WithName($"{nameof(RepositoryMethod.Update)}{name}")
             .AddAuthorization(authorization, RepositoryMethod.Update);
         }
@@ -188,7 +188,7 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Batch)}", async (List<BatchOperation<T, TKey>> operations, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey, TState>;
-                return await commandService!.BatchAsync(operations);
+                return await commandService!.BatchAsync(operations).NoContext();
             }).WithName($"{nameof(RepositoryMethod.Batch)}{name}")
             .AddAuthorization(authorization, RepositoryMethod.Batch);
         }
@@ -199,7 +199,7 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Delete)}", async (TKey key, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey, TState>;
-                return await commandService!.DeleteAsync(key);
+                return await commandService!.DeleteAsync(key).NoContext();
             }).WithName($"{nameof(RepositoryMethod.Delete)}{name}")
             .AddAuthorization(authorization, RepositoryMethod.Delete);
         }
