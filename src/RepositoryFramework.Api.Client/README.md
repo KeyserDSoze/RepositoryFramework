@@ -1,4 +1,6 @@
-﻿## Services extensions
+﻿### [What is Rystem?](https://github.com/KeyserDSoze/RystemV3)
+
+## Services extensions
 You may add a repository client for your model. You may choose the domain (domain where the api is), and the custom path by default is "api", you may add custom configuration to the HttpClient and the service lifetime with singleton as default. The api url will be https://{domain}/{startingPath}/{ModelName}/{Type of Api (from Insert, Update, Delete, Get, Query, Exist)}
 
     public static RepositoryBuilder<T, TKey> AddRepositoryApiClient<T, TKey>(this IServiceCollection services,

@@ -1,4 +1,6 @@
-﻿## Api auto-generated
+﻿### [What is Rystem?](https://github.com/KeyserDSoze/RystemV3)
+
+## Api auto-generated
 In your web application you have only to add one row after service build.
 
     app.AddApiForRepositoryFramework();
