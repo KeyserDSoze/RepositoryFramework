@@ -10,7 +10,7 @@
 		<Product>Rystem.RepositoryFramework</Product>
 		<Description>Rystem.RepositoryFramework allows you to use correctly concepts like repository pattern, CQRS and DDD. You have interfaces for your domains, auto-generated api, auto-generated HttpClient to simplify connection "api to front-end", a functionality for auto-population in memory of your models, a functionality to simulate exceptions and waiting time from external sources to improve your implementation/business test and load test.</Description>
 		<Copyright>2022</Copyright>
-		<PackageIcon>repositoryframework.png</PackageIcon>
+		<PackageIcon>rystem.repositoryframework.infrastructure.azure.storage.table.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
 		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Table</PackageId>
@@ -38,7 +38,7 @@
 	</Choose>
 
 	<ItemGroup>
-		<None Include="..\..\RepositoryFramework.Abstractions\repositoryframework.png">
+		<None Include="rystem.repositoryframework.infrastructure.azure.storage.table.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
