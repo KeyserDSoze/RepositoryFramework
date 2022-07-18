@@ -62,5 +62,7 @@ namespace RepositoryFramework
 
             return options;
         }
+        public QueryOptionsTranslate<T, TTranslated> Translate<TTranslated>() 
+            => new(this);
     }
 }

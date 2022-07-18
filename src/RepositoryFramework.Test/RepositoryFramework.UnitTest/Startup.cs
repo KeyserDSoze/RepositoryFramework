@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework.InMemory;
 using RepositoryFramework.UnitTest.Models;
+using RepositoryFramework.UnitTest.Repository.Models;
 using RepositoryFramework.UnitTest.Storage;
 using Rystem;
 using System;
@@ -76,7 +77,7 @@ namespace RepositoryFramework.UnitTest
                 .PopulateWithRandomData(x => x.Id!, 100)
                 .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com")
                 .And()
-                .AddRepositoryInMemoryStorage<Car, string>(options =>
+                .AddRepositoryInMemoryStorage<Models.Car, string>(options =>
                 {
                     var customExceptions = new List<ExceptionOdds>
                     {
@@ -227,6 +228,8 @@ namespace RepositoryFramework.UnitTest
                     .Services
                     .AddRepository<IperMigrationUser, string, State, IperMigrationTo>()
                     .AddMigrationSource<IperMigrationUser, string, State, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
+                    .Services
+                    .AddRepository<Repository.Models.Car, int, CarRepository>()
                     .Services
                 .BuildServiceProvider();
             serviceProvider.CreateScope().ServiceProvider.Populate();
