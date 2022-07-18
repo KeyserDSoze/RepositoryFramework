@@ -6,6 +6,7 @@
         public string? Targa { get; set; }
         public Guidatore? Guidatore { get; set; }
         public int NumeroRuote { get; set; }
+        public string? O { get; set; }
     }
     public class Guidatore
     {

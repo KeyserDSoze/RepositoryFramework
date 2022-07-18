@@ -47,7 +47,7 @@ namespace RepositoryFramework.UnitTest.Storage
         public Task<IEnumerable<IperMigrationUser>> QueryAsync(QueryOptions<IperMigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
             var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult(users);
+            return Task.FromResult(users.AsEnumerable());
         }
         public Task<long> CountAsync(QueryOptions<IperMigrationUser>? options = null, CancellationToken cancellationToken = default)
         {

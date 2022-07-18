@@ -50,7 +50,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
                 items.Add(JsonSerializer.Deserialize<T>(blobData.Value.Content)!);
             }
-            IEnumerable<T> results = items.Filter(options);
+            IEnumerable<T> results = items.Filter(options).AsEnumerable();
             return results;
         }
 
@@ -70,7 +70,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
                 items.Add(JsonSerializer.Deserialize<T>(blobData.Value.Content)!);
             }
-            IEnumerable<T> results = items.Filter(options);
+            IEnumerable<T> results = items.Filter(options).AsEnumerable();
             return results.Count();
         }
         public async Task<List<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)

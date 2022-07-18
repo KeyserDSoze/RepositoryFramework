@@ -70,6 +70,5 @@ Welcome to your new app.
             .AddDelete(id)
             .ExecuteAsync().NoContext();
         Users4 = await UserClient3.PageAsync(7, 20).NoContext();
-        StateHasChanged();
     }
 }

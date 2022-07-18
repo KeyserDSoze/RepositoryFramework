@@ -2,7 +2,7 @@
 {
     public static class QueryOptionsExtensions
     {
-        public static IEnumerable<T> Filter<T>(this IEnumerable<T> items, QueryOptions<T>? options)
+        public static IQueryable<T> Filter<T>(this IEnumerable<T> items, QueryOptions<T>? options)
         {
             if (options != null)
             {
@@ -18,7 +18,7 @@
                 if (options.Top != null)
                     items = items.Take(options.Top.Value);
             }
-            return items;
+            return items.AsQueryable();
         }
     }
 }

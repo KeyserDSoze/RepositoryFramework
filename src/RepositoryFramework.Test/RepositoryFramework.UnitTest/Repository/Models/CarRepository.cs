@@ -55,8 +55,9 @@ namespace RepositoryFramework.UnitTest.Repository.Models
                 .With(x => x.NumberOfWheels, x => x.NumeroRuote)
                 .With(x => x.Plate, x => x.Targa)
                 .With(x => x.Driver, x => x.Guidatore)
-                .With(x => x.Driver!.Name, x => x.Guidatore!.Nome)).ToList();
-            return Task.FromResult(filtered.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }));
+                .With(x => x.Driver!.Name, x => x.Guidatore!.Nome))
+                .ToList();
+            return Task.FromResult(filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }) ?? new List<Car>());
         }
 
         public Task<State> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)

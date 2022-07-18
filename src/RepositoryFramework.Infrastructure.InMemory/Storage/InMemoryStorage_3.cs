@@ -136,7 +136,7 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    IEnumerable<T> values = Values.Select(x => x.Value).Filter(options);
+                    IEnumerable<T> values = Values.Select(x => x.Value).Filter(options).AsEnumerable();
                     return values;
                 }
                 else

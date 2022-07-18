@@ -22,7 +22,7 @@ namespace RepositoryFramework.UnitTest.Repository
         public async Task QueryWithDifferentValuesAsync(int minimumId, int numberOfResults)
         {
             var results = await _repository
-                .Where(x => x.Id > minimumId && !string.IsNullOrWhiteSpace(x.Plate) && x.Plate != null && x.Driver != null && x.Driver.Name == null)
+                .Where(x => x.Id > minimumId && !string.IsNullOrWhiteSpace(x.Plate) && x.Plate != null && x.Driver != null && x.Driver.Name == null && string.IsNullOrEmpty(x.O))
                 .OrderByDescending(x => x.Id)
                 .QueryAsync();
             Assert.Equal(numberOfResults, results.Count());
