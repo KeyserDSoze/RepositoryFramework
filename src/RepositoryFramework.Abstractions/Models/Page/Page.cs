@@ -1,4 +1,4 @@
 ﻿namespace RepositoryFramework
 {
-    internal record Page<T>(IEnumerable<T> Items, long Count, long Pages) : IPage<T>;
+    internal record Page<T>(IEnumerable<T> Items, long TotalCount, long Pages) : IPage<T>;
 }
