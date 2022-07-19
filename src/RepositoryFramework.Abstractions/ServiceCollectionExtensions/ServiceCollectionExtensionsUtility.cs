@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 foreach (var serviceDescriptor in serviceDescriptors)
                 {
                     if (_throwExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes)
-                        throw new ArgumentException($"You have two configurations of the same interface {serviceDescriptor.ServiceType.FullName}. {typeof(TStorage).GetType().FullName} wants to override {serviceDescriptor.ImplementationType?.FullName} with lifetime {serviceDescriptor.Lifetime}.");
+                        throw new ArgumentException($"You have two configurations of the same interface {serviceDescriptor.ServiceType.FullName}. {typeof(TStorage).FullName} wants to override {serviceDescriptor.ImplementationType?.FullName} with lifetime {serviceDescriptor.Lifetime}.");
                     services.Remove(serviceDescriptor);
                 }
             }
