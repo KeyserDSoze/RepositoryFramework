@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace RepositoryFramework
+﻿namespace RepositoryFramework
 {
     public sealed class State<T> : IState<T>
     {
