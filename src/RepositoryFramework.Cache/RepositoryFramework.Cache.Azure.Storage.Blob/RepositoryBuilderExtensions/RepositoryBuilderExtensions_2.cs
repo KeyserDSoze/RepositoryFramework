@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
            string connectionString,
            string? name = null,
            BlobClientOptions? clientOptions = null,
-           Action<DistributedCacheOptions<T, TKey, State>>? settings = null)
+           Action<DistributedCacheOptions<T, TKey, State<T>>>? settings = null)
             where TKey : notnull
         {
             builder.Services
@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
            this RepositoryBuilder<T, TKey> builder,
            Uri endpointUri,
            BlobClientOptions? clientOptions = null,
-           Action<DistributedCacheOptions<T, TKey, State>>? settings = null)
+           Action<DistributedCacheOptions<T, TKey, State<T>>>? settings = null)
             where TKey : notnull
         {
             builder.Services

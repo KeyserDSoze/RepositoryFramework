@@ -14,23 +14,23 @@ namespace RepositoryFramework
     }
     public class UserWriter : ICommandPattern<User, string>
     {
-        public Task<List<BatchResult<string, State>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
+        public Task<List<BatchResult<string, State<User>>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
         {
             //insert, update or delete some items on DB or storage context
             throw new NotImplementedException();
         }
 
-        public Task<State> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<User>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<User>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<User>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
@@ -43,7 +43,7 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
 
-        public Task<State> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -61,17 +61,17 @@ namespace RepositoryFramework
     }
     public class UserRepository : IRepositoryPattern<User, string>
     {
-        public Task<State> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<User>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<User>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<User>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
@@ -92,7 +92,7 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
 
-        public Task<State> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -102,7 +102,7 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
 
-        public Task<List<BatchResult<string, State>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
+        public Task<List<BatchResult<string, State<User>>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

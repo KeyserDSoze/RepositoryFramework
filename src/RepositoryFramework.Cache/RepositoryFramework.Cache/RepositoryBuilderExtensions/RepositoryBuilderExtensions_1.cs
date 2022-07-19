@@ -18,11 +18,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
         public static RepositoryBuilder<T> WithCache<T, TCache>(
            this RepositoryBuilder<T> builder,
-           Action<CacheOptions<T, string, State>>? settings = null,
+           Action<CacheOptions<T, string, State<T>>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TCache : class, ICache<T>
         {
-            var options = new CacheOptions<T, string, State>();
+            var options = new CacheOptions<T, string, State<T>>();
             settings?.Invoke(options);
             builder.Services
                 .AddService<ICache<T>, TCache>(lifetime)
@@ -51,11 +51,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static RepositoryBuilder<T> WithDistributedCache<T, TCache>(
            this RepositoryBuilder<T> builder,
-           Action<DistributedCacheOptions<T, string, State>>? settings = null,
+           Action<DistributedCacheOptions<T, string, State<T>>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TCache : class, IDistributedCache<T>
         {
-            var options = new DistributedCacheOptions<T, string, State>();
+            var options = new DistributedCacheOptions<T, string, State<T>>();
             settings?.Invoke(options);
             builder.Services
                 .AddService<IDistributedCache<T>, TCache>(lifetime)

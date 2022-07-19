@@ -55,3 +55,4 @@ You may find some examples down below:
     ƒ => (ƒ.ExpirationTime > Convert.ToDateTime("7/6/2022 9:48:56 AM"))
     ƒ => (ƒ.TimeSpan > new TimeSpan(1000 as long))
     ƒ => Not(ƒ.Inside.Inside.A.Equals("dasdad"))
+    ƒ => Not(String.IsNullOrWhiteSpace(ƒ.Inside.Inside.A))

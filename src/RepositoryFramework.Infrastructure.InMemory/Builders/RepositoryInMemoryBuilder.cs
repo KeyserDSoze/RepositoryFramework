@@ -7,7 +7,7 @@ namespace RepositoryFramework.InMemory
 {
     public class RepositoryInMemoryBuilder<T, TKey, TState>
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         private readonly IServiceCollection _services;
         private readonly CreationSettings _internalBehaviorSettings = new();
@@ -21,12 +21,12 @@ namespace RepositoryFramework.InMemory
         public RepositoryInMemoryBuilder<TNext, TNextKey, TNextState> AddRepositoryInMemoryStorage<TNext, TNextKey, TNextState>(
             Action<RepositoryBehaviorSettings<TNext, TNextKey, TNextState>>? settings = default)
             where TNextKey : notnull
-            where TNextState : class, IState
+            where TNextState : class, IState<TNext>, new()
             => _services!.AddRepositoryInMemoryStorage(settings);
-        public RepositoryInMemoryBuilder<TNext, TNextKey, State> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey, State>>? settings = default)
+        public RepositoryInMemoryBuilder<TNext, TNextKey, State<TNext>> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey, State<TNext>>>? settings = default)
             where TNextKey : notnull
             => _services!.AddRepositoryInMemoryStorage(settings);
-        public RepositoryInMemoryBuilder<TNext, string, State> AddRepositoryInMemoryStorage<TNext>(Action<RepositoryBehaviorSettings<TNext, string, State>>? settings = default)
+        public RepositoryInMemoryBuilder<TNext, string, State<TNext>> AddRepositoryInMemoryStorage<TNext>(Action<RepositoryBehaviorSettings<TNext, string, State<TNext>>>? settings = default)
             => _services!.AddRepositoryInMemoryStorage(settings);
         public RepositoryInMemoryBuilder<T, TKey, TState> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,

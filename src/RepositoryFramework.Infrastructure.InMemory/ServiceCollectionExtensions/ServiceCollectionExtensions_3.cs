@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             Action<RepositoryBehaviorSettings<T, TKey, TState>>? settings = default)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             InMemoryRepositoryInstalled.PopulationStrategyRetriever.Add((serviceProvider) => serviceProvider.GetService<IPopulationStrategy<T, TKey>>());
             var options = new RepositoryBehaviorSettings<T, TKey, TState>();

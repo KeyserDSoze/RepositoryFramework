@@ -3,8 +3,9 @@
     /// <summary>
     /// Interface for return state.
     /// </summary>
-    public interface IState
+    public interface IState<T>
     {
-        bool IsOk { get; }
+        bool IsOk { get; init; }
+        T? Value { get; init; }
     }
 }

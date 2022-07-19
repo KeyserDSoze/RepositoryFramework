@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TMigrationSource : class, IMigrationSource<T, TKey, TState>
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             var options = new MigrationOptions<T, TKey, TState>();
             settings?.Invoke(options);

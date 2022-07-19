@@ -17,12 +17,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>IServiceCollection</returns>
         public static RepositoryBuilder<T, TKey> AddMigrationSource<T, TKey, TMigrationSource>(this RepositoryBuilder<T, TKey> builder,
-            Action<MigrationOptions<T, TKey, State>> settings,
+            Action<MigrationOptions<T, TKey, State<T>>> settings,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
           where TMigrationSource : class, IMigrationSource<T, TKey>
           where TKey : notnull
         {
-            var options = new MigrationOptions<T, TKey, State>();
+            var options = new MigrationOptions<T, TKey, State<T>>();
             settings?.Invoke(options);
             builder.Services
                 .AddSingleton(options)

@@ -10,10 +10,10 @@ namespace RepositoryFramework.UnitTest
     {
         private readonly IRepository<User> _user1;
         private readonly IRepository<SuperUser, string> _user2;
-        private readonly IRepository<IperUser, string, State> _user3;
+        private readonly IRepository<IperUser, string, State<IperUser>> _user3;
         public MethodsTest(IRepository<User> user1,
             IRepository<SuperUser, string> user2,
-            IRepository<IperUser, string, State> user3)
+            IRepository<IperUser, string, State<IperUser>> user3)
         {
             _user1 = user1;
             _user2 = user2;

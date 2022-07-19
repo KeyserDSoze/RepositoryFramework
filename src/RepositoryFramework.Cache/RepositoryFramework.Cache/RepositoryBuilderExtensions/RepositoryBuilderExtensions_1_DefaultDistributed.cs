@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
         public static RepositoryBuilder<T> WithDistributedCache<T>(
            this RepositoryBuilder<T> builder,
-           Action<CacheOptions<T, string, State>>? settings = null,
+           Action<CacheOptions<T, string, State<T>>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             => builder.WithDistributedCache<T, DistributedCache<T>>(settings, lifetime);
     }

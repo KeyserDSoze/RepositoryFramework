@@ -7,7 +7,7 @@ namespace RepositoryFramework.Api.Client
 {
     internal class RepositoryClient<T, TKey, TState> : IRepositoryPattern<T, TKey, TState>
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         private readonly HttpClient _httpClient;
         private readonly IRepositoryClientInterceptor? _clientInterceptor;

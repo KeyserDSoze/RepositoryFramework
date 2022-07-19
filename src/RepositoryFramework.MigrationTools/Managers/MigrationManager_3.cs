@@ -4,7 +4,7 @@ namespace RepositoryFramework.Migration
 {
     internal class MigrationManager<T, TKey, TState> : IMigrationManager<T, TKey, TState>
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         private readonly IMigrationSource<T, TKey, TState> _from;
         private readonly IRepositoryPattern<T, TKey, TState> _to;

@@ -6,7 +6,7 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
 #### Command (Write-Delete)
     public interface ICommandPattern<T, TKey, TState> : ICommandPattern
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
@@ -17,7 +17,7 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
 #### Query (Read)
     public interface IQueryPattern<T, TKey, TState> : IQueryPattern
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
         Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default);
@@ -30,27 +30,27 @@ Repository pattern is a sum of CQRS interfaces.
 
     public interface IRepositoryPattern<T, TKey, TState> : ICommandPattern<T, TKey, TState>, IQueryPattern<T, TKey, TState>, IRepositoryPattern, ICommandPattern, IQueryPattern
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
     }
 
 ### With State as TState 
 #### Command (Write-Delete)
-    public interface ICommandPattern<T, TKey> : ICommandPattern<T, TKey, State>, ICommandPattern
+    public interface ICommandPattern<T, TKey> : ICommandPattern<T, TKey, State<T>>, ICommandPattern
         where TKey : notnull
     {
-        Task<State> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<State> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<State> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<List<BatchResult<TKey, State>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default);
+        Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<List<BatchResult<TKey, State<T>>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default);
     }
 
 #### Query (Read)
-    public interface IQueryPattern<T, TKey> : IQueryPattern<T, TKey, State>, IQueryPattern
+    public interface IQueryPattern<T, TKey> : IQueryPattern<T, TKey, State<T>>, IQueryPattern
         where TKey : notnull
     {
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<State> ExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
         Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
     }
@@ -58,7 +58,7 @@ Repository pattern is a sum of CQRS interfaces.
 #### Repository Pattern (Write-Delete-Read)
 Repository pattern is a sum of CQRS interfaces.
 
-    public interface IRepositoryPattern<T, TKey> : IRepositoryPattern<T, TKey, State>, ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
+    public interface IRepositoryPattern<T, TKey> : IRepositoryPattern<T, TKey, State<T>>, ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
         where TKey : notnull
     {
     }
@@ -67,17 +67,17 @@ Repository pattern is a sum of CQRS interfaces.
 #### Command (Write-Delete)
     public interface ICommandPattern<T> : ICommandPattern<T, string>, ICommandPattern
     {
-        Task<State> InsertAsync(string key, T value, CancellationToken cancellationToken = default);
-        Task<State> UpdateAsync(string key, T value, CancellationToken cancellationToken = default);
-        Task<State> DeleteAsync(string key, CancellationToken cancellationToken = default);
-        Task<List<BatchResult<string, State>>> BatchAsync(List<BatchOperation<T, string>> operations, CancellationToken cancellationToken = default);
+        Task<State<T>> InsertAsync(string key, T value, CancellationToken cancellationToken = default);
+        Task<State<T>> UpdateAsync(string key, T value, CancellationToken cancellationToken = default);
+        Task<State<T>> DeleteAsync(string key, CancellationToken cancellationToken = default);
+        Task<List<BatchResult<string, State<T>>>> BatchAsync(List<BatchOperation<T, string>> operations, CancellationToken cancellationToken = default);
     }
 
 #### Query (Read)
     public interface IQueryPattern<T> : IQueryPattern<T, string>, IQueryPattern
     {
         Task<T?> GetAsync(string key, CancellationToken cancellationToken = default);
-        Task<State> ExistAsync(string key, CancellationToken cancellationToken = default);
+        Task<State<T>> ExistAsync(string key, CancellationToken cancellationToken = default);
         Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
         Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
     }
@@ -101,22 +101,22 @@ Repository pattern is a sum of CQRS interfaces.
 #### Command
     public class UserWriter : ICommandPattern<User, string>
     {
-        public Task<State> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<T>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<T>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<T>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<List<BatchResult<string, State>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
+        public Task<List<BatchResult<string, State<T>>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
         {
             //insert, update or delete some items on DB or storage context
             throw new NotImplementedException();
@@ -130,7 +130,7 @@ Repository pattern is a sum of CQRS interfaces.
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<T>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
@@ -152,22 +152,22 @@ if you don't have CQRS infrastructure (usually it's correct to use CQRS when you
 
     public class UserRepository : IRepositoryPattern<User, string>, IQueryPattern<User, string>, ICommandPattern<User, string>
     {
-        public Task<State> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<T>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<T>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<T>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<List<BatchResult<string, State>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
+        public Task<List<BatchResult<string, State<T>>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
         {
             //insert, update or delete some items on DB or storage context
             throw new NotImplementedException();
@@ -177,7 +177,7 @@ if you don't have CQRS infrastructure (usually it's correct to use CQRS when you
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<T>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
@@ -228,7 +228,7 @@ And you may inject the objects
     IQuery<User> command
 
 ### Example with TState
-In DI you install the services, in example we are using a Result class that is an IState, instead the default integration State.
+In DI you install the services, in example we are using a Result class that is an IState<T>, instead the default integration State.
 
     services.AddRepository<User, string, Result, UserRepository>();
     services.AddCommand<User, string, Result, UserWriter>();

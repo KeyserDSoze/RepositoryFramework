@@ -6,7 +6,7 @@
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to insert, update or delete your data from repository.</typeparam>
-    public interface ICommand<T, TKey> : ICommand<T, TKey, State>, ICommandPattern<T, TKey>
+    public interface ICommand<T, TKey> : ICommand<T, TKey, State<T>>, ICommandPattern<T, TKey>
         where TKey : notnull
     {
     }

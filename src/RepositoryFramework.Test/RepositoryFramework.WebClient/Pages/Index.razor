@@ -62,7 +62,7 @@ Welcome to your new app.
     private async Task AddInBatchSomething()
     {
         var id = Guid.NewGuid().ToString();
-        await UserClient3
+        var batched = await UserClient3
             .CreateBatchOperation()
             .AddInsert(id, new IperUser("dsadasd") { Id = "a" })
             .AddUpdate(id, new IperUser("dsadasd") { Id = "b" })

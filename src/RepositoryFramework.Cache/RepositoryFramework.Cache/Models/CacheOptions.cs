@@ -12,7 +12,7 @@
     /// <typeparam name="TState">Returning state.</typeparam>
     public class CacheOptions<T, TKey, TState>
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         public TimeSpan RefreshTime { get; set; }
         public bool HasCommandPattern => Methods.HasFlag(RepositoryMethod.Insert)

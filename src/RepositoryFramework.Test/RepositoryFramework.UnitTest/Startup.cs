@@ -58,7 +58,7 @@ namespace RepositoryFramework.UnitTest
                 .PopulateWithRandomData(x => x.Id!, 100)
                 .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com")
                 .And()
-                .AddRepositoryInMemoryStorage<IperUser, string, State>(
+                .AddRepositoryInMemoryStorage<IperUser, string, State<IperUser>>(
                 options =>
                 {
                     var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
@@ -226,8 +226,8 @@ namespace RepositoryFramework.UnitTest
                     .AddRepository<SuperMigrationUser, string, SuperMigrationTo>()
                     .AddMigrationSource<SuperMigrationUser, string, SuperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                     .Services
-                    .AddRepository<IperMigrationUser, string, State, IperMigrationTo>()
-                    .AddMigrationSource<IperMigrationUser, string, State, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
+                    .AddRepository<IperMigrationUser, string, State<IperMigrationUser>, IperMigrationTo>()
+                    .AddMigrationSource<IperMigrationUser, string, State<IperMigrationUser>, IperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                     .Services
                     .AddRepository<Repository.Models.Car, int, CarRepository>()
                     .Services

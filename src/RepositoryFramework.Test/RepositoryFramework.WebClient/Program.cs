@@ -9,9 +9,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddRepositoryApiClient<User>("localhost:7058",
     serviceLifetime: ServiceLifetime.Scoped)
-        .AddApiClientSpecificInterceptor<User, string, State, SpecificInterceptor>();
+        .AddApiClientSpecificInterceptor<User, string, State<User>, SpecificInterceptor>();
 builder.Services.AddRepositoryApiClient<SuperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryApiClient<IperUser, string, State>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryApiClient<IperUser, string, State<IperUser>>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddApiClientInterceptor<Interceptor>();
 var app = builder.Build();
 

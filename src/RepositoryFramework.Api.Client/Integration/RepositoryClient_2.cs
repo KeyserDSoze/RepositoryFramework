@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework.Api.Client
 {
-    internal class RepositoryClient<T, TKey> : RepositoryClient<T, TKey, State>, IRepositoryPattern<T, TKey>
+    internal class RepositoryClient<T, TKey> : RepositoryClient<T, TKey, State<T>>, IRepositoryPattern<T, TKey>
         where TKey : notnull
     {
         public RepositoryClient(IHttpClientFactory httpClientFactory,

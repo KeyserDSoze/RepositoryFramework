@@ -16,7 +16,7 @@ namespace RepositoryFramework.UnitTest.Repository.Models
             new Auto{Identificativo = 4, Targa ="03djkc0", NumeroRuote = 2, Guidatore = new() },
             new Auto{Identificativo = 5, Targa ="03djkd0", NumeroRuote = 2, Guidatore = new() },
         };
-        public Task<List<BatchResult<int, State>>> BatchAsync(List<BatchOperation<Car, int>> operations, CancellationToken cancellationToken = default)
+        public Task<List<BatchResult<int, State<Car>>>> BatchAsync(List<BatchOperation<Car, int>> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -26,12 +26,12 @@ namespace RepositoryFramework.UnitTest.Repository.Models
             throw new NotImplementedException();
         }
 
-        public Task<State> DeleteAsync(int key, CancellationToken cancellationToken = default)
+        public Task<State<Car>> DeleteAsync(int key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<State> ExistAsync(int key, CancellationToken cancellationToken = default)
+        public Task<State<Car>> ExistAsync(int key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -41,7 +41,7 @@ namespace RepositoryFramework.UnitTest.Repository.Models
             throw new NotImplementedException();
         }
 
-        public Task<State> InsertAsync(int key, Car value, CancellationToken cancellationToken = default)
+        public Task<State<Car>> InsertAsync(int key, Car value, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -60,7 +60,7 @@ namespace RepositoryFramework.UnitTest.Repository.Models
             return Task.FromResult(filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }) ?? new List<Car>());
         }
 
-        public Task<State> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)
+        public Task<State<Car>> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

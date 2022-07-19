@@ -4,9 +4,9 @@
     {
         public CachedQuery(IQueryPattern<T> query,
             ICache<T>? cache = null,
-            CacheOptions<T, string, State>? cacheOptions = null,
+            CacheOptions<T, string, State<T>>? cacheOptions = null,
             IDistributedCache<T>? distributed = null,
-            DistributedCacheOptions<T, string, State>? distributedCacheOptions = null) :
+            DistributedCacheOptions<T, string, State<T>>? distributedCacheOptions = null) :
             base(query, cache, cacheOptions, distributed, distributedCacheOptions)
         {
         }

@@ -2,7 +2,7 @@
 {
     internal class Query<T, TKey, TState> : IQuery<T, TKey, TState>
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         private readonly IQueryPattern<T, TKey, TState> _query;
 

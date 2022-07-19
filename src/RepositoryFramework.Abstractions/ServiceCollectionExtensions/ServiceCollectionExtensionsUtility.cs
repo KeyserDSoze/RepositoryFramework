@@ -5,13 +5,13 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class ServiceCollectionExtensions
     {
         private static RepositoryFrameworkService SetService<T>(this IServiceCollection services)
-            => services.SetService<T, string, State>();
+            => services.SetService<T, string, State<T>>();
         private static RepositoryFrameworkService SetService<T, TKey>(this IServiceCollection services)
             where TKey : notnull
-            => services.SetService<T, TKey, State>();
+            => services.SetService<T, TKey, State<T>>();
         private static RepositoryFrameworkService SetService<T, TKey, TState>(this IServiceCollection services)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             Type entityType = typeof(T);
             Type keyType = typeof(TKey);

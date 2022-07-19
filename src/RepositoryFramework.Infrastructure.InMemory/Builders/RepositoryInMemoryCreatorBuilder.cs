@@ -4,7 +4,7 @@ namespace RepositoryFramework.InMemory
 {
     public class RepositoryInMemoryCreatorBuilder<T, TKey, TState>
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         private readonly RepositoryInMemoryBuilder<T, TKey, TState> _builder;
         private readonly CreationSettings _internalBehaviorSettings;

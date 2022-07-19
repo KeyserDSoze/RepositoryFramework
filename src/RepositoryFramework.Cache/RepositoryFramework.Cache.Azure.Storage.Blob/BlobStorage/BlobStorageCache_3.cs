@@ -4,7 +4,7 @@ namespace RepositoryFramework.Cache.Azure.Storage.Blob
 {
     public class BlobStorageCache<T, TKey, TState> : IDistributedCache<T, TKey, TState>
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         private readonly IRepository<BlobStorageCacheModel, string> _repository;
 

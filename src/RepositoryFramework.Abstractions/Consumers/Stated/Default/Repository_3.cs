@@ -2,7 +2,7 @@
 {
     internal class Repository<T, TKey, TState> : IRepository<T, TKey, TState>
         where TKey : notnull
-        where TState : class, IState
+        where TState : class, IState<T>, new()
     {
         private readonly IRepositoryPattern<T, TKey, TState> _repository;
 

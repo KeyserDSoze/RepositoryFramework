@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<HttpClient>? configureClient = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             services.AddHttpClient($"{typeof(T).Name}{Const.HttpClientName}", options =>
             {
@@ -45,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
             => services.AddApiClient<T, TKey, TState>(PatternType.Repository, domain, startingPath, configureClient, serviceLifetime);
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
             => services.AddApiClient<T, TKey, TState>(PatternType.Command, domain, startingPath, configureClient, serviceLifetime);
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<HttpClient>? configureClient = null,
            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
             => services.AddApiClient<T, TKey, TState>(PatternType.Query, domain, startingPath, configureClient, serviceLifetime);
     }
 }

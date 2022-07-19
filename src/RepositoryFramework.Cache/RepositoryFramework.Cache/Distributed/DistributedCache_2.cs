@@ -2,7 +2,7 @@
 
 namespace RepositoryFramework.Cache
 {
-    internal class DistributedCache<T, TKey> : DistributedCache<T, TKey, State>, IDistributedCache<T, TKey>
+    internal class DistributedCache<T, TKey> : DistributedCache<T, TKey, State<T>>, IDistributedCache<T, TKey>
         where TKey : notnull
     {
         public DistributedCache(IDistributedCache distributedCache) : base(distributedCache)

@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
             bool isPrivate = false)
             where TStorage : class, IRepositoryPattern<T, TKey, TState>
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             var service = services.SetService<T, TKey, TState>();
             service.RepositoryType = typeof(IRepository<T, TKey, TState>);
@@ -49,7 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
             bool isPrivate = false)
             where TStorage : class, ICommandPattern<T, TKey, TState>
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             var service = services.SetService<T, TKey, TState>();
             service.CommandType = typeof(ICommand<T, TKey, TState>);
@@ -77,7 +77,7 @@ namespace Microsoft.Extensions.DependencyInjection
             bool isPrivate = false)
             where TStorage : class, IQueryPattern<T, TKey, TState>
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             var service = services.SetService<T, TKey, TState>();
             service.QueryType = typeof(IQuery<T, TKey, TState>);

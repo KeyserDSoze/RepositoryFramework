@@ -14,9 +14,9 @@ namespace RepositoryFramework.UnitTest
         private readonly IMigrationManager<SuperMigrationUser, string> _migrationService2;
         private readonly IRepository<SuperMigrationUser, string> _repository2;
         private readonly IMigrationSource<SuperMigrationUser, string> _from2;
-        private readonly IMigrationManager<IperMigrationUser, string, State> _migrationService3;
-        private readonly IRepository<IperMigrationUser, string, State> _repository3;
-        private readonly IMigrationSource<IperMigrationUser, string, State> _from3;
+        private readonly IMigrationManager<IperMigrationUser, string, State<IperMigrationUser>> _migrationService3;
+        private readonly IRepository<IperMigrationUser, string, State<IperMigrationUser>> _repository3;
+        private readonly IMigrationSource<IperMigrationUser, string, State<IperMigrationUser>> _from3;
 
         public Migrations(
             IMigrationManager<MigrationUser> migrationService1,
@@ -25,9 +25,9 @@ namespace RepositoryFramework.UnitTest
             IMigrationManager<SuperMigrationUser, string> migrationService2,
             IRepository<SuperMigrationUser, string> repository2,
             IMigrationSource<SuperMigrationUser, string> from2,
-            IMigrationManager<IperMigrationUser, string, State> migrationService3,
-            IRepository<IperMigrationUser, string, State> repository3,
-            IMigrationSource<IperMigrationUser, string, State> from3)
+            IMigrationManager<IperMigrationUser, string, State<IperMigrationUser>> migrationService3,
+            IRepository<IperMigrationUser, string, State<IperMigrationUser>> repository3,
+            IMigrationSource<IperMigrationUser, string, State<IperMigrationUser>> from3)
         {
             _migrationService1 = migrationService1;
             _repository1 = repository1;

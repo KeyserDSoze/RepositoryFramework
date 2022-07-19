@@ -25,7 +25,7 @@ and let the sorcery happen
 
 Now you may use the interface in DI
 
-    IMigrationManager<MigrationUser, string, State> migrationService
+    IMigrationManager<MigrationUser, string, State<T>> migrationService
 
 and let the sorcery happen
 

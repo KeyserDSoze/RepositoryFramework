@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
            string connectionString,
            string? name = null,
            BlobClientOptions? clientOptions = null,
-           Action<DistributedCacheOptions<T, string, State>>? settings = null)
+           Action<DistributedCacheOptions<T, string, State<T>>>? settings = null)
         {
             builder.Services
                    .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(connectionString, name, clientOptions, true);
@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
            this RepositoryBuilder<T> builder,
            Uri endpointUri,
            BlobClientOptions? clientOptions = null,
-           Action<DistributedCacheOptions<T, string, State>>? settings = null)
+           Action<DistributedCacheOptions<T, string, State<T>>>? settings = null)
         {
             builder.Services
                    .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(endpointUri, clientOptions, true);

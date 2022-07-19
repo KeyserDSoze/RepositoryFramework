@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
            BlobClientOptions? clientOptions = null,
            Action<DistributedCacheOptions<T, TKey, TState>>? settings = null)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             builder.Services
                   .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(connectionString, name, clientOptions, true);
@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
            BlobClientOptions? clientOptions = null,
            Action<DistributedCacheOptions<T, TKey, TState>>? settings = null)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             builder.Services
                   .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(endpointUri, clientOptions, true);

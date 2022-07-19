@@ -19,16 +19,16 @@ namespace RepositoryFramework.UnitTest.Storage
             { "3", new IperMigrationUser { Id = "3", Name = "Alessia", Email = "Alo@gmail.com", IsAdmin = false } },
             { "4", new IperMigrationUser { Id = "4", Name = "Alisandro", Email = "Ali@gmail.com", IsAdmin = false } },
         };
-        public Task<State> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<IperMigrationUser>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             if (_users.ContainsKey(key))
-                return Task.FromResult(new State(_users.Remove(key)));
-            return Task.FromResult(new State(true));
+                return Task.FromResult(new State<IperMigrationUser>(_users.Remove(key)));
+            return Task.FromResult(new State<IperMigrationUser>(true));
         }
 
-        public Task<State> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<IperMigrationUser>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new State(_users.ContainsKey(key)));
+            return Task.FromResult(new State<IperMigrationUser>(_users.ContainsKey(key)));
         }
 
         public Task<IperMigrationUser?> GetAsync(string key, CancellationToken cancellationToken = default)
@@ -38,10 +38,10 @@ namespace RepositoryFramework.UnitTest.Storage
             return Task.FromResult(default(IperMigrationUser));
         }
 
-        public Task<State> InsertAsync(string key, IperMigrationUser value, CancellationToken cancellationToken = default)
+        public Task<State<IperMigrationUser>> InsertAsync(string key, IperMigrationUser value, CancellationToken cancellationToken = default)
         {
             _users.Add(key, value);
-            return Task.FromResult(new State(true));
+            return Task.FromResult(new State<IperMigrationUser>(true));
         }
 
         public Task<IEnumerable<IperMigrationUser>> QueryAsync(QueryOptions<IperMigrationUser>? options = null, CancellationToken cancellationToken = default)
@@ -54,13 +54,13 @@ namespace RepositoryFramework.UnitTest.Storage
             var users = _users.Select(x => x.Value).Filter(options);
             return Task.FromResult((long)users.Count());
         }
-        public Task<State> UpdateAsync(string key, IperMigrationUser value, CancellationToken cancellationToken = default)
+        public Task<State<IperMigrationUser>> UpdateAsync(string key, IperMigrationUser value, CancellationToken cancellationToken = default)
         {
             _users[key] = value;
-            return Task.FromResult(new State(true));
+            return Task.FromResult(new State<IperMigrationUser>(true));
         }
 
-        public Task<List<BatchResult<string, State>>> BatchAsync(List<BatchOperation<IperMigrationUser, string>> operations, CancellationToken cancellationToken = default)
+        public Task<List<BatchResult<string, State<IperMigrationUser>>>> BatchAsync(List<BatchOperation<IperMigrationUser, string>> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

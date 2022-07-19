@@ -7,7 +7,7 @@
             ICommandPattern<T, TKey, TState> command,
             CancellationToken cancellationToken = default)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
             => command.BatchAsync(operations, cancellationToken);
         public static List<BatchOperation<T, TKey>> AddInsert<T, TKey>(
             this List<BatchOperation<T, TKey>> operations,

@@ -111,7 +111,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddGet<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Get)}", async (TKey key, [FromServices] TService service) =>
                {
@@ -122,7 +122,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddQuery<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Query)}",
                 async (string? query, int? top, int? skip, string? order, bool? asc, [FromServices] TService service) =>
@@ -136,7 +136,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddCount<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Count)}",
                 async (string? query, int? top, int? skip, string? order, bool? asc, [FromServices] TService service) =>
@@ -150,7 +150,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddExist<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Exist)}", async (TKey key, [FromServices] TService service) =>
             {
@@ -161,7 +161,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddInsert<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Insert)}", async (TKey key, T entity, [FromServices] TService service) =>
             {
@@ -172,7 +172,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddUpdate<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Update)}", async (TKey key, T entity, [FromServices] TService service) =>
             {
@@ -183,7 +183,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddBatch<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Batch)}", async (List<BatchOperation<T, TKey>> operations, [FromServices] TService service) =>
             {
@@ -194,7 +194,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddDelete<T, TKey, TState, TService>(IEndpointRouteBuilder app, string name, string startingPath, AuthorizationForApi authorization)
             where TKey : notnull
-            where TState : class, IState
+            where TState : class, IState<T>, new()
         {
             _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethod.Delete)}", async (TKey key, [FromServices] TService service) =>
             {
