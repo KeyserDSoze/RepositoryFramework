@@ -22,6 +22,11 @@ namespace RepositoryFramework.UnitTest
                 .Build();
             services.AddSingleton(configuration);
             var serviceProvider = services
+                .AddRepositoryInMemoryStorage<Animal, int>()
+                .ToServiceCollection()
+                .AddScoped<AnimalDatabase>()
+                .AddRepository<Animal, int, AnimalStorage>()
+                .Services
                 .AddRepositoryInMemoryStorage<User>(options =>
                 {
                     var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),

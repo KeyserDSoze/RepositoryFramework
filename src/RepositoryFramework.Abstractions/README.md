@@ -239,3 +239,9 @@ And you may inject the objects
     IRepository<User, string, Result> repository
     ICommand<User, string, Result> command
     IQuery<User, string, Result> command
+
+### Twice or more configurations for the same repository service
+Pay attention during the DI, you may install the same repository two or more times for the same model. If you want to be sure, you may start the DI with a method that checks for you.
+When can it happen? For instance, when you use at the same time InMemory integration with a custom integration.
+
+    services.ThrowExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes();

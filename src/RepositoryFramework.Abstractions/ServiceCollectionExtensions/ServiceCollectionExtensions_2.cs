@@ -26,10 +26,12 @@ namespace Microsoft.Extensions.DependencyInjection
             service.RepositoryType = typeof(IRepository<T, TKey>);
             service.IsPrivate = isPrivate;
             services
+                .RemoveServiceIfAlreadyInstalled<TStorage>(service.RepositoryType, typeof(IRepositoryPattern<T, TKey>))
                 .AddService<IRepositoryPattern<T, TKey>, TStorage>(serviceLifetime)
                 .AddService<IRepository<T, TKey>, Repository<T, TKey>>(serviceLifetime);
             return new(services, PatternType.Repository, serviceLifetime);
         }
+       
 
         /// <summary>
         /// Add Command storage for your CQRS, inject the ICommand<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
@@ -53,6 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.CommandType = typeof(ICommand<T, TKey>);
             service.IsPrivate = isPrivate;
             services
+                .RemoveServiceIfAlreadyInstalled<TStorage>(service.CommandType, typeof(ICommandPattern<T, TKey>))
                 .AddService<ICommandPattern<T, TKey>, TStorage>(serviceLifetime)
                 .AddService<ICommand<T, TKey>, Command<T, TKey>>(serviceLifetime);
             return new(services, PatternType.Command, serviceLifetime);
@@ -80,6 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.QueryType = typeof(IQuery<T, TKey>);
             service.IsPrivate = isPrivate;
             services
+                .RemoveServiceIfAlreadyInstalled<TStorage>(service.QueryType, typeof(IQueryPattern<T, TKey>))
                 .AddService<IQueryPattern<T, TKey>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T, TKey>, Query<T, TKey>>(serviceLifetime);
             return new(services, PatternType.Query, serviceLifetime);

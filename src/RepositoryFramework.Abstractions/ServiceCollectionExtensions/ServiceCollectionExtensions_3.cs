@@ -27,6 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.RepositoryType = typeof(IRepository<T, TKey, TState>);
             service.IsPrivate = isPrivate;
             services
+                .RemoveServiceIfAlreadyInstalled<TStorage>(service.RepositoryType, typeof(IRepositoryPattern<T, TKey, TState>))
                 .AddService<IRepositoryPattern<T, TKey, TState>, TStorage>(serviceLifetime)
                 .AddService<IRepository<T, TKey, TState>, Repository<T, TKey, TState>>(serviceLifetime);
             return new(services, PatternType.Repository, serviceLifetime);
@@ -55,6 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.CommandType = typeof(ICommand<T, TKey, TState>);
             service.IsPrivate = isPrivate;
             services
+                .RemoveServiceIfAlreadyInstalled<TStorage>(service.CommandType, typeof(ICommandPattern<T, TKey, TState>))
                 .AddService<ICommandPattern<T, TKey, TState>, TStorage>(serviceLifetime)
                 .AddService<ICommand<T, TKey, TState>, Command<T, TKey, TState>>(serviceLifetime);
             return new(services, PatternType.Command, serviceLifetime);
@@ -83,6 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
             service.QueryType = typeof(IQuery<T, TKey, TState>);
             service.IsPrivate = isPrivate;
             services
+                .RemoveServiceIfAlreadyInstalled<TStorage>(service.QueryType, typeof(IQueryPattern<T, TKey, TState>))
                 .AddService<IQueryPattern<T, TKey, TState>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T, TKey, TState>, Query<T, TKey, TState>>(serviceLifetime);
             return new(services, PatternType.Query, serviceLifetime);
