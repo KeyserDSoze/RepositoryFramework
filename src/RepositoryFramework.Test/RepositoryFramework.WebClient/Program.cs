@@ -12,6 +12,9 @@ builder.Services.AddRepositoryApiClient<User>("localhost:7058",
         .AddApiClientSpecificInterceptor<User, string, State<User>, SpecificInterceptor>();
 builder.Services.AddRepositoryApiClient<SuperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryApiClient<IperUser, string, State<IperUser>>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryApiClient<Animal, AnimalKey>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryApiClient<Car, Guid>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryApiClient<Car2, Range>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddApiClientInterceptor<Interceptor>();
 var app = builder.Build();
 

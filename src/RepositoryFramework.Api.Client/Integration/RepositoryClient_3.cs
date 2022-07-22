@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 
 namespace RepositoryFramework.Api.Client
@@ -12,6 +13,7 @@ namespace RepositoryFramework.Api.Client
         private readonly HttpClient _httpClient;
         private readonly IRepositoryClientInterceptor? _clientInterceptor;
         private readonly IRepositoryClientInterceptor<T>? _specificClientInterceptor;
+        private static readonly bool _hasProperties = typeof(TKey).GetProperties().Length > 0;
 
         public RepositoryClient(IHttpClientFactory httpClientFactory,
             IRepositoryClientInterceptor? clientInterceptor = null,
@@ -33,22 +35,26 @@ namespace RepositoryFramework.Api.Client
         public async Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Delete).NoContext();
-            return (await client.GetFromJsonAsync<TState>($"{nameof(RepositoryMethod.Delete)}?key={key}", cancellationToken).NoContext())!;
+            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            return (await client.GetFromJsonAsync<TState>($"{nameof(RepositoryMethod.Delete)}?key={keyAsString}", cancellationToken).NoContext())!;
         }
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Get).NoContext();
-            return await client.GetFromJsonAsync<T>($"{nameof(RepositoryMethod.Get)}?key={key}", cancellationToken).NoContext();
+            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            return await client.GetFromJsonAsync<T>($"{nameof(RepositoryMethod.Get)}?key={keyAsString}", cancellationToken).NoContext();
         }
         public async Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Exist).NoContext();
-            return (await client.GetFromJsonAsync<TState>($"{nameof(RepositoryMethod.Exist)}?key={key}", cancellationToken).NoContext())!;
+            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            return (await client.GetFromJsonAsync<TState>($"{nameof(RepositoryMethod.Exist)}?key={keyAsString}", cancellationToken).NoContext())!;
         }
         public async Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Insert).NoContext();
-            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Insert)}?key={key}", value, cancellationToken).NoContext();
+            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Insert)}?key={keyAsString}", value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             return (await response!.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken).NoContext())!;
         }
@@ -67,7 +73,8 @@ namespace RepositoryFramework.Api.Client
         public async Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Update).NoContext();
-            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Update)}?key={key}", value, cancellationToken).NoContext();
+            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Update)}?key={keyAsString}", value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             return (await response.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken).NoContext())!;
         }

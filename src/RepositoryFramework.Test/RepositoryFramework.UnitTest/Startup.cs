@@ -21,6 +21,8 @@ namespace RepositoryFramework.UnitTest
                 .Build();
             services.AddSingleton(configuration);
             var serviceProvider = services
+                .AddRepository<ClassAnimal, ClassAnimalKey, ClassAnimalRepository>()
+                .Services
                 .AddRepositoryInMemoryStorage<Animal, int>()
                 .ToServiceCollection()
                 .AddScoped<AnimalDatabase>()

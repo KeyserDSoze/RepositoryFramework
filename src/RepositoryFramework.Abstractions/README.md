@@ -245,3 +245,52 @@ Pay attention during the DI, you may install the same repository two or more tim
 When can it happen? For instance, when you use at the same time InMemory integration with a custom integration.
 
     services.ThrowExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes();
+
+
+### TKey when it's not a primitive
+You can use a class or record. Record is better, for example, if you want to use the Equals operator from key, with record you don't check it by the refence but by the value of the properties in the record.
+My key:
+
+    public class MyKey 
+    {
+        public int Id { get; set; }
+        public int Id2 { get; set; }
+    }
+
+the DI
+    
+    services.AddRepository<User, MyKey, Result, UserRepository>();
+
+and you may inject (for ICommand and IQuery is the same)
+
+    IRepository<User, MyKey, Result> repository
+
+### Default TKey record
+You may use the default record in repository framework namespace.
+For 1 value (it's not really useful I know, but I liked to create it).
+
+    new Key<int>(2);
+
+or for 2 values
+    
+    new Key<int, int>(2, 4);
+
+or for 3 values
+    
+    new Key<int, int, string>(2, 4, "312");
+
+or for 4 values
+    
+    new Key<int, int, string, Guid>(2, 4, "312", Guid.NewGuid());
+
+or for 5 values
+    
+    new Key<int, int, string, Guid, string>(2, 4, "312", Guid.NewGuid(), "3232");
+
+the DI
+    
+    services.AddRepository<User, Key<int, int>, Result, UserRepository>();
+
+and you may inject (for ICommand and IQuery is the same)
+
+    IRepository<User, Key<int, int>, Result> repository

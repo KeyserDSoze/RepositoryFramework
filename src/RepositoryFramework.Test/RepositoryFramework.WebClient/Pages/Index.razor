@@ -41,10 +41,37 @@ Welcome to your new app.
         <div style="position:relative;float:left;width:100%">@user.Email -- @user.Name -- @user.GroupId</div>
     }
 }
+<h1>Animals</h1>
+@if (Animals != null)
+{
+    foreach (var animal in Animals)
+    {
+        <div style="position:relative;float:left;width:100%">@animal.Id - @animal.Name</div>
+    }
+}
+<h1>Cars</h1>
+@if (Cars != null)
+{
+    foreach (var car in Cars)
+    {
+        <div style="position:relative;float:left;width:100%">@car.Id - @car.Name</div>
+    }
+}
+<h1>Cars 2</h1>
+@if (Cars2 != null)
+{
+    foreach (var car in Cars2)
+    {
+        <div style="position:relative;float:left;width:100%">@car.Id - @car.Name</div>
+    }
+}
 @code {
     private IEnumerable<User>? Users1;
     private IEnumerable<User>? Users2;
     private IEnumerable<User>? Users3;
+    private IEnumerable<Animal> Animals;
+    private IEnumerable<Car> Cars;
+    private IEnumerable<Car2> Cars2;
     private IPage<User>? Users4;
     private static int X = 2;
     private Guid Alfa = Guid.Parse("db429642-94e3-436d-8880-6160575978b6");
@@ -57,6 +84,22 @@ Welcome to your new app.
         Users2 = await UserClient2.Where(x => x.Email!.Contains(user.Email!) && x.IsAdmin && x.GroupId.Equals(Alfa)).QueryAsync().NoContext();
         Users3 = await UserClient3.Where(x => x.Port > X && x.IsAdmin).QueryAsync().NoContext();
         Users4 = await UserClient3.PageAsync(7, 20).NoContext();
+        var key = new AnimalKey("a", 2, Guid.NewGuid());
+        await AnimalClient.InsertAsync(key, new Animal { Id = 1, Name = "Rosario" });
+        await AnimalClient.UpdateAsync(key, new Animal { Id = 1, Name = "RosarioUpdated" });
+        var exist = await AnimalClient.ExistAsync(key);
+        await AnimalClient.DeleteAsync(key);
+        exist = await AnimalClient.ExistAsync(key);
+        await AnimalClient.InsertAsync(new AnimalKey("b", 2, Guid.NewGuid()), new Animal { Id = 2, Name = "Rosario" });
+        Animals = await AnimalClient.QueryAsync();
+        await CarClient.InsertAsync(Guid.NewGuid(), new Car { Id = Guid.NewGuid(), Name = "a" });
+        await CarClient.InsertAsync(Guid.NewGuid(), new Car { Id = Guid.NewGuid(), Name = "a2" });
+        await CarClient.InsertAsync(Guid.NewGuid(), new Car { Id = Guid.NewGuid(), Name = "a3" });
+        Cars = await CarClient.QueryAsync();
+        await CarClient2.InsertAsync(new Range(1, 3), new Car2 { Id = Guid.NewGuid(), Name = "a" });
+        await CarClient2.InsertAsync(new Range(1, 4), new Car2 { Id = Guid.NewGuid(), Name = "a2" });
+        await CarClient2.InsertAsync(new Range(1, 5), new Car2 { Id = Guid.NewGuid(), Name = "a3" });
+        Cars2 = await CarClient2.QueryAsync();
         await base.OnParametersSetAsync().NoContext();
     }
     private async Task AddInBatchSomething()
