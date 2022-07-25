@@ -10,7 +10,7 @@ namespace RepositoryFramework.UnitTest.Repository.Models
     public class ClassAnimal
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
     }
     public record ClassAnimalKey(string Id, int Key, Guid ValKey);
     public class ClassAnimalRepository : IRepository<ClassAnimal, ClassAnimalKey>
@@ -28,40 +28,35 @@ namespace RepositoryFramework.UnitTest.Repository.Models
 
         public async Task<State<ClassAnimal>> DeleteAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
         {
-            if (_dic.ContainsKey(key.Id))
-                if (_dic[key.Id].ContainsKey(key.Key))
-                    if (_dic[key.Id][key.Key].ContainsKey(key.ValKey))
-                    {
-                        _dic[key.Id][key.Key].Remove(key.ValKey);
-                        return true;
-                    }
+            await Task.Delay(0, cancellationToken).NoContext();
+            if (_dic.ContainsKey(key.Id) && _dic[key.Id].ContainsKey(key.Key) && _dic[key.Id][key.Key].ContainsKey(key.ValKey))
+            {
+                _dic[key.Id][key.Key].Remove(key.ValKey);
+                return true;
+            }
+
             return false;
         }
 
         public async Task<State<ClassAnimal>> ExistAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
         {
-            if (_dic.ContainsKey(key.Id))
-                if (_dic[key.Id].ContainsKey(key.Key))
-                    if (_dic[key.Id][key.Key].ContainsKey(key.ValKey))
-                    {
-                        return true;
-                    }
-            return false;
+            await Task.Delay(0, cancellationToken).NoContext();
+            return _dic.ContainsKey(key.Id) && _dic[key.Id].ContainsKey(key.Key) && _dic[key.Id][key.Key].ContainsKey(key.ValKey);
         }
 
         public async Task<ClassAnimal?> GetAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
         {
-            if (_dic.ContainsKey(key.Id))
-                if (_dic[key.Id].ContainsKey(key.Key))
-                    if (_dic[key.Id][key.Key].ContainsKey(key.ValKey))
-                    {
-                        return _dic[key.Id][key.Key][key.ValKey];
-                    }
+            await Task.Delay(0, cancellationToken).NoContext();
+            if (_dic.ContainsKey(key.Id) && _dic[key.Id].ContainsKey(key.Key) && _dic[key.Id][key.Key].ContainsKey(key.ValKey))
+            {
+                return _dic[key.Id][key.Key][key.ValKey];
+            }
             return default;
         }
 
         public async Task<State<ClassAnimal>> InsertAsync(ClassAnimalKey key, ClassAnimal value, CancellationToken cancellationToken = default)
         {
+            await Task.Delay(0, cancellationToken).NoContext();
             if (!_dic.ContainsKey(key.Id))
                 _dic.Add(key.Id, new());
             if (!_dic[key.Id].ContainsKey(key.Key))
@@ -76,18 +71,17 @@ namespace RepositoryFramework.UnitTest.Repository.Models
 
         public Task<IEnumerable<ClassAnimal>> QueryAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
         {
-            return default;
+            return default!;
         }
 
         public async Task<State<ClassAnimal>> UpdateAsync(ClassAnimalKey key, ClassAnimal value, CancellationToken cancellationToken = default)
         {
-            if (_dic.ContainsKey(key.Id))
-                if (_dic[key.Id].ContainsKey(key.Key))
-                    if (_dic[key.Id][key.Key].ContainsKey(key.ValKey))
-                    {
-                        _dic[key.Id][key.Key][key.ValKey] = value;
-                        return true;
-                    }
+            await Task.Delay(0, cancellationToken).NoContext();
+            if (_dic.ContainsKey(key.Id) && _dic[key.Id].ContainsKey(key.Key) && _dic[key.Id][key.Key].ContainsKey(key.ValKey))
+            {
+                _dic[key.Id][key.Key][key.ValKey] = value;
+                return true;
+            }
             return false;
         }
     }

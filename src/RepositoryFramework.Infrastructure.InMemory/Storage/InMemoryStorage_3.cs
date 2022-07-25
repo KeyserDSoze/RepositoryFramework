@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
 namespace RepositoryFramework.InMemory
 {
@@ -117,7 +116,7 @@ namespace RepositoryFramework.InMemory
                 if (Values.ContainsKey(key))
                 {
                     Values[key] = value;
-                    return InMemoryStorage<T, TKey, TState>.SetState(false, value);
+                    return InMemoryStorage<T, TKey, TState>.SetState(true, value);
                 }
                 else
                     return InMemoryStorage<T, TKey, TState>.SetState(false);
@@ -137,7 +136,7 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    IEnumerable<T> values = Values.Select(x => x.Value).Filter(options).AsEnumerable();
+                    IEnumerable<T> values = Values.Filter(options);
                     return values;
                 }
                 else
@@ -160,7 +159,7 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    IEnumerable<T> values = Values.Select(x => x.Value).Filter(options);
+                    IEnumerable<T> values = Values.Filter(options);
                     return values.Count();
                 }
                 else

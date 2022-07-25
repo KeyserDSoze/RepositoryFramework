@@ -10,11 +10,11 @@ namespace RepositoryFramework.UnitTest.Repository.Models
     {
         private readonly List<Auto> _database = new()
         {
-            new Auto{Identificativo = 1, Targa ="03djks0", NumeroRuote = 4, Guidatore = new()},
-            new Auto{Identificativo = 2, Targa ="03djka0", NumeroRuote = 4, Guidatore = new() },
-            new Auto{Identificativo = 3, Targa ="03djkb0", NumeroRuote = 3, Guidatore = new() },
-            new Auto{Identificativo = 4, Targa ="03djkc0", NumeroRuote = 2, Guidatore = new() },
-            new Auto{Identificativo = 5, Targa ="03djkd0", NumeroRuote = 2, Guidatore = new() },
+            new Auto { Identificativo = 5, Targa = "03djkd0", NumeroRuote = 2, Guidatore = new() },
+            new Auto { Identificativo = 1, Targa = "03djks0", NumeroRuote = 4, Guidatore = new() },
+            new Auto { Identificativo = 2, Targa = "03djka0", NumeroRuote = 4, Guidatore = new() },
+            new Auto { Identificativo = 3, Targa = "03djkb0", NumeroRuote = 3, Guidatore = new() },
+            new Auto { Identificativo = 4, Targa = "03djkc0", NumeroRuote = 2, Guidatore = new() },
         };
         public Task<List<BatchResult<int, State<Car>>>> BatchAsync(List<BatchOperation<Car, int>> operations, CancellationToken cancellationToken = default)
         {
@@ -23,7 +23,7 @@ namespace RepositoryFramework.UnitTest.Repository.Models
 
         public Task<long> CountAsync(QueryOptions<Car>? options = null, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return Task.FromResult((long)_database.Count);
         }
 
         public Task<State<Car>> DeleteAsync(int key, CancellationToken cancellationToken = default)

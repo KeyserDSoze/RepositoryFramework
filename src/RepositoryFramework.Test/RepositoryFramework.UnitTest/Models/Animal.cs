@@ -10,11 +10,13 @@ namespace RepositoryFramework.UnitTest.Models
     public class Animal
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
     }
     public class AnimalDatabase
     {
         private static readonly Dictionary<int, Animal> _animals = new();
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Test purpose")]
         public Dictionary<int, Animal> Animals => _animals;
     }
     public class AnimalStorage : IRepository<Animal, int>

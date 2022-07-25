@@ -20,5 +20,8 @@
             }
             return items.AsQueryable();
         }
+        public static IQueryable<TValue> Filter<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> hashMap,
+            QueryOptions<TValue>? options) 
+            => hashMap.Select(x => x.Value).Filter(options);
     }
 }
