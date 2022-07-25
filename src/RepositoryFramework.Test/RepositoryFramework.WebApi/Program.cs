@@ -60,6 +60,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.AddApiForRepositoryFramework();
+app.AddApiForRepositoryFramework()
+    .WithNoAuthorization();
+
+app.AddApiForRepository<User>()
+    .SetPolicy(RepositoryMethod.Query)
+    .Empty()
+    .SetPolicy(RepositoryMethod.Delete)
+    .With("Admin")
+    .With("Other")
+    .And()
+    .Finalize();
 
 app.Run();
