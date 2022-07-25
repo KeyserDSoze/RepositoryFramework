@@ -63,13 +63,15 @@ app.UseHttpsRedirection();
 app.AddApiForRepositoryFramework()
     .WithNoAuthorization();
 
-app.AddApiForRepository<User>()
-    .SetPolicy(RepositoryMethod.Query)
-    .Empty()
-    .SetPolicy(RepositoryMethod.Delete)
-    .With("Admin")
-    .With("Other")
-    .And()
-    .Finalize();
+#pragma warning disable S125 // Sections of code should not be commented out
+    //.SetPolicy(RepositoryMethod.Query)
+    //.Empty()
+    //.SetPolicy(RepositoryMethod.Delete)
+    //.With("Admin")
+    //.With("Other")
+    //.And()
+    //.Finalize();
+#pragma warning restore S125 // Sections of code should not be commented out
+
 
 app.Run();
