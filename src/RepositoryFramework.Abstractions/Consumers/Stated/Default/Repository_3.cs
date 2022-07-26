@@ -31,7 +31,7 @@
         public Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.UpdateAsync(key, value, cancellationToken);
 
-        public Task<List<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<TKey, TState>> BatchAsync(BatchOperations<T, TKey, TState> operations, CancellationToken cancellationToken = default)
             => _repository.BatchAsync(operations, cancellationToken);
     }
 }

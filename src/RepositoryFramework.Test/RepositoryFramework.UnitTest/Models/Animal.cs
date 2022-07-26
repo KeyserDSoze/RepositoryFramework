@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace RepositoryFramework.UnitTest.Models
 {
+    public record AnimalKey(int Id);
     public class Animal
     {
         public int Id { get; set; }
@@ -26,7 +27,7 @@ namespace RepositoryFramework.UnitTest.Models
         {
             _database = database;
         }
-        public Task<List<BatchResult<int, State<Animal>>>> BatchAsync(List<BatchOperation<Animal, int>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<int, State<Animal>>> BatchAsync(BatchOperations<Animal, int, State<Animal>> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

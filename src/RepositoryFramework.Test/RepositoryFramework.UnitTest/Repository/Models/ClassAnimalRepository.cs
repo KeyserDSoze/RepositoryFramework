@@ -16,7 +16,7 @@ namespace RepositoryFramework.UnitTest.Repository.Models
     public class ClassAnimalRepository : IRepository<ClassAnimal, ClassAnimalKey>
     {
         private static readonly Dictionary<string, Dictionary<int, Dictionary<Guid, ClassAnimal>>> _dic = new();
-        public Task<List<BatchResult<ClassAnimalKey, State<ClassAnimal>>>> BatchAsync(List<BatchOperation<ClassAnimal, ClassAnimalKey>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<ClassAnimalKey, State<ClassAnimal>>> BatchAsync(BatchOperations<ClassAnimal, ClassAnimalKey, State<ClassAnimal>> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

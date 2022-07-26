@@ -99,7 +99,7 @@ namespace RepositoryFramework.UnitTest
         [Fact]
         public async Task TestWithRegexAsync()
         {
-            var all = await _population.QueryAsync().NoContext();
+            var all = await _population.OrderBy(x => x.Id).QueryAsync().NoContext();
             var theFirst = all.First();
             Assert.Equal(90, all.Count());
             Assert.Equal(0, all.First().Id);
@@ -244,8 +244,8 @@ namespace RepositoryFramework.UnitTest
         [Fact]
         public async Task TestWithAutoincrementAsync()
         {
-            var all = await _autoincrementRepository.QueryAsync().NoContext();
-            var all2 = await _autoincrementRepository2.QueryAsync().NoContext();
+            var all = await _autoincrementRepository.OrderBy(x => x.Id).QueryAsync().NoContext();
+            var all2 = await _autoincrementRepository2.OrderBy(x => x.Id).QueryAsync().NoContext();
             Assert.Equal(0, all.First().Id);
             Assert.Equal(99, all.Last().Id);
             Assert.Equal(1, all2.First().Id);

@@ -73,21 +73,21 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             IEnumerable<T> results = items.Filter(options).AsEnumerable();
             return results.Count();
         }
-        public async Task<List<BatchResult<TKey, State<T>>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<BatchResults<TKey, State<T>>> BatchAsync(BatchOperations<T, TKey, State<T>> operations, CancellationToken cancellationToken = default)
         {
-            List<BatchResult<TKey, State<T>>> results = new();
-            foreach (var operation in operations)
+            BatchResults<TKey, State<T>> results = new();
+            foreach (var operation in operations.Values)
             {
                 switch (operation.Command)
                 {
                     case CommandType.Delete:
-                        results.Add(new(operation.Command, operation.Key, await DeleteAsync(operation.Key, cancellationToken).NoContext()));
+                        results.AddDelete(operation.Key, await DeleteAsync(operation.Key, cancellationToken).NoContext());
                         break;
                     case CommandType.Insert:
-                        results.Add(new(operation.Command, operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
+                        results.AddInsert(operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken).NoContext());
                         break;
                     case CommandType.Update:
-                        results.Add(new(operation.Command, operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken).NoContext()));
+                        results.AddUpdate(operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken).NoContext());
                         break;
                 }
             }

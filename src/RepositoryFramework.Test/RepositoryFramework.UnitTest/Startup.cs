@@ -29,6 +29,10 @@ namespace RepositoryFramework.UnitTest
                 .ToServiceCollection()
                 .AddRepositoryInMemoryStorage<Animal, long>()
                 .ToServiceCollection()
+                .AddRepositoryInMemoryStorage<Animal, AnimalKey>()
+                .PopulateWithRandomData(x => new AnimalKey(x.Id), 100)
+                .And()
+                .ToServiceCollection()
                 .AddScoped<AnimalDatabase>()
                 .AddRepository<Animal, int, AnimalStorage>()
                 .Services

@@ -30,9 +30,9 @@
                         property.SetValue(entity, _populationService!.Construct(property.PropertyType,
                             _settings.NumberOfElementsWhenEnumerableIsFound, string.Empty,
                             property.Name));
-
-                var key = properties.First(x => x.Name == _settings.KeyName).GetValue(entity);
-                _settings.AddElementToMemory?.Invoke((TKey)key!, (T)entity!);
+                T item = (T)entity!;
+                TKey key = _settings.KeyCalculator!.Invoke(item);
+                _settings.AddElementToMemory?.Invoke(key, item);
             }
         }
         private static dynamic GetDefault(Type type)

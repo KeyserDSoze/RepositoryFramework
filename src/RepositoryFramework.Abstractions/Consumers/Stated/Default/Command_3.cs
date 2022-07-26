@@ -10,7 +10,7 @@
         {
             _command = command;
         }
-        public Task<List<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<TKey, TState>> BatchAsync(BatchOperations<T, TKey, TState> operations, CancellationToken cancellationToken = default)
             => _command.BatchAsync(operations, cancellationToken);
 
         public Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default)

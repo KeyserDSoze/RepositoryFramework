@@ -99,7 +99,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
             where TState : class, IState<T>, new()
         {
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Batch)}", async (List<BatchOperation<T, TKey>> operations, [FromServices] TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethod.Batch)}", async (BatchOperations<T, TKey, TState> operations, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey, TState>;
                 return await commandService!.BatchAsync(operations).NoContext();

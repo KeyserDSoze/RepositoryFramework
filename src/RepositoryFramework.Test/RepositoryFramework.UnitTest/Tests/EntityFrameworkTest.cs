@@ -24,7 +24,7 @@ namespace RepositoryFramework.UnitTest.Repository
             var user = new AppUser(3, "Arnold", "Arnold@gmail.com", new());
             var result = await _repository.InsertAsync(new AppUserKey(3), user);
             Assert.True(result.IsOk);
-            user = user with { Id = result.Value.Id };
+            user = user with { Id = result.Value!.Id };
             var key = await CheckAsync("Arnold");
 
             result = await _repository.UpdateAsync(key, user with { Username = "Fish" });

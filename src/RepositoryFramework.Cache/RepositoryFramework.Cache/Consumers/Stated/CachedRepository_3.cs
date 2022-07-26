@@ -20,10 +20,10 @@
             _command = command;
         }
 
-        public async Task<List<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<BatchResults<TKey, TState>> BatchAsync(BatchOperations<T, TKey, TState> operations, CancellationToken cancellationToken = default)
         {
             var results = await (_repository ?? _command!).BatchAsync(operations, cancellationToken).NoContext();
-            foreach (var result in results)
+            foreach (var result in results.Results)
             {
                 if (result.State.IsOk)
                 {
@@ -31,7 +31,7 @@
                     if ((_cache != null && _cacheOptions.HasCache(method))
                         || (_distributed != null && _distributedCacheOptions.HasCache(method)))
                     {
-                        var operation = operations.First(x => x.Key.Equals(result.Key));
+                        var operation = operations.Values.First(x => x.Key.Equals(result.Key));
                         if (result.Command != CommandType.Delete)
                         {
                             await UpdateExistAndGetCacheAsync(operation.Key, operation.Value!,

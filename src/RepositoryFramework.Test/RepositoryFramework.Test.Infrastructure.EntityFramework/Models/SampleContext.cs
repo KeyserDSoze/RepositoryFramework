@@ -19,6 +19,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework.Models
         public virtual DbSet<Group> Groups { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3251:Implementations should be provided for \"partial\" methods", Justification = "Test purpose.")]
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Group>(entity =>
@@ -65,6 +66,9 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework.Models
             OnModelCreatingPartial(modelBuilder);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3251:Implementations should be provided for \"partial\" methods", Justification = "Test purpose.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Test purpose.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Test purpose.")]
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

@@ -17,7 +17,15 @@ namespace RepositoryFramework.InMemory
             _services = services;
             _numberOfParameters = numberOfParameters;
         }
-
+        private void AddElementBasedOnGenericElements(TKey key, T value)
+        {
+            if (_numberOfParameters == 1)
+                InMemoryStorage<T>.AddValue(key, value);
+            else if (_numberOfParameters == 2)
+                InMemoryStorage<T, TKey>.AddValue(key, value);
+            else
+                InMemoryStorage<T, TKey, TState>.AddValue(key, value);
+        }
         public RepositoryInMemoryBuilder<TNext, TNextKey, TNextState> AddRepositoryInMemoryStorage<TNext, TNextKey, TNextState>(
             Action<RepositoryBehaviorSettings<TNext, TNextKey, TNextState>>? settings = default)
             where TNextKey : notnull
@@ -43,7 +51,7 @@ namespace RepositoryFramework.InMemory
         {
             var keyProperty = navigationKey.GetPropertyBasedOnKey();
             foreach (var element in elements)
-                InMemoryStorage<T, TKey>.Values.Add((TKey)keyProperty.GetValue(element)!, element);
+                AddElementBasedOnGenericElements((TKey)keyProperty.GetValue(element)!, element);
             return this;
         }
         public RepositoryInMemoryCreatorBuilder<T, TKey, TState> PopulateWithRandomData(
@@ -75,16 +83,8 @@ namespace RepositoryFramework.InMemory
                     NumberOfElements = numberOfElements,
                     BehaviorSettings = _internalBehaviorSettings,
                     NumberOfElementsWhenEnumerableIsFound = numberOfElementsWhenEnumerableIsFound,
-                    AddElementToMemory = (key, entity) =>
-                    {
-                        if (_numberOfParameters == 1)
-                            InMemoryStorage<T>.Values.Add(key.ToString()!, entity);
-                        else if (_numberOfParameters == 2)
-                            InMemoryStorage<T, TKey>.Values.Add(key, entity);
-                        else
-                            InMemoryStorage<T, TKey, TState>.Values.Add(key, entity);
-                    },
-                    KeyName = navigationKey.ToString().Split('.').Last()
+                    AddElementToMemory = AddElementBasedOnGenericElements,
+                    KeyCalculator = navigationKey.Compile()
                 });
             return new(this, _internalBehaviorSettings);
         }

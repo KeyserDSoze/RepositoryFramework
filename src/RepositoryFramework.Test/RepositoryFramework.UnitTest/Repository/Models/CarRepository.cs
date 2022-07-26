@@ -16,7 +16,7 @@ namespace RepositoryFramework.UnitTest.Repository.Models
             new Auto { Identificativo = 3, Targa = "03djkb0", NumeroRuote = 3, Guidatore = new() },
             new Auto { Identificativo = 4, Targa = "03djkc0", NumeroRuote = 2, Guidatore = new() },
         };
-        public Task<List<BatchResult<int, State<Car>>>> BatchAsync(List<BatchOperation<Car, int>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<int, State<Car>>> BatchAsync(BatchOperations<Car, int, State<Car>> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

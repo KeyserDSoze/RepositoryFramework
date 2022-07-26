@@ -11,7 +11,7 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
         Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<List<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default);
+        Task<BatchResults<TKey, TState>> BatchAsync(BatchOperations<T, TKey, State<T>> operations, CancellationToken cancellationToken = default);
     }
 
 #### Query (Read)
@@ -42,7 +42,7 @@ Repository pattern is a sum of CQRS interfaces.
         Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
         Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<List<BatchResult<TKey, State<T>>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default);
+        Task<BatchResults<TKey, State<T>>> BatchAsync(BatchOperations<T, TKey, State<T>> operations, CancellationToken cancellationToken = default);
     }
 
 #### Query (Read)
@@ -70,7 +70,7 @@ Repository pattern is a sum of CQRS interfaces.
         Task<State<T>> InsertAsync(string key, T value, CancellationToken cancellationToken = default);
         Task<State<T>> UpdateAsync(string key, T value, CancellationToken cancellationToken = default);
         Task<State<T>> DeleteAsync(string key, CancellationToken cancellationToken = default);
-        Task<List<BatchResult<string, State<T>>>> BatchAsync(List<BatchOperation<T, string>> operations, CancellationToken cancellationToken = default);
+        Task<BatchResults<string, State<T>>> BatchAsync(BatchOperations<T, string> operations, CancellationToken cancellationToken = default);
     }
 
 #### Query (Read)
@@ -116,7 +116,7 @@ Repository pattern is a sum of CQRS interfaces.
             //update on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<List<BatchResult<string, State<T>>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<string, State<T>>> BatchAsync(BatchOperations<User, string> operations, CancellationToken cancellationToken = default)
         {
             //insert, update or delete some items on DB or storage context
             throw new NotImplementedException();
@@ -167,7 +167,7 @@ if you don't have CQRS infrastructure (usually it's correct to use CQRS when you
             //update on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<List<BatchResult<string, State<T>>>> BatchAsync(List<BatchOperation<User, string>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<string, State<T>>> BatchAsync(BatchOperations<User, string> operations, CancellationToken cancellationToken = default)
         {
             //insert, update or delete some items on DB or storage context
             throw new NotImplementedException();

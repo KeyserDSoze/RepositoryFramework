@@ -78,12 +78,12 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response.Content.ReadFromJsonAsync<TState>(cancellationToken: cancellationToken).NoContext())!;
         }
-        public async Task<List<BatchResult<TKey, TState>>> BatchAsync(List<BatchOperation<T, TKey>> operations, CancellationToken cancellationToken = default)
+        public async Task<BatchResults<TKey, TState>> BatchAsync(BatchOperations<T, TKey, TState> operations, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethod.Batch).NoContext();
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethod.Batch)}", operations, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            return (await response.Content.ReadFromJsonAsync<List<BatchResult<TKey, TState>>>(cancellationToken: cancellationToken).NoContext())!;
+            return (await response.Content.ReadFromJsonAsync<BatchResults<TKey, TState>>(cancellationToken: cancellationToken).NoContext())!;
         }
     }
 }

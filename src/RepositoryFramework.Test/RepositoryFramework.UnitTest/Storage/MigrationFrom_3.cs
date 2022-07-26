@@ -60,7 +60,7 @@ namespace RepositoryFramework.UnitTest.Storage
             return Task.FromResult(new State<IperMigrationUser>(true));
         }
 
-        public Task<List<BatchResult<string, State<IperMigrationUser>>>> BatchAsync(List<BatchOperation<IperMigrationUser, string>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<string, State<IperMigrationUser>>> BatchAsync(BatchOperations<IperMigrationUser, string, State<IperMigrationUser>> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
