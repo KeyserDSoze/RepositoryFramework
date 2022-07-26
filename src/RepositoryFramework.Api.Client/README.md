@@ -102,3 +102,15 @@ or for a State as default TState and string as default TKey
         where TInterceptor : class, IRepositoryClientInterceptor<T>   
 
 Maybe you can use it to add a token as JWT o another pre-request things.
+
+### Default interceptor for Authentication with JWT
+You may use the default interceptor to deal with the identity manager in .Net DI.
+
+    builder.Services.AddApiClientAuthorizationInterceptor();
+
+This line of code inject an interceptor that works with ITokenAcquisition, injected by the framework during OpenId integration (for example AAD integration).
+Automatically it adds the token to each request.
+
+You may use the default identity interceptor not on all repositories, you can specificy them with
+
+    builder.Services.AddApiClientSpecificAuthorizationInterceptor<YourModel>();

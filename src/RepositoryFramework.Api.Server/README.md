@@ -3,24 +3,21 @@
 ## Api auto-generated
 In your web application you have only to add one row after service build.
 
-    app.AddApiForRepositoryFramework();
+    app.AddApiForRepositoryFramework()
+       .WithNoAuthorization();
 
-    public static TEndpointRouteBuilder AddApiForRepositoryFramework<TEndpointRouteBuilder>(
+    public static ApiAuthorizationBuilder AddApiForRepositoryFramework<TEndpointRouteBuilder>(
         this TEndpointRouteBuilder app,
-        string startingPath = "api",
-        AuthorizationForApi? authorizationPolicy = null)
+        string startingPath = "api")
         where TEndpointRouteBuilder : IEndpointRouteBuilder
     
 You may add api for each service by
 
-        public static IEndpointRouteBuilder AddApiForRepository<T>(this IEndpointRouteBuilder app,
-            string startingPath = "api",
-            AuthorizationForApi? authorizationPolicy = null)
+        public static ApiAuthorizationBuilder AddApiForRepository<T>(this IEndpointRouteBuilder app,
+            string startingPath = "api")
 
 ### Startup example
 In the example below you may find the DI for repository with string key for User model, populated with random data in memory, swagger to test the solution, the population method just after the build and the configuration of your API based on repository framework.
-
-    using RepositoryFramework.WebApi.Models;
 
     var builder = WebApplication.CreateBuilder(args);
     builder.Services
@@ -31,16 +28,90 @@ In the example below you may find the DI for repository with string key for User
     
     var app = builder.Build();
     app.Services.Populate();
-    // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
         app.UseSwaggerUI();
     }
     app.UseHttpsRedirection();
-    app.AddApiForRepositoryFramework();
+    app.AddApiForRepositoryFramework()
+        .WithNoAuthorization();
     app.Run();
 
+### Authorization flow - default
+You have to configure an identity provider, for example Azure Active Directory and the middlewares UseAuthentication(), UseAuthorization().
+Now you can use the default identity, without policies. Here an example with an API with AAD configured.
+
+    var builder = WebApplication.CreateBuilder(args);
+    var configurationSection = builder.Configuration.GetSection("AzureAd");
+    var scopes = builder.Configuration["AzureAd:Scopes"];
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApi(configurationSection);
+
+    builder.Services
+        .AddRepositoryInMemoryStorage<User>()
+        .PopulateWithRandomData(x => x.Email!, 120, 5);
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+    
+    var app = builder.Build();
+    app.Services.Populate();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+    app.UseHttpsRedirection();
+    app.AddApiForRepositoryFramework()
+        .WithDefaultAuthorization();
+
+    app.UseRouting();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.Run();
+
+### Authorization flow - custom policies
+You may configure the scoper for each method of your repository and for each repository, as you wish.
+
+    var builder = WebApplication.CreateBuilder(args);
+    var configurationSection = builder.Configuration.GetSection("AzureAd");
+    var scopes = builder.Configuration["AzureAd:Scopes"];
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApi(configurationSection);
+
+    builder.Services
+        .AddRepositoryInMemoryStorage<User>()
+        .PopulateWithRandomData(x => x.Email!, 120, 5);
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+    
+    var app = builder.Build();
+    app.Services.Populate();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+    app.UseHttpsRedirection();
+    app.AddApiForRepositoryFramework()
+        .SetPolicyForAll()
+        .With("Normal User")
+        .And()
+        .SetPolicy(RepositoryMethod.Insert)
+        .With("Admin")
+        .And()
+        .SetPolicy(RepositoryMethod.Update)
+        .With("Admin")
+        .And()
+        .Finalize();
+
+    app.UseRouting();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.Run();
+
+In this example, I'm configuring a policy named "Normal User" for all methods and all repositories, and a policy named "Admin" for the methods Insert and Update for all repositories.
+You can customize it repository for repository, using AddApiForRepository<T>() method.
 
 ### Sample of query usage when you use the api directly
 All the requests are basic requests, the strangest request is only the query and you must use the Linq query.

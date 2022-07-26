@@ -25,7 +25,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="app">IEndpointRouteBuilder</param>
         /// <param name="startingPath">By default is "api", but you can choose your path. https://{your domain}/{startingPath}</param>
         /// <returns>ApiAuthorizationBuilder</returns>
-        public static ApiAuthorizationBuilder AddApiForRepositoryFramework<TEndpointRouteBuilder>(this TEndpointRouteBuilder app, string startingPath = "api")
+        public static ApiAuthorizationBuilder AddApiForRepositoryFramework<TEndpointRouteBuilder>(this TEndpointRouteBuilder app,
+            string startingPath = "api")
             where TEndpointRouteBuilder : IEndpointRouteBuilder
         => new(authorization =>
                 {

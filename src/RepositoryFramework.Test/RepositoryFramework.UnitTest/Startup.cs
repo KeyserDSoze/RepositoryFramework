@@ -16,11 +16,13 @@ namespace RepositoryFramework.UnitTest
         public void ConfigureServices(IServiceCollection services)
         {
             IConfiguration configuration = new ConfigurationBuilder()
-               .AddJsonFile("appsettings.test.json")
+                .AddJsonFile("appsettings.test.json")
+                .AddUserSecrets<Startup>()
                 .AddEnvironmentVariables()
                 .Build();
             services.AddSingleton(configuration);
             var serviceProvider = services
+                .AddDatabaseRepository(configuration["Database:ConnectionString"])
                 .AddRepository<ClassAnimal, ClassAnimalKey, ClassAnimalRepository>()
                 .Services
                 .AddRepositoryInMemoryStorage<Animal, int>()

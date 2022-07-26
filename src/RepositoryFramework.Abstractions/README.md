@@ -294,3 +294,7 @@ the DI
 and you may inject (for ICommand and IQuery is the same)
 
     IRepository<User, Key<int, int>, Result> repository
+
+### Entity framework examples
+
+[Here you may find the example]()

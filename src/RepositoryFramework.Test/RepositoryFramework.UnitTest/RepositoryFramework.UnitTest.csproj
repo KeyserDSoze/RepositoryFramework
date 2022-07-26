@@ -5,12 +5,15 @@
 		<Nullable>enable</Nullable>
 
 		<IsPackable>false</IsPackable>
+
+		<UserSecretsId>fbbabb5d-3c0a-4641-930c-596c73247895</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
 		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="Xunit.DependencyInjection" Version="8.5.0" />
@@ -27,6 +30,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\RepositoryFramework.Infrastructure.InMemory\RepositoryFramework.Infrastructure.InMemory.csproj" />
 		<ProjectReference Include="..\..\RepositoryFramework.MigrationTools\RepositoryFramework.MigrationTools.csproj" />
+		<ProjectReference Include="..\RepositoryFramework.Test.Infrastructure.EntityFramework\RepositoryFramework.Test.Infrastructure.EntityFramework.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

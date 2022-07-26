@@ -56,6 +56,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.Infrast
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.Cache.Azure.Storage.Blob", "src\RepositoryFramework.Cache\RepositoryFramework.Cache.Azure.Storage.Blob\RepositoryFramework.Cache.Azure.Storage.Blob.csproj", "{0F631E6C-00A1-460D-AA88-59F869C6910B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.Test.Infrastructure.EntityFramework", "src\RepositoryFramework.Test\RepositoryFramework.Test.Infrastructure.EntityFramework\RepositoryFramework.Test.Infrastructure.EntityFramework.csproj", "{EB66A0D8-8F61-4076-8905-360258C11BFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +120,10 @@ Global
 		{0F631E6C-00A1-460D-AA88-59F869C6910B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F631E6C-00A1-460D-AA88-59F869C6910B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F631E6C-00A1-460D-AA88-59F869C6910B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB66A0D8-8F61-4076-8905-360258C11BFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB66A0D8-8F61-4076-8905-360258C11BFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB66A0D8-8F61-4076-8905-360258C11BFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB66A0D8-8F61-4076-8905-360258C11BFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -132,6 +138,7 @@ Global
 		{04A16A33-5B7A-408C-BC4B-7E2C3AD770B1} = {617B922F-00AB-4FBC-B68D-C4799163815E}
 		{0A2A0C73-15E6-483A-9017-249A8AB6B452} = {9547851D-6AEF-40BE-B71B-ECC0C0DFD156}
 		{0F631E6C-00A1-460D-AA88-59F869C6910B} = {617B922F-00AB-4FBC-B68D-C4799163815E}
+		{EB66A0D8-8F61-4076-8905-360258C11BFA} = {1C3E945D-92FF-46AF-ABA7-DF0B3655C9FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15846BE9-69D7-49D6-8E61-F58E9927D291}
