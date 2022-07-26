@@ -296,5 +296,4 @@ and you may inject (for ICommand and IQuery is the same)
     IRepository<User, Key<int, int>, Result> repository
 
 ### Entity framework examples
-
-[Here you may find the example]()
+[Here you may find the example.](https://github.com/KeyserDSoze/RepositoryFramework/blob/master/src/RepositoryFramework.Test/RepositoryFramework.UnitTest/Tests/EntityFrameworkTest.cs)
