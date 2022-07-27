@@ -1,11 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<DebugType>embedded</DebugType>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<DebugSymbols>true</DebugSymbols>
+		<EmbedAllSources>true</EmbedAllSources>
+		<DebugType>portable</DebugType>
 		<Authors>Alessandro Rapiti</Authors>
 		<Company>Alessandro Rapiti</Company>
 		<Product>Rystem.RepositoryFramework</Product>
