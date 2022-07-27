@@ -11,7 +11,7 @@ jobs:
     
     steps:
       - name: Publish package
-        uses: KeyserDSoze/DefaultAction/pushing_nuget_with_symbols@v1.0.0
+        uses: KeyserDSoze/DefaultAction/pushing_nuget_with_symbols@v1.0.1
         with:
           dotnet-version: ${{ secrets.NET_VERSION }}
           path: src/RepositoryFramework.Api.Client/RepositoryFramework.Api.Client.csproj
