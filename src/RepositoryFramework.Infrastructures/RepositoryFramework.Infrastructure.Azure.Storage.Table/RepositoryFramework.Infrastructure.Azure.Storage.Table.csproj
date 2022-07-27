@@ -5,6 +5,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<DebugType>embedded</DebugType>
 		<Authors>Alessandro Rapiti</Authors>
 		<Company>Alessandro Rapiti</Company>
 		<Product>Rystem.RepositoryFramework</Product>
