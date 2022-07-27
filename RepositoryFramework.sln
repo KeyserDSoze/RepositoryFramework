@@ -24,6 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{166D9CDD-8137-4A52-8FCF-9C2F34F5C557}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		CODE-OF-CONDUCT.md = CODE-OF-CONDUCT.md
 		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.CosmosSql.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.CosmosSql.yml
 		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.Storage.Blob.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.Storage.Blob.yml
 		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.Storage.Table.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.Storage.Table.yml
