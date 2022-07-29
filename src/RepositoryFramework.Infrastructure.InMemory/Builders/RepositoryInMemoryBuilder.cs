@@ -20,7 +20,7 @@ namespace RepositoryFramework.InMemory
         private void AddElementBasedOnGenericElements(TKey key, T value)
         {
             if (_numberOfParameters == 1)
-                InMemoryStorage<T>.AddValue(key, value);
+                InMemoryStorage<T>.AddValue(key.ToString()!, value);
             else if (_numberOfParameters == 2)
                 InMemoryStorage<T, TKey>.AddValue(key, value);
             else

@@ -11,6 +11,7 @@ namespace RepositoryFramework.Cache
         private protected readonly CacheOptions<T, TKey, TState> _cacheOptions;
         private protected readonly IDistributedCache<T, TKey, TState>? _distributed;
         private protected readonly DistributedCacheOptions<T, TKey, TState> _distributedCacheOptions;
+        private readonly string _cacheName;
 
         public CachedQuery(IQueryPattern<T, TKey, TState> query,
             ICache<T, TKey, TState>? cache = null,
@@ -23,11 +24,12 @@ namespace RepositoryFramework.Cache
             _cacheOptions = cacheOptions ?? CacheOptions<T, TKey, TState>.Default;
             _distributed = distributed;
             _distributedCacheOptions = distributedCacheOptions ?? DistributedCacheOptions<T, TKey, TState>.Default;
+            _cacheName = typeof(T).Name;
         }
         private protected Task RemoveExistAndGetCacheAsync(TKey key, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
         {
-            string existKeyAsString = $"{nameof(RepositoryMethod.Exist)}_{key}";
-            string getKeyAsString = $"{nameof(RepositoryMethod.Get)}_{key}";
+            string existKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethod.Exist)}_{_cacheName}");
+            string getKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethod.Get)}_{_cacheName}");
             List<Task> toDelete = new();
             if (inMemory && _cache != null)
             {
@@ -47,8 +49,8 @@ namespace RepositoryFramework.Cache
         }
         private protected Task UpdateExistAndGetCacheAsync(TKey key, T value, TState state, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
         {
-            string existKeyAsString = $"{nameof(RepositoryMethod.Exist)}_{key}";
-            string getKeyAsString = $"{nameof(RepositoryMethod.Get)}_{key}";
+            string existKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethod.Exist)}_{_cacheName}");
+            string getKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethod.Get)}_{_cacheName}");
             List<Task> toUpdate = new();
             if (_cache != null || _distributed != null)
             {
@@ -65,7 +67,7 @@ namespace RepositoryFramework.Cache
         }
         public async Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            string keyAsString = $"{nameof(RepositoryMethod.Exist)}_{key}";
+            string keyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethod.Exist)}_{_cacheName}");
             var value = await RetrieveValueAsync(RepositoryMethod.Exist, keyAsString,
                 () => _query.ExistAsync(key, cancellationToken)!, cancellationToken).NoContext();
 
@@ -80,7 +82,7 @@ namespace RepositoryFramework.Cache
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            string keyAsString = $"{nameof(RepositoryMethod.Get)}_{key}";
+            string keyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethod.Get)}_{_cacheName}");
             var value = await RetrieveValueAsync<T?>(RepositoryMethod.Get, keyAsString,
                 () => _query.GetAsync(key, cancellationToken), cancellationToken).NoContext();
 
@@ -95,9 +97,9 @@ namespace RepositoryFramework.Cache
 
         public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
-            string keyAsString = $"{nameof(RepositoryMethod.Query)}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
+            string keyAsString = $"{nameof(RepositoryMethod.Query)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
 
-            var value = await RetrieveValueAsync<IEnumerable<T>>(RepositoryMethod.Query, keyAsString,
+            var value = await RetrieveValueAsync(RepositoryMethod.Query, keyAsString,
                 () => _query.QueryAsync(options, cancellationToken)!, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
@@ -110,7 +112,7 @@ namespace RepositoryFramework.Cache
         }
         public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
-            string keyAsString = $"{nameof(RepositoryMethod.Count)}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
+            string keyAsString = $"{nameof(RepositoryMethod.Count)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
 
             var value = await RetrieveValueAsync(RepositoryMethod.Count, keyAsString,
                 () => _query.CountAsync(options, cancellationToken)!, cancellationToken).NoContext();

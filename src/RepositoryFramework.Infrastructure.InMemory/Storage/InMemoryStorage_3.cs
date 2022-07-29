@@ -9,27 +9,14 @@ namespace RepositoryFramework.InMemory
         where TState : class, IState<T>, new()
     {
         private readonly RepositoryBehaviorSettings<T, TKey, TState> _settings;
-        private const string DefaultSeparator = "-";
         public InMemoryStorage(RepositoryBehaviorSettings<T, TKey, TState> settings)
         {
             _settings = settings;
 
         }
-        private static string KeyToString(TKey key)
-            => Stringify(key);
-        private static string Stringify<TStringifiable>(TStringifiable item)
-        {
-            if (item == null)
-                return string.Empty;
-            var properties = item.GetType().FetchProperties().Where(x => x.SetMethod != null).ToList();
-            if (properties.Count > 0)
-                return string.Join(DefaultSeparator, properties.Select(x => Stringify(x.GetValue(item))));
-            else
-                return item.ToString()!;
-        }
         private static ConcurrentDictionary<string, T> Values { get; } = new();
-        internal static void AddValue(object key, T value) 
-            => Values.TryAdd(Stringify(key), value);
+        internal static void AddValue(TKey key, T value) 
+            => Values.TryAdd(key.AsString(), value);
         private static int GetRandomNumber(Range range)
         {
             int maxPlusOne = range.End.Value + 1 - range.Start.Value;
@@ -84,7 +71,7 @@ namespace RepositoryFramework.InMemory
         public Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethod.Delete, () =>
                 {
-                    string keyAsString = KeyToString(key);
+                    string keyAsString = key.AsString();
                     if (Values.ContainsKey(keyAsString))
                         return InMemoryStorage<T, TKey, TState>.SetState(Values.TryRemove(keyAsString, out _));
                     return InMemoryStorage<T, TKey, TState>.SetState(false);
@@ -104,7 +91,7 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    string keyAsString = KeyToString(key);
+                    string keyAsString = key.AsString();
                     return Values.ContainsKey(keyAsString) ? Values[keyAsString] : default;
                 }
                 else
@@ -121,7 +108,7 @@ namespace RepositoryFramework.InMemory
         public Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethod.Insert, () =>
             {
-                string keyAsString = KeyToString(key);
+                string keyAsString = key.AsString();
                 if (!Values.ContainsKey(keyAsString))
                 {
                     Values.TryAdd(keyAsString, value);
@@ -134,7 +121,7 @@ namespace RepositoryFramework.InMemory
         public Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethod.Update, () =>
             {
-                string keyAsString = KeyToString(key);
+                string keyAsString = key.AsString();
                 if (Values.ContainsKey(keyAsString))
                 {
                     Values[keyAsString] = value;
@@ -193,7 +180,7 @@ namespace RepositoryFramework.InMemory
         public Task<TState> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethod.Exist, () =>
             {
-                string keyAsString = KeyToString(key);
+                string keyAsString = key.AsString();
                 return InMemoryStorage<T, TKey, TState>.SetState(Values.ContainsKey(keyAsString));
             }, cancellationToken);
 
