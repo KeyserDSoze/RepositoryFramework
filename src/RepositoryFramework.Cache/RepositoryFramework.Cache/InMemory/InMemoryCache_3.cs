@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Concurrent;
 
 namespace RepositoryFramework.Cache
 {
@@ -6,39 +7,24 @@ namespace RepositoryFramework.Cache
         where TKey : notnull
         where TState : class, IState<T>, new()
     {
-        private sealed class InMemoryCacheValue
+        private readonly IMemoryCache _memoryCache;
+        public InMemoryCache(IMemoryCache memoryCache)
+            => _memoryCache = memoryCache;
+        public Task<CacheResponse<TValue>> RetrieveAsync<TValue>(string key, CancellationToken cancellationToken = default)
         {
-            public object? Value { get; set; }
-            public DateTime ExpiringTime { get; set; }
-        }
-        private readonly ConcurrentDictionary<string, InMemoryCacheValue> _cache = new();
-        public Task<(bool IsPresent, TValue Response)> RetrieveAsync<TValue>(string key, CancellationToken cancellationToken = default)
-        {
-            if (_cache.ContainsKey(key))
-            {
-                var cached = _cache[key];
-                if (DateTime.UtcNow < cached.ExpiringTime)
-                    return Task.FromResult((true, cached.Value == null ? default! : (TValue)cached.Value));
-            }
-            return Task.FromResult((false, default(TValue)!));
+            bool isPresent = _memoryCache.TryGetValue(key, out TValue value);
+            return Task.FromResult(new CacheResponse<TValue>(isPresent, value));
         }
 
         public Task<bool> SetAsync<TValue>(string key, TValue value, CacheOptions<T, TKey, TState> options, CancellationToken? cancellationToken = null)
         {
-            var cached = new InMemoryCacheValue
-            {
-                Value = value,
-                ExpiringTime = DateTime.UtcNow.Add(options.RefreshTime)
-            };
-            if (!_cache.TryAdd(key, cached))
-                _cache[key] = cached;
+            _memoryCache.Set(key, value, options.ExpiringTime);
             return Task.FromResult(true);
         }
 
         public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
-            if (!_cache.ContainsKey(key))
-                return Task.FromResult(_cache.TryRemove(key, out _));
+            _memoryCache.Remove(key);
             return Task.FromResult(true);
         }
     }

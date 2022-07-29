@@ -17,7 +17,7 @@
         internal static new DistributedCacheOptions<T, TKey, TState> Default { get; } =
             new DistributedCacheOptions<T, TKey, TState>()
             {
-                RefreshTime = TimeSpan.FromDays(365 * 365)
+                ExpiringTime = TimeSpan.FromDays(365 * 365)
             };
     }
 }

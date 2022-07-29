@@ -27,7 +27,7 @@ namespace RepositoryFramework.Cache.Azure.Storage.Blob
         public async Task<bool> SetAsync<TValue>(string key, TValue value, CacheOptions<T, TKey, TState> options, CancellationToken? cancellationToken = null)
             => (await _repository.UpdateAsync(key, new BlobStorageCacheModel
             {
-                Expiration = DateTime.UtcNow.Add(options.RefreshTime),
+                Expiration = DateTime.UtcNow.Add(options.ExpiringTime),
                 Value = JsonSerializer.Serialize(value),
             }).NoContext()).IsOk;
         public async Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)

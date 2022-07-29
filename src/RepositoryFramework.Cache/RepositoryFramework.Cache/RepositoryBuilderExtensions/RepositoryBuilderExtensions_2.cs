@@ -5,6 +5,23 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class RepositoryBuilderExtensions
     {
+        private static void AddCacheManager<T, TKey>(this RepositoryBuilder<T, TKey> builder,
+            CacheOptions<T, TKey, State<T>> options)
+            where TKey : notnull
+        {
+            if (builder.Type == PatternType.Repository)
+                builder.Services
+                    .RemoveServiceIfAlreadyInstalled<CachedRepository<T, TKey>>(typeof(IRepository<T, TKey>))
+                    .AddService<IRepository<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
+            else if (builder.Type == PatternType.Query)
+                builder.Services
+                    .RemoveServiceIfAlreadyInstalled<CachedQuery<T, TKey>>(typeof(IQuery<T, TKey>))
+                    .AddService<IQuery<T, TKey>, CachedQuery<T, TKey>>(builder.ServiceLifetime);
+            else if (options.HasCommandPattern)
+                builder.Services
+                    .RemoveServiceIfAlreadyInstalled<CachedRepository<T, TKey>>(typeof(ICommand<T, TKey>))
+                    .AddService<ICommand<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
+        }
         /// <summary>
         /// Add cache mechanism for your Repository or Query (CQRS), 
         /// injected directly in the IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>> interface
@@ -27,17 +44,10 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new CacheOptions<T, TKey, State<T>>();
             settings?.Invoke(options);
             builder.Services
+                .RemoveServiceIfAlreadyInstalled<TCache>(typeof(ICache<T, TKey>))
                 .AddService<ICache<T, TKey>, TCache>(lifetime)
                 .AddSingleton(options);
-            if (builder.Type == PatternType.Repository)
-                builder.Services
-                    .AddService<IRepository<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
-            else if (builder.Type == PatternType.Query)
-                builder.Services
-                    .AddService<IQuery<T, TKey>, CachedQuery<T, TKey>>(builder.ServiceLifetime);
-            else if (options.HasCommandPattern)
-                builder.Services
-                    .AddService<ICommand<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
+            builder.AddCacheManager(options);
             return builder;
         }
         /// <summary>
@@ -62,17 +72,10 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new DistributedCacheOptions<T, TKey, State<T>>();
             settings?.Invoke(options);
             builder.Services
+                .RemoveServiceIfAlreadyInstalled<TCache>(typeof(IDistributedCache<T, TKey>))
                 .AddService<IDistributedCache<T, TKey>, TCache>(lifetime)
                 .AddSingleton(options);
-            if (builder.Type == PatternType.Repository)
-                builder.Services
-                    .AddService<IRepository<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
-            else if (builder.Type == PatternType.Query)
-                builder.Services
-                    .AddService<IQuery<T, TKey>, CachedQuery<T, TKey>>(builder.ServiceLifetime);
-            else if (options.HasCommandPattern)
-                builder.Services
-                    .AddService<ICommand<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
+            builder.AddCacheManager(options);
             return builder;
         }
     }

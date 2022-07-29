@@ -1,5 +1,12 @@
 ﻿namespace RepositoryFramework.InMemory
 {
+    public class RepositoryBehaviorSettings<T> : RepositoryBehaviorSettings<T, string>
+    {
+    }
+    public class RepositoryBehaviorSettings<T, TKey> : RepositoryBehaviorSettings<T, TKey, State<T>>
+        where TKey : notnull
+    {
+    }
     /// <summary>
     /// You may set the milliseconds (in range) for each request to simulate a real external database or storage.
     /// You may set a list of exceptions with a random percentage of throwing.

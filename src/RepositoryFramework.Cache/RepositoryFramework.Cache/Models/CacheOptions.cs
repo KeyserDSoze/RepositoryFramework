@@ -14,7 +14,7 @@
         where TKey : notnull
         where TState : class, IState<T>, new()
     {
-        public TimeSpan RefreshTime { get; set; }
+        public TimeSpan ExpiringTime { get; set; }
         public bool HasCommandPattern => Methods.HasFlag(RepositoryMethod.Insert)
             || Methods.HasFlag(RepositoryMethod.Update)
             || Methods.HasFlag(RepositoryMethod.Delete);
@@ -22,7 +22,7 @@
         public RepositoryMethod Methods { get; set; } = RepositoryMethod.Query | RepositoryMethod.Get | RepositoryMethod.Exist;
         internal static CacheOptions<T, TKey, TState> Default { get; } = new CacheOptions<T, TKey, TState>()
         {
-            RefreshTime = TimeSpan.FromDays(365)
+            ExpiringTime = TimeSpan.FromDays(365)
         };
     }
 }

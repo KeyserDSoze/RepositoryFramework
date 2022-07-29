@@ -88,6 +88,29 @@ namespace RepositoryFramework.InMemory
                 });
             return new(this, _internalBehaviorSettings);
         }
+        public RepositoryBuilder<T, TKey, TState> AsRepositoryBuilderWithState()
+        {
+            if (_numberOfParameters == 3)
+                return new RepositoryBuilder<T, TKey, TState>(_services, PatternType.Repository, ServiceLifetime.Singleton);
+            else
+                throw new ArgumentException("Wrong builder");
+
+        }
+        public RepositoryBuilder<T, TKey> AsRepositoryBuilderWithKey()
+        {
+            if (_numberOfParameters == 2)
+                return new RepositoryBuilder<T, TKey>(_services, PatternType.Repository, ServiceLifetime.Singleton);
+            else
+                throw new ArgumentException("Wrong builder");
+        }
+        public RepositoryBuilder<T> AsRepositoryBuilder()
+        {
+            if (_numberOfParameters == 1)
+                return new RepositoryBuilder<T>(_services, PatternType.Repository, ServiceLifetime.Singleton);
+            else
+                throw new ArgumentException("Wrong builder");
+        }
+
         public IServiceCollection ToServiceCollection()
             => _services!;
     }

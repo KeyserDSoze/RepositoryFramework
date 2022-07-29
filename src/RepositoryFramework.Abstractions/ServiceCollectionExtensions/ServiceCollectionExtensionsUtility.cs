@@ -45,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 _ => services.AddScoped<TService, TImplementation>()
             };
 
-        private static IServiceCollection RemoveServiceIfAlreadyInstalled<TStorage>(this IServiceCollection services,
+        public static IServiceCollection RemoveServiceIfAlreadyInstalled<TStorage>(this IServiceCollection services,
             params Type[] types)
         {
             foreach (var type in types)
