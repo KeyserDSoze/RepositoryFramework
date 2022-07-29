@@ -1,6 +1,8 @@
 ﻿using RepositoryFramework.Test.Infrastructure.EntityFramework;
 using RepositoryFramework.UnitTest.Models;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -63,7 +65,8 @@ namespace RepositoryFramework.UnitTest.Repository
             items = await _repository.Where(x => x.Id >= 0).QueryAsync();
             Assert.Equal(10, items.Count());
 
-            var page = await _repository.Where(x => x.Id > 0).OrderByDescending(x => x.Id).PageAsync(1, 2);
+            Expression<Func<AppUser, object>> orderPredicate = x => x.Id;
+            var page = await _repository.Where(x => x.Id > 0).OrderByDescending(orderPredicate).PageAsync(1, 2);
             Assert.True(page.Items.First().Id > page.Items.Last().Id);
 
             batchOperation = _repository.CreateBatchOperation();
