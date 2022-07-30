@@ -9,7 +9,7 @@ namespace RepositoryFramework.InMemory
         where TKey : notnull
         where TState : class, IState<T>, new()
     {
-        private readonly CreationSettings _internalBehaviorSettings = new();
+        private protected readonly CreationSettings _internalBehaviorSettings = new();
         private protected int _numberOfParameters;
         public IServiceCollection Services { get; }
         public PatternType Type => PatternType.Repository;

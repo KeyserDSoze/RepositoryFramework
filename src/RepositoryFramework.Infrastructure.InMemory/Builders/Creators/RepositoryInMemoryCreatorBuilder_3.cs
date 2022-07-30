@@ -6,7 +6,7 @@ namespace RepositoryFramework.InMemory
         where TKey : notnull
         where TState : class, IState<T>, new()
     {
-        private readonly RepositoryInMemoryBuilder<T, TKey, TState> _builder;
+        private protected readonly RepositoryInMemoryBuilder<T, TKey, TState> _builder;
         private readonly CreationSettings _internalBehaviorSettings;
         public RepositoryInMemoryCreatorBuilder(
             RepositoryInMemoryBuilder<T, TKey, TState> builder,
