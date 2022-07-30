@@ -22,9 +22,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
         /// <param name="settings">Settings for your cache.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static RepositoryBuilder<T, TKey, TState> WithBlobStorageCache<T, TKey, TState>(
-           this RepositoryBuilder<T, TKey, TState> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
+        public static IRepositoryBuilder<T, TKey, TState> WithBlobStorageCache<T, TKey, TState>(
+           this IRepositoryBuilder<T, TKey, TState> builder,
            string connectionString,
            string? name = null,
            BlobClientOptions? clientOptions = null,
@@ -48,9 +48,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
         /// <param name="settings">Settings for your cache.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static RepositoryBuilder<T, TKey, TState> WithBlobStorageCache<T, TKey, TState>(
-           this RepositoryBuilder<T, TKey, TState> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
+        public static IRepositoryBuilder<T, TKey, TState> WithBlobStorageCache<T, TKey, TState>(
+           this IRepositoryBuilder<T, TKey, TState> builder,
            Uri endpointUri,
            BlobClientOptions? clientOptions = null,
            Action<DistributedCacheOptions<T, TKey, TState>>? settings = null)

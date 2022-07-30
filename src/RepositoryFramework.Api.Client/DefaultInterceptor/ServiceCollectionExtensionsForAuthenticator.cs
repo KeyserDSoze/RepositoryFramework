@@ -28,9 +28,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>></param>
         /// <param name="settings">Settings.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddApiClientSpecificAuthorizationInterceptor<T>(
-            this RepositoryBuilder<T> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddApiClientSpecificAuthorizationInterceptor<T>(
+            this IRepositoryBuilder<T> builder,
             Action<AuthenticatorSettings<T>>? settings = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
@@ -50,9 +50,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="settings">Settings.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static RepositoryBuilder<T, TKey> AddApiClientSpecificAuthorizationInterceptor<T, TKey>(
-            this RepositoryBuilder<T, TKey> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryBuilder<T, TKey> AddApiClientSpecificAuthorizationInterceptor<T, TKey>(
+            this IRepositoryBuilder<T, TKey> builder,
             Action<AuthenticatorSettings<T>>? settings = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TKey : notnull
@@ -73,9 +73,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></param>
         /// <param name="settings">Settings.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static RepositoryBuilder<T, TKey, TState> AddApiClientSpecificAuthorizationInterceptor<T, TKey, TState>(
-            this RepositoryBuilder<T, TKey, TState> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
+        public static IRepositoryBuilder<T, TKey, TState> AddApiClientSpecificAuthorizationInterceptor<T, TKey, TState>(
+            this IRepositoryBuilder<T, TKey, TState> builder,
             Action<AuthenticatorSettings<T>>? settings = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TKey : notnull

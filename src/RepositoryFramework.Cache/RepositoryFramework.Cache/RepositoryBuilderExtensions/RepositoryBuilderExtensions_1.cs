@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class RepositoryBuilderExtensions
     {
-        private static void AddCacheManager<T>(this RepositoryBuilder<T> builder,
+        private static void AddCacheManager<T>(this IRepositoryBuilder<T> builder,
             CacheOptions<T, string, State<T>> options)
         {
             if (builder.Type == PatternType.Repository)
@@ -31,9 +31,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>></param>
         /// <param name="settings">Settings for your cache.</param>
         /// <param name="lifetime">Service Lifetime.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> WithCache<T, TCache>(
-           this RepositoryBuilder<T> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> WithCache<T, TCache>(
+           this IRepositoryBuilder<T> builder,
            Action<CacheOptions<T, string, State<T>>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TCache : class, ICache<T>
@@ -57,9 +57,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="settings">Settings for your cache.</param>
         /// <param name="lifetime">Service Lifetime.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static RepositoryBuilder<T> WithDistributedCache<T, TCache>(
-           this RepositoryBuilder<T> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryBuilder<T> WithDistributedCache<T, TCache>(
+           this IRepositoryBuilder<T> builder,
            Action<DistributedCacheOptions<T, string, State<T>>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TCache : class, IDistributedCache<T>

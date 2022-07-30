@@ -20,9 +20,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
         /// <param name="settings">Settings for your cache.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> WithBlobStorageCache<T>(
-           this RepositoryBuilder<T> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> WithBlobStorageCache<T>(
+           this IRepositoryBuilder<T> builder,
            string connectionString,
            string? name = null,
            BlobClientOptions? clientOptions = null,
@@ -43,9 +43,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
         /// <param name="settings">Settings for your cache.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> WithBlobStorageCache<T>(
-           this RepositoryBuilder<T> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> WithBlobStorageCache<T>(
+           this IRepositoryBuilder<T> builder,
            Uri endpointUri,
            BlobClientOptions? clientOptions = null,
            Action<DistributedCacheOptions<T, string, State<T>>>? settings = null)

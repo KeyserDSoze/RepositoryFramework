@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// You may set a list of exceptions with a random percentage of throwing.
         /// </param>
         /// <returns>RepositoryInMemoryBuilder</returns>
-        public static RepositoryInMemoryBuilder<T, TKey, TState> AddRepositoryInMemoryStorage<T, TKey, TState>(
+        public static IRepositoryInMemoryBuilder<T, TKey, TState> AddRepositoryInMemoryStorage<T, TKey, TState>(
             this IServiceCollection services,
             Action<RepositoryBehaviorSettings<T, TKey, TState>>? settings = default)
             where TKey : notnull
@@ -26,21 +26,29 @@ namespace Microsoft.Extensions.DependencyInjection
             InMemoryRepositoryInstalled.PopulationStrategyRetriever.Add((serviceProvider) => serviceProvider.GetService<IPopulationStrategy<T, TKey>>());
             var options = new RepositoryBehaviorSettings<T, TKey, TState>();
             settings?.Invoke(options);
-            Check(options.Get(RepositoryMethod.Insert).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Update).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Delete).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Batch).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Get).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Query).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Exist).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.Count).ExceptionOdds);
-            Check(options.Get(RepositoryMethod.All).ExceptionOdds);
+            CheckSettings(options);
             services.AddSingleton(options);
             services.AddRepository<T, TKey, TState, InMemoryStorage<T, TKey, TState>>(ServiceLifetime.Singleton);
             services.AddCommand<T, TKey, TState, InMemoryStorage<T, TKey, TState>>(ServiceLifetime.Singleton);
             services.AddQuery<T, TKey, TState, InMemoryStorage<T, TKey, TState>>(ServiceLifetime.Singleton);
 
-            return new RepositoryInMemoryBuilder<T, TKey, TState>(services, options.NumberOfParameters ?? 3);
+            return new RepositoryInMemoryBuilder<T, TKey, TState>(services);
+
+
+        }
+        private static void CheckSettings<T, TKey, TState>(RepositoryBehaviorSettings<T, TKey, TState> settings)
+             where TKey : notnull
+            where TState : class, IState<T>, new()
+        {
+            Check(settings.Get(RepositoryMethod.Insert).ExceptionOdds);
+            Check(settings.Get(RepositoryMethod.Update).ExceptionOdds);
+            Check(settings.Get(RepositoryMethod.Delete).ExceptionOdds);
+            Check(settings.Get(RepositoryMethod.Batch).ExceptionOdds);
+            Check(settings.Get(RepositoryMethod.Get).ExceptionOdds);
+            Check(settings.Get(RepositoryMethod.Query).ExceptionOdds);
+            Check(settings.Get(RepositoryMethod.Exist).ExceptionOdds);
+            Check(settings.Get(RepositoryMethod.Count).ExceptionOdds);
+            Check(settings.Get(RepositoryMethod.All).ExceptionOdds);
 
             static void Check(List<ExceptionOdds> odds)
             {

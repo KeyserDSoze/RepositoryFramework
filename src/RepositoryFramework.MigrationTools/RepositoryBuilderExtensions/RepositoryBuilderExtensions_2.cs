@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">Settings for migration.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T, TKey> AddMigrationSource<T, TKey, TMigrationSource>(this RepositoryBuilder<T, TKey> builder,
+        public static IRepositoryBuilder<T, TKey> AddMigrationSource<T, TKey, TMigrationSource>(this IRepositoryBuilder<T, TKey> builder,
             Action<MigrationOptions<T, TKey, State<T>>> settings,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
           where TMigrationSource : class, IMigrationSource<T, TKey>

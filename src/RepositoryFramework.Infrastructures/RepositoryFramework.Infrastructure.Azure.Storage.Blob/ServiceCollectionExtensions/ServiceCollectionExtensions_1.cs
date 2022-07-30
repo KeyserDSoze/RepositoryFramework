@@ -18,8 +18,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
         /// <param name="isInvisibleForApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddRepositoryInBlobStorage<T>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddRepositoryInBlobStorage<T>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,
@@ -42,8 +42,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
         /// <param name="isInvisibleForApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddCommandInBlobStorage<T>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddCommandInBlobStorage<T>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,
@@ -66,8 +66,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
         /// <param name="isInvisibleForApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddQueryInBlobStorage<T>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddQueryInBlobStorage<T>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,

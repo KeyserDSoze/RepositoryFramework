@@ -14,8 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddRepositoryInTableStorage<T>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddRepositoryInTableStorage<T>(
            this IServiceCollection services,
            Uri endpointUri,
            string? name = null,
@@ -33,8 +33,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddCommandInTableStorage<T>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddCommandInTableStorage<T>(
            this IServiceCollection services,
            Uri endpointUri,
            string? name = null,
@@ -52,8 +52,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="endpointUri">Uri of your storage.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddQueryInTableStorage<T>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddQueryInTableStorage<T>(
            this IServiceCollection services,
            Uri endpointUri,
            string? name = null,

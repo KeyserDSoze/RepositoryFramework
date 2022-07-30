@@ -22,8 +22,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static RepositoryBuilder<T, TKey> AddRepositoryInCosmosSql<T, TKey>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryBuilder<T, TKey> AddRepositoryInCosmosSql<T, TKey>(
            this IServiceCollection services,
            Expression<Func<T, TKey>> navigationKey,
            Uri endpointUri,
@@ -60,8 +60,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static RepositoryBuilder<T, TKey> AddCommandInCosmosSql<T, TKey>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryBuilder<T, TKey> AddCommandInCosmosSql<T, TKey>(
            this IServiceCollection services,
            Expression<Func<T, TKey>> navigationKey,
            Uri endpointUri,
@@ -98,8 +98,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static RepositoryBuilder<T, TKey> AddQueryInCosmosSql<T, TKey>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryBuilder<T, TKey> AddQueryInCosmosSql<T, TKey>(
            this IServiceCollection services,
            Expression<Func<T, TKey>> navigationKey,
            Uri endpointUri,

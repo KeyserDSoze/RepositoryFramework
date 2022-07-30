@@ -26,13 +26,11 @@ namespace RepositoryFramework.UnitTest
                 .AddRepository<ClassAnimal, ClassAnimalKey, ClassAnimalRepository>()
                 .Services
                 .AddRepositoryInMemoryStorage<Animal, int>()
-                .ToServiceCollection()
                 .AddRepositoryInMemoryStorage<Animal, long>()
-                .ToServiceCollection()
                 .AddRepositoryInMemoryStorage<Animal, AnimalKey>()
                 .PopulateWithRandomData(x => new AnimalKey(x.Id), 100)
                 .And()
-                .ToServiceCollection()
+                .Services
                 .AddScoped<AnimalDatabase>()
                 .AddRepository<Animal, int, AnimalStorage>()
                 .Services
@@ -233,7 +231,7 @@ namespace RepositoryFramework.UnitTest
                 .PopulateWithRandomData(x => x.Id)
                 .WithAutoIncrement(x => x.Id, 1)
                 .And()
-                .ToServiceCollection()
+                .Services
                     .AddRepository<MigrationUser, MigrationTo>()
                     .AddMigrationSource<MigrationUser, MigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                     .Services

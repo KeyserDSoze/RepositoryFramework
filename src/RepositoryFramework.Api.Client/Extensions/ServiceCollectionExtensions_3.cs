@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
-        private static RepositoryBuilder<T, TKey, TState> AddApiClient<T, TKey, TState>(this IServiceCollection services,
+        private static IRepositoryBuilder<T, TKey, TState> AddApiClient<T, TKey, TState>(this IServiceCollection services,
             PatternType clientType,
             string domain,
             string startingPath = "api",
@@ -38,8 +38,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="startingPath">Path after domain to compose the final api url</param>
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static RepositoryBuilder<T, TKey, TState> AddRepositoryApiClient<T, TKey, TState>(this IServiceCollection services,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
+        public static IRepositoryBuilder<T, TKey, TState> AddRepositoryApiClient<T, TKey, TState>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
@@ -61,8 +61,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="startingPath">Path after domain to compose the final api url</param>
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static RepositoryBuilder<T, TKey, TState> AddCommandApiClient<T, TKey, TState>(this IServiceCollection services,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
+        public static IRepositoryBuilder<T, TKey, TState> AddCommandApiClient<T, TKey, TState>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
@@ -84,8 +84,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="startingPath">Path after domain to compose the final api url</param>
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static RepositoryBuilder<T, TKey, TState> AddQueryApiClient<T, TKey, TState>(this IServiceCollection services,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
+        public static IRepositoryBuilder<T, TKey, TState> AddQueryApiClient<T, TKey, TState>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,

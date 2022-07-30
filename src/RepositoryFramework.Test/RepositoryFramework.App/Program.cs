@@ -60,7 +60,7 @@ var services = new ServiceCollection()
     .WithValue(x => x.Z, () => new Range(new Index(1), new Index(2)))
     .WithAutoIncrement(x => x.S, 0)
     .And()
-    .ToServiceCollection()
+    .Services
     .BuildServiceProvider();
 
 services.CreateScope().ServiceProvider.Populate();

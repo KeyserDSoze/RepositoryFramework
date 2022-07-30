@@ -1,5 +1,5 @@
-﻿using RepositoryFramework;
-using RepositoryFramework.InMemory;
+﻿using RepositoryFramework.InMemory;
+using RepositoryFramework.InMemory.Population;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,19 +15,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// You may set a list of exceptions with a random percentage of throwing.
         /// </param>
         /// <returns>RepositoryInMemoryBuilder</returns>
-        public static RepositoryInMemoryBuilder<T, string, State<T>> AddRepositoryInMemoryStorage<T>(
+        public static IRepositoryInMemoryBuilder<T> AddRepositoryInMemoryStorage<T>(
             this IServiceCollection services,
-            Action<RepositoryBehaviorSettings<T, string, State<T>>>? settings = default)
+            Action<RepositoryBehaviorSettings<T>>? settings = default)
         {
+            InMemoryRepositoryInstalled.PopulationStrategyRetriever.Add((serviceProvider) => serviceProvider.GetService<IPopulationStrategy<T, string>>());
+            var options = new RepositoryBehaviorSettings<T>();
+            settings?.Invoke(options);
+            CheckSettings(options);
+            services.AddSingleton(options);
             services.AddRepository<T, InMemoryStorage<T>>(ServiceLifetime.Singleton);
             services.AddCommand<T, InMemoryStorage<T>>(ServiceLifetime.Singleton);
             services.AddQuery<T, InMemoryStorage<T>>(ServiceLifetime.Singleton);
 
-            return services.AddRepositoryInMemoryStorage<T, string>(options =>
-            {
-                settings?.Invoke(options);
-                options.NumberOfParameters = 1;
-            });
+            return new RepositoryInMemoryBuilder<T>(services);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
-        private static RepositoryBuilder<T> AddApiClient<T>(this IServiceCollection services,
+        private static IRepositoryBuilder<T> AddApiClient<T>(this IServiceCollection services,
             PatternType clientType,
             string domain,
             string startingPath = "api",
@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T> AddRepositoryApiClient<T>(this IServiceCollection services,
+        public static IRepositoryBuilder<T> AddRepositoryApiClient<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T> AddCommandApiClient<T>(this IServiceCollection services,
+        public static IRepositoryBuilder<T> AddCommandApiClient<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,
@@ -72,7 +72,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configureClient">Add custom configuration for HttpClient used by IRepositoryClient</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static RepositoryBuilder<T> AddQueryApiClient<T>(this IServiceCollection services,
+        public static IRepositoryBuilder<T> AddQueryApiClient<T>(this IServiceCollection services,
             string domain,
             string startingPath = "api",
             Action<HttpClient>? configureClient = null,

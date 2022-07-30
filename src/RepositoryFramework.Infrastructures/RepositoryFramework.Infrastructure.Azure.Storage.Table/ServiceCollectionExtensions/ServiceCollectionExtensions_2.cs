@@ -17,8 +17,8 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Configure Azure Storage connection strings.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static RepositoryBuilder<T, TKey> AddRepositoryInTableStorage<T, TKey>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryBuilder<T, TKey> AddRepositoryInTableStorage<T, TKey>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,
@@ -40,8 +40,8 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Configure Azure Storage connection strings.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static RepositoryBuilder<T, TKey> AddCommandInTableStorage<T, TKey>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryBuilder<T, TKey> AddCommandInTableStorage<T, TKey>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,
@@ -63,8 +63,8 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Configure Azure Storage connection strings.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static RepositoryBuilder<T, TKey> AddQueryInTableStorage<T, TKey>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryBuilder<T, TKey> AddQueryInTableStorage<T, TKey>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,

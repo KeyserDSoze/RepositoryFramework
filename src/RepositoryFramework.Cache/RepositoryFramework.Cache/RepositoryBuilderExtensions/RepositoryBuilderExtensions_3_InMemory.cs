@@ -15,9 +15,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TState">Returning state.</typeparam>
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></param>
         /// <param name="settings">Settings for your cache.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static RepositoryBuilder<T, TKey, TState> WithInMemoryCache<T, TKey, TState>(
-           this RepositoryBuilder<T, TKey, TState> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
+        public static IRepositoryBuilder<T, TKey, TState> WithInMemoryCache<T, TKey, TState>(
+           this IRepositoryBuilder<T, TKey, TState> builder,
            Action<CacheOptions<T, TKey, TState>>? settings = null)
             where TKey : notnull
             where TState : class, IState<T>, new()

@@ -33,7 +33,6 @@ namespace RepositoryFramework.UnitTest
                 .AddRepositoryInMemoryStorage<Country, CountryKey>()
                 .PopulateWithRandomData(x => new CountryKey(x.Id, x.Abbreviation!), NumberOfEntries, NumberOfEntries)
                 .And()
-                .AsRepositoryBuilderWithKey()
                 .WithInMemoryCache(settings =>
                 {
                     settings.ExpiringTime = TimeSpan.FromSeconds(5);
@@ -48,7 +47,7 @@ namespace RepositoryFramework.UnitTest
             ServiceProvider.Populate();
         }
 
-        private readonly IRepositoryPattern<Country, CountryKey> _repo;
+        private readonly IRepository<Country, CountryKey> _repo;
         public CacheTest()
         {
             _repo = ServiceProvider.GetService<IRepository<Country, CountryKey>>()!;

@@ -15,8 +15,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TState">Returning state.</typeparam>
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static RepositoryBuilder<T, TKey, TState> AddApiClientSpecificInterceptor<T, TKey, TState, TInterceptor>(this RepositoryBuilder<T, TKey, TState> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
+        public static IRepositoryBuilder<T, TKey, TState> AddApiClientSpecificInterceptor<T, TKey, TState, TInterceptor>(this IRepositoryBuilder<T, TKey, TState> builder,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TInterceptor : class, IRepositoryClientInterceptor<T>
             where TKey : notnull
@@ -37,8 +37,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static RepositoryBuilder<T, TKey> AddApiClientSpecificInterceptor<T, TKey, TInterceptor>(this RepositoryBuilder<T, TKey> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryBuilder<T, TKey> AddApiClientSpecificInterceptor<T, TKey, TInterceptor>(this IRepositoryBuilder<T, TKey> builder,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TInterceptor : class, IRepositoryClientInterceptor<T>
             where TKey : notnull
@@ -57,8 +57,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>></param>
         /// <param name="serviceLifetime">Service Lifetime</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddApiClientSpecificInterceptor<T, TInterceptor>(this RepositoryBuilder<T> builder,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddApiClientSpecificInterceptor<T, TInterceptor>(this IRepositoryBuilder<T> builder,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TInterceptor : class, IRepositoryClientInterceptor<T>
         {

@@ -13,15 +13,15 @@ namespace RepositoryFramework.Cache.Azure.Storage.Blob
             _repository = repository;
         }
 
-        public async Task<(bool IsPresent, TValue Response)> RetrieveAsync<TValue>(string key, CancellationToken cancellationToken = default)
+        public async Task<CacheResponse<TValue>> RetrieveAsync<TValue>(string key, CancellationToken cancellationToken = default)
         {
             if (await _repository.ExistAsync(key, cancellationToken).NoContext())
             {
                 var result = await _repository.GetAsync(key, cancellationToken).NoContext();
                 if (DateTime.UtcNow < (result?.Expiration ?? DateTime.MaxValue))
-                    return (true, result?.Value != null ? JsonSerializer.Deserialize<TValue>(result.Value)! : default!);
+                    return new(true, result?.Value != null ? JsonSerializer.Deserialize<TValue>(result.Value)! : default!);
             }
-            return (false, default(TValue)!);
+            return new(false, default);
         }
 
         public async Task<bool> SetAsync<TValue>(string key, TValue value, CacheOptions<T, TKey, TState> options, CancellationToken? cancellationToken = null)

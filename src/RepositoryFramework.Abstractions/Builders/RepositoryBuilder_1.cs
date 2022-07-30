@@ -6,7 +6,7 @@ namespace RepositoryFramework
     /// Builder with string as default TKey and State as default TState.
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
-    public class RepositoryBuilder<T> : RepositoryBuilder<T, string>
+    internal class RepositoryBuilder<T> : RepositoryBuilder<T, string>, IRepositoryBuilder<T>
     {
         public RepositoryBuilder(IServiceCollection services, PatternType type, ServiceLifetime serviceLifetime) 
             : base(services, type, serviceLifetime)

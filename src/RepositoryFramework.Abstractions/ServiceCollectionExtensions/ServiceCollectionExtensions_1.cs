@@ -14,8 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddRepository<T, TStorage>(this IServiceCollection services,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddRepository<T, TStorage>(this IServiceCollection services,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
           bool isPrivate = false)
           where TStorage : class, IRepositoryPattern<T>
@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .RemoveServiceIfAlreadyInstalled<TStorage>(service.RepositoryType, typeof(IRepositoryPattern<T>))
                 .AddService<IRepositoryPattern<T>, TStorage>(serviceLifetime)
                 .AddService<IRepository<T>, Repository<T>>(serviceLifetime);
-            return new(services, PatternType.Repository, serviceLifetime);
+            return new RepositoryBuilder<T>(services, PatternType.Repository, serviceLifetime);
         }
 
         /// <summary>
@@ -40,8 +40,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddCommand<T, TStorage>(this IServiceCollection services,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddCommand<T, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
             bool isPrivate = false)
             where TStorage : class, ICommandPattern<T>
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .RemoveServiceIfAlreadyInstalled<TStorage>(service.CommandType, typeof(ICommandPattern<T>))
                 .AddService<ICommandPattern<T>, TStorage>(serviceLifetime)
                 .AddService<ICommand<T>, Command<T>>(serviceLifetime);
-            return new(services, PatternType.Command, serviceLifetime);
+            return new RepositoryBuilder<T>(services, PatternType.Command, serviceLifetime);
         }
 
         /// <summary>
@@ -66,8 +66,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
-        /// <returns>RepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static RepositoryBuilder<T> AddQuery<T, TStorage>(this IServiceCollection services,
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
+        public static IRepositoryBuilder<T> AddQuery<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
            bool isPrivate = false)
            where TStorage : class, IQueryPattern<T>
@@ -79,7 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .RemoveServiceIfAlreadyInstalled<TStorage>(service.QueryType, typeof(IQueryPattern<T>))
                 .AddService<IQueryPattern<T>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T>, Query<T>>(serviceLifetime);
-            return new(services, PatternType.Query, serviceLifetime);
+            return new RepositoryBuilder<T>(services, PatternType.Query, serviceLifetime);
         }
     }
 }
