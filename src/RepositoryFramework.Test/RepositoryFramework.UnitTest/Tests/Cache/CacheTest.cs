@@ -35,11 +35,11 @@ namespace RepositoryFramework.UnitTest
                 .And()
                 .WithInMemoryCache(settings =>
                 {
-                    settings.ExpiringTime = TimeSpan.FromSeconds(5);
+                    settings.ExpiringTime = TimeSpan.FromSeconds(10);
                 })
                 .WithDistributedCache(settings =>
                 {
-                    settings.ExpiringTime = TimeSpan.FromSeconds(5);
+                    settings.ExpiringTime = TimeSpan.FromSeconds(10);
                 })
                 .Services
                 .BuildServiceProvider();
@@ -62,7 +62,7 @@ namespace RepositoryFramework.UnitTest
             }
             countries = await _repo.ToListAsync().NoContext();
             Assert.Equal(NumberOfEntries, countries.Count);
-            await Task.Delay(5_000);
+            await Task.Delay(10_000);
             countries = await _repo.ToListAsync().NoContext();
             Assert.Empty(countries);
         }

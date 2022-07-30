@@ -103,7 +103,7 @@ namespace RepositoryFramework.Cache
                 () => _query.QueryAsync(options, cancellationToken)!, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
-                await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
+                await SaveOnCacheAsync(keyAsString, value.Response.ToList(), value.Source,
                     _cacheOptions.HasCache(RepositoryMethod.Query),
                     _distributedCacheOptions.HasCache(RepositoryMethod.Query),
                     cancellationToken).NoContext();
