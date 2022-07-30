@@ -19,6 +19,9 @@ namespace Microsoft.Extensions.DependencyInjection
            this IRepositoryBuilder<T, TKey> builder,
            Action<CacheOptions<T, TKey, State<T>>>? settings = null)
             where TKey : notnull
-            => builder.WithCache<T, TKey, InMemoryCache<T, TKey>>(settings, ServiceLifetime.Singleton);
+        {
+            builder.Services.AddMemoryCache();
+            return builder.WithCache<T, TKey, InMemoryCache<T, TKey>>(settings, ServiceLifetime.Singleton);
+        }
     }
 }

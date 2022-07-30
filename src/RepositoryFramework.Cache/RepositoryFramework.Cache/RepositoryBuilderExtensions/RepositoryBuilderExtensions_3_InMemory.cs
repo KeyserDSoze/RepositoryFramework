@@ -21,6 +21,9 @@ namespace Microsoft.Extensions.DependencyInjection
            Action<CacheOptions<T, TKey, TState>>? settings = null)
             where TKey : notnull
             where TState : class, IState<T>, new()
-            => builder.WithCache<T, TKey, TState, InMemoryCache<T, TKey, TState>>(settings, ServiceLifetime.Singleton);
+        {
+            builder.Services.AddMemoryCache();
+            return builder.WithCache<T, TKey, TState, InMemoryCache<T, TKey, TState>>(settings, ServiceLifetime.Singleton);
+        }
     }
 }

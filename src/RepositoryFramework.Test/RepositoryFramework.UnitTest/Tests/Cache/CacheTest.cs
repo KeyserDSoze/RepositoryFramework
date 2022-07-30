@@ -24,7 +24,7 @@ namespace RepositoryFramework.UnitTest
                .AddEnvironmentVariables()
                .Build();
             services.AddSingleton(configuration);
-            var serviceProvider = services.AddMemoryCache()
+            var serviceProvider = services
                 .AddStackExchangeRedisCache(options =>
                 {
                     options.Configuration = configuration["ConnectionString:Redis"];
