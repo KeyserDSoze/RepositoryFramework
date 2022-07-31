@@ -1,7 +1,5 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.UnitTest.Models;
-using RepositoryFramework.UnitTest.Repository.Models;
+using RepositoryFramework.UnitTest.Cache.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,17 +12,9 @@ namespace RepositoryFramework.UnitTest
         private static readonly IServiceProvider ServiceProvider;
         private const int NumberOfEntries = 100;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3963:\"static\" fields should be initialized inline", Justification = "Test purpose.")]
         static CacheTest()
         {
-            var services = new ServiceCollection();
-            IConfiguration configuration = new ConfigurationBuilder()
-               .AddJsonFile("appsettings.test.json")
-               .AddUserSecrets<Startup>()
-               .AddEnvironmentVariables()
-               .Build();
-            services.AddSingleton(configuration);
-            var serviceProvider = services
+            DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
                 .AddStackExchangeRedisCache(options =>
                 {
                     options.Configuration = configuration["ConnectionString:Redis"];
@@ -42,9 +32,8 @@ namespace RepositoryFramework.UnitTest
                     settings.ExpiringTime = TimeSpan.FromSeconds(10);
                 })
                 .Services
-                .BuildServiceProvider();
-            ServiceProvider = serviceProvider.CreateScope().ServiceProvider;
-            ServiceProvider.Populate();
+                .Finalize(out ServiceProvider)
+                .Populate();
         }
 
         private readonly IRepository<Country, CountryKey> _repo;

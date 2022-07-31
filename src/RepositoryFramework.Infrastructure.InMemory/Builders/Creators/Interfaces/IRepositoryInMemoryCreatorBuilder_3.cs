@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Linq.Expressions;
 
 namespace RepositoryFramework.InMemory
 {
@@ -6,6 +7,7 @@ namespace RepositoryFramework.InMemory
         where TKey : notnull
         where TState : class, IState<T>, new()
     {
+        IServiceCollection Services { get; }
         IRepositoryInMemoryCreatorBuilder<T, TKey, TState> WithPattern<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, params string[] regex);
         IRepositoryInMemoryCreatorBuilder<T, TKey, TState> WithSpecificNumberOfElements<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, int numberOfElements);
         IRepositoryInMemoryCreatorBuilder<T, TKey, TState> WithValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Func<TProperty> creator);

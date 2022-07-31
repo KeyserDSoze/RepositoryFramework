@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Linq.Expressions;
 
 namespace RepositoryFramework.InMemory
 {
@@ -8,6 +9,7 @@ namespace RepositoryFramework.InMemory
     {
         private protected readonly RepositoryInMemoryBuilder<T, TKey, TState> _builder;
         private readonly CreationSettings _internalBehaviorSettings;
+        public IServiceCollection Services => _builder.Services;
         public RepositoryInMemoryCreatorBuilder(
             RepositoryInMemoryBuilder<T, TKey, TState> builder,
             CreationSettings internalBehaviorSettings)
