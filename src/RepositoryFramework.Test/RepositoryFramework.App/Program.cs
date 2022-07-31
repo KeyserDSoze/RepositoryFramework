@@ -75,12 +75,10 @@ var all = (await storage!.QueryAsync().NoContext()).ToList();
 //await storage.UpdateAsync("aaa", new("aaa") { Id = "a3", Name = "b3" });
 //all = await storage.QueryAsync(x => x.Name == "b3", 1);
 //all = await storage.QueryAsync(x => x.Name == "b3", 1, 1);
-#pragma warning disable S1481 // Unused local variables should be removed
 var q = await storage.GetAsync("aaa").NoContext();
 await storage.DeleteAsync("aaa").NoContext();
 all = (await storage.QueryAsync().NoContext()).ToList();
 var olaf = string.Empty;
-#pragma warning restore S1481 // Unused local variables should be removed
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
 #pragma warning restore IDE0079 // Remove unnecessary suppression
