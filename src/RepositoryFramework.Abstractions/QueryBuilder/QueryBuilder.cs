@@ -11,43 +11,86 @@ namespace RepositoryFramework
         {
             _query = query;
         }
+        /// <summary>
+        /// Take all elements by <paramref name="predicate"/> query.
+        /// </summary>
+        /// <param name="top">Number of elements to take.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public QueryBuilder<T, TKey> Where(Expression<Func<T, bool>> predicate)
         {
             _options.Predicate = predicate;
             return this;
         }
+        /// <summary>
+        /// Take first <paramref name="top"/> elements.
+        /// </summary>
+        /// <param name="top">Number of elements to take.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public QueryBuilder<T, TKey> Take(int top)
         {
             _options.Top = top;
             return this;
         }
+        /// <summary>
+        /// Skip first <paramref name="skip"/> elements.
+        /// </summary>
+        /// <param name="skip">Number of elements to skip.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public QueryBuilder<T, TKey> Skip(int skip)
         {
             _options.Skip = skip;
             return this;
         }
+        /// <summary>
+        /// Order by ascending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public QueryBuilder<T, TKey> OrderBy(Expression<Func<T, object>> predicate)
         {
             _options.Order = predicate;
             _options.IsAscending = true;
             return this;
         }
+        /// <summary>
+        /// Order by descending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public QueryBuilder<T, TKey> OrderByDescending(Expression<Func<T, object>> predicate)
         {
             _options.Order = predicate;
             _options.IsAscending = false;
             return this;
         }
+        /// <summary>
+        /// Group by a value your query.
+        /// </summary>
+        /// <typeparam name="TProperty">Grouped by this property.</typeparam>
+        /// <param name="predicate">Expression query.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns>IEnumerable<IGrouping<<typeparamref name="TProperty"/>, <typeparamref name="T"/>>></returns>
         public async Task<IEnumerable<IGrouping<TProperty, T>>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
         {
             var items = await QueryAsync(cancellationToken).NoContext();
             return items.AsQueryable().GroupBy(predicate);
         }
-        public async Task<State<T>> AnyAsync(CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Check if exists at least one element with the selected query.
+        /// </summary>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns>bool</returns>
+        public async Task<bool> AnyAsync(CancellationToken cancellationToken = default)
         {
             _options.Top = 1;
             return (await _query.QueryAsync(_options, cancellationToken).NoContext()).Any();
         }
+        /// <summary>
+        /// Take the first value of your query or default value T.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns><typeparamref name="T"/></returns>
         public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
             if (predicate != null)
@@ -56,6 +99,12 @@ namespace RepositoryFramework
             var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
             return query.FirstOrDefault();
         }
+        /// <summary>
+        /// Take the first value of your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns><typeparamref name="T"/></returns>
         public async Task<T> FirstAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
             if (predicate != null)
@@ -64,7 +113,6 @@ namespace RepositoryFramework
             var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
             return query.First();
         }
-#warning Alessandro Rapiti - finalize comments in public methods
         /// <summary>
         /// Starting from page 1 you may page your query.
         /// </summary>
