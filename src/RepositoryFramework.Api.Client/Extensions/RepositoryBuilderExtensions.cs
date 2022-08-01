@@ -11,29 +11,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="TInterceptor">Interceptor service.</typeparam>
         /// <typeparam name="T">Model used for your repository.</typeparam>
-        /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
-        /// <typeparam name="TState">Returning state.</typeparam>
-        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></param>
-        /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static IRepositoryBuilder<T, TKey, TState> AddApiClientSpecificInterceptor<T, TKey, TState, TInterceptor>(this IRepositoryBuilder<T, TKey, TState> builder,
-            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TInterceptor : class, IRepositoryClientInterceptor<T>
-            where TKey : notnull
-            where TState : class, IState<T>, new()
-        {
-            builder
-              .Services
-              .AddService<IRepositoryClientInterceptor<T>, TInterceptor>(serviceLifetime);
-            return builder;
-        }
-
-        /// <summary>
-        /// Add specific interceptor for your <typeparamref name="T"/> client. Interceptor runs before every request.
-        /// For example you can add here your JWT retrieve for authorized requests.
-        /// </summary>
-        /// <typeparam name="TInterceptor">Interceptor service.</typeparam>
-        /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="serviceLifetime">Service Lifetime.</param>

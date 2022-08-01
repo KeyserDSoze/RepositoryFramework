@@ -42,14 +42,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
-        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             List<T> entities = new();
             await foreach (var item in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
             {
                 entities.Add(JsonSerializer.Deserialize<T>(item.Value)!);
             }
-            IEnumerable<T> results = entities.Filter(options).AsEnumerable();
+            var results = entities.Filter(options).ToList();
             return results;
         }
         public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
@@ -73,9 +73,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             return !response.IsError;
         }
 
-        public async Task<BatchResults<TKey, State<T>>> BatchAsync(BatchOperations<T, TKey, State<T>> operations, CancellationToken cancellationToken = default)
+        public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
-            BatchResults<TKey, State<T>> results = new();
+            BatchResults<T, TKey> results = new();
             foreach (var operation in operations.Values)
             {
                 switch (operation.Command)

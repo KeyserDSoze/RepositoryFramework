@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> WithDistributedCache<T, TKey>(
            this IRepositoryBuilder<T, TKey> builder,
-           Action<CacheOptions<T, TKey, State<T>>>? settings = null,
+           Action<CacheOptions<T, TKey>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
             => builder.WithDistributedCache<T, TKey, DistributedCache<T, TKey>>(settings, lifetime);

@@ -41,7 +41,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return new(response.Value != null, value);
         }
 
-        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             List<T> items = new();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
@@ -50,7 +50,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
                 items.Add(JsonSerializer.Deserialize<T>(blobData.Value.Content)!);
             }
-            IEnumerable<T> results = items.Filter(options).AsEnumerable();
+            var results = items.Filter(options).ToList();
             return results;
         }
 
@@ -73,9 +73,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             IEnumerable<T> results = items.Filter(options).AsEnumerable();
             return results.Count();
         }
-        public async Task<BatchResults<TKey, State<T>>> BatchAsync(BatchOperations<T, TKey, State<T>> operations, CancellationToken cancellationToken = default)
+        public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
-            BatchResults<TKey, State<T>> results = new();
+            BatchResults<T, TKey> results = new();
             foreach (var operation in operations.Values)
             {
                 switch (operation.Command)

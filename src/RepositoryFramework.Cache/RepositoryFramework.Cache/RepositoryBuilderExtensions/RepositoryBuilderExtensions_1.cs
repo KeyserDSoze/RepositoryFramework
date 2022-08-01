@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class RepositoryBuilderExtensions
     {
         private static void AddCacheManager<T>(this IRepositoryBuilder<T> builder,
-            CacheOptions<T, string, State<T>> options)
+            CacheOptions<T, string> options)
         {
             if (builder.Type == PatternType.Repository)
                 builder.Services
@@ -34,11 +34,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
         public static IRepositoryBuilder<T> WithCache<T, TCache>(
            this IRepositoryBuilder<T> builder,
-           Action<CacheOptions<T, string, State<T>>>? settings = null,
+           Action<CacheOptions<T, string>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TCache : class, ICache<T>
         {
-            var options = new CacheOptions<T, string, State<T>>();
+            var options = new CacheOptions<T, string>();
             settings?.Invoke(options);
             builder.Services
                 .RemoveServiceIfAlreadyInstalled<TCache>(typeof(ICache<T>))
@@ -60,11 +60,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T> WithDistributedCache<T, TCache>(
            this IRepositoryBuilder<T> builder,
-           Action<DistributedCacheOptions<T, string, State<T>>>? settings = null,
+           Action<DistributedCacheOptions<T, string>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TCache : class, IDistributedCache<T>
         {
-            var options = new DistributedCacheOptions<T, string, State<T>>();
+            var options = new DistributedCacheOptions<T, string>();
             settings?.Invoke(options);
             builder.Services
                 .RemoveServiceIfAlreadyInstalled<TCache>(typeof(IDistributedCache<T>))

@@ -14,7 +14,7 @@ namespace RepositoryFramework
     }
     public class UserWriter : ICommandPattern<User, string>
     {
-        public Task<BatchResults<string, State<User>>> BatchAsync(BatchOperations<User, string, State<User>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<User, string>> BatchAsync(BatchOperations<User, string> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -52,7 +52,7 @@ namespace RepositoryFramework
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IEnumerable<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
+        public Task<List<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
             //get a list of items by a predicate with top and skip from DB or storage context
             throw new NotImplementedException();
@@ -81,7 +81,9 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "Test")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "Test purpose.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Test purpose.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Test purpose.")]
         public Task<IEnumerable<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
@@ -101,7 +103,12 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
 
-        public Task<BatchResults<string, State<User>>> BatchAsync(BatchOperations<User, string, State<User>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<User, string>> BatchAsync(BatchOperations<User, string> operations, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<User>> IQueryPattern<User, string>.QueryAsync(QueryOptions<User>? options, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

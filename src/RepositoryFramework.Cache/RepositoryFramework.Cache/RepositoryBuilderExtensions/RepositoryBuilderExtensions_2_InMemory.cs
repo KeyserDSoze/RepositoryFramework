@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> WithInMemoryCache<T, TKey>(
            this IRepositoryBuilder<T, TKey> builder,
-           Action<CacheOptions<T, TKey, State<T>>>? settings = null)
+           Action<CacheOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
             builder.Services.AddMemoryCache();

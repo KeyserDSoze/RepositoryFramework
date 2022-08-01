@@ -44,15 +44,15 @@ namespace RepositoryFramework.UnitTest
         [Fact]
         public async Task TestAsync()
         {
-            var countries = await _repo.ToListAsync().NoContext();
+            var countries = await _repo.QueryAsync().NoContext();
             foreach (var country in countries)
             {
                 await _repo.DeleteAsync(new CountryKey(country.Id, country.Abbreviation!));
             }
-            countries = await _repo.ToListAsync().NoContext();
+            countries = await _repo.QueryAsync().NoContext();
             Assert.Equal(NumberOfEntries, countries.Count);
             await Task.Delay(10_000);
-            countries = await _repo.ToListAsync().NoContext();
+            countries = await _repo.QueryAsync().NoContext();
             Assert.Empty(countries);
         }
     }

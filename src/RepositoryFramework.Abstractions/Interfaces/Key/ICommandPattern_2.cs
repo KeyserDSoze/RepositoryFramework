@@ -6,8 +6,12 @@
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to insert, update or delete your data from repository.</typeparam>
-    public interface ICommandPattern<T, TKey> : ICommandPattern<T, TKey, State<T>>
+    public interface ICommandPattern<T, TKey> : ICommandPattern
         where TKey : notnull
     {
+        Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default);
     }
 }

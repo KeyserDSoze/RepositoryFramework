@@ -14,9 +14,9 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             _context = context;
         }
 
-        public async Task<BatchResults<AppUserKey, State<AppUser>>> BatchAsync(BatchOperations<AppUser, AppUserKey, State<AppUser>> operations, CancellationToken cancellationToken = default)
+        public async Task<BatchResults<AppUser, AppUserKey>> BatchAsync(BatchOperations<AppUser, AppUserKey> operations, CancellationToken cancellationToken = default)
         {
-            BatchResults<AppUserKey, State<AppUser>> results = new();
+            BatchResults<AppUser, AppUserKey> results = new();
             foreach (var operation in operations.Values)
             {
                 switch (operation.Command)
@@ -87,7 +87,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             };
         }
 
-        public async Task<IEnumerable<AppUser>> QueryAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
+        public async Task<List<AppUser>> QueryAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
         {
             return (await _context.Users.
                 FilterAsAsyncEnumerable(options?
@@ -96,7 +96,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
                 .With(x => x.Username, x => x.Nome)
                 .With(x => x.Email, x => x.IndirizzoElettronico))
                 .ToListAsync(cancellationToken))
-                .Select(x => new AppUser(x.Identificativo, x.Nome, x.IndirizzoElettronico, new()));
+                .Select(x => new AppUser(x.Identificativo, x.Nome, x.IndirizzoElettronico, new())).ToList();
         }
 
         public async Task<State<AppUser>> UpdateAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)

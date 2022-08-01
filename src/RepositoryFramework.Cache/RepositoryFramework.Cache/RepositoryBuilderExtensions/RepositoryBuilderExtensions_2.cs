@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class RepositoryBuilderExtensions
     {
         private static void AddCacheManager<T, TKey>(this IRepositoryBuilder<T, TKey> builder,
-            CacheOptions<T, TKey, State<T>> options)
+            CacheOptions<T, TKey> options)
             where TKey : notnull
         {
             if (builder.Type == PatternType.Repository)
@@ -36,12 +36,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> WithCache<T, TKey, TCache>(
            this IRepositoryBuilder<T, TKey> builder,
-           Action<CacheOptions<T, TKey, State<T>>>? settings = null,
+           Action<CacheOptions<T, TKey>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
             where TCache : class, ICache<T, TKey>
         {
-            var options = new CacheOptions<T, TKey, State<T>>();
+            var options = new CacheOptions<T, TKey>();
             settings?.Invoke(options);
             builder.Services
                 .RemoveServiceIfAlreadyInstalled<TCache>(typeof(ICache<T, TKey>))
@@ -64,12 +64,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> WithDistributedCache<T, TKey, TCache>(
            this IRepositoryBuilder<T, TKey> builder,
-           Action<DistributedCacheOptions<T, TKey, State<T>>>? settings = null,
+           Action<DistributedCacheOptions<T, TKey>>? settings = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
             where TCache : class, IDistributedCache<T, TKey>
         {
-            var options = new DistributedCacheOptions<T, TKey, State<T>>();
+            var options = new DistributedCacheOptions<T, TKey>();
             settings?.Invoke(options);
             builder.Services
                 .RemoveServiceIfAlreadyInstalled<TCache>(typeof(IDistributedCache<T, TKey>))

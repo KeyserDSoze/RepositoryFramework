@@ -20,8 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> WithInMemoryAndDistributedCache<T, TKey>(
            this IRepositoryBuilder<T, TKey> builder,
-           Action<CacheOptions<T, TKey, State<T>>>? inMemorySettings = null,
-           Action<CacheOptions<T, TKey, State<T>>>? distributedSettings = null,
+           Action<CacheOptions<T, TKey>>? inMemorySettings = null,
+           Action<CacheOptions<T, TKey>>? distributedSettings = null,
            ServiceLifetime inMemoryLifetime = ServiceLifetime.Singleton,
            ServiceLifetime distributedLifetime = ServiceLifetime.Singleton)
             where TKey : notnull

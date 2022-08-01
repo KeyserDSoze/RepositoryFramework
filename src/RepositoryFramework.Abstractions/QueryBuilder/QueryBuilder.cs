@@ -2,38 +2,37 @@
 
 namespace RepositoryFramework
 {
-    public class QueryBuilder<T, TKey, TState>
+    public class QueryBuilder<T, TKey>
         where TKey : notnull
-        where TState : class, IState<T>, new()
     {
-        private readonly IQueryPattern<T, TKey, TState> _query;
+        private readonly IQueryPattern<T, TKey> _query;
         private readonly QueryOptions<T> _options = new();
-        public QueryBuilder(IQueryPattern<T, TKey, TState> query)
+        internal QueryBuilder(IQueryPattern<T, TKey> query)
         {
             _query = query;
         }
-        public QueryBuilder<T, TKey, TState> Where(Expression<Func<T, bool>> predicate)
+        public QueryBuilder<T, TKey> Where(Expression<Func<T, bool>> predicate)
         {
             _options.Predicate = predicate;
             return this;
         }
-        public QueryBuilder<T, TKey, TState> Take(int top)
+        public QueryBuilder<T, TKey> Take(int top)
         {
             _options.Top = top;
             return this;
         }
-        public QueryBuilder<T, TKey, TState> Skip(int skip)
+        public QueryBuilder<T, TKey> Skip(int skip)
         {
             _options.Skip = skip;
             return this;
         }
-        public QueryBuilder<T, TKey, TState> OrderBy(Expression<Func<T, object>> predicate)
+        public QueryBuilder<T, TKey> OrderBy(Expression<Func<T, object>> predicate)
         {
             _options.Order = predicate;
             _options.IsAscending = true;
             return this;
         }
-        public QueryBuilder<T, TKey, TState> OrderByDescending(Expression<Func<T, object>> predicate)
+        public QueryBuilder<T, TKey> OrderByDescending(Expression<Func<T, object>> predicate)
         {
             _options.Order = predicate;
             _options.IsAscending = false;
@@ -65,14 +64,7 @@ namespace RepositoryFramework
             var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
             return query.First();
         }
-        public async Task<List<T>> ToListAsync(CancellationToken cancellationToken = default)
-        {
-            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
-            if (query is List<T> list)
-                return list;
-            else
-                return query.ToList();
-        }
+#warning Alessandro Rapiti - finalize comments in public methods
         /// <summary>
         /// Starting from page 1 you may page your query.
         /// </summary>
@@ -107,7 +99,7 @@ namespace RepositoryFramework
             long pages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
             return new Page<T>(query, count, pages);
         }
-        public Task<IEnumerable<T>> QueryAsync(CancellationToken cancellationToken = default)
+        public Task<List<T>> QueryAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_options, cancellationToken);
     }
 }

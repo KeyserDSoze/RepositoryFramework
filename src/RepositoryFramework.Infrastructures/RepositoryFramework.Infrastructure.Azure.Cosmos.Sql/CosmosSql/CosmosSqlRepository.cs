@@ -75,7 +75,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
             });
 
-        public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
             => ExecuteAsync(default!, RepositoryMethods.Query, async () =>
             {
                 IQueryable<T> queryable = _client.GetItemLinqQueryable<T>().Filter(options);
@@ -95,7 +95,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                         }
                     }
                 }
-                return items.Select(x => x);
+                return items;
             });
         public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
             => ExecuteAsync<long>(default!, RepositoryMethods.Count, async () =>
@@ -129,9 +129,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
                 return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
             });
-        public async Task<BatchResults<TKey, State<T>>> BatchAsync(BatchOperations<T, TKey, State<T>> operations, CancellationToken cancellationToken = default)
+        public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
-            BatchResults<TKey, State<T>> results = new();
+            BatchResults<T, TKey> results = new();
             foreach (var operation in operations.Values)
             {
                 switch (operation.Command)

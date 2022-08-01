@@ -1,32 +1,36 @@
 ﻿namespace RepositoryFramework
 {
-    public sealed class BatchOperations<T, TKey, TState>
+    public sealed class BatchOperations<T, TKey>
         where TKey : notnull
-        where TState : class, IState<T>, new()
     {
         public List<BatchOperation<T, TKey>> Values { get; init; } = new();
-        internal ICommandPattern<T, TKey, TState>? Command { get; init; }
-        public BatchOperations<T, TKey, TState> AddInsert(TKey key, T value)
+        private readonly ICommandPattern<T, TKey>? _command;
+        internal BatchOperations(ICommandPattern<T, TKey>? command)
+        {
+            _command = command;
+        }
+        public BatchOperations<T, TKey> AddInsert(TKey key, T value)
         {
             Values.Add(new BatchOperation<T, TKey>(CommandType.Insert, key, value));
             return this;
         }
-        public BatchOperations<T, TKey, TState> AddUpdate(TKey key, T value)
+        public BatchOperations<T, TKey> AddUpdate(TKey key, T value)
         {
             Values.Add(new BatchOperation<T, TKey>(CommandType.Update, key, value));
             return this;
         }
-        public BatchOperations<T, TKey, TState> AddDelete(TKey key)
+        public BatchOperations<T, TKey> AddDelete(TKey key)
         {
             Values.Add(new BatchOperation<T, TKey>(CommandType.Delete, key));
             return this;
         }
-        public Task<BatchResults<TKey, TState>> ExecuteAsync(CancellationToken cancellationToken = default)
+#warning Alessandro Rapiti - check if I want to read this in method, I don't like the two ways. In BatchAsync and here.
+        public Task<BatchResults<T, TKey>> ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            if (Values.Count > 0 && Command != null)
-                return Command.BatchAsync(this, cancellationToken);
+            if (Values.Count > 0 && _command != null)
+                return _command.BatchAsync(this, cancellationToken);
             else
-                return Task.FromResult(BatchResults<TKey, TState>.Empty);
+                return Task.FromResult(BatchResults<T, TKey>.Empty);
         }
     }
 }

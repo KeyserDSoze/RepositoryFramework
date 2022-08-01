@@ -8,7 +8,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
     public class ClassAnimalRepository : IRepository<ClassAnimal, ClassAnimalKey>
     {
         private static readonly Dictionary<string, Dictionary<int, Dictionary<Guid, ClassAnimal>>> _dic = new();
-        public Task<BatchResults<ClassAnimalKey, State<ClassAnimal>>> BatchAsync(BatchOperations<ClassAnimal, ClassAnimalKey, State<ClassAnimal>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<ClassAnimal, ClassAnimalKey>> BatchAsync(BatchOperations<ClassAnimal, ClassAnimalKey> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -61,7 +61,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             return false;
         }
 
-        public Task<IEnumerable<ClassAnimal>> QueryAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
+        public Task<List<ClassAnimal>> QueryAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
         {
             return default!;
         }

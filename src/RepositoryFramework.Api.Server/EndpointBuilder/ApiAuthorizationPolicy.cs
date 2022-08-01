@@ -10,10 +10,11 @@
             _method = method;
             _authorizationBuilder = authorization;
         }
-        public ApiAuthorizationPolicy With(string policy)
+        public ApiAuthorizationPolicy With(params string[] policies)
         {
-            if (!_policies.Contains(policy))
-                _policies.Add(policy);
+            foreach(var policy in policies)
+                if (!_policies.Contains(policy))
+                    _policies.Add(policy);
             return this;
         }
         public ApiAuthorizationBuilder Empty()

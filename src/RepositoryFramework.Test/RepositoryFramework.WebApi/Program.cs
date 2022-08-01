@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
-builder.Services.AddRepositoryInMemoryStorage<IperUser, string, State<IperUser>>()
+builder.Services.AddRepositoryInMemoryStorage<IperUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
 builder.Services.AddRepositoryInMemoryStorage<Animal, AnimalKey>();

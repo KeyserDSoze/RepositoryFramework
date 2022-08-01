@@ -77,7 +77,7 @@ namespace RepositoryFramework.UnitTest.Repository
             await batchOperation.ExecuteAsync();
 
             items = await _repository.Where(x => x.Id >= 0).QueryAsync();
-            Assert.Equal(10, items.Count());
+            Assert.Equal(10, items.Count);
 
             Expression<Func<AppUser, object>> orderPredicate = x => x.Id;
             var page = await _repository.Where(x => x.Id > 0).OrderByDescending(orderPredicate).PageAsync(1, 2);
@@ -89,7 +89,7 @@ namespace RepositoryFramework.UnitTest.Repository
             await batchOperation.ExecuteAsync();
 
             items = await _repository.Where(x => x.Id >= 0).QueryAsync();
-            Assert.Equal(10, items.Count());
+            Assert.Equal(10, items.Count);
             Assert.Equal($"Email Updated {items.First().Id}", items.First().Email);
 
             batchOperation = _repository.CreateBatchOperation();

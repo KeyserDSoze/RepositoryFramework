@@ -64,29 +64,5 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddService<IRepositoryClientInterceptor<T>, Authenticator<T>>(serviceLifetime);
             return builder;
         }
-        /// <summary>
-        /// Add JWT specific interceptor for your <typeparamref name="T"/> client. Interceptor runs before every request.
-        /// </summary>
-        /// <typeparam name="T">Model used for your repository.</typeparam>
-        /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
-        /// <typeparam name="TState">Returning state.</typeparam>
-        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></param>
-        /// <param name="settings">Settings.</param>
-        /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, <typeparamref name="TState"/>></returns>
-        public static IRepositoryBuilder<T, TKey, TState> AddApiClientSpecificAuthorizationInterceptor<T, TKey, TState>(
-            this IRepositoryBuilder<T, TKey, TState> builder,
-            Action<AuthenticatorSettings<T>>? settings = null,
-            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TKey : notnull
-            where TState : class, IState<T>, new()
-        {
-            var options = new AuthenticatorSettings<T>();
-            settings?.Invoke(options);
-            builder
-              .Services
-              .AddService<IRepositoryClientInterceptor<T>, Authenticator<T>>(serviceLifetime);
-            return builder;
-        }
     }
 }

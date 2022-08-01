@@ -68,7 +68,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             await batchOperation.ExecuteAsync();
 
             items = await _animal.Where(x => x.Id >= 0).QueryAsync();
-            Assert.Equal(10, items.Count());
+            Assert.Equal(10, items.Count);
 
             var page = await _animal.Where(x => x.Id > 0).OrderByDescending(x => x.Id).PageAsync(1, 2);
             Assert.Equal(9, page.Items.First().Id);
@@ -80,7 +80,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             await batchOperation.ExecuteAsync();
 
             items = await _animal.Where(x => x.Id >= 0).OrderBy(x => x.Id).QueryAsync();
-            Assert.Equal(10, items.Count());
+            Assert.Equal(10, items.Count);
             Assert.Equal("Animal 0", items.First().Name);
 
             batchOperation = _animal.CreateBatchOperation();
@@ -94,7 +94,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
         public async Task AllCommandsAndQueryWithStrangeKeyAsync()
         {
             var all = await _strangeKeyRepository.QueryAsync();
-            Assert.Equal(100, all.Count());
+            Assert.Equal(100, all.Count);
             foreach (var item in all)
                 await _strangeKeyRepository.DeleteAsync(new(item.Id));
 
@@ -130,7 +130,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             await batchOperation.ExecuteAsync();
 
             items = await _strangeKeyRepository.Where(x => x.Id >= 0).QueryAsync();
-            Assert.Equal(10, items.Count());
+            Assert.Equal(10, items.Count);
 
             var page = await _strangeKeyRepository.Where(x => x.Id > 0).OrderByDescending(x => x.Id).PageAsync(1, 2);
             Assert.Equal(9, page.Items.First().Id);
@@ -142,7 +142,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             await batchOperation.ExecuteAsync();
 
             items = await _strangeKeyRepository.Where(x => x.Id >= 0).OrderBy(x => x.Id).QueryAsync();
-            Assert.Equal(10, items.Count());
+            Assert.Equal(10, items.Count);
             Assert.Equal("Animal 0", items.First().Name);
 
             batchOperation = _strangeKeyRepository.CreateBatchOperation();

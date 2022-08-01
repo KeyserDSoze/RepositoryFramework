@@ -42,10 +42,10 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<SuperMigrationUser>(true));
         }
 
-        public Task<IEnumerable<SuperMigrationUser>> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public Task<List<SuperMigrationUser>> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
             var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult(users.AsEnumerable());
+            return Task.FromResult(users.ToList());
         }
         public Task<long> CountAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
@@ -58,7 +58,7 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<SuperMigrationUser>(true));
         }
 
-        public Task<BatchResults<string, State<SuperMigrationUser>>> BatchAsync(BatchOperations<SuperMigrationUser, string, State<SuperMigrationUser>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<SuperMigrationUser, string>> BatchAsync(BatchOperations<SuperMigrationUser, string> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

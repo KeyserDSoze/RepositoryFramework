@@ -17,7 +17,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
             new Auto { Identificativo = 3, Targa = "03djkb0", NumeroRuote = 3, Guidatore = new() },
             new Auto { Identificativo = 4, Targa = "03djkc0", NumeroRuote = 2, Guidatore = new() },
         };
-        public Task<BatchResults<int, State<Car>>> BatchAsync(BatchOperations<Car, int, State<Car>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<Car, int>> BatchAsync(BatchOperations<Car, int> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -47,7 +47,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Car>> QueryAsync(QueryOptions<Car>? options = null, CancellationToken cancellationToken = default)
+        public Task<List<Car>> QueryAsync(QueryOptions<Car>? options = null, CancellationToken cancellationToken = default)
         {
             var filtered = _database.Filter(
                 options?
@@ -58,7 +58,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
                 .With(x => x.Driver, x => x.Guidatore)
                 .With(x => x.Driver!.Name, x => x.Guidatore!.Nome))
                 .ToList();
-            return Task.FromResult(filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }) ?? new List<Car>());
+            return Task.FromResult(filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }).ToList() ?? new List<Car>());
         }
 
         public Task<State<Car>> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)

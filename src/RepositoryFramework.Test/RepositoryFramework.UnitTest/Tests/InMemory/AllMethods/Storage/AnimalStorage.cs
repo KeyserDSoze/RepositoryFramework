@@ -14,7 +14,7 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
         {
             _database = database;
         }
-        public Task<BatchResults<int, State<Animal>>> BatchAsync(BatchOperations<Animal, int, State<Animal>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<Animal, int>> BatchAsync(BatchOperations<Animal, int> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -44,9 +44,9 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Animal>> QueryAsync(QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
+        public Task<List<Animal>> QueryAsync(QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(_database.Animals.Select(x => x.Value).Filter(options).AsEnumerable());
+            return Task.FromResult(_database.Animals.Select(x => x.Value).Filter(options).ToList());
         }
 
         public Task<State<Animal>> UpdateAsync(int key, Animal value, CancellationToken cancellationToken = default)
