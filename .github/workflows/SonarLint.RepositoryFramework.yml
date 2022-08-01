@@ -53,5 +53,5 @@ jobs:
           dotnet build "src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Cosmos.Sql/RepositoryFramework.Infrastructure.Azure.Cosmos.Sql.csproj" -c Debug
           dotnet build "src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Storage.Blob/RepositoryFramework.Infrastructure.Azure.Storage.Blob.csproj" -c Debug
           dotnet build "src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Storage.Table/RepositoryFramework.Infrastructure.Azure.Storage.Table.csproj" -c Debug
-          dotnet build "src\RepositoryFramework.Test\RepositoryFramework.UnitTest/RepositoryFramework.UnitTest.csproj" -c Debug
+          dotnet test "src\RepositoryFramework.Test\RepositoryFramework.UnitTest/RepositoryFramework.UnitTest.csproj" -c Debug --collect "Code Coverage"
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"

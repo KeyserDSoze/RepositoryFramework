@@ -78,19 +78,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
             => ExecuteAsync(default!, RepositoryMethods.Query, async () =>
             {
-                IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
-                if (options?.Predicate != null)
-                    queryable = queryable
-                        .Where(options.Predicate);
-                if (options?.Order != null)
-                    if (options.IsAscending)
-                        queryable = queryable.OrderBy(options.Order);
-                    else
-                        queryable = queryable.OrderByDescending(options.Order);
-                if (options?.Skip != null && options.Skip > 0)
-                    queryable = queryable.Skip(options.Skip.Value);
-                if (options?.Top != null && options.Top > 0)
-                    queryable = queryable.Take(options.Top.Value);
+                IQueryable<T> queryable = _client.GetItemLinqQueryable<T>().Filter(options);
 
                 List<T> items = new();
                 using (FeedIterator<T> iterator = queryable.ToFeedIterator())
@@ -112,19 +100,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
             => ExecuteAsync<long>(default!, RepositoryMethods.Count, async () =>
             {
-                IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
-                if (options?.Predicate != null)
-                    queryable = queryable
-                        .Where(options.Predicate);
-                if (options?.Order != null)
-                    if (options.IsAscending)
-                        queryable = queryable.OrderBy(options.Order);
-                    else
-                        queryable = queryable.OrderByDescending(options.Order);
-                if (options?.Skip != null && options.Skip > 0)
-                    queryable = queryable.Skip(options.Skip.Value);
-                if (options?.Top != null && options.Top > 0)
-                    queryable = queryable.Take(options.Top.Value);
+                IQueryable<T> queryable = _client.GetItemLinqQueryable<T>().Filter(options);
 
                 List<T> items = new();
                 using (FeedIterator<T> iterator = queryable.ToFeedIterator())
