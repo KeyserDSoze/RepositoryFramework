@@ -15,11 +15,11 @@
         where TState : class, IState<T>, new()
     {
         public TimeSpan ExpiringTime { get; set; }
-        public bool HasCommandPattern => Methods.HasFlag(RepositoryMethod.Insert)
-            || Methods.HasFlag(RepositoryMethod.Update)
-            || Methods.HasFlag(RepositoryMethod.Delete);
-        public bool HasCache(RepositoryMethod method) => Methods.HasFlag(RepositoryMethod.All) || Methods.HasFlag(method);
-        public RepositoryMethod Methods { get; set; } = RepositoryMethod.Query | RepositoryMethod.Get | RepositoryMethod.Exist;
+        public bool HasCommandPattern => Methods.HasFlag(RepositoryMethods.Insert)
+            || Methods.HasFlag(RepositoryMethods.Update)
+            || Methods.HasFlag(RepositoryMethods.Delete);
+        public bool HasCache(RepositoryMethods method) => Methods.HasFlag(RepositoryMethods.All) || Methods.HasFlag(method);
+        public RepositoryMethods Methods { get; set; } = RepositoryMethods.Query | RepositoryMethods.Get | RepositoryMethods.Exist;
         internal static CacheOptions<T, TKey, TState> Default { get; } = new CacheOptions<T, TKey, TState>()
         {
             ExpiringTime = TimeSpan.FromDays(365)

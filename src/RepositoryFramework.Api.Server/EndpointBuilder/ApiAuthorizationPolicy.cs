@@ -2,10 +2,10 @@
 {
     public class ApiAuthorizationPolicy
     {
-        private readonly RepositoryMethod _method;
+        private readonly RepositoryMethods _method;
         private readonly ApiAuthorizationBuilder _authorizationBuilder;
         private readonly List<string> _policies = new();
-        public ApiAuthorizationPolicy(RepositoryMethod method, ApiAuthorizationBuilder authorization)
+        public ApiAuthorizationPolicy(RepositoryMethods method, ApiAuthorizationBuilder authorization)
         {
             _method = method;
             _authorizationBuilder = authorization;

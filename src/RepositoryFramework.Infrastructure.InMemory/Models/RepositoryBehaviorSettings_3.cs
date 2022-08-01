@@ -12,9 +12,9 @@
         where TKey : notnull
         where TState : class, IState<T>, new()
     {
-        private readonly Dictionary<RepositoryMethod, MethodBehaviorSetting> _settings = new();
+        private readonly Dictionary<RepositoryMethods, MethodBehaviorSetting> _settings = new();
         internal RepositoryBehaviorSettings() { }
-        private void Add(RepositoryMethod method, MethodBehaviorSetting methodSettings)
+        private void Add(RepositoryMethods method, MethodBehaviorSetting methodSettings)
         {
             if (!_settings.ContainsKey(method))
                 _settings.Add(method, methodSettings);
@@ -22,43 +22,43 @@
                 _settings[method] = methodSettings;
         }
         public void AddForRepositoryPattern(MethodBehaviorSetting setting)
-            => Add(RepositoryMethod.All, setting);
+            => Add(RepositoryMethods.All, setting);
         public void AddForCommandPattern(MethodBehaviorSetting setting)
         {
-            Add(RepositoryMethod.Insert, setting);
-            Add(RepositoryMethod.Update, setting);
-            Add(RepositoryMethod.Delete, setting);
-            Add(RepositoryMethod.Batch, setting);
+            Add(RepositoryMethods.Insert, setting);
+            Add(RepositoryMethods.Update, setting);
+            Add(RepositoryMethods.Delete, setting);
+            Add(RepositoryMethods.Batch, setting);
         }
         public void AddForQueryPattern(MethodBehaviorSetting setting)
         {
-            Add(RepositoryMethod.Get, setting);
-            Add(RepositoryMethod.Query, setting);
-            Add(RepositoryMethod.Exist, setting);
-            Add(RepositoryMethod.Count, setting);
+            Add(RepositoryMethods.Get, setting);
+            Add(RepositoryMethods.Query, setting);
+            Add(RepositoryMethods.Exist, setting);
+            Add(RepositoryMethods.Count, setting);
         }
         public void AddForInsert(MethodBehaviorSetting setting)
-            => Add(RepositoryMethod.Insert, setting);
+            => Add(RepositoryMethods.Insert, setting);
         public void AddForUpdate(MethodBehaviorSetting setting)
-            => Add(RepositoryMethod.Update, setting);
+            => Add(RepositoryMethods.Update, setting);
         public void AddForDelete(MethodBehaviorSetting setting)
-            => Add(RepositoryMethod.Delete, setting);
+            => Add(RepositoryMethods.Delete, setting);
         public void AddForBatch(MethodBehaviorSetting setting)
-            => Add(RepositoryMethod.Batch, setting);
+            => Add(RepositoryMethods.Batch, setting);
         public void AddForGet(MethodBehaviorSetting setting)
-            => Add(RepositoryMethod.Get, setting);
+            => Add(RepositoryMethods.Get, setting);
         public void AddForQuery(MethodBehaviorSetting setting)
-            => Add(RepositoryMethod.Query, setting);
+            => Add(RepositoryMethods.Query, setting);
         public void AddForExist(MethodBehaviorSetting setting)
-            => Add(RepositoryMethod.Exist, setting);
+            => Add(RepositoryMethods.Exist, setting);
         public void AddForCount(MethodBehaviorSetting setting)
-            => Add(RepositoryMethod.Count, setting);
-        public MethodBehaviorSetting Get(RepositoryMethod method)
+            => Add(RepositoryMethods.Count, setting);
+        public MethodBehaviorSetting Get(RepositoryMethods method)
         {
             if (_settings.ContainsKey(method))
                 return _settings[method];
-            else if (_settings.ContainsKey(RepositoryMethod.All))
-                return _settings[RepositoryMethod.All];
+            else if (_settings.ContainsKey(RepositoryMethods.All))
+                return _settings[RepositoryMethods.All];
             else
                 return MethodBehaviorSetting.Default;
         }

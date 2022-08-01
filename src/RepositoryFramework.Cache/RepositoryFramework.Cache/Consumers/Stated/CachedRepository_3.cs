@@ -27,7 +27,7 @@
             {
                 if (result.State.IsOk)
                 {
-                    RepositoryMethod method = (RepositoryMethod)(int)(result.Command);
+                    RepositoryMethods method = (RepositoryMethods)(int)(result.Command);
                     if ((_cache != null && _cacheOptions.HasCache(method))
                         || (_distributed != null && _distributedCacheOptions.HasCache(method)))
                     {
@@ -43,8 +43,8 @@
                         else
                         {
                             await RemoveExistAndGetCacheAsync(operation.Key,
-                                _cacheOptions.HasCache(RepositoryMethod.Delete),
-                                _distributedCacheOptions.HasCache(RepositoryMethod.Delete), cancellationToken).NoContext();
+                                _cacheOptions.HasCache(RepositoryMethods.Delete),
+                                _distributedCacheOptions.HasCache(RepositoryMethods.Delete), cancellationToken).NoContext();
                         }
                     }
                 }
@@ -54,23 +54,23 @@
 
         public async Task<TState> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            if ((_cache != null && _cacheOptions.HasCache(RepositoryMethod.Delete))
-                || (_distributed != null && _distributedCacheOptions.HasCache(RepositoryMethod.Delete)))
+            if ((_cache != null && _cacheOptions.HasCache(RepositoryMethods.Delete))
+                || (_distributed != null && _distributedCacheOptions.HasCache(RepositoryMethods.Delete)))
                 await RemoveExistAndGetCacheAsync(key,
-                    _cacheOptions.HasCache(RepositoryMethod.Delete),
-                    _distributedCacheOptions.HasCache(RepositoryMethod.Delete), cancellationToken).NoContext();
+                    _cacheOptions.HasCache(RepositoryMethods.Delete),
+                    _distributedCacheOptions.HasCache(RepositoryMethods.Delete), cancellationToken).NoContext();
             return await (_repository ?? _command!).DeleteAsync(key, cancellationToken).NoContext();
         }
 
         public async Task<TState> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             TState result = await (_repository ?? _command!).InsertAsync(key, value, cancellationToken).NoContext();
-            if ((_cache != null && _cacheOptions.HasCache(RepositoryMethod.Insert))
-                || (_distributed != null && _distributedCacheOptions.HasCache(RepositoryMethod.Insert)))
+            if ((_cache != null && _cacheOptions.HasCache(RepositoryMethods.Insert))
+                || (_distributed != null && _distributedCacheOptions.HasCache(RepositoryMethods.Insert)))
                 await UpdateExistAndGetCacheAsync(key, value, 
                     await (_query ?? _repository!).ExistAsync(key, cancellationToken).NoContext(),
-                    _cacheOptions.HasCache(RepositoryMethod.Insert),
-                    _distributedCacheOptions.HasCache(RepositoryMethod.Insert),
+                    _cacheOptions.HasCache(RepositoryMethods.Insert),
+                    _distributedCacheOptions.HasCache(RepositoryMethods.Insert),
                     cancellationToken).NoContext();
             return result;
         }
@@ -78,12 +78,12 @@
         public async Task<TState> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             TState result = await (_repository ?? _command!).UpdateAsync(key, value, cancellationToken).NoContext();
-            if ((_cache != null && _cacheOptions.HasCache(RepositoryMethod.Update))
-                || (_distributed != null && _distributedCacheOptions.HasCache(RepositoryMethod.Update)))
+            if ((_cache != null && _cacheOptions.HasCache(RepositoryMethods.Update))
+                || (_distributed != null && _distributedCacheOptions.HasCache(RepositoryMethods.Update)))
                 await UpdateExistAndGetCacheAsync(key, value,
                     await (_query ?? _repository!).ExistAsync(key, cancellationToken).NoContext(),
-                    _cacheOptions.HasCache(RepositoryMethod.Update),
-                    _distributedCacheOptions.HasCache(RepositoryMethod.Update),
+                    _cacheOptions.HasCache(RepositoryMethods.Update),
+                    _distributedCacheOptions.HasCache(RepositoryMethods.Update),
                     cancellationToken).NoContext();
             return result;
         }

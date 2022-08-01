@@ -40,15 +40,15 @@ namespace Microsoft.Extensions.DependencyInjection
              where TKey : notnull
             where TState : class, IState<T>, new()
         {
-            Check(settings.Get(RepositoryMethod.Insert).ExceptionOdds);
-            Check(settings.Get(RepositoryMethod.Update).ExceptionOdds);
-            Check(settings.Get(RepositoryMethod.Delete).ExceptionOdds);
-            Check(settings.Get(RepositoryMethod.Batch).ExceptionOdds);
-            Check(settings.Get(RepositoryMethod.Get).ExceptionOdds);
-            Check(settings.Get(RepositoryMethod.Query).ExceptionOdds);
-            Check(settings.Get(RepositoryMethod.Exist).ExceptionOdds);
-            Check(settings.Get(RepositoryMethod.Count).ExceptionOdds);
-            Check(settings.Get(RepositoryMethod.All).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.Insert).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.Update).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.Delete).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.Batch).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.Get).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.Query).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.Exist).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.Count).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.All).ExceptionOdds);
 
             static void Check(List<ExceptionOdds> odds)
             {

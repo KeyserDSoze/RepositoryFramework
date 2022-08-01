@@ -25,7 +25,7 @@ namespace RepositoryFramework.Api.Client.DefaultInterceptor
             _settings = settings;
             _provider = provider;
         }
-        public async Task<HttpClient> EnrichAsync(HttpClient client, RepositoryMethod path)
+        public async Task<HttpClient> EnrichAsync(HttpClient client, RepositoryMethods path)
         {
             try
             {

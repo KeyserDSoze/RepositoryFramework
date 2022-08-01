@@ -19,7 +19,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             (_client, _properties) = clientFactory.Get(typeof(T).Name);
             _logger = logger;
         }
-        private async Task<TReponse> ExecuteAsync<TReponse>(TKey key, RepositoryMethod method, Func<Task<TReponse>> action)
+        private async Task<TReponse> ExecuteAsync<TReponse>(TKey key, RepositoryMethods method, Func<Task<TReponse>> action)
         {
             if (_logger != null)
             {
@@ -41,7 +41,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 return await action();
         }
         public Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
-            => ExecuteAsync(key, RepositoryMethod.Delete, async () =>
+            => ExecuteAsync(key, RepositoryMethods.Delete, async () =>
             {
                 var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
                 return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent);
@@ -49,14 +49,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
 
 
         public Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
-            => ExecuteAsync(key, RepositoryMethod.Exist, async () =>
+            => ExecuteAsync(key, RepositoryMethods.Exist, async () =>
                 {
                     var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
                     return new State<T>(response.StatusCode == HttpStatusCode.OK);
                 });
 
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
-        => ExecuteAsync(key, RepositoryMethod.Get, async () =>
+        => ExecuteAsync(key, RepositoryMethods.Get, async () =>
             {
                 var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -65,7 +65,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                     return default;
             });
         public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
-            => ExecuteAsync(key, RepositoryMethod.Insert, async () =>
+            => ExecuteAsync(key, RepositoryMethods.Insert, async () =>
             {
                 var flexible = new ExpandoObject();
                 flexible.TryAdd("id", key.ToString());
@@ -76,7 +76,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             });
 
         public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
-            => ExecuteAsync(default!, RepositoryMethod.Query, async () =>
+            => ExecuteAsync(default!, RepositoryMethods.Query, async () =>
             {
                 IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
                 if (options?.Predicate != null)
@@ -110,7 +110,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 return items.Select(x => x);
             });
         public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
-            => ExecuteAsync<long>(default!, RepositoryMethod.Count, async () =>
+            => ExecuteAsync<long>(default!, RepositoryMethods.Count, async () =>
             {
                 IQueryable<T> queryable = _client.GetItemLinqQueryable<T>();
                 if (options?.Predicate != null)
@@ -144,7 +144,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 return items.Count;
             });
         public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
-            => ExecuteAsync(key, RepositoryMethod.Update, async () =>
+            => ExecuteAsync(key, RepositoryMethods.Update, async () =>
             {
                 var flexible = new ExpandoObject();
                 flexible.TryAdd("id", key.ToString());

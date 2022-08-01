@@ -26,7 +26,7 @@ namespace RepositoryFramework
         /// Set policies for a specific repository method.
         /// </summary>
         /// <returns>IEndpointRouteBuilder</returns>
-        public ApiAuthorizationPolicy SetPolicy(RepositoryMethod method)
+        public ApiAuthorizationPolicy SetPolicy(RepositoryMethods method)
         {
             Authorization.Policies.Add(method, Array.Empty<string>());
             return new ApiAuthorizationPolicy(method, this);
@@ -37,8 +37,8 @@ namespace RepositoryFramework
         /// <returns>ApiAuthorizationPolicy</returns>
         public ApiAuthorizationPolicy SetPolicyForAll()
         {
-            Authorization.Policies.Add(RepositoryMethod.All, Array.Empty<string>());
-            return new ApiAuthorizationPolicy(RepositoryMethod.All, this);
+            Authorization.Policies.Add(RepositoryMethods.All, Array.Empty<string>());
+            return new ApiAuthorizationPolicy(RepositoryMethods.All, this);
         }
         /// <summary>
         /// Confirm the authorization policies created till now.

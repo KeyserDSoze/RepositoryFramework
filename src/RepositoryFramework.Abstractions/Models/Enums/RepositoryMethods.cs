@@ -4,7 +4,7 @@
     /// Mapping for methods in repository pattern or CQRS.
     /// </summary>
     [Flags]
-    public enum RepositoryMethod
+    public enum RepositoryMethods
     {
         Insert = 1,
         Update = 2,

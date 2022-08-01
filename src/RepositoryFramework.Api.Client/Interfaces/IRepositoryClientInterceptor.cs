@@ -5,6 +5,6 @@
     /// </summary>
     public interface IRepositoryClientInterceptor
     {
-        Task<HttpClient> EnrichAsync(HttpClient client, RepositoryMethod path);
+        Task<HttpClient> EnrichAsync(HttpClient client, RepositoryMethods path);
     }
 }
