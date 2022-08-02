@@ -50,7 +50,7 @@ namespace RepositoryFramework.UnitTest
                 await _repo.DeleteAsync(new CountryKey(country.Id, country.Abbreviation!));
             }
             countries = await _repo.QueryAsync().NoContext();
-            Assert.Equal(NumberOfEntries, countries.Count);
+            Assert.Equal(NumberOfEntries, countries.Count());
             await Task.Delay(10_000);
             countries = await _repo.QueryAsync().NoContext();
             Assert.Empty(countries);

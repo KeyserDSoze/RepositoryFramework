@@ -129,7 +129,7 @@ namespace RepositoryFramework.InMemory
                     return InMemoryStorage<T, TKey>.SetState(false);
             }, cancellationToken);
 
-        public async Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Query);
             await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
@@ -152,7 +152,7 @@ namespace RepositoryFramework.InMemory
             else
                 throw new TaskCanceledException();
         }
-        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Count);
             await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();

@@ -13,9 +13,9 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             throw new NotImplementedException();
         }
 
-        public Task<long> CountAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<long> CountAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult((long)_dic.Count);
+            return ValueTask.FromResult((long)_dic.Count);
         }
 
         public async Task<State<ClassAnimal>> DeleteAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
@@ -61,7 +61,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             return false;
         }
 
-        public Task<List<ClassAnimal>> QueryAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<ClassAnimal>> QueryAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
         {
             return default!;
         }

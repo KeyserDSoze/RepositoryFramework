@@ -19,7 +19,7 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
             throw new NotImplementedException();
         }
 
-        public Task<long> CountAsync(QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<long> CountAsync(QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -44,9 +44,9 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
             throw new NotImplementedException();
         }
 
-        public Task<List<Animal>> QueryAsync(QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<Animal>> QueryAsync(QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(_database.Animals.Select(x => x.Value).Filter(options).ToList());
+            return Task.FromResult(_database.Animals.Select(x => x.Value).Filter(options).AsEnumerable());
         }
 
         public Task<State<Animal>> UpdateAsync(int key, Animal value, CancellationToken cancellationToken = default)

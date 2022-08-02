@@ -37,7 +37,7 @@ namespace RepositoryFramework
     }
     public class UserReader : IQueryPattern<User, string>
     {
-        public Task<long> CountAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<long> CountAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -52,7 +52,7 @@ namespace RepositoryFramework
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<List<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
             //get a list of items by a predicate with top and skip from DB or storage context
             throw new NotImplementedException();
@@ -82,10 +82,10 @@ namespace RepositoryFramework
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "Test purpose.")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Test purpose.")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Test purpose.")]
         public Task<IEnumerable<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
+            if (cancellationToken.IsCancellationRequested)
+                return Task.FromResult(default(IEnumerable<User>)!);
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
             var x = options?.Predicate!.ToString();
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
@@ -98,17 +98,12 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
 
-        public Task<long> CountAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<long> CountAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
         public Task<BatchResults<User, string>> BatchAsync(BatchOperations<User, string> operations, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<List<User>> IQueryPattern<User, string>.QueryAsync(QueryOptions<User>? options, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

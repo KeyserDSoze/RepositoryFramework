@@ -22,9 +22,9 @@
         public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.InsertAsync(key, value, cancellationToken);
 
-        public Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
             => _repository.QueryAsync(options, cancellationToken);
-        public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
            => _repository.CountAsync(options, cancellationToken);
 
         public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)

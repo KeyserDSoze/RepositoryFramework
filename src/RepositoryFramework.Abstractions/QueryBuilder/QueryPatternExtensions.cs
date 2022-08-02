@@ -130,6 +130,8 @@ namespace System.Linq
         /// <summary>
         /// Starting from page 1 you may page your query.
         /// </summary>
+        /// <typeparam name="T">Model used for your repository.</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="page">Page of your request, starting from 1.</param>
         /// <param name="pageSize">Number of elements for page. Minimum value is 1.</param>
         /// <param name="cancellationToken"></param>
@@ -141,5 +143,17 @@ namespace System.Linq
             where TKey : notnull
             
            => new QueryBuilder<T, TKey>(entity).PageAsync(page, pageSize, cancellationToken);
+        /// <summary>
+        /// List the query.
+        /// </summary>
+        /// <typeparam name="T">Model used for your repository.</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
+        /// <param name="cancellationToken"></param>
+        /// <returns>List<<typeparamref name="T"/>></returns>
+        public static Task<List<T>> ToListAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
+            CancellationToken cancellationToken = default)
+            where TKey : notnull
+
+           => new QueryBuilder<T, TKey>(entity).ToListAsync(cancellationToken);
     }
 }

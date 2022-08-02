@@ -41,7 +41,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return new(response.Value != null, value);
         }
 
-        public async Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             List<T> items = new();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
@@ -61,7 +61,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return new(response.Value != null, value);
         }
 
-        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             List<T> items = new();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))

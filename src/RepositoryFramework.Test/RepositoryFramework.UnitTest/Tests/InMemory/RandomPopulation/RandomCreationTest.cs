@@ -223,7 +223,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
         {
             var all = await _population.OrderBy(x => x.Id).QueryAsync().NoContext();
             var theFirst = all.First();
-            Assert.Equal(90, all.Count);
+            Assert.Equal(90, all.Count());
             Assert.Equal(0, all.First().Id);
             Assert.Equal(89, all.Last().Id);
             Assert.NotEqual(0, theFirst.A);

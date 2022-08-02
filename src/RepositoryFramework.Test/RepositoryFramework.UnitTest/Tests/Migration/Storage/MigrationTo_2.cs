@@ -35,15 +35,15 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<SuperMigrationUser>(true));
         }
 
-        public Task<List<SuperMigrationUser>> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<SuperMigrationUser>> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
             var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult(users.ToList());
+            return Task.FromResult(users.AsEnumerable());
         }
-        public Task<long> CountAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<long> CountAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
             var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult((long)users.Count());
+            return ValueTask.FromResult((long)users.Count());
         }
         public Task<State<SuperMigrationUser>> UpdateAsync(string key, SuperMigrationUser value, CancellationToken cancellationToken = default)
         {

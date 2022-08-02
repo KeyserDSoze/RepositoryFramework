@@ -35,15 +35,15 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<MigrationUser>(true));
         }
 
-        public Task<List<MigrationUser>> QueryAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<MigrationUser>> QueryAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
             var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult(users.ToList());
+            return Task.FromResult(users.AsEnumerable());
         }
-        public Task<long> CountAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<long> CountAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
             var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult((long)users.Count());
+            return ValueTask.FromResult((long)users.Count());
         }
         public Task<State<MigrationUser>> UpdateAsync(string key, MigrationUser value, CancellationToken cancellationToken = default)
         {

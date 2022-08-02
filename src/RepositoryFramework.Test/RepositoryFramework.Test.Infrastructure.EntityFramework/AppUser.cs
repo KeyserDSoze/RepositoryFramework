@@ -35,7 +35,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             return results;
         }
 
-        public async Task<long> CountAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<long> CountAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
         {
             return await _context.Users.Filter(options?
                 .Translate<User>()
@@ -87,7 +87,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             };
         }
 
-        public async Task<List<AppUser>> QueryAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<AppUser>> QueryAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
         {
             return (await _context.Users.
                 FilterAsAsyncEnumerable(options?
@@ -96,7 +96,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
                 .With(x => x.Username, x => x.Nome)
                 .With(x => x.Email, x => x.IndirizzoElettronico))
                 .ToListAsync(cancellationToken))
-                .Select(x => new AppUser(x.Identificativo, x.Nome, x.IndirizzoElettronico, new())).ToList();
+                .Select(x => new AppUser(x.Identificativo, x.Nome, x.IndirizzoElettronico, new()));
         }
 
         public async Task<State<AppUser>> UpdateAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)

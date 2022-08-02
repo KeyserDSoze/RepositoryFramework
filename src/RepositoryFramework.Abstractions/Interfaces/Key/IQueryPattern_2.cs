@@ -11,7 +11,7 @@
     {
         Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
-        Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
+        ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
     }
 }

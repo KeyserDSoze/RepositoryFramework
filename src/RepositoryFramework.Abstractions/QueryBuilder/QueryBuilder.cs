@@ -147,7 +147,25 @@ namespace RepositoryFramework
             long pages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
             return new Page<T>(query, count, pages);
         }
-        public Task<List<T>> QueryAsync(CancellationToken cancellationToken = default)
+        /// <summary>
+        /// List the query.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>List<<typeparamref name="T"/>></returns>
+        public async Task<List<T>> ToListAsync(CancellationToken cancellationToken = default)
+        {
+            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
+            if (query is List<T> list)
+                return list;
+            else
+                return query.ToList();
+        }
+        /// <summary>
+        /// Call query method in your Repository.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>IEnumerable<<typeparamref name="T"/>></returns>
+        public Task<IEnumerable<T>> QueryAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_options, cancellationToken);
     }
 }

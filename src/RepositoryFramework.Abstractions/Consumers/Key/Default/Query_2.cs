@@ -16,9 +16,9 @@
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.GetAsync(key, cancellationToken);
 
-        public Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
             => _query.QueryAsync(options, cancellationToken);
-        public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
             => _query.CountAsync(options, cancellationToken);
     }
 }

@@ -66,7 +66,8 @@
         {
             string keyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Exist)}_{_cacheName}");
             var value = await RetrieveValueAsync(RepositoryMethods.Exist, keyAsString,
-                () => _query.ExistAsync(key, cancellationToken)!, cancellationToken).NoContext();
+                () => _query.ExistAsync(key, cancellationToken)!,
+                null, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
@@ -81,7 +82,8 @@
         {
             string keyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Get)}_{_cacheName}");
             var value = await RetrieveValueAsync<T?>(RepositoryMethods.Get, keyAsString,
-                () => _query.GetAsync(key, cancellationToken), cancellationToken).NoContext();
+                () => _query.GetAsync(key, cancellationToken),
+                null, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
@@ -92,12 +94,13 @@
             return value.Response;
         }
 
-        public async Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             string keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
 
             var value = await RetrieveValueAsync(RepositoryMethods.Query, keyAsString,
-                () => _query.QueryAsync(options, cancellationToken)!, cancellationToken).NoContext();
+                () => _query.QueryAsync(options, cancellationToken)!,
+                null, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response.ToList(), value.Source,
@@ -107,11 +110,12 @@
 
             return value.Response ?? new List<T>();
         }
-        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             string keyAsString = $"{nameof(RepositoryMethods.Count)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
 
-            var value = await RetrieveValueAsync(RepositoryMethods.Count, keyAsString,
+            var value = await RetrieveValueAsync(RepositoryMethods.Count, keyAsString, 
+                null,
                 () => _query.CountAsync(options, cancellationToken)!, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
@@ -131,7 +135,12 @@
                 cacheSaverTasks.Add(_distributed.SetAsync(key, response, _distributedCacheOptions, cancellationToken));
             return Task.WhenAll(cacheSaverTasks);
         }
-        private async Task<(Source Source, TValue? Response)> RetrieveValueAsync<TValue>(RepositoryMethods method, string key, Func<Task<TValue?>> action, CancellationToken cancellationToken)
+        private async Task<(Source Source, TValue? Response)> RetrieveValueAsync<TValue>(
+            RepositoryMethods method,
+            string key,
+            Func<Task<TValue?>>? action,
+            Func<ValueTask<TValue?>>? actionFromValueTask,
+            CancellationToken cancellationToken)
         {
             if (_cache != null && _cacheOptions.HasCache(method))
             {
@@ -145,11 +154,11 @@
                 if (IsPresent)
                     return (Source.Distributed, Response);
             }
-            return (Source.Repository, await action.Invoke().NoContext());
+            return (Source.Repository, 
+                action == null ? 
+                await actionFromValueTask!.Invoke().NoContext() : 
+                await action.Invoke().NoContext());
         }
-
-
-
         private enum Source
         {
             InMemory,

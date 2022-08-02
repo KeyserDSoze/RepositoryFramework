@@ -42,7 +42,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
-        public async Task<List<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             List<T> entities = new();
             await foreach (var item in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
@@ -52,7 +52,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             var results = entities.Filter(options).ToList();
             return results;
         }
-        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             List<T> entities = new();
             await foreach (var item in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
