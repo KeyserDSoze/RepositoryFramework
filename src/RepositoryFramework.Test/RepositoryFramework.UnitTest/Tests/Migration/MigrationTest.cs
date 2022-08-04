@@ -50,8 +50,8 @@ namespace RepositoryFramework.UnitTest.Migration
             {
                 case 1:
                     migrationResult = await _migrationService1.MigrateAsync(x => x.Id!, true).NoContext();
-                    Assert.Equal(4, (await _repository1.QueryAsync().NoContext()).Count());
-                    foreach (var user in await _from1.QueryAsync().NoContext())
+                    Assert.Equal(4, (await _repository1.QueryAsync().ToListAsync().NoContext()).Count);
+                    await foreach (var user in _from1.QueryAsync())
                     {
                         Assert.True(await _repository1.ExistAsync(user.Id!).NoContext());
                         var newUser = await _repository1.GetAsync(user.Id!).NoContext();
@@ -63,8 +63,8 @@ namespace RepositoryFramework.UnitTest.Migration
                     break;
                 case 2:
                     migrationResult = await _migrationService2.MigrateAsync(x => x.Id!, true).NoContext();
-                    Assert.Equal(4, (await _repository2.QueryAsync().NoContext()).Count());
-                    foreach (var user in await _from2.QueryAsync().NoContext())
+                    Assert.Equal(4, (await _repository2.QueryAsync().ToListAsync().NoContext()).Count);
+                    await foreach (var user in _from2.QueryAsync())
                     {
                         Assert.True(await _repository2.ExistAsync(user.Id!).NoContext());
                         var newUser = await _repository2.GetAsync(user.Id!).NoContext();

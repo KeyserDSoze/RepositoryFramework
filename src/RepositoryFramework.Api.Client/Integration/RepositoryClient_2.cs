@@ -1,4 +1,6 @@
-﻿using System.Net.Http.Json;
+﻿using System.Linq.Expressions;
+using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace RepositoryFramework.Api.Client
@@ -54,17 +56,27 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response!.Content.ReadFromJsonAsync<State<T>>(cancellationToken: cancellationToken).NoContext())!;
         }
-        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Query).NoContext();
             var query = $"{nameof(RepositoryMethods.Query)}{options?.ToQuery()}";
-            return (await client.GetFromJsonAsync<List<T>>(query, cancellationToken).NoContext())!;
+            var response = await client.GetFromJsonAsync<List<T>>(query, cancellationToken).NoContext();
+            if (response != null)
+                foreach (var item in response)
+                    if (!cancellationToken.IsCancellationRequested)
+                        yield return item;
         }
-        public async ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        private const string LogicAnd = "&";
+        private const string LogicQuery = "?";
+        public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<T>? options = null, Expression<Func<T, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethods.Count).NoContext();
-            var query = $"{nameof(RepositoryMethods.Count)}{options?.ToQuery()}";
-            return (await client.GetFromJsonAsync<long>(query, cancellationToken).NoContext())!;
+            var client = await EnrichedClientAsync(RepositoryMethods.Operation).NoContext();
+            string querystring = options?.ToQuery() ?? string.Empty;
+            if (aggregateExpression != null)
+                querystring = $"{querystring}{(!string.IsNullOrEmpty(querystring) ? LogicAnd : LogicQuery)}aggr={aggregateExpression.Serialize()}";
+            var query = $"{nameof(RepositoryMethods.Operation)}{querystring}";
+            return (await client.GetFromJsonAsync<TProperty>(query, cancellationToken).NoContext())!;
         }
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {

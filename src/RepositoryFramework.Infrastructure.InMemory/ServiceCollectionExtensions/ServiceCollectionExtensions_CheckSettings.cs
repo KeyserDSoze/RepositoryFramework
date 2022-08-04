@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Check(settings.Get(RepositoryMethods.Get).ExceptionOdds);
             Check(settings.Get(RepositoryMethods.Query).ExceptionOdds);
             Check(settings.Get(RepositoryMethods.Exist).ExceptionOdds);
-            Check(settings.Get(RepositoryMethods.Count).ExceptionOdds);
+            Check(settings.Get(RepositoryMethods.Operation).ExceptionOdds);
             Check(settings.Get(RepositoryMethods.All).ExceptionOdds);
 
             static void Check(List<ExceptionOdds> odds)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,9 +14,16 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             throw new NotImplementedException();
         }
 
-        public ValueTask<long> CountAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(
+         OperationType<TProperty> operation,
+         QueryOptions<ClassAnimal>? options = null,
+         Expression<Func<ClassAnimal, TProperty>>? aggregateExpression = null,
+         CancellationToken cancellationToken = default)
         {
-            return ValueTask.FromResult((long)_dic.Count);
+            if (operation.Type == Operations.Count)
+                return ValueTask.FromResult((TProperty)(object)_dic.Count);
+            else
+                throw new NotImplementedException();
         }
 
         public async Task<State<ClassAnimal>> DeleteAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
@@ -61,10 +69,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             return false;
         }
 
-        public Task<IEnumerable<ClassAnimal>> QueryAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
-        {
-            return default!;
-        }
+       
 
         public async Task<State<ClassAnimal>> UpdateAsync(ClassAnimalKey key, ClassAnimal value, CancellationToken cancellationToken = default)
         {
@@ -75,6 +80,11 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
                 return true;
             }
             return false;
+        }
+
+        public IAsyncEnumerable<ClassAnimal> QueryAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

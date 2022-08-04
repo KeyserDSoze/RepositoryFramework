@@ -37,11 +37,6 @@ namespace RepositoryFramework
     }
     public class UserReader : IQueryPattern<User, string>
     {
-        public ValueTask<long> CountAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<State<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
@@ -52,9 +47,14 @@ namespace RepositoryFramework
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IEnumerable<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
+
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<User>? options = null, Expression<Func<User, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
         {
-            //get a list of items by a predicate with top and skip from DB or storage context
+            throw new NotImplementedException();
+        }
+
+        public IAsyncEnumerable<User> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
+        {
             throw new NotImplementedException();
         }
     }
@@ -81,29 +81,21 @@ namespace RepositoryFramework
             throw new NotImplementedException();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "Test purpose.")]
-        public Task<IEnumerable<User>> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
-        {
-            if (cancellationToken.IsCancellationRequested)
-                return Task.FromResult(default(IEnumerable<User>)!);
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            var x = options?.Predicate!.ToString();
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-            //get a list of items by a predicate with top and skip from DB or storage context
-            throw new NotImplementedException();
-        }
-
         public Task<State<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
-
-        public ValueTask<long> CountAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
+        public Task<BatchResults<User, string>> BatchAsync(BatchOperations<User, string> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<BatchResults<User, string>> BatchAsync(BatchOperations<User, string> operations, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<User> QueryAsync(QueryOptions<User>? options = null, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<User>? options = null, Expression<Func<User, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

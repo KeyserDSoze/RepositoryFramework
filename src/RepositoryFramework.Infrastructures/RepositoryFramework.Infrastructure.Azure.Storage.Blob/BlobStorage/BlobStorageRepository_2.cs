@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
@@ -41,17 +42,21 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return new(response.Value != null, value);
         }
 
-        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            List<T> items = new();
+            Func<T, bool> predicate = x => true;
+            if (options?.Predicate != null)
+                predicate = options.Predicate.Compile();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
             {
                 var blobClient = _client.GetBlobClient(blob.Name);
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
-                items.Add(JsonSerializer.Deserialize<T>(blobData.Value.Content)!);
+                var item = JsonSerializer.Deserialize<T>(blobData.Value.Content)!;
+                if (!predicate.Invoke(item))
+                    continue;
+                yield return item;
             }
-            var results = items.Filter(options).ToList();
-            return results;
         }
 
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
@@ -61,17 +66,22 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return new(response.Value != null, value);
         }
 
-        public async ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<TProperty> OperationAsync<TProperty>(
+         OperationType<TProperty> operation,
+         QueryOptions<T>? options = null,
+         Expression<Func<T, TProperty>>? aggregateExpression = null,
+         CancellationToken cancellationToken = default)
         {
             List<T> items = new();
-            await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
-            {
-                var blobClient = _client.GetBlobClient(blob.Name);
-                var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
-                items.Add(JsonSerializer.Deserialize<T>(blobData.Value.Content)!);
-            }
-            IEnumerable<T> results = items.Filter(options).AsEnumerable();
-            return results.Count();
+            await foreach (var item in QueryAsync(options, cancellationToken))
+                items.Add(item);
+
+            return (await operation.ExecuteAsync(
+                () => items.Count,
+                null!,
+                () => items.Select(aggregateExpression.Compile()).Max(),
+                () => items.Select(aggregateExpression.Compile()).Min(),
+                null!))!;
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {

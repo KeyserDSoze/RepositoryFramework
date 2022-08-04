@@ -1,4 +1,7 @@
-﻿namespace RepositoryFramework.Cache
+﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+
+namespace RepositoryFramework.Cache
 {
     internal class CachedQuery<T, TKey> : IQuery<T, TKey>
          where TKey : notnull
@@ -93,30 +96,42 @@
 
             return value.Response;
         }
-
-        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        private static readonly List<T> Empty = new();
+        public async IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            string keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
+            string keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{(options != null ? string.Join("_", options.Orders.Select(x => $"{x.Order.Serialize()}_{x.ThenBy}_{x.IsAscending}")) : string.Empty)}";
 
             var value = await RetrieveValueAsync(RepositoryMethods.Query, keyAsString,
-                () => _query.QueryAsync(options, cancellationToken)!,
+                async () =>
+                {
+                    List<T> items = new();
+                    await foreach (var item in _query.QueryAsync(options, cancellationToken)!)
+                        items.Add(item);
+                    return items;
+                },
                 null, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
-                await SaveOnCacheAsync(keyAsString, value.Response.ToList(), value.Source,
+                await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
                     _cacheOptions.HasCache(RepositoryMethods.Query),
                     _distributedCacheOptions.HasCache(RepositoryMethods.Query),
                     cancellationToken).NoContext();
 
-            return value.Response ?? new List<T>();
+            foreach (var item in value.Response ?? Empty)
+                yield return item;
         }
-        public async ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<TProperty> OperationAsync<TProperty>(
+            OperationType<TProperty> operation,
+            QueryOptions<T>? options = null,
+            Expression<Func<T, TProperty>>? aggregateExpression = null,
+            CancellationToken cancellationToken = default)
         {
-            string keyAsString = $"{nameof(RepositoryMethods.Count)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{options?.Order}_{options?.IsAscending}";
+            string keyAsString = $"{nameof(RepositoryMethods.Operation)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{(options != null ? string.Join("_", options.Orders.Select(x => $"{x.Order.Serialize()}_{x.ThenBy}_{x.IsAscending}")) : string.Empty)}_{aggregateExpression?.Serialize()}";
 
-            var value = await RetrieveValueAsync(RepositoryMethods.Count, keyAsString, 
+            var value = await RetrieveValueAsync(RepositoryMethods.Operation, keyAsString,
                 null,
-                () => _query.CountAsync(options, cancellationToken)!, cancellationToken).NoContext();
+                () => _query.OperationAsync(operation, options, aggregateExpression, cancellationToken)!, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
@@ -154,9 +169,9 @@
                 if (IsPresent)
                     return (Source.Distributed, Response);
             }
-            return (Source.Repository, 
-                action == null ? 
-                await actionFromValueTask!.Invoke().NoContext() : 
+            return (Source.Repository,
+                action == null ?
+                await actionFromValueTask!.Invoke().NoContext() :
                 await action.Invoke().NoContext());
         }
         private enum Source

@@ -35,16 +35,12 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<MigrationUser>(true));
         }
 
-        public Task<IEnumerable<MigrationUser>> QueryAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<MigrationUser> QueryAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
             var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult(users.AsEnumerable());
+            return users.ToAsyncEnumerable();
         }
-        public ValueTask<long> CountAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
-        {
-            var users = _users.Select(x => x.Value).Filter(options);
-            return ValueTask.FromResult((long)users.Count());
-        }
+       
         public Task<State<MigrationUser>> UpdateAsync(string key, MigrationUser value, CancellationToken cancellationToken = default)
         {
             _users[key] = value;
@@ -52,6 +48,11 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
         }
 
         public Task<BatchResults<MigrationUser, string>> BatchAsync(BatchOperations<MigrationUser, string> operations, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<MigrationUser>? options = null, System.Linq.Expressions.Expression<Func<MigrationUser, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace RepositoryFramework.InMemory
@@ -129,7 +131,8 @@ namespace RepositoryFramework.InMemory
                     return InMemoryStorage<T, TKey>.SetState(false);
             }, cancellationToken);
 
-        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null,
+             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Query);
             await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
@@ -141,20 +144,24 @@ namespace RepositoryFramework.InMemory
                     await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken).NoContext();
                     throw exception;
                 }
-                if (!cancellationToken.IsCancellationRequested)
+                foreach (var item in Values.Filter(options))
                 {
-                    var values = Values.Filter(options).ToList();
-                    return values;
+                    if (!cancellationToken.IsCancellationRequested)
+                        yield return item;
+                    else
+                        throw new TaskCanceledException();
                 }
-                else
-                    throw new TaskCanceledException();
             }
             else
                 throw new TaskCanceledException();
         }
-        public async ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<TProperty> OperationAsync<TProperty>(
+           OperationType<TProperty> operation,
+           QueryOptions<T>? options = null,
+           Expression<Func<T, TProperty>>? aggregateExpression = null,
+           CancellationToken cancellationToken = default)
         {
-            var settings = _settings.Get(RepositoryMethods.Count);
+            var settings = _settings.Get(RepositoryMethods.Operation);
             await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
             if (!cancellationToken.IsCancellationRequested)
             {
@@ -166,8 +173,12 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    IEnumerable<T> values = Values.Filter(options);
-                    return values.Count();
+                    return (await operation.ExecuteAsync(
+                        () => ValueTask.FromResult((TProperty)Convert.ChangeType(Values.Filter(options).Count(), typeof(TProperty))),
+                        () => ValueTask.FromResult((TProperty)(object)Values.Filter(options).Sum((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x))),
+                        () => ValueTask.FromResult((TProperty)(object)Values.Filter(options).Max((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x))),
+                        () => ValueTask.FromResult((TProperty)(object)Values.Filter(options).Min((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x))),
+                        () => ValueTask.FromResult((TProperty)(object)Values.Filter(options).Average((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x)))))!;
                 }
                 else
                     throw new TaskCanceledException();

@@ -81,9 +81,9 @@ Welcome to your new app.
     {
         var user = new User("@gmail.com");
 
-        Users1 = await UserClient1.Where(x => x.Email != "").OrderByDescending(x => x.Name!).QueryAsync().NoContext();
-        Users2 = await UserClient2.Where(x => x.Email!.Contains(user.Email!) && x.IsAdmin && x.GroupId.Equals(Alfa)).QueryAsync().NoContext();
-        Users3 = await UserClient3.Where(x => x.Port > X && x.IsAdmin).QueryAsync().NoContext();
+        Users1 = await UserClient1.Where(x => x.Email != "").OrderByDescending(x => x.Name!).QueryAsync().ToListAsync().NoContext();
+        Users2 = await UserClient2.Where(x => x.Email!.Contains(user.Email!) && x.IsAdmin && x.GroupId.Equals(Alfa)).QueryAsync().ToListAsync().NoContext();
+        Users3 = await UserClient3.Where(x => x.Port > X && x.IsAdmin).QueryAsync().ToListAsync().NoContext();
         var order = $"x => x.Id".Deserialize<IperUser, object>();
         Users4 = await UserClient3.OrderByDescending(order).PageAsync(7, 20).NoContext();
         var key = new AnimalKey("a", 2, Guid.NewGuid());
@@ -93,15 +93,15 @@ Welcome to your new app.
         await AnimalClient.DeleteAsync(key);
         exist = await AnimalClient.ExistAsync(key);
         await AnimalClient.InsertAsync(new AnimalKey("b", 2, Guid.NewGuid()), new Animal { Id = 2, Name = "Rosario" });
-        Animals = await AnimalClient.QueryAsync();
+        Animals = await AnimalClient.QueryAsync().ToListAsync();
         await CarClient.InsertAsync(Guid.NewGuid(), new Car { Id = Guid.NewGuid(), Name = "a" });
         await CarClient.InsertAsync(Guid.NewGuid(), new Car { Id = Guid.NewGuid(), Name = "a2" });
         await CarClient.InsertAsync(Guid.NewGuid(), new Car { Id = Guid.NewGuid(), Name = "a3" });
-        Cars = await CarClient.QueryAsync();
+        Cars = await CarClient.QueryAsync().ToListAsync();
         await CarClient2.InsertAsync(new Range(1, 3), new Car2 { Id = Guid.NewGuid(), Name = "a" });
         await CarClient2.InsertAsync(new Range(1, 4), new Car2 { Id = Guid.NewGuid(), Name = "a2" });
         await CarClient2.InsertAsync(new Range(1, 5), new Car2 { Id = Guid.NewGuid(), Name = "a3" });
-        Cars2 = await CarClient2.QueryAsync();
+        Cars2 = await CarClient2.QueryAsync().ToListAsync();
         await base.OnParametersSetAsync().NoContext();
     }
     private async Task AddInBatchSomething()

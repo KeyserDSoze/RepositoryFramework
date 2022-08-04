@@ -71,10 +71,10 @@ namespace RepositoryFramework.UnitTest.InMemory.Population
             switch (numberOfParameters)
             {
                 case 1:
-                    users = await _user1.QueryAsync().NoContext();
+                    users = await _user1.QueryAsync().ToListAsync().NoContext();
                     break;
                 case 2:
-                    users = await _user2.QueryAsync().NoContext();
+                    users = await _user2.QueryAsync().ToListAsync().NoContext();
                     break;
             }
             Assert.Equal(100, users.Count());

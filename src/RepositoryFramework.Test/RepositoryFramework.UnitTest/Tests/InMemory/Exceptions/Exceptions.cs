@@ -52,7 +52,7 @@ namespace RepositoryFramework.UnitTest.InMemory.Exceptions
         {
             try
             {
-                var cars = await _car.QueryAsync().NoContext();
+                var cars = await _car.QueryAsync().ToListAsync().NoContext();
                 Assert.True(false);
                 Assert.Empty(cars);
             }

@@ -1,4 +1,6 @@
-﻿namespace RepositoryFramework
+﻿using System.Linq.Expressions;
+
+namespace RepositoryFramework
 {
     /// <summary>
     /// Interface for your CQRS pattern, with Get, Query, Count and Exist methods.
@@ -11,7 +13,7 @@
     {
         Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
-        Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
-        ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default);
+        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<T>? options = null, Expression<Func<T, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default);
     }
 }

@@ -2,8 +2,10 @@
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Logging;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
 {
@@ -47,46 +49,33 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
         }
 
-        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             IQueryable<T> queryable = _client.GetItemLinqQueryable<T>().Filter(options);
 
-            List<T> items = new();
-            using (FeedIterator<T> iterator = queryable.ToFeedIterator())
+            using FeedIterator<T> iterator = queryable.ToFeedIterator();
+            while (iterator.HasMoreResults)
             {
-                while (iterator.HasMoreResults)
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        return items;
-                    foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
-                    {
-                        items.Add(item);
-                        if (cancellationToken.IsCancellationRequested)
-                            return items;
-                    }
-                }
+                if (cancellationToken.IsCancellationRequested)
+                    break;
+                foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
+                    yield return item;
             }
-            return items;
         }
-        public async ValueTask<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
+            QueryOptions<T>? options = null,
+            Expression<Func<T, TProperty>>? aggregateExpression = null,
+            CancellationToken cancellationToken = default)
         {
             IQueryable<T> queryable = _client.GetItemLinqQueryable<T>().Filter(options);
-            List<T> items = new();
-            using (FeedIterator<T> iterator = queryable.ToFeedIterator())
-            {
-                while (iterator.HasMoreResults)
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        return items.Count;
-                    foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
-                    {
-                        items.Add(item);
-                        if (cancellationToken.IsCancellationRequested)
-                            return items.Count;
-                    }
-                }
-            }
-            return items.Count;
+            return operation.ExecuteAsync(
+                () => queryable.CountAsync(cancellationToken),
+                () => queryable.Sum(x => (decimal)(object)aggregateExpression!.Compile().Invoke(x)!),
+                async () => (await queryable.Select(aggregateExpression!).AsQueryable().MaxAsync(cancellationToken).NoContext()).Resource,
+                async () => (await queryable.Select(aggregateExpression!).AsQueryable().MinAsync(cancellationToken).NoContext()).Resource,
+                () => queryable.Average(x => (decimal)(object)aggregateExpression!.Compile().Invoke(x)!)
+                );
         }
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {

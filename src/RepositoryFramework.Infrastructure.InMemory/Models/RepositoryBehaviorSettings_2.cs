@@ -33,7 +33,7 @@
             Add(RepositoryMethods.Get, setting);
             Add(RepositoryMethods.Query, setting);
             Add(RepositoryMethods.Exist, setting);
-            Add(RepositoryMethods.Count, setting);
+            Add(RepositoryMethods.Operation, setting);
         }
         public void AddForInsert(MethodBehaviorSetting setting)
             => Add(RepositoryMethods.Insert, setting);
@@ -50,7 +50,7 @@
         public void AddForExist(MethodBehaviorSetting setting)
             => Add(RepositoryMethods.Exist, setting);
         public void AddForCount(MethodBehaviorSetting setting)
-            => Add(RepositoryMethods.Count, setting);
+            => Add(RepositoryMethods.Operation, setting);
         public MethodBehaviorSetting Get(RepositoryMethods method)
         {
             if (_settings.ContainsKey(method))

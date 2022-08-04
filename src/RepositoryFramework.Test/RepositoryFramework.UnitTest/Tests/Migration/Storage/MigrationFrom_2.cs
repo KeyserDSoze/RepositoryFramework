@@ -42,16 +42,12 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<SuperMigrationUser>(true));
         }
 
-        public Task<IEnumerable<SuperMigrationUser>> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<SuperMigrationUser> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
             var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult(users.AsEnumerable());
+            return users.ToAsyncEnumerable();
         }
-        public ValueTask<long> CountAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
-        {
-            var users = _users.Select(x => x.Value).Filter(options);
-            return ValueTask.FromResult((long)users.Count());
-        }
+       
         public Task<State<SuperMigrationUser>> UpdateAsync(string key, SuperMigrationUser value, CancellationToken cancellationToken = default)
         {
             _users[key] = value;
@@ -59,6 +55,11 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
         }
 
         public Task<BatchResults<SuperMigrationUser, string>> BatchAsync(BatchOperations<SuperMigrationUser, string> operations, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<SuperMigrationUser>? options = null, System.Linq.Expressions.Expression<Func<SuperMigrationUser, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

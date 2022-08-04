@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,20 +13,27 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
     {
         private readonly List<Auto> _database = new()
         {
-            new Auto { Identificativo = 5, Targa = "03djkd0", NumeroRuote = 2, Guidatore = new() },
-            new Auto { Identificativo = 1, Targa = "03djks0", NumeroRuote = 4, Guidatore = new() },
-            new Auto { Identificativo = 2, Targa = "03djka0", NumeroRuote = 4, Guidatore = new() },
-            new Auto { Identificativo = 3, Targa = "03djkb0", NumeroRuote = 3, Guidatore = new() },
-            new Auto { Identificativo = 4, Targa = "03djkc0", NumeroRuote = 2, Guidatore = new() },
+            new Auto { Identificativo = 5, Identificativo2 = 5, Targa = "03djkd0", NumeroRuote = 2, Guidatore = new() },
+            new Auto { Identificativo = 1, Identificativo2 = 1, Targa = "03djks0", NumeroRuote = 4, Guidatore = new() },
+            new Auto { Identificativo = 2, Identificativo2 = 2, Targa = "03djka0", NumeroRuote = 4, Guidatore = new() },
+            new Auto { Identificativo = 3, Identificativo2 = 3, Targa = "03djkb0", NumeroRuote = 3, Guidatore = new() },
+            new Auto { Identificativo = 4, Identificativo2 = 4, Targa = "03djkc0", NumeroRuote = 2, Guidatore = new() },
         };
         public Task<BatchResults<Car, int>> BatchAsync(BatchOperations<Car, int> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public ValueTask<long> CountAsync(QueryOptions<Car>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(
+          OperationType<TProperty> operation,
+          QueryOptions<Car>? options = null,
+          Expression<Func<Car, TProperty>>? aggregateExpression = null,
+          CancellationToken cancellationToken = default)
         {
-            return ValueTask.FromResult((long)_database.Count);
+            if (operation.Type == Operations.Count)
+                return ValueTask.FromResult((TProperty)Convert.ChangeType(_database.Count, typeof(TProperty)));
+            else
+                throw new NotImplementedException();
         }
 
         public Task<State<Car>> DeleteAsync(int key, CancellationToken cancellationToken = default)
@@ -47,18 +56,22 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Car>> QueryAsync(QueryOptions<Car>? options = null, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<Car> QueryAsync(QueryOptions<Car>? options = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
+            await Task.Delay(0, cancellationToken);
             var filtered = _database.Filter(
                 options?
                 .Translate<Auto>()
                 .With(x => x.Id, x => x.Identificativo)
+                .With(x => x.Id2, x => x.Identificativo2)
                 .With(x => x.NumberOfWheels, x => x.NumeroRuote)
                 .With(x => x.Plate, x => x.Targa)
                 .With(x => x.Driver, x => x.Guidatore)
                 .With(x => x.Driver!.Name, x => x.Guidatore!.Nome))
                 .ToList();
-            return Task.FromResult(filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }) ?? new List<Car>());
+            foreach (var item in filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }) ?? new List<Car>())
+                yield return item;
         }
 
         public Task<State<Car>> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)

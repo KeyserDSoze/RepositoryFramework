@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,15 +36,24 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<SuperMigrationUser>(true));
         }
 
-        public Task<IEnumerable<SuperMigrationUser>> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<SuperMigrationUser> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
-            var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult(users.AsEnumerable());
+            var users = _users.Select(x => x.Value).FilterAsAsyncEnumerable(options);
+            return users;
         }
-        public ValueTask<long> CountAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(
+          OperationType<TProperty> operation,
+          QueryOptions<SuperMigrationUser>? options = null,
+          Expression<Func<SuperMigrationUser, TProperty>>? aggregateExpression = null,
+          CancellationToken cancellationToken = default)
         {
-            var users = _users.Select(x => x.Value).Filter(options);
-            return ValueTask.FromResult((long)users.Count());
+            if (operation.Type == Operations.Count)
+            {
+                var users = _users.Select(x => x.Value).Filter(options);
+                return ValueTask.FromResult((TProperty)(object)users.Count());
+            }
+            else
+                throw new NotImplementedException();
         }
         public Task<State<SuperMigrationUser>> UpdateAsync(string key, SuperMigrationUser value, CancellationToken cancellationToken = default)
         {

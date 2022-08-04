@@ -15,11 +15,22 @@
             {
                 if (options.Predicate != null)
                     items = items.Where(options.Predicate.Compile());
-                if (options.Order != null)
-                    if (options.IsAscending)
-                        items = items.OrderBy(options.Order.Compile());
+                foreach (var order in options.Orders)
+                    if (!order.ThenBy)
+                    {
+                        if (order.IsAscending)
+                            items = items.OrderBy(order.Order.Compile());
+                        else
+                            items = items.OrderByDescending(order.Order.Compile());
+                    }
                     else
-                        items = items.OrderByDescending(options.Order.Compile());
+                    {
+                        if (items is IOrderedEnumerable<T> ordered)
+                            if (order.IsAscending)
+                                items = ordered.ThenBy(order.Order.Compile());
+                            else
+                                items = ordered.ThenByDescending(order.Order.Compile());
+                    }
                 if (options.Skip != null)
                     items = items.Skip(options.Skip.Value);
                 if (options.Top != null)
@@ -45,24 +56,8 @@
         /// <param name="items">Context.</param>
         /// <param name="options">Query options.</param>
         /// <returns>IAsyncEnumerable<typeparamref name="T"/></returns>
-        public static IAsyncEnumerable<T> FilterAsAsyncEnumerable<T>(this IEnumerable<T> items, QueryOptions<T>? options)
-        {
-            if (options != null)
-            {
-                if (options.Predicate != null)
-                    items = items.Where(options.Predicate.Compile());
-                if (options.Order != null)
-                    if (options.IsAscending)
-                        items = items.OrderBy(options.Order.Compile());
-                    else
-                        items = items.OrderByDescending(options.Order.Compile());
-                if (options.Skip != null)
-                    items = items.Skip(options.Skip.Value);
-                if (options.Top != null)
-                    items = items.Take(options.Top.Value);
-            }
-            return items.ToAsyncEnumerable();
-        }
+        public static IAsyncEnumerable<T> FilterAsAsyncEnumerable<T>(this IEnumerable<T> items, QueryOptions<T>? options) 
+            => items.Filter(options).ToAsyncEnumerable();
         /// <summary>
         /// Help your Dictionary/KeyValuePair context to apply filters. Use in options the Translate method to change the name of the properties.
         /// </summary>
@@ -87,11 +82,22 @@
             {
                 if (options.Predicate != null)
                     items = items.Where(options.Predicate.Compile());
-                if (options.Order != null)
-                    if (options.IsAscending)
-                        items = items.OrderBy(options.Order.Compile());
+                foreach (var order in options.Orders)
+                    if (!order.ThenBy)
+                    {
+                        if (order.IsAscending)
+                            items = items.OrderBy(order.Order.Compile());
+                        else
+                            items = items.OrderByDescending(order.Order.Compile());
+                    }
                     else
-                        items = items.OrderByDescending(options.Order.Compile());
+                    {
+                        if (items is IOrderedAsyncEnumerable<T> ordered)
+                            if (order.IsAscending)
+                                items = ordered.ThenBy(order.Order.Compile());
+                            else
+                                items = ordered.ThenByDescending(order.Order.Compile());
+                    }
                 if (options.Skip != null)
                     items = items.Skip(options.Skip.Value);
                 if (options.Top != null)

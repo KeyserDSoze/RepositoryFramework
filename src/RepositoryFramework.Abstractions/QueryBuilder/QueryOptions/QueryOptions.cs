@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 
 namespace RepositoryFramework
@@ -9,8 +10,7 @@ namespace RepositoryFramework
         public Expression<Func<T, bool>>? Predicate { get; internal set; }
         public int? Top { get; internal set; }
         public int? Skip { get; internal set; }
-        public Expression<Func<T, object>>? Order { get; internal set; }
-        public bool IsAscending { get; internal set; }
+        public List<QueryOrderedOptions<T>> Orders { get; internal set; } = new();
         private const string LogicAnd = "&";
         private const string LogicQuery = "?";
         public string ToQuery()
@@ -26,10 +26,9 @@ namespace RepositoryFramework
                 query.Append($"{AddSeparator()}top={Top}");
             if (Skip != null)
                 query.Append($"{AddSeparator()}skip={Skip}");
-            if (Order != null)
+            foreach (var order in Orders)
             {
-                var orderAsString = Order.Serialize();
-                query.Append($"{AddSeparator()}order={HttpUtility.UrlEncode(orderAsString)}&asc={IsAscending}");
+                query.Append($"{AddSeparator()}{order.QuerystringKey}={HttpUtility.UrlEncode(order.Order.Serialize())}");
             }
 
             return query.ToString();
@@ -49,7 +48,9 @@ namespace RepositoryFramework
             int? top,
             int? skip,
             string? orderAsString,
-            bool? isAscending)
+            string? orderDescendingAsString,
+            string[]? thenByAsString,
+            string[]? thenByDescendingAsString)
         {
             var options = new QueryOptions<T>();
             if (predicateAsString != null)
@@ -57,12 +58,18 @@ namespace RepositoryFramework
             options.Top = top;
             options.Skip = skip;
             if (orderAsString != null)
-                options.Order = orderAsString.Deserialize<T, object>();
-            options.IsAscending = isAscending.HasValue && isAscending.Value;
-
+                options.Orders.Add(new QueryOrderedOptions<T>(orderAsString.Deserialize<T, object>(), true, false));
+            if (orderDescendingAsString != null)
+                options.Orders.Add(new QueryOrderedOptions<T>(orderDescendingAsString.Deserialize<T, object>(), false, false));
+            if (thenByAsString != null)
+                foreach (var thenBy in thenByAsString)
+                    options.Orders.Add(new QueryOrderedOptions<T>(thenBy.Deserialize<T, object>(), true, true));
+            if (thenByDescendingAsString != null)
+                foreach (var thenByDesc in thenByDescendingAsString)
+                    options.Orders.Add(new QueryOrderedOptions<T>(thenByDesc.Deserialize<T, object>(), false, true));
             return options;
         }
-        public QueryOptionsTranslate<T, TTranslated> Translate<TTranslated>() 
+        public QueryOptionsTranslate<T, TTranslated> Translate<TTranslated>()
             => new(this);
     }
 }

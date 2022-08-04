@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using RepositoryFramework;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json;
 
@@ -56,7 +57,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
                     .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
 
-                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddCount), BindingFlags.NonPublic | BindingFlags.Static)!
+                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddOperation), BindingFlags.NonPublic | BindingFlags.Static)!
                     .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
                     .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
 
@@ -100,27 +101,36 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Query)}",
-                async (string? query, int? top, int? skip, string? order, bool? asc, [FromServices] TService service) =>
+                async (string? query, int? top, int? skip, string? orderBy, string? orderByDesc,
+                 string[]? thenBy, string[]? thenByDesc, [FromServices] TService service) =>
                 {
-                    var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, order, asc);
+                    var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, orderBy, orderByDesc, thenBy, thenByDesc);
                     var queryService = service as IQueryPattern<T, TKey>;
-                    return await queryService!.QueryAsync(options).NoContext();
+                    return await queryService!.QueryAsync(options).ToListAsync().NoContext();
 
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Query);
         }
-        private static void AddCount<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+        private static void AddOperation<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Count)}",
-                async (string? query, int? top, int? skip, string? order, bool? asc, [FromServices] TService service) =>
+            var method = typeof(IQueryPattern<T, TKey>).GetMethod("OperationAsync");
+            var resultProperty = typeof(ValueTask).GetProperty("Result");
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
+                async (string? query, int? top, int? skip, string? orderBy, string? orderByDesc,
+                 string[]? thenBy, string[]? thenByDesc, string aggr, [FromServices] TService service) =>
                 {
-                    var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, order, asc);
+                    var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, orderBy, orderByDesc, thenBy, thenByDesc);
+                    var aggregate = aggr.DeserializeAsDynamicAndRetrieveType<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
-                    return await queryService!.CountAsync(options).NoContext();
+                    var generic = method!.MakeGenericMethod(aggregate.Type);
+                    var task = (ValueTask)generic!.Invoke(queryService, new object[] { options, aggregate.Expression })!;
+                    await task.NoContext();
+                    var result = resultProperty!.GetValue(task);
+                    return result;
 
-                }).WithName($"{nameof(RepositoryMethods.Count)}{name}")
-              .AddAuthorization(authorization, RepositoryMethods.Count);
+                }).WithName($"{nameof(RepositoryMethods.Operation)}{name}")
+              .AddAuthorization(authorization, RepositoryMethods.Operation);
         }
         private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull

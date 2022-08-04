@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RepositoryFramework.Test.Infrastructure.EntityFramework.Models;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace RepositoryFramework.Test.Infrastructure.EntityFramework
 {
@@ -35,15 +37,22 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             return results;
         }
 
-        public async ValueTask<long> CountAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<TProperty> OperationAsync<TProperty>(
+          OperationType<TProperty> operation,
+          QueryOptions<AppUser>? options = null,
+          Expression<Func<AppUser, TProperty>>? aggregateExpression = null,
+          CancellationToken cancellationToken = default)
         {
-            return await _context.Users.Filter(options?
-                .Translate<User>()
-                .With(x => x.Id, x => x.Identificativo)
-                .With(x => x.Username, x => x.Nome)
-                .With(x => x.Email, x => x.IndirizzoElettronico))
-                .ToAsyncEnumerable()
-                .CountAsync(cancellationToken);
+            if (operation.Type == Operations.Count)
+                return (TProperty)Convert.ChangeType(await _context.Users.Filter(options?
+                    .Translate<User>()
+                    .With(x => x.Id, x => x.Identificativo)
+                    .With(x => x.Username, x => x.Nome)
+                    .With(x => x.Email, x => x.IndirizzoElettronico))
+                    .ToAsyncEnumerable()
+                    .CountAsync(cancellationToken), typeof(TProperty));
+            else
+                throw new NotImplementedException();
         }
 
         public async Task<State<AppUser>> DeleteAsync(AppUserKey key, CancellationToken cancellationToken = default)
@@ -87,16 +96,18 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             };
         }
 
-        public async Task<IEnumerable<AppUser>> QueryAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<AppUser> QueryAsync(QueryOptions<AppUser>? options = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            return (await _context.Users.
+            await foreach (var user in _context.Users.
                 FilterAsAsyncEnumerable(options?
                 .Translate<User>()
                 .With(x => x.Id, x => x.Identificativo)
                 .With(x => x.Username, x => x.Nome)
-                .With(x => x.Email, x => x.IndirizzoElettronico))
-                .ToListAsync(cancellationToken))
-                .Select(x => new AppUser(x.Identificativo, x.Nome, x.IndirizzoElettronico, new()));
+                .With(x => x.Email, x => x.IndirizzoElettronico)))
+            {
+                yield return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new());
+            }
         }
 
         public async Task<State<AppUser>> UpdateAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)
