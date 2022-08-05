@@ -100,11 +100,10 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddQuery<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Query)}",
-                async (string? query, int? top, int? skip, string? orderBy, string? orderByDesc,
-                 string[]? thenBy, string[]? thenByDesc, [FromServices] TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Query)}",
+                async ([FromBody] QueryOptions query, [FromServices] TService service) =>
                 {
-                    var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, orderBy, orderByDesc, thenBy, thenByDesc);
+                    var options = query.Transform<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
                     return await queryService!.QueryAsync(options).ToListAsync().NoContext();
 
@@ -116,15 +115,14 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var method = typeof(IQueryPattern<T, TKey>).GetMethod("OperationAsync");
             var resultProperty = typeof(ValueTask).GetProperty("Result");
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
-                async (string? query, int? top, int? skip, string? orderBy, string? orderByDesc,
-                 string[]? thenBy, string[]? thenByDesc, string aggr, [FromServices] TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
+                async ([FromBody] QueryOptions query, [FromServices] TService service) =>
                 {
-                    var options = QueryOptions<T>.ComposeFromQuery(query, top, skip, orderBy, orderByDesc, thenBy, thenByDesc);
-                    var aggregate = aggr.DeserializeAsDynamicAndRetrieveType<T>();
+                    var options = query.Transform<T>();
+                    var aggregate = query.AggregationPredicate?.DeserializeAsDynamicAndRetrieveType<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
-                    var generic = method!.MakeGenericMethod(aggregate.Type);
-                    var task = (ValueTask)generic!.Invoke(queryService, new object[] { options, aggregate.Expression })!;
+                    var generic = method!.MakeGenericMethod(aggregate?.Type ?? typeof(object));
+                    var task = (ValueTask)generic!.Invoke(queryService, new object[] { options, aggregate?.Expression })!;
                     await task.NoContext();
                     var result = resultProperty!.GetValue(task);
                     return result;

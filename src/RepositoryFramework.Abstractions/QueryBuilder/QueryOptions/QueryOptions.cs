@@ -1,74 +1,53 @@
 ﻿using System.Linq.Expressions;
-using System.Text;
-using System.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RepositoryFramework
 {
+    public sealed record QueryOptions([property: JsonPropertyName("p")] string? Predicate,
+        [property: JsonPropertyName("t")] int? Top,
+        [property: JsonPropertyName("s")] int? Skip,
+        [property: JsonPropertyName("o")] List<QueryOrderedOptions> Orders,
+        [property: JsonPropertyName("a")] string? AggregationPredicate)
+    {
+        public static QueryOptions Empty { get; } = new(null, null, null, new(), null);
+        public static string EmptyAsJson { get; } = Empty.ToJson();
+        public QueryOptions<T> Transform<T>()
+        {
+            var options = new QueryOptions<T>();
+            if (Predicate != null)
+                options.Predicate = Predicate.Deserialize<T, bool>();
+            options.Top = Top;
+            options.Skip = Skip;
+            foreach (var order in Orders)
+                options.Orders.Add(new(order.Order.Deserialize<T, object>(), order.IsAscending, order.ThenBy));
+            return options;
+        }
+    }
+    public sealed record QueryOrderedOptions(
+        [property: JsonPropertyName("o")] string Order,
+        [property: JsonPropertyName("a")] bool IsAscending,
+        [property: JsonPropertyName("t")] bool ThenBy);
     public sealed class QueryOptions<T>
     {
+        public static QueryOptions<T> Empty { get; } = new();
         public Expression<Func<T, bool>>? Predicate { get; internal set; }
         public int? Top { get; internal set; }
         public int? Skip { get; internal set; }
         public List<QueryOrderedOptions<T>> Orders { get; internal set; } = new();
-        private const string LogicAnd = "&";
-        private const string LogicQuery = "?";
-        public string ToQuery()
+        public string ToBodyAsJson(LambdaExpression? aggregateExpression = null)
         {
-            var query = new StringBuilder();
-            bool isAlreadyAdded = false;
-            if (Predicate != null)
-            {
-                var predicateAsString = Predicate.Serialize();
-                query.Append($"{AddSeparator()}query={HttpUtility.UrlEncode(predicateAsString)}");
-            }
-            if (Top != null)
-                query.Append($"{AddSeparator()}top={Top}");
-            if (Skip != null)
-                query.Append($"{AddSeparator()}skip={Skip}");
-            foreach (var order in Orders)
-            {
-                query.Append($"{AddSeparator()}{order.QuerystringKey}={HttpUtility.UrlEncode(order.Order.Serialize())}");
-            }
+            var query = new QueryOptions(
+                Predicate?.Serialize(),
+                Top,
+                Skip,
+                Orders.Select(order => new QueryOrderedOptions(order.Order.Serialize(), order.IsAscending, order.ThenBy)).ToList(),
+                aggregateExpression?.Serialize()
+                );
 
-            return query.ToString();
-
-            string AddSeparator()
-            {
-                if (!isAlreadyAdded)
-                {
-                    isAlreadyAdded = true;
-                    return LogicQuery;
-                }
-                else
-                    return LogicAnd;
-            }
+            return query.ToJson();
         }
-        public static QueryOptions<T> ComposeFromQuery(string? predicateAsString,
-            int? top,
-            int? skip,
-            string? orderAsString,
-            string? orderDescendingAsString,
-            string[]? thenByAsString,
-            string[]? thenByDescendingAsString)
-        {
-            var options = new QueryOptions<T>();
-            if (predicateAsString != null)
-                options.Predicate = predicateAsString.Deserialize<T, bool>();
-            options.Top = top;
-            options.Skip = skip;
-            if (orderAsString != null)
-                options.Orders.Add(new QueryOrderedOptions<T>(orderAsString.Deserialize<T, object>(), true, false));
-            if (orderDescendingAsString != null)
-                options.Orders.Add(new QueryOrderedOptions<T>(orderDescendingAsString.Deserialize<T, object>(), false, false));
-            if (thenByAsString != null)
-                foreach (var thenBy in thenByAsString)
-                    options.Orders.Add(new QueryOrderedOptions<T>(thenBy.Deserialize<T, object>(), true, true));
-            if (thenByDescendingAsString != null)
-                foreach (var thenByDesc in thenByDescendingAsString)
-                    options.Orders.Add(new QueryOrderedOptions<T>(thenByDesc.Deserialize<T, object>(), false, true));
-            return options;
-        }
-        public QueryOptions<TTranslated>? Translate<TTranslated>() 
+        public QueryOptions<TTranslated>? Translate<TTranslated>()
             => FilterTranslation<T, TTranslated>.Instance.Execute(this);
     }
 }

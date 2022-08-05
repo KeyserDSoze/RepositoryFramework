@@ -60,23 +60,23 @@ namespace RepositoryFramework.Api.Client
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Query).NoContext();
-            var query = $"{nameof(RepositoryMethods.Query)}{options?.ToQuery()}";
-            var response = await client.GetFromJsonAsync<List<T>>(query, cancellationToken).NoContext();
-            if (response != null)
-                foreach (var item in response)
+            var value = options?.ToBodyAsJson() ?? QueryOptions.EmptyAsJson;
+            var response = await client.PostAsJsonAsync(nameof(RepositoryMethods.Query), value, cancellationToken).NoContext();
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<List<T>>(cancellationToken: cancellationToken).NoContext();
+            if (result != null)
+                foreach (var item in result)
                     if (!cancellationToken.IsCancellationRequested)
                         yield return item;
         }
-        private const string LogicAnd = "&";
-        private const string LogicQuery = "?";
         public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<T>? options = null, Expression<Func<T, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Operation).NoContext();
-            string querystring = options?.ToQuery() ?? string.Empty;
-            if (aggregateExpression != null)
-                querystring = $"{querystring}{(!string.IsNullOrEmpty(querystring) ? LogicAnd : LogicQuery)}aggr={aggregateExpression.Serialize()}";
-            var query = $"{nameof(RepositoryMethods.Operation)}{querystring}";
-            return (await client.GetFromJsonAsync<TProperty>(query, cancellationToken).NoContext())!;
+            var value = options?.ToBodyAsJson(aggregateExpression) ?? (aggregateExpression == null ? QueryOptions.EmptyAsJson : QueryOptions<T>.Empty.ToBodyAsJson(aggregateExpression));
+            var response = await client.PostAsJsonAsync(nameof(RepositoryMethods.Operation), value, cancellationToken).NoContext();
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<TProperty>(cancellationToken: cancellationToken).NoContext();
+            return result!;
         }
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {

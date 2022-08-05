@@ -26,12 +26,4 @@ namespace RepositoryFramework
                 _ => throw new NotImplementedException($"{Type} not found")
             };
     }
-    public enum Operations
-    {
-        Count,
-        Sum,
-        Max,
-        Min,
-        Average,
-    }
 }

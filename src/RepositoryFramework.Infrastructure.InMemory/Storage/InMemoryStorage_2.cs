@@ -173,12 +173,13 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
+                    var filterd = Values.Filter(options);
                     return (await operation.ExecuteAsync(
-                        () => ValueTask.FromResult((TProperty)Convert.ChangeType(Values.Filter(options).Count(), typeof(TProperty))),
-                        () => ValueTask.FromResult((TProperty)(object)Values.Filter(options).Sum((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x))),
-                        () => ValueTask.FromResult((TProperty)(object)Values.Filter(options).Max((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x))),
-                        () => ValueTask.FromResult((TProperty)(object)Values.Filter(options).Min((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x))),
-                        () => ValueTask.FromResult((TProperty)(object)Values.Filter(options).Average((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x)))))!;
+                        () => Invoke<TProperty>(filterd.Count()),
+                        () => Invoke<TProperty>(filterd.Sum(x => aggregateExpression!.Transform<decimal>(x!))),
+                        () => Invoke<TProperty>(filterd.Max(x => aggregateExpression!.Transform<decimal>(x!))),
+                        () => Invoke<TProperty>(filterd.Min(x => aggregateExpression!.Transform<decimal>(x!))),
+                        () => Invoke<TProperty>(filterd.Average(x => aggregateExpression!.Transform<decimal>(x!)))))!;
                 }
                 else
                     throw new TaskCanceledException();
@@ -186,6 +187,8 @@ namespace RepositoryFramework.InMemory
             else
                 throw new TaskCanceledException();
         }
+        private static ValueTask<TProperty> Invoke<TProperty>(object value) 
+            => ValueTask.FromResult((TProperty)Convert.ChangeType(value, typeof(TProperty)));
         public Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Exist, () =>
             {
