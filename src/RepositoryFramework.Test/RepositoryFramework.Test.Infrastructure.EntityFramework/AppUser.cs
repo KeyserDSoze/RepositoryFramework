@@ -44,11 +44,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
           CancellationToken cancellationToken = default)
         {
             if (operation.Type == Operations.Count)
-                return (TProperty)Convert.ChangeType(await _context.Users.Filter(options?
-                    .Translate<User>()
-                    .With(x => x.Id, x => x.Identificativo)
-                    .With(x => x.Username, x => x.Nome)
-                    .With(x => x.Email, x => x.IndirizzoElettronico))
+                return (TProperty)Convert.ChangeType(await _context.Users.FilterWithTranslation(options)
                     .ToAsyncEnumerable()
                     .CountAsync(cancellationToken), typeof(TProperty));
             else
@@ -100,11 +96,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var user in _context.Users.
-                FilterAsAsyncEnumerable(options?
-                .Translate<User>()
-                .With(x => x.Id, x => x.Identificativo)
-                .With(x => x.Username, x => x.Nome)
-                .With(x => x.Email, x => x.IndirizzoElettronico)))
+                FilterWithTranslationAsAsyncEnumerable(options))
             {
                 yield return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new());
             }

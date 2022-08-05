@@ -60,15 +60,8 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken);
-            var filtered = _database.Filter(
-                options?
-                .Translate<Auto>()
-                .With(x => x.Id, x => x.Identificativo)
-                .With(x => x.Id2, x => x.Identificativo2)
-                .With(x => x.NumberOfWheels, x => x.NumeroRuote)
-                .With(x => x.Plate, x => x.Targa)
-                .With(x => x.Driver, x => x.Guidatore)
-                .With(x => x.Driver!.Name, x => x.Guidatore!.Nome))
+            var filtered = _database.FilterWithTranslation(
+                options)
                 .ToList();
             foreach (var item in filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }) ?? new List<Car>())
                 yield return item;

@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    public static class QueryOptionsExtensions
+    public static partial class QueryOptionsExtensions
     {
         /// <summary>
         /// Help your context to apply filters. Use in options the Translate method to change the name of the properties.
@@ -56,7 +56,7 @@
         /// <param name="items">Context.</param>
         /// <param name="options">Query options.</param>
         /// <returns>IAsyncEnumerable<typeparamref name="T"/></returns>
-        public static IAsyncEnumerable<T> FilterAsAsyncEnumerable<T>(this IEnumerable<T> items, QueryOptions<T>? options) 
+        public static IAsyncEnumerable<T> FilterAsAsyncEnumerable<T>(this IEnumerable<T> items, QueryOptions<T>? options)
             => items.Filter(options).ToAsyncEnumerable();
         /// <summary>
         /// Help your Dictionary/KeyValuePair context to apply filters. Use in options the Translate method to change the name of the properties.

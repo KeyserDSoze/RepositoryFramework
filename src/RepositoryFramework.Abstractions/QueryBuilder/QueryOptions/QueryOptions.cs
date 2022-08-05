@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using System.Text;
-using System.Text.Json;
 using System.Web;
 
 namespace RepositoryFramework
@@ -69,7 +68,7 @@ namespace RepositoryFramework
                     options.Orders.Add(new QueryOrderedOptions<T>(thenByDesc.Deserialize<T, object>(), false, true));
             return options;
         }
-        public QueryOptionsTranslate<T, TTranslated> Translate<TTranslated>()
-            => new(this);
+        public QueryOptions<TTranslated>? Translate<TTranslated>() 
+            => FilterTranslation<T, TTranslated>.Instance.Execute(this);
     }
 }

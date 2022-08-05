@@ -19,5 +19,7 @@ namespace RepositoryFramework
             Type = type;
             ServiceLifetime = serviceLifetime;
         }
+        public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
+            => new QueryTranslationBuilder<T, TKey, TTranslated>(this);
     }
 }

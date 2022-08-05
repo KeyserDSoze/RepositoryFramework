@@ -21,6 +21,10 @@ namespace RepositoryFramework.UnitTest.Repository
                     options.UseSqlServer(configuration["Database:ConnectionString"]);
                 }, ServiceLifetime.Scoped)
                 .AddRepository<AppUser, AppUserKey, AppUserStorage>()
+                .Translate<User>()
+                    .With(x => x.Id, x => x.Identificativo)
+                    .With(x => x.Username, x => x.Nome)
+                    .With(x => x.Email, x => x.IndirizzoElettronico)
                 .Services
                 .Finalize(out ServiceProvider);
         }
