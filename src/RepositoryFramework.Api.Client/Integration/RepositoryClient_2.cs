@@ -60,7 +60,7 @@ namespace RepositoryFramework.Api.Client
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Query).NoContext();
-            var value = options?.ToBodyAsJson() ?? QueryOptions.EmptyAsJson;
+            var value = options?.ToBody() ?? QueryOptions.Empty;
             var response = await client.PostAsJsonAsync(nameof(RepositoryMethods.Query), value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<List<T>>(cancellationToken: cancellationToken).NoContext();
@@ -72,8 +72,9 @@ namespace RepositoryFramework.Api.Client
         public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<T>? options = null, Expression<Func<T, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Operation).NoContext();
-            var value = options?.ToBodyAsJson(aggregateExpression) ?? (aggregateExpression == null ? QueryOptions.EmptyAsJson : QueryOptions<T>.Empty.ToBodyAsJson(aggregateExpression));
-            var response = await client.PostAsJsonAsync(nameof(RepositoryMethods.Operation), value, cancellationToken).NoContext();
+            var value = options?.ToBody(aggregateExpression) ?? (aggregateExpression == null ? QueryOptions.Empty : QueryOptions<T>.Empty.ToBody(aggregateExpression));
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Operation)}?op={operation.Type}",
+                value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<TProperty>(cancellationToken: cancellationToken).NoContext();
             return result!;

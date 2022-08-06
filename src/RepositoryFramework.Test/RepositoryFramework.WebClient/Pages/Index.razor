@@ -102,6 +102,7 @@ Welcome to your new app.
         await CarClient2.InsertAsync(new Range(1, 4), new Car2 { Id = Guid.NewGuid(), Name = "a2" });
         await CarClient2.InsertAsync(new Range(1, 5), new Car2 { Id = Guid.NewGuid(), Name = "a3" });
         Cars2 = await CarClient2.QueryAsync().ToListAsync();
+        var sum = await UserClient3.SumAsync(x => x.Port);
         await base.OnParametersSetAsync().NoContext();
     }
     private async Task AddInBatchSomething()

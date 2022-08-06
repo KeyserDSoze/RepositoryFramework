@@ -11,32 +11,33 @@
         /// <returns>IQueryable<typeparamref name="T"/></returns>
         public static IQueryable<T> Filter<T>(this IEnumerable<T> items, QueryOptions<T>? options)
         {
+            IQueryable<T> query = items.AsQueryable();
             if (options != null)
             {
                 if (options.Predicate != null)
-                    items = items.Where(options.Predicate.Compile());
+                    query = query.Where(options.Predicate).AsQueryable();
                 foreach (var order in options.Orders)
                     if (!order.ThenBy)
                     {
                         if (order.IsAscending)
-                            items = items.OrderBy(order.Order.Compile());
+                            query = query.OrderBy(order.Order).AsQueryable();
                         else
-                            items = items.OrderByDescending(order.Order.Compile());
+                            query = query.OrderByDescending(order.Order).AsQueryable();
                     }
                     else
                     {
-                        if (items is IOrderedEnumerable<T> ordered)
+                        if (query is IOrderedQueryable<T> ordered)
                             if (order.IsAscending)
-                                items = ordered.ThenBy(order.Order.Compile());
+                                query = ordered.ThenBy(order.Order).AsQueryable();
                             else
-                                items = ordered.ThenByDescending(order.Order.Compile());
+                                query = ordered.ThenByDescending(order.Order).AsQueryable();
                     }
                 if (options.Skip != null)
-                    items = items.Skip(options.Skip.Value);
+                    query = query.Skip(options.Skip.Value);
                 if (options.Top != null)
-                    items = items.Take(options.Top.Value);
+                    query = query.Take(options.Top.Value);
             }
-            return items.AsQueryable();
+            return query;
         }
         /// <summary>
         /// Help your Dictionary/KeyValuePair context to apply filters. Use in options the Translate method to change the name of the properties.

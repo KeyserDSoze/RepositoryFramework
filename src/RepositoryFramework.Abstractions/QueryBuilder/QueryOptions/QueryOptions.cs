@@ -11,7 +11,6 @@ namespace RepositoryFramework
         [property: JsonPropertyName("a")] string? AggregationPredicate)
     {
         public static QueryOptions Empty { get; } = new(null, null, null, new(), null);
-        public static string EmptyAsJson { get; } = Empty.ToJson();
         public QueryOptions<T> Transform<T>()
         {
             var options = new QueryOptions<T>();
@@ -35,7 +34,7 @@ namespace RepositoryFramework
         public int? Top { get; internal set; }
         public int? Skip { get; internal set; }
         public List<QueryOrderedOptions<T>> Orders { get; internal set; } = new();
-        public string ToBodyAsJson(LambdaExpression? aggregateExpression = null)
+        public QueryOptions ToBody(LambdaExpression? aggregateExpression = null)
         {
             var query = new QueryOptions(
                 Predicate?.Serialize(),
@@ -45,7 +44,7 @@ namespace RepositoryFramework
                 aggregateExpression?.Serialize()
                 );
 
-            return query.ToJson();
+            return query;
         }
         public QueryOptions<TTranslated>? Translate<TTranslated>()
             => FilterTranslation<T, TTranslated>.Instance.Execute(this);

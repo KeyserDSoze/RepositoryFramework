@@ -12,7 +12,8 @@ builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
 builder.Services.AddRepositoryInMemoryStorage<IperUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
-.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
+.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com")
+.WithPattern(x => x.Port, @"[1-9]{3,4}");
 builder.Services.AddRepositoryInMemoryStorage<Animal, AnimalKey>();
 builder.Services.AddRepositoryInMemoryStorage<Car, Guid>();
 builder.Services.AddRepositoryInMemoryStorage<Car2, Range>();

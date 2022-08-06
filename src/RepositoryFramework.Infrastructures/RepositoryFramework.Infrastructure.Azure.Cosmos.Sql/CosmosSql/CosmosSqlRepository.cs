@@ -54,13 +54,15 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         {
             IQueryable<T> queryable = _client.GetItemLinqQueryable<T>().Filter(options);
 
-            using FeedIterator<T> iterator = queryable.ToFeedIterator();
-            while (iterator.HasMoreResults)
+            using (FeedIterator<T> iterator = queryable.ToFeedIterator())
             {
-                if (cancellationToken.IsCancellationRequested)
-                    break;
-                foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
-                    yield return item;
+                while (iterator.HasMoreResults)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        break;
+                    foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
+                        yield return item;
+                }
             }
         }
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,

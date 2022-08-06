@@ -89,7 +89,8 @@ namespace Microsoft.Extensions.DependencyInjection
            where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Get)}", async (string key, [FromServices] TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Get)}",
+                async ([FromQuery] string key, [FromServices] TService service) =>
             {
                 var queryService = service as IQueryPattern<T, TKey>;
                 var keyAsValue = parser(key);
@@ -113,28 +114,39 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddOperation<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
-            var method = typeof(IQueryPattern<T, TKey>).GetMethod("OperationAsync");
-            var resultProperty = typeof(ValueTask).GetProperty("Result");
+            MethodInfo method = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(GetResultFromOperation), BindingFlags.NonPublic | BindingFlags.Static)!;
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
-                async ([FromBody] QueryOptions query, [FromServices] TService service) =>
+                async ([FromQuery] Operations op, [FromBody] QueryOptions query, [FromServices] TService service) =>
                 {
                     var options = query.Transform<T>();
                     var aggregate = query.AggregationPredicate?.DeserializeAsDynamicAndRetrieveType<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
-                    var generic = method!.MakeGenericMethod(aggregate?.Type ?? typeof(object));
-                    var task = (ValueTask)generic!.Invoke(queryService, new object[] { options, aggregate?.Expression })!;
-                    await task.NoContext();
-                    var result = resultProperty!.GetValue(task);
+                    var generic = method.MakeGenericMethod(typeof(T), typeof(TKey), aggregate?.Type ?? typeof(object));
+                    var task = (dynamic)generic.Invoke(null, new object[] {
+                        queryService!, op, options, aggregate?.Expression! })!;
+                    await task;
+                    var result = task.Result;
                     return result;
 
                 }).WithName($"{nameof(RepositoryMethods.Operation)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Operation);
         }
+        private static ValueTask<TProperty> GetResultFromOperation<T, TKey, TProperty>(
+            IQueryPattern<T, TKey> queryService,
+            Operations operations,
+            QueryOptions<T> options,
+            Expression<Func<T, TProperty>> aggregation)
+            where TKey : notnull
+            => queryService.OperationAsync(
+                new OperationType<TProperty> { Type = operations },
+                options,
+                aggregation);
         private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Exist)}", async (string key, [FromServices] TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Exist)}", 
+                async ([FromQuery] string key, [FromServices] TService service) =>
             {
                 var queryService = service as IQueryPattern<T, TKey>;
                 var keyAsValue = parser(key);
@@ -146,7 +158,8 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Insert)}", async (string key, T entity, [FromServices] TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Insert)}", 
+                async ([FromQuery] string key, [FromBody] T entity, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
                 var keyAsValue = parser(key);
@@ -158,7 +171,8 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Update)}", async (string key, T entity, [FromServices] TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Update)}", 
+                async ([FromQuery] string key, [FromBody] T entity, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
                 var keyAsValue = parser(key);
@@ -169,7 +183,8 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddBatch<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Batch)}", async (BatchOperations<T, TKey> operations, [FromServices] TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Batch)}", 
+                async ([FromBody] BatchOperations<T, TKey> operations, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
                 return await commandService!.BatchAsync(operations).NoContext();
@@ -180,7 +195,8 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Delete)}", async (string key, [FromServices] TService service) =>
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Delete)}", 
+                async ([FromQuery] string key, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
                 var keyAsValue = parser(key);
