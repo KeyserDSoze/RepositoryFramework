@@ -8,9 +8,10 @@ namespace RepositoryFramework
         [property: JsonPropertyName("t")] int? Top,
         [property: JsonPropertyName("s")] int? Skip,
         [property: JsonPropertyName("o")] List<QueryOrderedOptions> Orders,
-        [property: JsonPropertyName("a")] string? AggregationPredicate)
+        [property: JsonPropertyName("l")] string? Select,
+        [property: JsonPropertyName("a")] string? Aggregate)
     {
-        public static QueryOptions Empty { get; } = new(null, null, null, new(), null);
+        public static QueryOptions Empty { get; } = new(null, null, null, new(), null, null);
         public QueryOptions<T> Transform<T>()
         {
             var options = new QueryOptions<T>();
@@ -27,22 +28,28 @@ namespace RepositoryFramework
         [property: JsonPropertyName("o")] string Order,
         [property: JsonPropertyName("a")] bool IsAscending,
         [property: JsonPropertyName("t")] bool ThenBy);
-    public sealed class QueryOptions<T>
+    public class QueryOptions<T, TProperty> : QueryOptions<T>
+    {
+        public new Expression<Func<T, TProperty>>? Aggregate { get; internal set; }
+    }
+    public class QueryOptions<T>
     {
         public static QueryOptions<T> Empty { get; } = new();
         public Expression<Func<T, bool>>? Predicate { get; internal set; }
         public int? Top { get; internal set; }
         public int? Skip { get; internal set; }
         public List<QueryOrderedOptions<T>> Orders { get; internal set; } = new();
-        public QueryOptions ToBody(LambdaExpression? aggregateExpression = null)
+        public Expression<Func<T, object>>? Select { get; internal set; }
+        public Expression<Func<T, object>>? Aggregate { get; internal set; }
+        public QueryOptions ToBody()
         {
             var query = new QueryOptions(
                 Predicate?.Serialize(),
                 Top,
                 Skip,
                 Orders.Select(order => new QueryOrderedOptions(order.Order.Serialize(), order.IsAscending, order.ThenBy)).ToList(),
-                aggregateExpression?.Serialize()
-                );
+                Select?.Serialize(),
+                Aggregate?.Serialize());
 
             return query;
         }

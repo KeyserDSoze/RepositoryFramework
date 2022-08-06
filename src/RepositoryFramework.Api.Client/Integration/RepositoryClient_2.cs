@@ -72,7 +72,7 @@ namespace RepositoryFramework.Api.Client
         public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<T>? options = null, Expression<Func<T, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Operation).NoContext();
-            var value = options?.ToBody(aggregateExpression) ?? (aggregateExpression == null ? QueryOptions.Empty : QueryOptions<T>.Empty.ToBody(aggregateExpression));
+            var value = options?.ToBody() ?? (aggregateExpression == null ? QueryOptions.Empty : QueryOptions<T>.Empty.ToBody(aggregateExpression));
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Operation)}?op={operation.Type}",
                 value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();

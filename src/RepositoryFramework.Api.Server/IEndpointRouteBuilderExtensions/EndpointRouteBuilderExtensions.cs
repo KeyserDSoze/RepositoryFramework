@@ -119,7 +119,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 async ([FromQuery] Operations op, [FromBody] QueryOptions query, [FromServices] TService service) =>
                 {
                     var options = query.Transform<T>();
-                    var aggregate = query.AggregationPredicate?.DeserializeAsDynamicAndRetrieveType<T>();
+                    var aggregate = query.Aggregate?.DeserializeAsDynamicAndRetrieveType<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
                     var generic = method.MakeGenericMethod(typeof(T), typeof(TKey), aggregate?.Type ?? typeof(object));
                     var task = (dynamic)generic.Invoke(null, new object[] {
