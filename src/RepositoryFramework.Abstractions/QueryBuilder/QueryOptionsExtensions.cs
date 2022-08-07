@@ -1,4 +1,6 @@
-﻿namespace RepositoryFramework
+﻿using System.Linq.Expressions;
+
+namespace RepositoryFramework
 {
     public static partial class QueryOptionsExtensions
     {
@@ -11,6 +13,7 @@
         /// <returns>IQueryable<typeparamref name="T"/></returns>
         public static IQueryable<T> Filter<T>(this IEnumerable<T> items, QueryOptions<T>? options)
         {
+#warning Alessandro Rapiti - Adding of select and group makes sense? It's not possible to add IGrouping and ISelect because change the type of the object. I need to think differently.
             IQueryable<T> query = items.AsQueryable();
             if (options != null)
             {

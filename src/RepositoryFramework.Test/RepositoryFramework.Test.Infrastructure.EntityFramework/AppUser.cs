@@ -42,12 +42,22 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
           QueryOptions<AppUser>? options = null,
           CancellationToken cancellationToken = default)
         {
+            var context = _context.Users
+                    .FilterWithTranslationAsAsyncEnumerable(options);
+            return await operation.ExecuteAsync(
+                    () => context.CountAsync(cancellationToken),
+                    () => context.SumAsync(x => x, cancellationToken),
+                    () => context.MaxAsync(cancellationToken),
+                    () => context.MinAsync(cancellationToken),
+                    () => context.AverageAsync(cancellationToken)
+                );
             if (operation.Operation == Operations.Count)
-                return (TProperty)Convert.ChangeType(await _context.Users.FilterWithTranslation(options)
-                    .ToAsyncEnumerable()
-                    .CountAsync(cancellationToken), typeof(TProperty));
-            else
-                throw new NotImplementedException();
+                return (TProperty)Convert.ChangeType(await
+                    , typeof(TProperty));
+            else if (operation.Operation == Operations.Sum)
+            {
+
+            }
         }
 
         public async Task<State<AppUser>> DeleteAsync(AppUserKey key, CancellationToken cancellationToken = default)
