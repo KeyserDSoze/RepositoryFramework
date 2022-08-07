@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace RepositoryFramework.Cache
 {
@@ -100,7 +101,7 @@ namespace RepositoryFramework.Cache
         public async IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            string keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{(options != null ? string.Join("_", options.Orders.Select(x => $"{x.Order.Serialize()}_{x.ThenBy}_{x.IsAscending}")) : string.Empty)}";
+            string keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{options?.ToKey()}";
 
             var value = await RetrieveValueAsync(RepositoryMethods.Query, keyAsString,
                 async () =>
@@ -124,14 +125,13 @@ namespace RepositoryFramework.Cache
         public async ValueTask<TProperty> OperationAsync<TProperty>(
             OperationType<TProperty> operation,
             QueryOptions<T>? options = null,
-            Expression<Func<T, TProperty>>? aggregateExpression = null,
             CancellationToken cancellationToken = default)
         {
-            string keyAsString = $"{nameof(RepositoryMethods.Operation)}_{_cacheName}_{options?.Predicate}_{options?.Top}_{options?.Skip}_{(options != null ? string.Join("_", options.Orders.Select(x => $"{x.Order.Serialize()}_{x.ThenBy}_{x.IsAscending}")) : string.Empty)}_{aggregateExpression?.Serialize()}";
+            string keyAsString = $"{nameof(RepositoryMethods.Operation)}_{_cacheName}_{options?.ToKey()}";
 
             var value = await RetrieveValueAsync(RepositoryMethods.Operation, keyAsString,
                 null,
-                () => _query.OperationAsync(operation, options, aggregateExpression, cancellationToken)!, cancellationToken).NoContext();
+                () => _query.OperationAsync(operation, options, cancellationToken)!, cancellationToken).NoContext();
 
             if (_cache != null || _distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,

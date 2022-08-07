@@ -44,10 +44,9 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
         public ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
           QueryOptions<SuperMigrationUser>? options = null,
-          Expression<Func<SuperMigrationUser, TProperty>>? aggregateExpression = null,
           CancellationToken cancellationToken = default)
         {
-            if (operation.Type == Operations.Count)
+            if (operation.Operation == Operations.Count)
             {
                 var users = _users.Select(x => x.Value).Filter(options);
                 return ValueTask.FromResult((TProperty)(object)users.Count());

@@ -59,7 +59,7 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             throw new NotImplementedException();
         }
 
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<SuperMigrationUser>? options = null, System.Linq.Expressions.Expression<Func<SuperMigrationUser, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<SuperMigrationUser>? options = null,  CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

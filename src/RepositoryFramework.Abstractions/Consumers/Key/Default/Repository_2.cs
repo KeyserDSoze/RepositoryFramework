@@ -28,9 +28,8 @@ namespace RepositoryFramework
             => _repository.QueryAsync(options, cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             QueryOptions<T>? options = null,
-            Expression<Func<T, TProperty>>? aggregateExpression = null,
             CancellationToken cancellationToken = default)
-           => _repository.OperationAsync(operation, options, aggregateExpression, cancellationToken);
+           => _repository.OperationAsync(operation, options, cancellationToken);
 
         public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.UpdateAsync(key, value, cancellationToken);

@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace RepositoryFramework
@@ -16,44 +15,16 @@ namespace RepositoryFramework
         {
             var options = new QueryOptions<T>();
             if (Predicate != null)
-                options.Predicate = Predicate.Deserialize<T, bool>();
+                options.Where = Predicate.Deserialize<T, bool>();
             options.Top = Top;
             options.Skip = Skip;
             foreach (var order in Orders)
                 options.Orders.Add(new(order.Order.Deserialize<T, object>(), order.IsAscending, order.ThenBy));
+            if (Select != null)
+                options.Select = Select.DeserializeAsDynamic<T>();
+            if (Aggregate != null)
+                options.Aggregate = Aggregate.DeserializeAsDynamic<T>();
             return options;
         }
-    }
-    public sealed record QueryOrderedOptions(
-        [property: JsonPropertyName("o")] string Order,
-        [property: JsonPropertyName("a")] bool IsAscending,
-        [property: JsonPropertyName("t")] bool ThenBy);
-    public class QueryOptions<T, TProperty> : QueryOptions<T>
-    {
-        public new Expression<Func<T, TProperty>>? Aggregate { get; internal set; }
-    }
-    public class QueryOptions<T>
-    {
-        public static QueryOptions<T> Empty { get; } = new();
-        public Expression<Func<T, bool>>? Predicate { get; internal set; }
-        public int? Top { get; internal set; }
-        public int? Skip { get; internal set; }
-        public List<QueryOrderedOptions<T>> Orders { get; internal set; } = new();
-        public Expression<Func<T, object>>? Select { get; internal set; }
-        public Expression<Func<T, object>>? Aggregate { get; internal set; }
-        public QueryOptions ToBody()
-        {
-            var query = new QueryOptions(
-                Predicate?.Serialize(),
-                Top,
-                Skip,
-                Orders.Select(order => new QueryOrderedOptions(order.Order.Serialize(), order.IsAscending, order.ThenBy)).ToList(),
-                Select?.Serialize(),
-                Aggregate?.Serialize());
-
-            return query;
-        }
-        public QueryOptions<TTranslated>? Translate<TTranslated>()
-            => FilterTranslation<T, TTranslated>.Instance.Execute(this);
     }
 }

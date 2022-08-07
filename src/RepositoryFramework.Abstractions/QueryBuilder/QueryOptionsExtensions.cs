@@ -14,8 +14,8 @@
             IQueryable<T> query = items.AsQueryable();
             if (options != null)
             {
-                if (options.Predicate != null)
-                    query = query.Where(options.Predicate).AsQueryable();
+                if (options.Where != null)
+                    query = query.Where(options.Where).AsQueryable();
                 foreach (var order in options.Orders)
                     if (!order.ThenBy)
                     {
@@ -81,8 +81,8 @@
         {
             if (options != null)
             {
-                if (options.Predicate != null)
-                    items = items.Where(options.Predicate.Compile());
+                if (options.Where != null)
+                    items = items.Where(options.Where.Compile());
                 foreach (var order in options.Orders)
                     if (!order.ThenBy)
                     {

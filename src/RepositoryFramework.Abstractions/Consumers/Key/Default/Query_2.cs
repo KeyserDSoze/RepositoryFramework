@@ -20,8 +20,7 @@ namespace RepositoryFramework
             => _query.QueryAsync(options, cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             QueryOptions<T>? options = null,
-            Expression<Func<T, TProperty>>? aggregateExpression = null,
             CancellationToken cancellationToken = default)
-            => _query.OperationAsync(operation, options, aggregateExpression, cancellationToken);
+            => _query.OperationAsync(operation, options, cancellationToken);
     }
 }

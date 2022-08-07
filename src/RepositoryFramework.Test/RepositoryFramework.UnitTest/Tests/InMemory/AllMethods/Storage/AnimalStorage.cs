@@ -40,7 +40,7 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
             throw new NotImplementedException();
         }
 
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<Animal>? options = null, System.Linq.Expressions.Expression<Func<Animal, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

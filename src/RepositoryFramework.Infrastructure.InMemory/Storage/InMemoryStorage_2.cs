@@ -158,7 +158,6 @@ namespace RepositoryFramework.InMemory
         public async ValueTask<TProperty> OperationAsync<TProperty>(
            OperationType<TProperty> operation,
            QueryOptions<T>? options = null,
-           Expression<Func<T, TProperty>>? aggregateExpression = null,
            CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Operation);
@@ -176,10 +175,10 @@ namespace RepositoryFramework.InMemory
                     var filterd = Values.Filter(options);
                     return (await operation.ExecuteAsync(
                         () => Invoke<TProperty>(filterd.Count()),
-                        () => Invoke<TProperty>(filterd.Sum(x => aggregateExpression!.Transform<decimal>(x!))),
-                        () => Invoke<TProperty>(filterd.Max(x => aggregateExpression!.Transform<decimal>(x!))),
-                        () => Invoke<TProperty>(filterd.Min(x => aggregateExpression!.Transform<decimal>(x!))),
-                        () => Invoke<TProperty>(filterd.Average(x => aggregateExpression!.Transform<decimal>(x!)))))!;
+                        () => Invoke<TProperty>(filterd.Sum(x => options!.Select!.Transform<decimal>(x!))),
+                        () => Invoke<TProperty>(filterd.Max(x => options!.Select!.Transform<decimal>(x!))),
+                        () => Invoke<TProperty>(filterd.Min(x => options!.Select!.Transform<decimal>(x!))),
+                        () => Invoke<TProperty>(filterd.Average(x => options!.Select!.Transform<decimal>(x!)))))!;
                 }
                 else
                     throw new TaskCanceledException();

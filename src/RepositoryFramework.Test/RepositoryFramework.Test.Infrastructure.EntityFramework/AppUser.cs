@@ -40,10 +40,9 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
         public async ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
           QueryOptions<AppUser>? options = null,
-          Expression<Func<AppUser, TProperty>>? aggregateExpression = null,
           CancellationToken cancellationToken = default)
         {
-            if (operation.Type == Operations.Count)
+            if (operation.Operation == Operations.Count)
                 return (TProperty)Convert.ChangeType(await _context.Users.FilterWithTranslation(options)
                     .ToAsyncEnumerable()
                     .CountAsync(cancellationToken), typeof(TProperty));

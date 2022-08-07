@@ -1,4 +1,5 @@
 ﻿using Azure.Data.Tables;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -47,8 +48,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             Func<T, bool> predicate = x => true;
-            if (options?.Predicate != null)
-                predicate = options.Predicate.Compile();
+            if (options?.Where != null)
+                predicate = options.Where.Compile();
             await foreach (var entity in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
             {
                 var item = JsonSerializer.Deserialize<T>(entity.Value)!;
@@ -60,20 +61,19 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public async ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
           QueryOptions<T>? options = null,
-          Expression<Func<T, TProperty>>? aggregateExpression = null,
           CancellationToken cancellationToken = default)
         {
             List<T> items = new();
             await foreach (var item in QueryAsync(options, cancellationToken))
                 items.Add(item);
 
-            return await operation.ExecuteAsync(
+            return (await operation.ExecuteAsync(
                 () => ValueTask.FromResult((TProperty)(object)items.Count),
-                () => ValueTask.FromResult((TProperty)(object)items.Sum((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x))),
-                () => ValueTask.FromResult((TProperty)(object)items.Max((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x))),
-                () => ValueTask.FromResult((TProperty)(object)items.Min((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x))),
-                () => ValueTask.FromResult((TProperty)(object)items.Average((x) => (decimal)(object)aggregateExpression.Compile().Invoke(x)))
-                );
+                () => ValueTask.FromResult((TProperty)(object)items.Sum(x => options!.Select!.Transform<decimal>(x!))),
+                () => ValueTask.FromResult((TProperty)(object)items.Max(x => options!.Select!.Transform<decimal>(x!))),
+                () => ValueTask.FromResult((TProperty)(object)items.Min(x => options!.Select!.Transform<decimal>(x!))),
+                () => ValueTask.FromResult((TProperty)(object)items.Average(x => options!.Select!.Transform<decimal>(x!)))
+                ))!;
         }
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {

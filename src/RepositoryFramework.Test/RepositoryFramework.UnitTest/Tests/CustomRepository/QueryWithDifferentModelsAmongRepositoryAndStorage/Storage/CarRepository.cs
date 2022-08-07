@@ -27,10 +27,9 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
         public ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
           QueryOptions<Car>? options = null,
-          Expression<Func<Car, TProperty>>? aggregateExpression = null,
           CancellationToken cancellationToken = default)
         {
-            if (operation.Type == Operations.Count)
+            if (operation.Operation == Operations.Count)
                 return ValueTask.FromResult((TProperty)Convert.ChangeType(_database.Count, typeof(TProperty)));
             else
                 throw new NotImplementedException();

@@ -40,7 +40,7 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             var users = _users.Select(x => x.Value).Filter(options);
             return users.ToAsyncEnumerable();
         }
-       
+
         public Task<State<MigrationUser>> UpdateAsync(string key, MigrationUser value, CancellationToken cancellationToken = default)
         {
             _users[key] = value;
@@ -52,7 +52,7 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             throw new NotImplementedException();
         }
 
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<MigrationUser>? options = null, System.Linq.Expressions.Expression<Func<MigrationUser, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

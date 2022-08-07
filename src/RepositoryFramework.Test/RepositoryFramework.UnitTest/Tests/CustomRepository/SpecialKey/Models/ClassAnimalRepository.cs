@@ -17,10 +17,9 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
         public ValueTask<TProperty> OperationAsync<TProperty>(
          OperationType<TProperty> operation,
          QueryOptions<ClassAnimal>? options = null,
-         Expression<Func<ClassAnimal, TProperty>>? aggregateExpression = null,
          CancellationToken cancellationToken = default)
         {
-            if (operation.Type == Operations.Count)
+            if (operation.Operation == Operations.Count)
                 return ValueTask.FromResult((TProperty)(object)_dic.Count);
             else
                 throw new NotImplementedException();

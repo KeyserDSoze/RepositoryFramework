@@ -98,6 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }).WithName($"{nameof(RepositoryMethods.Get)}{name}")
                .AddAuthorization(authorization, RepositoryMethods.Get);
         }
+#warning think about to have more than one api with the same name and a dictionary? Problem with change of mind? the key name can be used?
         private static void AddQuery<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
@@ -111,41 +112,53 @@ namespace Microsoft.Extensions.DependencyInjection
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Query);
         }
+        private static readonly Type ObjectType = typeof(object);
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "I need it because I want to use reflection to inject different TProperty to my operation method.")]
+        private static readonly MethodInfo GetResultFromOperationMethod = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(GetResultFromOperation), BindingFlags.NonPublic | BindingFlags.Static)!;
         private static void AddOperation<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
-            MethodInfo method = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(GetResultFromOperation), BindingFlags.NonPublic | BindingFlags.Static)!;
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
-                async ([FromQuery] Operations op, [FromBody] QueryOptions query, [FromServices] TService service) =>
+                async ([FromQuery] Operations op, [FromQuery] string? returnType, [FromBody] QueryOptions query, [FromServices] TService service) =>
                 {
                     var options = query.Transform<T>();
-                    var aggregate = query.Aggregate?.DeserializeAsDynamicAndRetrieveType<T>();
+                    Type type = CalculateTypeFromQuery();
                     var queryService = service as IQueryPattern<T, TKey>;
-                    var generic = method.MakeGenericMethod(typeof(T), typeof(TKey), aggregate?.Type ?? typeof(object));
-                    var task = (dynamic)generic.Invoke(null, new object[] {
-                        queryService!, op, options, aggregate?.Expression! })!;
+                    var generic = GetResultFromOperationMethod.MakeGenericMethod(typeof(T), typeof(TKey), type);
+                    var task = (dynamic)generic.Invoke(null,
+                        new object[] { queryService!, op, options })!;
                     await task;
                     var result = task.Result;
                     return result;
 
+                    Type CalculateTypeFromQuery()
+                    {
+                        Type? calculatedType = ObjectType;
+                        if (string.IsNullOrWhiteSpace(returnType))
+                            return calculatedType;
+                        if (PrimitiveMapper.Instance.FromNameToAssemblyQualifiedName.ContainsKey(returnType))
+                            calculatedType = Type.GetType(PrimitiveMapper.Instance.FromNameToAssemblyQualifiedName[returnType]);
+                        else
+                            calculatedType = Type.GetType(returnType);
+                        return calculatedType ?? ObjectType;
+                    }
                 }).WithName($"{nameof(RepositoryMethods.Operation)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Operation);
         }
         private static ValueTask<TProperty> GetResultFromOperation<T, TKey, TProperty>(
             IQueryPattern<T, TKey> queryService,
             Operations operations,
-            QueryOptions<T> options,
-            Expression<Func<T, TProperty>> aggregation)
+            QueryOptions<T> options)
             where TKey : notnull
             => queryService.OperationAsync(
-                new OperationType<TProperty> { Type = operations },
-                options,
-                aggregation);
+                new OperationType<TProperty> { Operation = operations },
+                options);
         private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Exist)}", 
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Exist)}",
                 async ([FromQuery] string key, [FromServices] TService service) =>
             {
                 var queryService = service as IQueryPattern<T, TKey>;
@@ -158,7 +171,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Insert)}", 
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Insert)}",
                 async ([FromQuery] string key, [FromBody] T entity, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
@@ -171,7 +184,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Update)}", 
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Update)}",
                 async ([FromQuery] string key, [FromBody] T entity, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
@@ -183,7 +196,7 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddBatch<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Batch)}", 
+            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Batch)}",
                 async ([FromBody] BatchOperations<T, TKey> operations, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;
@@ -195,7 +208,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Delete)}", 
+            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Delete)}",
                 async ([FromQuery] string key, [FromServices] TService service) =>
             {
                 var commandService = service as ICommandPattern<T, TKey>;

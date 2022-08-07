@@ -46,8 +46,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             Func<T, bool> predicate = x => true;
-            if (options?.Predicate != null)
-                predicate = options.Predicate.Compile();
+            if (options?.Where != null)
+                predicate = options.Where.Compile();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
             {
                 var blobClient = _client.GetBlobClient(blob.Name);
@@ -69,9 +69,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         public async ValueTask<TProperty> OperationAsync<TProperty>(
          OperationType<TProperty> operation,
          QueryOptions<T>? options = null,
-         Expression<Func<T, TProperty>>? aggregateExpression = null,
          CancellationToken cancellationToken = default)
         {
+#warning to refactor
             List<T> items = new();
             await foreach (var item in QueryAsync(options, cancellationToken))
                 items.Add(item);
@@ -79,8 +79,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return (await operation.ExecuteAsync(
                 () => items.Count,
                 null!,
-                () => items.Select(aggregateExpression.Compile()).Max(),
-                () => items.Select(aggregateExpression.Compile()).Min(),
+                () => items.Select(x => options!.Select!.Transform<object>(x!)).Max(),
+                () => items.Select(x => options!.Select!.Transform<object>(x!)).Min(),
                 null!))!;
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)

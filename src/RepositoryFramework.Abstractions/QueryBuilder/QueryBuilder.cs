@@ -18,7 +18,7 @@ namespace RepositoryFramework
         /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public QueryBuilder<T, TKey> Where(Expression<Func<T, bool>> predicate)
         {
-            _options.Predicate = predicate;
+            _options.Where = predicate;
             return this;
         }
         /// <summary>
@@ -158,12 +158,12 @@ namespace RepositoryFramework
         {
             QueryOptions<T> countOptions = new()
             {
-                Predicate = _options.Predicate
+                Where = _options.Where
             };
             _options.Top = pageSize;
             _options.Skip = (page - 1) * pageSize;
             var query = await _query.QueryAsync(_options, cancellationToken).ToListAsync().NoContext();
-            var count = await _query.OperationAsync(OperationType<long>.Count, countOptions, null, cancellationToken).NoContext();
+            var count = await _query.OperationAsync(OperationType<long>.Count, countOptions, cancellationToken).NoContext();
             long pages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
             return new Page<T>(query, count, pages);
         }
@@ -172,7 +172,7 @@ namespace RepositoryFramework
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns>List<<typeparamref name="T"/>></returns>
-        public ValueTask<List<T>> ToListAsync(CancellationToken cancellationToken = default) 
+        public ValueTask<List<T>> ToListAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_options, cancellationToken).ToListAsync(cancellationToken);
         /// <summary>
         /// Call query method in your Repository.
@@ -187,8 +187,8 @@ namespace RepositoryFramework
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns>ValueTask<long></returns>
-        public ValueTask<long> CountAsync(CancellationToken cancellationToken = default) 
-            => _query.OperationAsync(OperationType<long>.Count, _options, null, cancellationToken);
+        public ValueTask<long> CountAsync(CancellationToken cancellationToken = default)
+            => _query.OperationAsync(OperationType<long>.Count, _options, cancellationToken);
         /// <summary>
         /// Sum the column of your items by your query.
         /// </summary>
@@ -196,8 +196,12 @@ namespace RepositoryFramework
         /// <param name="predicate">Select the columnt to sum.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>ValueTask<decimal></returns>
-        public ValueTask<TProperty> SumAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default) 
-            => _query.OperationAsync(OperationType<TProperty>.Sum, _options, predicate, cancellationToken);
+        public ValueTask<TProperty> SumAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        {
+            _options.Select = predicate;
+            return _query.OperationAsync(OperationType<TProperty>.Sum, _options, cancellationToken);
+        }
+
         /// <summary>
         /// Calculate the average of your column by your query.
         /// </summary>
@@ -206,7 +210,11 @@ namespace RepositoryFramework
         /// <param name="cancellationToken"></param>
         /// <returns>ValueTask<decimal></returns>
         public ValueTask<TProperty> AverageAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
-            => _query.OperationAsync(OperationType<TProperty>.Average, _options, predicate, cancellationToken);
+        {
+            _options.Select = predicate;
+            return _query.OperationAsync(OperationType<TProperty>.Average, _options, cancellationToken);
+        }
+
         /// <summary>
         /// Search the max between items by your query.
         /// </summary>
@@ -215,7 +223,11 @@ namespace RepositoryFramework
         /// <param name="cancellationToken"></param>
         /// <returns>ValueTask<decimal></returns>
         public ValueTask<TProperty> MaxAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
-            => _query.OperationAsync(OperationType<TProperty>.Max, _options, predicate, cancellationToken);
+        {
+            _options.Select = predicate;
+            return _query.OperationAsync(OperationType<TProperty>.Max, _options, cancellationToken);
+        }
+
         /// <summary>
         /// Search the min between items by your query.
         /// </summary>
@@ -224,6 +236,9 @@ namespace RepositoryFramework
         /// <param name="cancellationToken"></param>
         /// <returns>ValueTask<decimal></returns>
         public ValueTask<TProperty> MinAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
-            => _query.OperationAsync(OperationType<TProperty>.Min, _options, predicate, cancellationToken);
+        {
+            _options.Select = predicate;
+            return _query.OperationAsync(OperationType<TProperty>.Min, _options, cancellationToken);
+        }
     }
 }

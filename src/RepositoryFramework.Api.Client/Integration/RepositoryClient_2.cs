@@ -69,15 +69,25 @@ namespace RepositoryFramework.Api.Client
                     if (!cancellationToken.IsCancellationRequested)
                         yield return item;
         }
-        public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<T>? options = null, Expression<Func<T, TProperty>>? aggregateExpression = null, CancellationToken cancellationToken = default)
+        public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Operation).NoContext();
-            var value = options?.ToBody() ?? (aggregateExpression == null ? QueryOptions.Empty : QueryOptions<T>.Empty.ToBody(aggregateExpression));
-            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Operation)}?op={operation.Type}",
+            var value = options?.ToBody() ?? QueryOptions.Empty;
+            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Operation)}?op={operation.Operation}&returnType={GetPrimitiveNameOrAssemblyQualifiedName()}",
                 value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<TProperty>(cancellationToken: cancellationToken).NoContext();
             return result!;
+
+            string? GetPrimitiveNameOrAssemblyQualifiedName()
+            {
+                var name = operation.Type.AssemblyQualifiedName;
+                if (name == null)
+                    return null;
+                if (PrimitiveMapper.Instance.FromAssemblyQualifiedNameToName.ContainsKey(name))
+                    return PrimitiveMapper.Instance.FromAssemblyQualifiedNameToName[name];
+                return name;
+            }
         }
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {

@@ -26,10 +26,10 @@ namespace RepositoryFramework
                 Skip = _queryOptions.Skip,
                 Top = _queryOptions.Top,
             };
-            if (_queryOptions.Predicate != null)
+            if (_queryOptions.Where != null)
             {
-                var serializedPredicate = _queryOptions.Predicate.Serialize();
-                translatedQueryOptions.Predicate = ReplaceWithValues(serializedPredicate).Deserialize<TTranslated, bool>();
+                var serializedPredicate = _queryOptions.Where.Serialize();
+                translatedQueryOptions.Where = ReplaceWithValues(serializedPredicate).Deserialize<TTranslated, bool>();
             }
             if (_queryOptions.Orders != null)
             {
