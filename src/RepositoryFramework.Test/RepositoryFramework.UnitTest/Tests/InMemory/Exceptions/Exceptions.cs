@@ -52,7 +52,8 @@ namespace RepositoryFramework.UnitTest.InMemory.Exceptions
         {
             try
             {
-                var cars = await _car.QueryAsync().ToListAsync().NoContext();
+#warning Why does not it see the empty queryasync method?
+                var cars = await _car.QueryAsync(Query.Empty).ToListAsync().NoContext();
                 Assert.True(false);
                 Assert.Empty(cars);
             }

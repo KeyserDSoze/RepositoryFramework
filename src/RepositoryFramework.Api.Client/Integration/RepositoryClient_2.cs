@@ -60,7 +60,7 @@ namespace RepositoryFramework.Api.Client
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Query).NoContext();
-            var value = options?.ToBody() ?? QueryOptions.Empty;
+            var value = query.Serialize();
             var response = await client.PostAsJsonAsync(nameof(RepositoryMethods.Query), value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<List<T>>(cancellationToken: cancellationToken).NoContext();
@@ -73,7 +73,7 @@ namespace RepositoryFramework.Api.Client
             Query query, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Operation).NoContext();
-            var value = options?.ToBody() ?? QueryOptions.Empty;
+            var value = query.Serialize();
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Operation)}?op={operation.Operation}&returnType={GetPrimitiveNameOrAssemblyQualifiedName()}",
                 value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();

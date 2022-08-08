@@ -26,7 +26,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
 
         public ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
-          QueryOptions<Car>? options = null,
+          Query query,
           CancellationToken cancellationToken = default)
         {
             if (operation.Operation == Operations.Count)
@@ -55,13 +55,11 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
             throw new NotImplementedException();
         }
 
-        public async IAsyncEnumerable<Car> QueryAsync(QueryOptions<Car>? options = null,
+        public async IAsyncEnumerable<Car> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken);
-            var filtered = _database.FilterWithTranslation(
-                options)
-                .ToList();
+            var filtered = query.Filter(_database).ToList();
             foreach (var item in filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }) ?? new List<Car>())
                 yield return item;
         }

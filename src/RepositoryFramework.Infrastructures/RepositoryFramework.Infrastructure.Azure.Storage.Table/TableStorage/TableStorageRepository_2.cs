@@ -44,12 +44,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
-        public async IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null,
+        public async IAsyncEnumerable<T> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             Func<T, bool> predicate = x => true;
-            if (options?.Where != null)
-                predicate = options.Where.Compile();
+#warning to check well, and check if possible to get a queryable item to improve query request
+            LambdaExpression? where = query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where)?.Expression;
+            if (where != null)
+                predicate = where.AsExpression<T, bool>().Compile();
             await foreach (var entity in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
             {
                 var item = JsonSerializer.Deserialize<T>(entity.Value)!;
@@ -60,19 +62,19 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
-          QueryOptions<T>? options = null,
+          Query query,
           CancellationToken cancellationToken = default)
         {
             List<T> items = new();
-            await foreach (var item in QueryAsync(options, cancellationToken))
+            await foreach (var item in QueryAsync(query, cancellationToken))
                 items.Add(item);
-
+            LambdaExpression? select = query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Select)?.Expression;
             return (await operation.ExecuteAsync(
                 () => ValueTask.FromResult((TProperty)(object)items.Count),
-                () => ValueTask.FromResult((TProperty)(object)items.Sum(x => options!.Select!.Transform<decimal>(x!))),
-                () => ValueTask.FromResult((TProperty)(object)items.Max(x => options!.Select!.Transform<decimal>(x!))),
-                () => ValueTask.FromResult((TProperty)(object)items.Min(x => options!.Select!.Transform<decimal>(x!))),
-                () => ValueTask.FromResult((TProperty)(object)items.Average(x => options!.Select!.Transform<decimal>(x!)))
+                () => ValueTask.FromResult((TProperty)(object)items.Sum(x => select!.InvokeAndTransform<decimal>(x!))),
+                () => ValueTask.FromResult((TProperty)(object)items.Max(x => select!.InvokeAndTransform<decimal>(x!))),
+                () => ValueTask.FromResult((TProperty)(object)items.Min(x => select!.InvokeAndTransform<decimal>(x!))),
+                () => ValueTask.FromResult((TProperty)(object)items.Average(x => select!.InvokeAndTransform<decimal>(x!)))
                 ))!;
         }
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)

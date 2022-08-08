@@ -36,19 +36,19 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<SuperMigrationUser>(true));
         }
 
-        public IAsyncEnumerable<SuperMigrationUser> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<SuperMigrationUser> QueryAsync(Query query, CancellationToken cancellationToken = default)
         {
-            var users = _users.Select(x => x.Value).FilterAsAsyncEnumerable(options);
+            var users = query.FilterAsAsyncEnumerable(_users.Select(x => x.Value));
             return users;
         }
         public ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
-          QueryOptions<SuperMigrationUser>? options = null,
+          Query query,
           CancellationToken cancellationToken = default)
         {
             if (operation.Operation == Operations.Count)
             {
-                var users = _users.Select(x => x.Value).Filter(options);
+                var users = query.Filter(_users.Select(x => x.Value));
                 return ValueTask.FromResult((TProperty)(object)users.Count());
             }
             else

@@ -131,7 +131,7 @@ namespace RepositoryFramework.InMemory
                     return InMemoryStorage<T, TKey>.SetState(false);
             }, cancellationToken);
 
-        public async IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null,
+        public async IAsyncEnumerable<T> QueryAsync(Query query,
              [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Query);
@@ -144,7 +144,7 @@ namespace RepositoryFramework.InMemory
                     await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken).NoContext();
                     throw exception;
                 }
-                foreach (var item in Values.Filter(options))
+                foreach (var item in query.Filter(Values))
                 {
                     if (!cancellationToken.IsCancellationRequested)
                         yield return item;
@@ -157,7 +157,7 @@ namespace RepositoryFramework.InMemory
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(
            OperationType<TProperty> operation,
-           QueryOptions<T>? options = null,
+           Query query,
            CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Operation);
@@ -172,13 +172,13 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    var filterd = Values.Filter(options);
+                    var filterd = query.Filter(Values);
                     return (await operation.ExecuteAsync(
                         () => Invoke<TProperty>(filterd.Count()),
-                        () => Invoke<TProperty>(filterd.Sum(x => options!.Select!.Transform<decimal>(x!))),
-                        () => Invoke<TProperty>(filterd.Max(x => options!.Select!.Transform<decimal>(x!))),
-                        () => Invoke<TProperty>(filterd.Min(x => options!.Select!.Transform<decimal>(x!))),
-                        () => Invoke<TProperty>(filterd.Average(x => options!.Select!.Transform<decimal>(x!)))))!;
+                        () => Invoke<TProperty>(filterd.Sum(x => (decimal)Convert.ChangeType(x, typeof(decimal)))),
+                        () => Invoke<TProperty>(filterd.Max(x => x)),
+                        () => Invoke<TProperty>(filterd.Min(x => x)),
+                        () => Invoke<TProperty>(filterd.Average(x => (decimal)Convert.ChangeType(x, typeof(decimal))))))!;
                 }
                 else
                     throw new TaskCanceledException();

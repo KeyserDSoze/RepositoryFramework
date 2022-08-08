@@ -39,25 +39,18 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
 
         public async ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
-          QueryOptions<AppUser>? options = null,
+          Query query,
           CancellationToken cancellationToken = default)
         {
-            var context = _context.Users
-                    .FilterWithTranslationAsAsyncEnumerable(options);
+#warning AR - to understand how to elaborate this problem
+            var context = query.Filter(_context.Users);
             return await operation.ExecuteAsync(
                     () => context.CountAsync(cancellationToken),
-                    () => context.SumAsync(x => x, cancellationToken),
+                    () => default(TProperty) /*context.SumAsync(x => x, cancellationToken)*/,
                     () => context.MaxAsync(cancellationToken),
                     () => context.MinAsync(cancellationToken),
-                    () => context.AverageAsync(cancellationToken)
+                    () => default(TProperty)/*context.AverageAsync(x => x, cancellationToken)*/
                 );
-            if (operation.Operation == Operations.Count)
-                return (TProperty)Convert.ChangeType(await
-                    , typeof(TProperty));
-            else if (operation.Operation == Operations.Sum)
-            {
-
-            }
         }
 
         public async Task<State<AppUser>> DeleteAsync(AppUserKey key, CancellationToken cancellationToken = default)
@@ -101,14 +94,11 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             };
         }
 
-        public async IAsyncEnumerable<AppUser> QueryAsync(QueryOptions<AppUser>? options = null,
+        public async IAsyncEnumerable<AppUser> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            await foreach (var user in _context.Users.
-                FilterWithTranslationAsAsyncEnumerable(options))
-            {
+            await foreach (var user in query.FilterAsAsyncEnumerable(_context.Users))
                 yield return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new());
-            }
         }
 
         public async Task<State<AppUser>> UpdateAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)

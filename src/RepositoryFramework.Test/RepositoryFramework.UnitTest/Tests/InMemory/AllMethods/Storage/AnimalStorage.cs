@@ -40,16 +40,18 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
             throw new NotImplementedException();
         }
 
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
+            Query query,
+            CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public async IAsyncEnumerable<Animal> QueryAsync(QueryOptions<Animal>? options = null,
+        public async IAsyncEnumerable<Animal> QueryAsync(Query query,
              [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken);
-            foreach (var entity in _database.Animals.Filter(options))
+            foreach (var entity in query.Filter(_database.Animals))
                 yield return entity;
         }
 

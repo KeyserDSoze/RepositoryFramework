@@ -42,12 +42,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return new(response.Value != null, value);
         }
 
-        public async IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null,
+        public async IAsyncEnumerable<T> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             Func<T, bool> predicate = x => true;
-            if (options?.Where != null)
-                predicate = options.Where.Compile();
+#warning to check well
+            LambdaExpression? where = query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where)?.Expression;
+            if (where != null)
+                predicate = where.AsExpression<T, bool>().Compile();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
             {
                 var blobClient = _client.GetBlobClient(blob.Name);
@@ -68,19 +70,19 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
 
         public async ValueTask<TProperty> OperationAsync<TProperty>(
          OperationType<TProperty> operation,
-         QueryOptions<T>? options = null,
+         Query query,
          CancellationToken cancellationToken = default)
         {
 #warning to refactor
             List<T> items = new();
-            await foreach (var item in QueryAsync(options, cancellationToken))
+            await foreach (var item in QueryAsync(query, cancellationToken))
                 items.Add(item);
-
+            LambdaExpression? select = query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Select)?.Expression;
             return (await operation.ExecuteAsync(
                 () => items.Count,
                 null!,
-                () => items.Select(x => options!.Select!.Transform<object>(x!)).Max(),
-                () => items.Select(x => options!.Select!.Transform<object>(x!)).Min(),
+                () => items.Select(x => select!.InvokeAndTransform<object>(x!)).Max(),
+                () => items.Select(x => select!.InvokeAndTransform<object>(x!)).Min(),
                 null!))!;
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)

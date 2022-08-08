@@ -9,7 +9,7 @@ namespace RepositoryFramework
             => _repositoryBuilder = repositoryBuilder;
         public new IQueryTranslationBuilder<T, TTranslated> With<TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
-            FilterTranslation<T, TTranslated>.Instance.With(property, translatedProperty);
+            FilterTranslation.Instance.With(property, translatedProperty);
             return this;
         }
         public new IRepositoryBuilder<T> Builder => _repositoryBuilder;

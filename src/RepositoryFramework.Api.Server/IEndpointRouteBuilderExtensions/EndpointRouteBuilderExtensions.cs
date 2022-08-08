@@ -103,45 +103,43 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Query)}",
-                async ([FromBody] QueryOptions query, [FromServices] TService service) =>
+                async ([FromBody] SerializableQuery query, [FromServices] TService service) =>
                 {
-                    var options = query.Transform<T>();
+                    var options = query.DeserializeAndTranslate<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
                     return await queryService!.QueryAsync(options).ToListAsync().NoContext();
 
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Query);
         }
-        private static readonly Type ObjectType = typeof(object);
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "I need it because I want to use reflection to inject different TProperty to my operation method.")]
-        private static readonly MethodInfo GetResultFromOperationMethod = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(GetResultFromOperation), BindingFlags.NonPublic | BindingFlags.Static)!;
         private static void AddOperation<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
-                async ([FromQuery] Operations op, [FromQuery] string? returnType, [FromBody] QueryOptions query, [FromServices] TService service) =>
+                async ([FromQuery] Operations op, [FromQuery] string? returnType,
+                    [FromBody] SerializableQuery query, [FromServices] TService service) =>
                 {
-                    var options = query.Transform<T>();
+                    var options = query.DeserializeAndTranslate<T>();
                     Type type = CalculateTypeFromQuery();
                     var queryService = service as IQueryPattern<T, TKey>;
-                    var generic = GetResultFromOperationMethod.MakeGenericMethod(typeof(T), typeof(TKey), type);
-                    var task = (dynamic)generic.Invoke(null,
-                        new object[] { queryService!, op, options })!;
+                    var task = (dynamic)(Generics.With(typeof(EndpointRouteBuilderExtensions),
+                                  nameof(GetResultFromOperation),
+                                  typeof(T), typeof(TKey), type)
+                                .Invoke(queryService!, op, options))!;
                     await task;
                     var result = task.Result;
                     return result;
 
                     Type CalculateTypeFromQuery()
                     {
-                        Type? calculatedType = ObjectType;
+                        Type? calculatedType = typeof(object);
                         if (string.IsNullOrWhiteSpace(returnType))
                             return calculatedType;
                         if (PrimitiveMapper.Instance.FromNameToAssemblyQualifiedName.ContainsKey(returnType))
                             calculatedType = Type.GetType(PrimitiveMapper.Instance.FromNameToAssemblyQualifiedName[returnType]);
                         else
                             calculatedType = Type.GetType(returnType);
-                        return calculatedType ?? ObjectType;
+                        return calculatedType ?? typeof(object);
                     }
                 }).WithName($"{nameof(RepositoryMethods.Operation)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Operation);
@@ -149,7 +147,7 @@ namespace Microsoft.Extensions.DependencyInjection
         private static ValueTask<TProperty> GetResultFromOperation<T, TKey, TProperty>(
             IQueryPattern<T, TKey> queryService,
             Operations operations,
-            QueryOptions<T> options)
+            Query options)
             where TKey : notnull
             => queryService.OperationAsync(
                 new OperationType<TProperty> { Operation = operations },

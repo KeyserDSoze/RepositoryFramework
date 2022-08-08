@@ -42,9 +42,9 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<MigrationUser>(true));
         }
 
-        public IAsyncEnumerable<MigrationUser> QueryAsync(QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<MigrationUser> QueryAsync(Query query, CancellationToken cancellationToken = default)
         {
-            var users = _users.Select(x => x.Value).Filter(options);
+            var users = query.Filter(_users.Select(x => x.Value));
             return users.ToAsyncEnumerable();
         }
         
@@ -59,7 +59,7 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             throw new NotImplementedException();
         }
 
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, QueryOptions<MigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
