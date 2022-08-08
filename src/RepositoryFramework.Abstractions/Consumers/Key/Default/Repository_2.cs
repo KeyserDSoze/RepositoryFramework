@@ -24,12 +24,12 @@ namespace RepositoryFramework
         public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.InsertAsync(key, value, cancellationToken);
 
-        public IAsyncEnumerable<T> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
-            => _repository.QueryAsync(options, cancellationToken);
+        public IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default)
+            => _repository.QueryAsync(query, cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
-            QueryOptions<T>? options = null,
+            Query query,
             CancellationToken cancellationToken = default)
-           => _repository.OperationAsync(operation, options, cancellationToken);
+           => _repository.OperationAsync(operation, query, cancellationToken);
 
         public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.UpdateAsync(key, value, cancellationToken);
