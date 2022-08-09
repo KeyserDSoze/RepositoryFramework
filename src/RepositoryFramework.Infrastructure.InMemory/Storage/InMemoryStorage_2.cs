@@ -173,12 +173,13 @@ namespace RepositoryFramework.InMemory
                 if (!cancellationToken.IsCancellationRequested)
                 {
                     var filterd = query.Filter(Values);
+                    var selected = query.FilterAsSelect(filterd);
                     return (await operation.ExecuteAsync(
-                        () => Invoke<TProperty>(filterd.Count()),
-                        () => Invoke<TProperty>(filterd.Sum(x => (decimal)Convert.ChangeType(x, typeof(decimal)))),
-                        () => Invoke<TProperty>(filterd.Max(x => x)),
-                        () => Invoke<TProperty>(filterd.Min(x => x)),
-                        () => Invoke<TProperty>(filterd.Average(x => (decimal)Convert.ChangeType(x, typeof(decimal))))))!;
+                        () => Invoke<TProperty>(selected.Count()),
+                        () => Invoke<TProperty>(selected.Sum(x => (decimal)Convert.ChangeType(x, typeof(decimal)))),
+                        () => Invoke<TProperty>(selected.Max()!),
+                        () => Invoke<TProperty>(selected.Min()!),
+                        () => Invoke<TProperty>(selected.Average(x => (decimal)Convert.ChangeType(x, typeof(decimal))))))!;
                 }
                 else
                     throw new TaskCanceledException();

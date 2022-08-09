@@ -6,13 +6,12 @@ namespace System.Linq
     public static class QueryPatternExtensions
     {
         /// <summary>
-        /// Take all elements by <paramref name="predicate"/> query.
+        /// Query all elements.
         /// </summary>
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="entity"></param>
-        /// <param name="top">Number of elements to take.</param>
-        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        /// <returns>IAsyncEnumerable<typeparamref name="T"/></returns>
         public static IAsyncEnumerable<T> QueryAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
             CancellationToken cancellationToken = default)
             where TKey : notnull

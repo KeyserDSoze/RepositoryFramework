@@ -15,10 +15,16 @@ namespace RepositoryFramework
                     operation.Expression?.Serialize(), operation.Value));
             return serialized;
         }
-        public string Serialize() 
+        public string Serialize()
             => ToSerializableQuery().ToJson();
         public string ToKey()
             => ToSerializableQuery().ToString()!;
+        public Query Translate<T>()
+        {
+            if (FilterTranslation.Instance.HasTranslation<T>())
+                return ToSerializableQuery().DeserializeAndTranslate<T>();
+            return this;
+        }
         internal Query Where(LambdaExpression expression)
         {
             Operations.Add(new QueryOperation(QueryOperations.Where, expression));
@@ -68,31 +74,6 @@ namespace RepositoryFramework
             => Filter(enumerable.AsQueryable());
         public IQueryable<TValue> Filter<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
             => Filter(dictionary.Select(x => x.Value).AsQueryable());
-        //public IAsyncEnumerable<T> Filter<T>(IAsyncEnumerable<T> enumerable)
-        //{
-        //    foreach (var operation in Operations)
-        //    {
-        //        enumerable = operation.Operation switch
-        //        {
-        //            QueryOperations.Where => enumerable.Where(operation.Expression!.AsExpression<T, bool>()),
-        //            QueryOperations.Top => enumerable.Take(operation.Value!.Value),
-        //            QueryOperations.Skip => enumerable.Skip(operation.Value!.Value),
-        //            QueryOperations.OrderBy => enumerable.OrderBy(operation.Expression!.AsExpression<T, object>()),
-        //            QueryOperations.OrderByDescending => enumerable.OrderByDescending(operation.Expression!.AsExpression<T, object>()),
-        //            QueryOperations.ThenBy => (enumerable as IOrderedAsyncEnumerable<T>)!.ThenBy(operation.Expression!.AsExpression<T, object>()),
-        //            QueryOperations.ThenByDescending => (enumerable as IOrderedAsyncEnumerable<T>)!.ThenByDescending(operation.Expression!.AsExpression<T, object>()),
-        //            _ => enumerable,
-        //        };
-        //    }
-        //    return enumerable;
-        //}
-        public TQueryable Filter<TQueryable, T>(TQueryable queryable)
-            where TQueryable : IEnumerable<T> 
-            => (TQueryable)Filter(queryable.AsQueryable());
-        public IAsyncEnumerable<T> FilterAsAsyncEnumerable<T>(IEnumerable<T> enumerable)
-            => Filter(enumerable).ToAsyncEnumerable();
-        public IAsyncEnumerable<T> FilterAsAsyncEnumerable<T>(IQueryable<T> queryable)
-            => Filter(queryable).ToAsyncEnumerable();
         public IQueryable<T> Filter<T>(IQueryable<T> queryable)
         {
             foreach (var operation in Operations)
@@ -111,5 +92,22 @@ namespace RepositoryFramework
             }
             return queryable;
         }
+        public IAsyncEnumerable<T> FilterAsAsyncEnumerable<T>(IEnumerable<T> enumerable)
+        => Filter(enumerable).ToAsyncEnumerable();
+        public IAsyncEnumerable<T> FilterAsAsyncEnumerable<T>(IQueryable<T> queryable)
+            => Filter(queryable).ToAsyncEnumerable();
+        public IQueryable<object> FilterAsSelect<T>(IEnumerable<T> enumerable)
+        {
+            var selectOperation = Operations.FirstOrDefault(x => x.Operation == QueryOperations.Select);
+            if (selectOperation != null)
+                return enumerable.Select(selectOperation.Expression!.AsExpression<T, object>().Compile()).AsQueryable();
+            else
+                return enumerable.Select(x => (object)x!).AsQueryable();
+        }
+        public IQueryable<object> FilterAsSelect<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
+            => FilterAsSelect(dictionary.Select(x => x.Value));
+
+        public IQueryable<object> FilterAsSelect<T>(IQueryable<T> queryable)
+            => FilterAsSelect(queryable.AsEnumerable());
     }
 }

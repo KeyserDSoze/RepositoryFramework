@@ -162,7 +162,7 @@ namespace RepositoryFramework
                 operations.Where(where.Expression!);
             Take(pageSize);
             Skip((page - 1) * pageSize);
-            var query = await ToListAsync().NoContext();
+            var query = await ToListAsync(cancellationToken).NoContext();
             var count = await _query.OperationAsync(OperationType<long>.Count, operations, cancellationToken).NoContext();
             long pages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
             return new Page<T>(query, count, pages);

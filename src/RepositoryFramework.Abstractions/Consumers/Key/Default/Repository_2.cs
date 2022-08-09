@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace RepositoryFramework
+﻿namespace RepositoryFramework
 {
     internal class Repository<T, TKey> : IRepository<T, TKey> 
         where TKey : notnull
@@ -25,11 +23,11 @@ namespace RepositoryFramework
             => _repository.InsertAsync(key, value, cancellationToken);
 
         public IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default)
-            => _repository.QueryAsync(query, cancellationToken);
+            => _repository.QueryAsync(query.Translate<T>(), cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             Query query,
             CancellationToken cancellationToken = default)
-           => _repository.OperationAsync(operation, query, cancellationToken);
+           => _repository.OperationAsync(operation, query.Translate<T>(), cancellationToken);
 
         public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.UpdateAsync(key, value, cancellationToken);
