@@ -72,7 +72,7 @@ namespace RepositoryFramework.UnitTest.Repository
             result = await _repository.ExistAsync(key);
             Assert.False(result.IsOk);
 
-            var items = await _repository.Where(x => x.Id > 0).QueryAsync().ToListAsync();
+            var items = await _repository.Where(x => x.Id > 0).ToListAsync();
             Assert.Empty(items);
 
             var batchOperation = _repository.CreateBatchOperation();
@@ -80,7 +80,7 @@ namespace RepositoryFramework.UnitTest.Repository
                 batchOperation.AddInsert(new AppUserKey(i), new AppUser(i, $"User {i}", $"Email {i}", new()));
             await batchOperation.ExecuteAsync();
 
-            items = await _repository.Where(x => x.Id >= 0).QueryAsync().ToListAsync();
+            items = await _repository.Where(x => x.Id >= 0).ToListAsync();
             Assert.Equal(10, items.Count);
 
             Expression<Func<AppUser, object>> orderPredicate = x => x.Id;
@@ -92,7 +92,7 @@ namespace RepositoryFramework.UnitTest.Repository
                 batchOperation.AddUpdate(new AppUserKey(appUser.Id), new AppUser(appUser.Id, $"User Updated {appUser.Id}", $"Email Updated {appUser.Id}", new()));
             await batchOperation.ExecuteAsync();
 
-            items = await _repository.Where(x => x.Id >= 0).QueryAsync().ToListAsync();
+            items = await _repository.Where(x => x.Id >= 0).ToListAsync();
             Assert.Equal(10, items.Count);
             Assert.Equal($"Email Updated {items.First().Id}", items.First().Email);
 

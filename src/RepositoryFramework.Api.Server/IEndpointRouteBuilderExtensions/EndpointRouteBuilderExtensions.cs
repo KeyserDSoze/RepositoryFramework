@@ -122,12 +122,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     var options = query.DeserializeAndTranslate<T>();
                     Type type = CalculateTypeFromQuery();
                     var queryService = service as IQueryPattern<T, TKey>;
-                    var task = (dynamic)(Generics.With(typeof(EndpointRouteBuilderExtensions),
+                    var result = await Generics.WithStatic(
+                                  typeof(EndpointRouteBuilderExtensions),
                                   nameof(GetResultFromOperation),
                                   typeof(T), typeof(TKey), type)
-                                .Invoke(queryService!, op, options))!;
-                    await task;
-                    var result = task.Result;
+                                .InvokeAsync(queryService!, op, options)!;
                     return result;
 
                     Type CalculateTypeFromQuery()

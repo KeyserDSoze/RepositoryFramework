@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.Json;
 
 namespace RepositoryFramework
@@ -83,10 +84,10 @@ namespace RepositoryFramework
                     QueryOperations.Where => queryable.Where(operation.Expression!.AsExpression<T, bool>()).AsQueryable(),
                     QueryOperations.Top => queryable.Take(operation.Value!.Value).AsQueryable(),
                     QueryOperations.Skip => queryable.Skip(operation.Value!.Value).AsQueryable(),
-                    QueryOperations.OrderBy => queryable.OrderBy(operation.Expression!.AsExpression<T, object>()).AsQueryable(),
-                    QueryOperations.OrderByDescending => queryable.OrderByDescending(operation.Expression!.AsExpression<T, object>()).AsQueryable(),
-                    QueryOperations.ThenBy => (queryable as IOrderedQueryable<T>)!.ThenBy(operation.Expression!.AsExpression<T, object>()).AsQueryable(),
-                    QueryOperations.ThenByDescending => (queryable as IOrderedQueryable<T>)!.ThenByDescending(operation.Expression!.AsExpression<T, object>()).AsQueryable(),
+                    QueryOperations.OrderBy => queryable.OrderBy(operation.Expression!),
+                    QueryOperations.OrderByDescending => queryable.OrderByDescending(operation.Expression!),
+                    QueryOperations.ThenBy => (queryable as IOrderedQueryable<T>)!.ThenBy(operation.Expression!),
+                    QueryOperations.ThenByDescending => (queryable as IOrderedQueryable<T>)!.ThenByDescending(operation.Expression!),
                     _ => queryable,
                 };
             }
@@ -98,11 +99,10 @@ namespace RepositoryFramework
             => Filter(queryable).ToAsyncEnumerable();
         public IQueryable<object> FilterAsSelect<T>(IEnumerable<T> enumerable)
         {
-            var selectOperation = Operations.FirstOrDefault(x => x.Operation == QueryOperations.Select);
-            if (selectOperation != null)
-                return enumerable.Select(selectOperation.Expression!.AsExpression<T, object>().Compile()).AsQueryable();
-            else
-                return enumerable.Select(x => (object)x!).AsQueryable();
+            IQueryable<object>? queryable = null;
+            foreach (var item in Operations.Where(x => x.Operation == QueryOperations.Select))
+                queryable = enumerable.AsQueryable().Select(item.Expression!);
+            return queryable ?? enumerable.Select(x => (object)x!).AsQueryable();
         }
         public IQueryable<object> FilterAsSelect<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
             => FilterAsSelect(dictionary.Select(x => x.Value));

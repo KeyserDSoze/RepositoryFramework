@@ -42,15 +42,31 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
           Query query,
           CancellationToken cancellationToken = default)
         {
-#warning AR - to understand how to elaborate this problem
             var context = query.Filter(_context.Users);
-            return await operation.ExecuteAsync(
-                    () => context.CountAsync(cancellationToken),
-                    () => default(TProperty) /*context.SumAsync(x => x, cancellationToken)*/,
-                    () => context.MaxAsync(cancellationToken),
-                    () => context.MinAsync(cancellationToken),
-                    () => default(TProperty)/*context.AverageAsync(x => x, cancellationToken)*/
-                );
+            object? result = null;
+            if (operation.Operation == Operations.Count)
+            {
+                result = await context.CountAsync(cancellationToken);
+            }
+            else if (operation.Operation == Operations.Min)
+            {
+                result = await query.FilterAsSelect(context).MinAsync(cancellationToken);
+            }
+            else if (operation.Operation == Operations.Max)
+            {
+                result = await query.FilterAsSelect(context).MaxAsync(cancellationToken);
+            }
+            else if (operation.Operation == Operations.Sum)
+            {
+                var expression = query.Operations.First(x => x.Operation == QueryOperations.Select).Expression!;
+                result = await context.CallMethodAsync<User, decimal>("SumAsync", expression, typeof(EntityFrameworkQueryableExtensions));
+            }
+            else if (operation.Operation == Operations.Average)
+            {
+                var expression = query.Operations.First(x => x.Operation == QueryOperations.Select).Expression!;
+                result = await context.CallMethodAsync<User, decimal>("AverageAsync", expression, typeof(EntityFrameworkQueryableExtensions));
+            }
+            return result.Cast<TProperty>() ?? default(TProperty)!;
         }
 
         public async Task<State<AppUser>> DeleteAsync(AppUserKey key, CancellationToken cancellationToken = default)
