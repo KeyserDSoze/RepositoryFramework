@@ -46,7 +46,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             Func<T, bool> predicate = x => true;
-#warning to check well
+#warning to check well, check a new way to create the query
             LambdaExpression? where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
             if (where != null)
                 predicate = where.AsExpression<T, bool>().Compile();
