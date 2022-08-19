@@ -12,10 +12,15 @@ namespace RepositoryFramework
             Query query = new();
             if (Operations != null)
                 foreach (var operation in Operations)
-                    query.Operations.Add(new(operation.Operation, operation.Expression!.DeserializeAsDynamic<T>(), operation.Value));
+                {
+                    if (operation.Operation == QueryOperations.Top || operation.Operation == QueryOperations.Skip)
+                        query.Operations.Add(new ValueQueryOperation(operation.Operation, operation.Value != null ? long.Parse(operation.Value) : null));
+                    else
+                        query.Operations.Add(new LambdaQueryOperation(operation.Operation, operation.Value?.DeserializeAsDynamic<T>()));
+                }
             return query;
         }
-        public Query DeserializeAndTranslate<T>() 
+        public Query DeserializeAndTranslate<T>()
             => FilterTranslation.Instance.Transform<T>(this);
     }
 }

@@ -47,7 +47,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         {
             Func<T, bool> predicate = x => true;
 #warning to check well
-            LambdaExpression? where = query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where)?.Expression;
+            LambdaExpression? where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
             if (where != null)
                 predicate = where.AsExpression<T, bool>().Compile();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
@@ -77,7 +77,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             List<T> items = new();
             await foreach (var item in QueryAsync(query, cancellationToken))
                 items.Add(item);
-            LambdaExpression? select = query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Select)?.Expression;
+            LambdaExpression? select = query.FirstSelect;
             return (await operation.ExecuteAsync(
                 () => items.Count,
                 null!,

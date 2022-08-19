@@ -67,7 +67,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             CancellationToken cancellationToken = default)
         {
             IQueryable<T> queryable = query.Filter(_client.GetItemLinqQueryable<T>());
-            LambdaExpression? select = query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Select)?.Expression;
+            LambdaExpression? select = query.FirstSelect;
             return operation.ExecuteAsync(
                 () => queryable.CountAsync(cancellationToken)!,
                 () => queryable.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),

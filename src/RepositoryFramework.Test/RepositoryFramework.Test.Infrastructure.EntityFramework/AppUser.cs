@@ -50,23 +50,21 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             }
             else if (operation.Operation == Operations.Min)
             {
-                result = await query.FilterAsSelect(context).MinAsync(cancellationToken);
+                result = await query.FilterAsSelect(context).MinAsync(cancellationToken).NoContext();
             }
             else if (operation.Operation == Operations.Max)
             {
-                result = await query.FilterAsSelect(context).MaxAsync(cancellationToken);
+                result = await query.FilterAsSelect(context).MaxAsync(cancellationToken).NoContext();
             }
             else if (operation.Operation == Operations.Sum)
             {
-                var expression = query.Operations.First(x => x.Operation == QueryOperations.Select).Expression!;
-                result = await context.CallMethodAsync<User, decimal>("SumAsync", expression, typeof(EntityFrameworkQueryableExtensions));
+                result = await context.SumAsync(query.FirstSelect!.AsExpression<User, decimal>(), cancellationToken).NoContext();
             }
             else if (operation.Operation == Operations.Average)
             {
-                var expression = query.Operations.First(x => x.Operation == QueryOperations.Select).Expression!;
-                result = await context.CallMethodAsync<User, decimal>("AverageAsync", expression, typeof(EntityFrameworkQueryableExtensions));
+                result = await context.AverageAsync(query.FirstSelect!.AsExpression<User, decimal>(), cancellationToken).NoContext();
             }
-            return result.Cast<TProperty>() ?? default(TProperty)!;
+            return result.Cast<TProperty>() ?? default!;
         }
 
         public async Task<State<AppUser>> DeleteAsync(AppUserKey key, CancellationToken cancellationToken = default)

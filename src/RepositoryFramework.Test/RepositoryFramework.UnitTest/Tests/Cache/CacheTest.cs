@@ -17,7 +17,7 @@ namespace RepositoryFramework.UnitTest
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
                 .AddStackExchangeRedisCache(options =>
                 {
-                    options.Configuration = configuration["ConnectionString:Redis"];
+                    options.Configuration = configuration["Redis:ConnectionString"];
                     options.InstanceName = "SampleInstance";
                 })
                 .AddRepositoryInMemoryStorage<Country, CountryKey>()

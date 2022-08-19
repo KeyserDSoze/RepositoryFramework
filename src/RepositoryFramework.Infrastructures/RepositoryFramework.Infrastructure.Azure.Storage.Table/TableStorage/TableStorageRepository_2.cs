@@ -49,7 +49,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         {
             Func<T, bool> predicate = x => true;
 #warning to check well, and check if possible to get a queryable item to improve query request
-            LambdaExpression? where = query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where)?.Expression;
+            LambdaExpression? where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
             if (where != null)
                 predicate = where.AsExpression<T, bool>().Compile();
             await foreach (var entity in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
@@ -68,7 +68,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             List<T> items = new();
             await foreach (var item in QueryAsync(query, cancellationToken))
                 items.Add(item);
-            LambdaExpression? select = query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Select)?.Expression;
+            LambdaExpression? select = query.FirstSelect;
             return (await operation.ExecuteAsync(
                 () => ValueTask.FromResult((TProperty)(object)items.Count),
                 () => ValueTask.FromResult((TProperty)(object)items.Sum(x => select!.InvokeAndTransform<decimal>(x!))),

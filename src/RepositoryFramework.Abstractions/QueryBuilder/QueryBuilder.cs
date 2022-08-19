@@ -159,7 +159,7 @@ namespace RepositoryFramework
         {
             Query operations = new();
             foreach (var where in _operations.Operations.Where(x => x.Operation == QueryOperations.Where))
-                operations.Where(where.Expression!);
+                operations.Where((where as LambdaQueryOperation)!.Expression!);
             Take(pageSize);
             Skip((page - 1) * pageSize);
             var query = await ToListAsync(cancellationToken).NoContext();

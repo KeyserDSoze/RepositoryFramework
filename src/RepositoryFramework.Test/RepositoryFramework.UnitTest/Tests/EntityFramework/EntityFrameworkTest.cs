@@ -101,11 +101,11 @@ namespace RepositoryFramework.UnitTest.Repository
             int preSum = 0;
             for (int i = min; i <= max; i++)
                 preSum += i;
-            var preAverage = preSum / (max - min);
+            var preAverage = (int)((decimal)preSum / ((decimal)max + 1 - (decimal)min));
             var sum = await _repository.SumAsync(x => x.Id);
             Assert.Equal(preSum, sum);
             var average = await _repository.AverageAsync(x => x.Id);
-            Assert.Equal(preAverage, average);
+            Assert.InRange(preAverage, average - 1, average + 1);
 
             batchOperation = _repository.CreateBatchOperation();
             foreach (var appUser in await _repository.QueryAsync().ToListAsync())

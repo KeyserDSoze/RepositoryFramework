@@ -37,7 +37,7 @@ namespace RepositoryFramework
                 }
                 return AlreadySerialized[serialized];
             }
-            public LambdaExpression? Transform(LambdaExpression? from) 
+            public LambdaExpression? Transform(LambdaExpression? from)
                 => Transform(from?.Serialize());
         }
         public static FilterTranslation Instance { get; } = new();
@@ -65,10 +65,10 @@ namespace RepositoryFramework
             Query query = new();
             foreach (var operation in _query.Operations)
             {
-                query.Operations.Add(new QueryOperation(
-                    operation.Operation,
-                    translation.Transform(operation.Expression),
-                    operation.Value));
+                if (operation is ValueQueryOperation value)
+                    query.Operations.Add(value with { });
+                else if (operation is LambdaQueryOperation lambda)
+                    query.Operations.Add(new LambdaQueryOperation(lambda.Operation, translation.Transform(lambda.Expression)));
             }
             return query;
         }
@@ -81,10 +81,17 @@ namespace RepositoryFramework
             Query query = new();
             foreach (var operation in _query.Operations)
             {
-                query.Operations.Add(new QueryOperation(
+                if (operation.Operation == QueryOperations.Top || operation.Operation == QueryOperations.Skip)
+                {
+                    query.Operations.Add(new ValueQueryOperation(
+                    operation.Operation, operation.Value != null ? long.Parse(operation.Value) : null));
+                }
+                else
+                {
+                    query.Operations.Add(new LambdaQueryOperation(
                     operation.Operation,
-                    translation.Transform(operation.Expression),
-                    operation.Value));
+                    translation.Transform(operation.Value)));
+                }
             }
             return query;
         }

@@ -176,10 +176,10 @@ namespace RepositoryFramework.InMemory
                     var selected = query.FilterAsSelect(filterd);
                     return (await operation.ExecuteAsync(
                         () => Invoke<TProperty>(selected.Count()),
-                        () => Invoke<TProperty>(selected.Sum(x => (decimal)Convert.ChangeType(x, typeof(decimal)))),
+                        () => Invoke<TProperty>(selected.Sum(x => ((object)x).Cast<decimal>())),
                         () => Invoke<TProperty>(selected.Max()!),
                         () => Invoke<TProperty>(selected.Min()!),
-                        () => Invoke<TProperty>(selected.Average(x => (decimal)Convert.ChangeType(x, typeof(decimal))))))!;
+                        () => Invoke<TProperty>(selected.Average(x => ((object)x).Cast<decimal>()))))!;
                 }
                 else
                     throw new TaskCanceledException();
