@@ -1,9 +1,9 @@
 ﻿### [What is Rystem?](https://github.com/KeyserDSoze/RystemV3)
 
 ## Services extensions
-You may add a repository client for your model. You may choose the domain (domain where the api is), and the custom path by default is "api", you may add custom configuration to the HttpClient and the service lifetime with singleton as default. The api url will be https://{domain}/{startingPath}/{ModelName}/{Type of Api (from Insert, Update, Delete, Get, Query, Exist)}
+You may add a repository client for your model. You may choose the domain (domain where the api is), and the custom path by default is "api", you may add custom configuration to the HttpClient and the service lifetime with singleton as default. The api url will be https://{domain}/{startingPath}/{ModelName}/{Type of Api (from Insert, Update, Delete, Batch, Get, Query, Exist, Operation)}
 
-    public static RepositoryBuilder<T, TKey> AddRepositoryApiClient<T, TKey>(this IServiceCollection services,
+    public static IRepositoryBuilder<T, TKey> AddRepositoryApiClient<T, TKey>(this IServiceCollection services,
         string domain,
         string startingPath = "api",
         Action<HttpClient>? configureClient = null,
@@ -12,7 +12,7 @@ You may add a repository client for your model. You may choose the domain (domai
 
 You have the same client for CQRS, with command
     
-     public static RepositoryBuilder<T, TKey> AddCommandApiClient<T, TKey>(this IServiceCollection services,
+     public static IRepositoryBuilder<T, TKey> AddCommandApiClient<T, TKey>(this IServiceCollection services,
         string domain,
         string startingPath = "api",
         Action<HttpClient>? configureClient = null,
@@ -21,7 +21,7 @@ You have the same client for CQRS, with command
 
 and query
     
-      public static RepositoryBuilder<T, TKey> AddQueryApiClient<T, TKey>(this IServiceCollection services,
+      public static IRepositoryBuilder<T, TKey> AddQueryApiClient<T, TKey>(this IServiceCollection services,
         string domain,
         string startingPath = "api",
         Action<HttpClient>? configureClient = null,
@@ -44,22 +44,24 @@ In DI you install the services
     services.AddQueryApiClient<User, string>("localhost:7058");
 
 And you may inject the objects
-    
+## Please, use ICommand, IQuery and not ICommandPattern, IQueryPattern
+
     ICommand<User, string> command
     IQuery<User, string> command
 
-### With TState
-In DI you install the services, We're using a class Result as TState.
+### With a non default key
+In DI you install the services with a bool key for example.
 
-    services.AddRepositoryApiClient<User, string, Result>("localhost:7058");
-    services.AddCommandApiClient<User, string, Result>("localhost:7058");
-    services.AddQueryApiClient<User, string, Result>("localhost:7058");
+    services.AddRepositoryApiClient<User, bool>("localhost:7058");
+    services.AddCommandApiClient<User, bool>("localhost:7058");
+    services.AddQueryApiClient<User, bool>("localhost:7058");
 
 And you may inject the objects
+## Please, use ICommand, IQuery, IRepository and not ICommandPattern, IQueryPattern, IRepositoryPattern
     
-    IRepository<User, string, Result> repository
-    ICommand<User, string, Result> command
-    IQuery<User, string, Result> command
+    IRepository<User, string> repository
+    ICommand<User, string> command
+    IQuery<User, string> command
 
 ### With string as default TKey 
 In DI you install the services
@@ -75,27 +77,20 @@ And you may inject the objects
     IQuery<User> command
 
 ### Interceptors
-You may add a custom interceptor for every request
+You may add a custom interceptor for every request for every model
 
     public static IServiceCollection AddRepositoryApiClientInterceptor<TInterceptor>(this IServiceCollection services,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TInterceptor : class, IRepositoryClientInterceptor
 
-or a specific interceptor for every model
+or a specific interceptor for each model
     
-     public static RepositoryBuilder<T, TKey, TState> AddApiClientSpecificInterceptor<T, TKey, TState, TInterceptor>(this RepositoryBuilder<T, TKey, TState> builder,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where TInterceptor : class, IRepositoryClientInterceptor<T>
-        where TKey : notnull
-
-or for a State as default TState 
-
     public static RepositoryBuilder<T, TKey> AddApiClientSpecificInterceptor<T, TKey, TInterceptor>(this RepositoryBuilder<T, TKey> builder,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TInterceptor : class, IRepositoryClientInterceptor<T>
         where TKey : notnull
 
-or for a State as default TState and string as default TKey
+or for a string as default TKey
 
     public static RepositoryBuilder<T> AddApiClientSpecificInterceptor<T, TInterceptor>(this RepositoryBuilder<T> builder,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
