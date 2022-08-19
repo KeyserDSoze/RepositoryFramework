@@ -72,3 +72,5 @@ then you add the IDistributedCache implementation to your repository patterns or
 and as always you will use the standard interface that is automatically integrated in the repository flow.
     
     IRepository<User> repository;
+
+The same is valid for ICommand and IQuery.
