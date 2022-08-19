@@ -3,7 +3,7 @@
 ## In memory integration by default
 With this library you can add in memory integration with the chance to create random data with random values, random based on regular expressions and delegated methods
 
-    public static RepositoryInMemoryBuilder<T, TKey> AddRepositoryInMemoryStorage<T, TKey>(
+    public static IRepositoryInMemoryBuilder<T, TKey> AddRepositoryInMemoryStorage<T, TKey>(
         this IServiceCollection services,
         Action<RepositoryBehaviorSettings<T, TKey>>? settings = default)
         where TKey : notnull 

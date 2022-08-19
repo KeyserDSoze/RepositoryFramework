@@ -14,5 +14,6 @@ namespace RepositoryFramework.InMemory
             Expression<Func<T, string>> navigationKey,
             int numberOfElements = 100,
             int numberOfElementsWhenEnumerableIsFound = 10);
+        new IQueryTranslationInMemoryBuilder<T, TTranslated> Translate<TTranslated>();
     }
 }

@@ -17,7 +17,7 @@ namespace RepositoryFramework.UnitTest
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
                 .AddStackExchangeRedisCache(options =>
                 {
-                    options.Configuration = configuration["ConnectionString:Redis"];
+                    options.Configuration = configuration["Redis:ConnectionString"];
                     options.InstanceName = "SampleInstance";
                 })
                 .AddRepositoryInMemoryStorage<Country, CountryKey>()
@@ -44,15 +44,15 @@ namespace RepositoryFramework.UnitTest
         [Fact]
         public async Task TestAsync()
         {
-            var countries = await _repo.ToListAsync().NoContext();
+            var countries = await _repo.QueryAsync().ToListAsync().NoContext();
             foreach (var country in countries)
             {
                 await _repo.DeleteAsync(new CountryKey(country.Id, country.Abbreviation!));
             }
-            countries = await _repo.ToListAsync().NoContext();
+            countries = await _repo.QueryAsync().ToListAsync().NoContext();
             Assert.Equal(NumberOfEntries, countries.Count);
             await Task.Delay(10_000);
-            countries = await _repo.ToListAsync().NoContext();
+            countries = await _repo.QueryAsync().ToListAsync().NoContext();
             Assert.Empty(countries);
         }
     }

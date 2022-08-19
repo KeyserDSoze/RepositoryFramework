@@ -9,10 +9,8 @@
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
-    /// <typeparam name="TState">Returning state.</typeparam>
-    public class CacheOptions<T, TKey, TState>
+    public class CacheOptions<T, TKey>
         where TKey : notnull
-        where TState : class, IState<T>, new()
     {
         public TimeSpan ExpiringTime { get; set; }
         public bool HasCommandPattern => Methods.HasFlag(RepositoryMethods.Insert)
@@ -20,7 +18,7 @@
             || Methods.HasFlag(RepositoryMethods.Delete);
         public bool HasCache(RepositoryMethods method) => Methods.HasFlag(RepositoryMethods.All) || Methods.HasFlag(method);
         public RepositoryMethods Methods { get; set; } = RepositoryMethods.Query | RepositoryMethods.Get | RepositoryMethods.Exist;
-        internal static CacheOptions<T, TKey, TState> Default { get; } = new CacheOptions<T, TKey, TState>()
+        internal static CacheOptions<T, TKey> Default { get; } = new CacheOptions<T, TKey>()
         {
             ExpiringTime = TimeSpan.FromDays(365)
         };

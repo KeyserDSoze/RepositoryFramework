@@ -1,4 +1,6 @@
-﻿namespace RepositoryFramework
+﻿using System.Linq.Expressions;
+
+namespace RepositoryFramework
 {
     /// <summary>
     /// Interface for your CQRS pattern, with Get, Query, Count and Exist methods.
@@ -6,8 +8,12 @@
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to retrieve your data from repository.</typeparam>
-    public interface IQueryPattern<T, TKey> : IQueryPattern<T, TKey, State<T>>
+    public interface IQueryPattern<T, TKey> : IQueryPattern
         where TKey : notnull
     {
+        Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default);
+        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default);
     }
 }

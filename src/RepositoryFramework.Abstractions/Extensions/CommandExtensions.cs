@@ -2,15 +2,11 @@
 {
     public static class CommandExtensions
     {
-        public static BatchOperations<T, TKey, TState> CreateBatchOperation<T, TKey, TState>(
-            this ICommandPattern<T, TKey, TState> command)
+        public static BatchOperationsBuilder<T, TKey> CreateBatchOperation<T, TKey>(
+            this ICommandPattern<T, TKey> command)
             where TKey : notnull
-            where TState : class, IState<T>, new()
         {
-            var operations = new BatchOperations<T, TKey, TState>()
-            {
-                Command = command
-            };
+            var operations = new BatchOperationsBuilder<T, TKey>(command);
             return operations;
         }
     }

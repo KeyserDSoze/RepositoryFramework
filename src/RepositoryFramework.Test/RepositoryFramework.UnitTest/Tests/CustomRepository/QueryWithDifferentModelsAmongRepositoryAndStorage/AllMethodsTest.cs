@@ -15,6 +15,13 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out _)
                 .AddRepository<Car, int, CarRepository>()
+                .Translate<Auto>()
+                .With(x => x.Id, x => x.Identificativo)
+                .With(x => x.Id2, x => x.Identificativo2)
+                .With(x => x.NumberOfWheels, x => x.NumeroRuote)
+                .With(x => x.Plate, x => x.Targa)
+                .With(x => x.Driver, x => x.Guidatore)
+                .With(x => x.Driver!.Name, x => x.Guidatore!.Nome)
                 .Services
                 .Finalize(out ServiceProvider);
         }
@@ -33,14 +40,14 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
         public async Task QueryWithDifferentValuesAsync(int minimumId, int numberOfResults)
         {
             var results = await _repository
-                .Where(x => x.Id > minimumId && !string.IsNullOrWhiteSpace(x.Plate) && x.Plate != null && x.Driver != null && x.Driver.Name == null && string.IsNullOrEmpty(x.O))
+                .Where(x => x.Id > minimumId && x.Id2 > minimumId && !string.IsNullOrWhiteSpace(x.Plate) && x.Plate != null && x.Driver != null && x.Driver.Name == null && string.IsNullOrEmpty(x.O))
                 .OrderByDescending(x => x.Id)
-                .QueryAsync();
-            Assert.Equal(numberOfResults, results.Count());
+                .ToListAsync();
+            Assert.Equal(numberOfResults, results.Count);
             if (results.Any())
                 Assert.Equal(5, results.First().Id);
-            var results2 = await _repository.QueryAsync();
-            Assert.Equal(5, results2.Count());
+            var results2 = await _repository.ToListAsync();
+            Assert.Equal(5, results2.Count);
             var results3 = await _repository
                 .OrderBy(x => x.Id)
                 .PageAsync(1, 2);

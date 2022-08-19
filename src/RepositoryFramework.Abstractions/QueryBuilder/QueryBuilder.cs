@@ -2,76 +2,137 @@
 
 namespace RepositoryFramework
 {
-    public class QueryBuilder<T, TKey, TState>
+    public class QueryBuilder<T, TKey>
         where TKey : notnull
-        where TState : class, IState<T>, new()
     {
-        private readonly IQueryPattern<T, TKey, TState> _query;
-        private readonly QueryOptions<T> _options = new();
-        public QueryBuilder(IQueryPattern<T, TKey, TState> query)
+        private readonly IQueryPattern<T, TKey> _query;
+        private readonly Query _operations = new();
+        internal QueryBuilder(IQueryPattern<T, TKey> query)
         {
             _query = query;
         }
-        public QueryBuilder<T, TKey, TState> Where(Expression<Func<T, bool>> predicate)
+        /// <summary>
+        /// Take all elements by <paramref name="predicate"/> query.
+        /// </summary>
+        /// <param name="top">Number of elements to take.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> Where(Expression<Func<T, bool>> predicate)
         {
-            _options.Predicate = predicate;
+            _ = _operations.Where(predicate);
             return this;
         }
-        public QueryBuilder<T, TKey, TState> Take(int top)
+        /// <summary>
+        /// Take first <paramref name="top"/> elements.
+        /// </summary>
+        /// <param name="top">Number of elements to take.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> Take(int top)
         {
-            _options.Top = top;
+            _ = _operations.Take(top);
             return this;
         }
-        public QueryBuilder<T, TKey, TState> Skip(int skip)
+        /// <summary>
+        /// Skip first <paramref name="skip"/> elements.
+        /// </summary>
+        /// <param name="skip">Number of elements to skip.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> Skip(int skip)
         {
-            _options.Skip = skip;
+            _ = _operations.Skip(skip);
             return this;
         }
-        public QueryBuilder<T, TKey, TState> OrderBy(Expression<Func<T, object>> predicate)
+        /// <summary>
+        /// Order by ascending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> OrderBy(Expression<Func<T, object>> predicate)
         {
-            _options.Order = predicate;
-            _options.IsAscending = true;
+            _ = _operations.OrderBy(predicate);
             return this;
         }
-        public QueryBuilder<T, TKey, TState> OrderByDescending(Expression<Func<T, object>> predicate)
+        /// <summary>
+        /// Order by descending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> OrderByDescending(Expression<Func<T, object>> predicate)
         {
-            _options.Order = predicate;
-            _options.IsAscending = false;
+            _ = _operations.OrderByDescending(predicate);
             return this;
         }
-        public async Task<IEnumerable<IGrouping<TProperty, T>>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Then by ascending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> ThenBy(Expression<Func<T, object>> predicate)
         {
-            var items = await QueryAsync(cancellationToken).NoContext();
-            return items.AsQueryable().GroupBy(predicate);
+            _ = _operations.ThenBy(predicate);
+            return this;
         }
-        public async Task<State<T>> AnyAsync(CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Then by descending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> ThenByDescending(Expression<Func<T, object>> predicate)
         {
-            _options.Top = 1;
-            return (await _query.QueryAsync(_options, cancellationToken).NoContext()).Any();
+            _ = _operations.ThenByDescending(predicate);
+            return this;
         }
-        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Group by a value your query.
+        /// </summary>
+        /// <typeparam name="TProperty">Grouped by this property.</typeparam>
+        /// <param name="predicate">Expression query.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns>IEnumerable<IGrouping<<typeparamref name="TProperty"/>, <typeparamref name="T"/>>></returns>
+        public IAsyncEnumerable<IAsyncGrouping<TProperty, T>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        {
+            _ = _operations.GroupBy(predicate);
+            var items = QueryAsync(cancellationToken).GroupBy(predicate.Compile());
+            return items;
+        }
+        /// <summary>
+        /// Check if exists at least one element with the selected query.
+        /// </summary>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns>bool</returns>
+        public ValueTask<bool> AnyAsync(CancellationToken cancellationToken = default)
+        {
+            Take(1);
+            return _query.QueryAsync(_operations, cancellationToken).AnyAsync(cancellationToken);
+        }
+        /// <summary>
+        /// Take the first value of your query or default value T.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns><typeparamref name="T"/></returns>
+        public ValueTask<T?> FirstOrDefaultAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
             if (predicate != null)
                 _ = Where(predicate);
-            _options.Top = 1;
-            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
-            return query.FirstOrDefault();
+            Take(1);
+            var query = _query
+                .QueryAsync(_operations, cancellationToken).FirstOrDefaultAsync(cancellationToken);
+            return query;
         }
-        public async Task<T> FirstAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Take the first value of your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns><typeparamref name="T"/></returns>
+        public ValueTask<T> FirstAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
             if (predicate != null)
                 _ = Where(predicate);
-            _options.Top = 1;
-            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
-            return query.First();
-        }
-        public async Task<List<T>> ToListAsync(CancellationToken cancellationToken = default)
-        {
-            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
-            if (query is List<T> list)
-                return list;
-            else
-                return query.ToList();
+            Take(1);
+            var query = _query
+                .QueryAsync(_operations, cancellationToken).FirstAsync(cancellationToken);
+            return query;
         }
         /// <summary>
         /// Starting from page 1 you may page your query.
@@ -96,18 +157,88 @@ namespace RepositoryFramework
             int pageSize,
             CancellationToken cancellationToken = default)
         {
-            QueryOptions<T> countOptions = new()
-            {
-                Predicate = _options.Predicate
-            };
-            _options.Top = pageSize;
-            _options.Skip = (page - 1) * pageSize;
-            var query = await _query.QueryAsync(_options, cancellationToken).NoContext();
-            var count = await _query.CountAsync(countOptions, cancellationToken).NoContext();
+            Query operations = new();
+            foreach (var where in _operations.Operations.Where(x => x.Operation == QueryOperations.Where))
+                operations.Where((where as LambdaQueryOperation)!.Expression!);
+            Take(pageSize);
+            Skip((page - 1) * pageSize);
+            var query = await ToListAsync(cancellationToken).NoContext();
+            var count = await _query.OperationAsync(OperationType<long>.Count, operations, cancellationToken).NoContext();
             long pages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
             return new Page<T>(query, count, pages);
         }
-        public Task<IEnumerable<T>> QueryAsync(CancellationToken cancellationToken = default)
-            => _query.QueryAsync(_options, cancellationToken);
+        /// <summary>
+        /// List the query.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>List<<typeparamref name="T"/>></returns>
+        public ValueTask<List<T>> ToListAsync(CancellationToken cancellationToken = default)
+            => _query.QueryAsync(_operations, cancellationToken).ToListAsync(cancellationToken);
+        /// <summary>
+        /// Call query method in your Repository.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>IAsyncEnumerable<<typeparamref name="T"/>></returns>
+        public IAsyncEnumerable<T> QueryAsync(CancellationToken cancellationToken = default)
+            => _query.QueryAsync(_operations, cancellationToken);
+
+        /// <summary>
+        /// Count the items by your query.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>ValueTask<long></returns>
+        public ValueTask<long> CountAsync(CancellationToken cancellationToken = default)
+            => _query.OperationAsync(OperationType<long>.Count, _operations, cancellationToken);
+        /// <summary>
+        /// Sum the column of your items by your query.
+        /// </summary>
+        /// <typeparam name="TProperty">Type of column selected.</typeparam>
+        /// <param name="predicate">Select the columnt to sum.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>ValueTask<decimal></returns>
+        public ValueTask<TProperty> SumAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        {
+            _operations.Select(predicate);
+            return _query.OperationAsync(OperationType<TProperty>.Sum, _operations, cancellationToken);
+        }
+
+        /// <summary>
+        /// Calculate the average of your column by your query.
+        /// </summary>
+        /// <typeparam name="TProperty">Type of column selected.</typeparam>
+        /// <param name="predicate">Select the column for average calculation.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>ValueTask<decimal></returns>
+        public ValueTask<TProperty> AverageAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        {
+            _operations.Select(predicate);
+            return _query.OperationAsync(OperationType<TProperty>.Average, _operations, cancellationToken);
+        }
+
+        /// <summary>
+        /// Search the max between items by your query.
+        /// </summary>
+        /// <typeparam name="TProperty">Type of column selected.</typeparam>
+        /// <param name="predicate">Select the column for max search.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>ValueTask<decimal></returns>
+        public ValueTask<TProperty> MaxAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        {
+            _operations.Select(predicate);
+            return _query.OperationAsync(OperationType<TProperty>.Max, _operations, cancellationToken);
+        }
+
+        /// <summary>
+        /// Search the min between items by your query.
+        /// </summary>
+        /// <typeparam name="TProperty">Type of column selected.</typeparam>
+        /// <param name="predicate">Select the column for min search.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>ValueTask<decimal></returns>
+        public ValueTask<TProperty> MinAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        {
+            _operations.Select(predicate);
+            return _query.OperationAsync(OperationType<TProperty>.Min, _operations, cancellationToken);
+        }
     }
 }

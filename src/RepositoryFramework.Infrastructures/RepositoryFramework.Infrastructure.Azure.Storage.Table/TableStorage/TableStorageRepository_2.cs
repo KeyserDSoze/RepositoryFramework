@@ -1,5 +1,7 @@
 ﻿using Azure.Data.Tables;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
@@ -42,25 +44,38 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
-        public async Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<T> QueryAsync(Query query,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            List<T> entities = new();
-            await foreach (var item in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
+            Func<T, bool> predicate = x => true;
+#warning to check well, and check if possible to get a queryable item to improve query request
+            LambdaExpression? where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
+            if (where != null)
+                predicate = where.AsExpression<T, bool>().Compile();
+            await foreach (var entity in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
             {
-                entities.Add(JsonSerializer.Deserialize<T>(item.Value)!);
+                var item = JsonSerializer.Deserialize<T>(entity.Value)!;
+                if (!predicate.Invoke(item))
+                    continue;
+                yield return item;
             }
-            IEnumerable<T> results = entities.Filter(options).AsEnumerable();
-            return results;
         }
-        public async Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<TProperty> OperationAsync<TProperty>(
+          OperationType<TProperty> operation,
+          Query query,
+          CancellationToken cancellationToken = default)
         {
-            List<T> entities = new();
-            await foreach (var item in _client.QueryAsync<TableEntity>(cancellationToken: cancellationToken))
-            {
-                entities.Add(JsonSerializer.Deserialize<T>(item.Value)!);
-            }
-            IEnumerable<T> results = entities.Filter(options).AsEnumerable();
-            return results.Count();
+            List<T> items = new();
+            await foreach (var item in QueryAsync(query, cancellationToken))
+                items.Add(item);
+            LambdaExpression? select = query.FirstSelect;
+            return (await operation.ExecuteAsync(
+                () => ValueTask.FromResult((TProperty)(object)items.Count),
+                () => ValueTask.FromResult((TProperty)(object)items.Sum(x => select!.InvokeAndTransform<decimal>(x!))),
+                () => ValueTask.FromResult((TProperty)(object)items.Max(x => select!.InvokeAndTransform<decimal>(x!))),
+                () => ValueTask.FromResult((TProperty)(object)items.Min(x => select!.InvokeAndTransform<decimal>(x!))),
+                () => ValueTask.FromResult((TProperty)(object)items.Average(x => select!.InvokeAndTransform<decimal>(x!)))
+                ))!;
         }
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
@@ -73,9 +88,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             return !response.IsError;
         }
 
-        public async Task<BatchResults<TKey, State<T>>> BatchAsync(BatchOperations<T, TKey, State<T>> operations, CancellationToken cancellationToken = default)
+        public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
-            BatchResults<TKey, State<T>> results = new();
+            BatchResults<T, TKey> results = new();
             foreach (var operation in operations.Values)
             {
                 switch (operation.Command)

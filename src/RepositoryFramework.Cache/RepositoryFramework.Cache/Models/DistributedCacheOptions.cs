@@ -10,12 +10,11 @@
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
     /// <typeparam name="TState">Returning state.</typeparam>
-    public class DistributedCacheOptions<T, TKey, TState> : CacheOptions<T, TKey, TState>
+    public class DistributedCacheOptions<T, TKey> : CacheOptions<T, TKey>
         where TKey : notnull
-        where TState : class, IState<T>, new()
     {
-        internal static new DistributedCacheOptions<T, TKey, TState> Default { get; } =
-            new DistributedCacheOptions<T, TKey, TState>()
+        internal static new DistributedCacheOptions<T, TKey> Default { get; } =
+            new DistributedCacheOptions<T, TKey>()
             {
                 ExpiringTime = TimeSpan.FromDays(365 * 365)
             };

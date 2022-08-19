@@ -12,17 +12,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TStorage">Repository pattern storage.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// <param name="notExposableAsApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
         public static IRepositoryBuilder<T> AddRepository<T, TStorage>(this IServiceCollection services,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
-          bool isPrivate = false)
+          bool notExposableAsApi = false)
           where TStorage : class, IRepositoryPattern<T>
         {
             var service = services.SetService<T>();
             service.RepositoryType = typeof(IRepository<T>);
-            service.IsPrivate = isPrivate;
+            service.NotExposableAsApi = notExposableAsApi;
             services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(service.RepositoryType, typeof(IRepositoryPattern<T>))
                 .AddService<IRepositoryPattern<T>, TStorage>(serviceLifetime)
@@ -38,17 +38,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TStorage">Command pattern storage.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// <param name="notExposableAsApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
         public static IRepositoryBuilder<T> AddCommand<T, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
-            bool isPrivate = false)
+            bool notExposableAsApi = false)
             where TStorage : class, ICommandPattern<T>
         {
             var service = services.SetService<T>();
             service.CommandType = typeof(ICommand<T>);
-            service.IsPrivate = isPrivate;
+            service.NotExposableAsApi = notExposableAsApi;
             services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(service.CommandType, typeof(ICommandPattern<T>))
                 .AddService<ICommandPattern<T>, TStorage>(serviceLifetime)
@@ -64,17 +64,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TStorage">Query pattern storage.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <param name="isPrivate">It's a parameter used by framework to understand the level of privacy,
+        /// <param name="notExposableAsApi">It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
         public static IRepositoryBuilder<T> AddQuery<T, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
-           bool isPrivate = false)
+           bool notExposableAsApi = false)
            where TStorage : class, IQueryPattern<T>
         {
             var service = services.SetService<T>();
             service.QueryType = typeof(IQuery<T>);
-            service.IsPrivate = isPrivate;
+            service.NotExposableAsApi = notExposableAsApi;
             services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(service.QueryType, typeof(IQueryPattern<T>))
                 .AddService<IQueryPattern<T>, TStorage>(serviceLifetime)

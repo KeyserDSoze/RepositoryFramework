@@ -27,5 +27,11 @@ namespace RepositoryFramework.InMemory
             _ = base.PopulateWithRandomData(navigationKey, numberOfElements, numberOfElementsWhenEnumerableIsFound);
             return new RepositoryInMemoryCreatorBuilder<T>(this, _internalBehaviorSettings);
         }
+
+        public new IQueryTranslationInMemoryBuilder<T, TTranslated> Translate<TTranslated>()
+           => new QueryTranslationInMemoryBuilder<T, TTranslated>(this);
+
+        IQueryTranslationBuilder<T, TTranslated> IRepositoryBuilder<T>.Translate<TTranslated>() 
+            => Translate<TTranslated>();
     }
 }

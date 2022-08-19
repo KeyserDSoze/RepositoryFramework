@@ -16,11 +16,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>RepositoryBuilder<T></returns>
         public static IRepositoryBuilder<T> AddMigrationSource<T, TMigrationSource>(this IRepositoryBuilder<T> builder,
-            Action<MigrationOptions<T, string, State<T>>> settings,
+            Action<MigrationOptions<T, string>> settings,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
           where TMigrationSource : class, IMigrationSource<T>
         {
-            var options = new MigrationOptions<T, string, State<T>>();
+            var options = new MigrationOptions<T, string>();
             settings?.Invoke(options);
             builder.Services
                 .AddSingleton(options)

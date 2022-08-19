@@ -1,9 +1,10 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
-using Microsoft.Extensions.Logging;
 using System.Dynamic;
+using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
 {
@@ -12,126 +13,81 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
     {
         private readonly Container _client;
         private readonly PropertyInfo[] _properties;
-        private readonly ILogger<CosmosSqlRepository<T, TKey>>? _logger;
 
-        public CosmosSqlRepository(CosmosSqlServiceClientFactory clientFactory, ILogger<CosmosSqlRepository<T, TKey>>? logger = null)
+        public CosmosSqlRepository(CosmosSqlServiceClientFactory clientFactory)
         {
             (_client, _properties) = clientFactory.Get(typeof(T).Name);
-            _logger = logger;
         }
-        private async Task<TReponse> ExecuteAsync<TReponse>(TKey key, RepositoryMethods method, Func<Task<TReponse>> action)
+        public async Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            if (_logger != null)
-            {
-#pragma warning disable CA2254 // Template should be a static expression
-                EventId eventId = new();
-                try
-                {
-                    _logger?.LogInformation(eventId, message: $"{method} for {key}");
-                    return await action();
-                }
-                catch (Exception exception)
-                {
-                    _logger?.LogError(eventId, message: exception.Message);
-                    return default!;
-                }
-#pragma warning restore CA2254 // Template should be a static expression
-            }
+            var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
+            return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent);
+        }
+
+        public async Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
+            return new State<T>(response.StatusCode == HttpStatusCode.OK);
+        }
+
+        public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
+            if (response.StatusCode == HttpStatusCode.OK)
+                return response.Resource;
             else
-                return await action();
+                return default;
         }
-        public Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
-            => ExecuteAsync(key, RepositoryMethods.Delete, async () =>
-            {
-                var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-                return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent);
-            });
-
-
-        public Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
-            => ExecuteAsync(key, RepositoryMethods.Exist, async () =>
-                {
-                    var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-                    return new State<T>(response.StatusCode == HttpStatusCode.OK);
-                });
-
-        public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
-        => ExecuteAsync(key, RepositoryMethods.Get, async () =>
-            {
-                var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-                if (response.StatusCode == HttpStatusCode.OK)
-                    return response.Resource;
-                else
-                    return default;
-            });
-        public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
-            => ExecuteAsync(key, RepositoryMethods.Insert, async () =>
-            {
-                var flexible = new ExpandoObject();
-                flexible.TryAdd("id", key.ToString());
-                foreach (var property in _properties)
-                    flexible.TryAdd(property.Name, property.GetValue(value));
-                var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-                return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
-            });
-
-        public Task<IEnumerable<T>> QueryAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
-            => ExecuteAsync(default!, RepositoryMethods.Query, async () =>
-            {
-                IQueryable<T> queryable = _client.GetItemLinqQueryable<T>().Filter(options);
-
-                List<T> items = new();
-                using (FeedIterator<T> iterator = queryable.ToFeedIterator())
-                {
-                    while (iterator.HasMoreResults)
-                    {
-                        if (cancellationToken.IsCancellationRequested)
-                            return items;
-                        foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
-                        {
-                            items.Add(item);
-                            if (cancellationToken.IsCancellationRequested)
-                                return items;
-                        }
-                    }
-                }
-                return items.Select(x => x);
-            });
-        public Task<long> CountAsync(QueryOptions<T>? options = null, CancellationToken cancellationToken = default)
-            => ExecuteAsync<long>(default!, RepositoryMethods.Count, async () =>
-            {
-                IQueryable<T> queryable = _client.GetItemLinqQueryable<T>().Filter(options);
-
-                List<T> items = new();
-                using (FeedIterator<T> iterator = queryable.ToFeedIterator())
-                {
-                    while (iterator.HasMoreResults)
-                    {
-                        if (cancellationToken.IsCancellationRequested)
-                            return items.Count;
-                        foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
-                        {
-                            items.Add(item);
-                            if (cancellationToken.IsCancellationRequested)
-                                return items.Count;
-                        }
-                    }
-                }
-                return items.Count;
-            });
-        public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
-            => ExecuteAsync(key, RepositoryMethods.Update, async () =>
-            {
-                var flexible = new ExpandoObject();
-                flexible.TryAdd("id", key.ToString());
-                foreach (var property in _properties)
-                    flexible.TryAdd(property.Name, property.GetValue(value));
-                var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-                return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
-            });
-        public async Task<BatchResults<TKey, State<T>>> BatchAsync(BatchOperations<T, TKey, State<T>> operations, CancellationToken cancellationToken = default)
+        public async Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            BatchResults<TKey, State<T>> results = new();
+            var flexible = new ExpandoObject();
+            flexible.TryAdd("id", key.ToString());
+            foreach (var property in _properties)
+                flexible.TryAdd(property.Name, property.GetValue(value));
+            var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
+            return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
+        }
+
+        public async IAsyncEnumerable<T> QueryAsync(Query query,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            IQueryable<T> queryable = query.Filter(_client.GetItemLinqQueryable<T>());
+
+            using FeedIterator<T> iterator = queryable.ToFeedIterator();
+            while (iterator.HasMoreResults)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    break;
+                foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
+                    yield return item;
+            }
+        }
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
+            Query query,
+            CancellationToken cancellationToken = default)
+        {
+            IQueryable<T> queryable = query.Filter(_client.GetItemLinqQueryable<T>());
+            LambdaExpression? select = query.FirstSelect;
+            return operation.ExecuteAsync(
+                () => queryable.CountAsync(cancellationToken)!,
+                () => queryable.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),
+                async () => (await queryable.Select(x => select!.InvokeAndTransform<object>(x!)).AsQueryable().MaxAsync(cancellationToken).NoContext()).Resource,
+                async () => (await queryable.Select(x => select!.InvokeAndTransform<object>(x!)).AsQueryable().MinAsync(cancellationToken).NoContext()).Resource,
+                () => queryable.Average(x => select!.InvokeAndTransform<decimal>(x!))
+                )!;
+        }
+        public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        {
+            var flexible = new ExpandoObject();
+            flexible.TryAdd("id", key.ToString());
+            foreach (var property in _properties)
+                flexible.TryAdd(property.Name, property.GetValue(value));
+            var response = await _client.UpsertItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
+            return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
+        }
+        public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
+        {
+            BatchResults<T, TKey> results = new();
             foreach (var operation in operations.Values)
             {
                 switch (operation.Command)

@@ -5,7 +5,7 @@
     /// This is the interface injected by the framework and that you may use for your purpose.
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
-    public interface IRepository<T> : ICommand<T>, IQuery<T>, IRepositoryPattern<T>
+    public interface IRepository<T> : ICommand<T>, IQuery<T>, IRepositoryPattern<T>, IRepository<T, string>
     {
     }
 }

@@ -12,17 +12,12 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
         private static RepositoryFrameworkService SetService<T>(this IServiceCollection services)
-            => services.SetService<T, string, State<T>>();
+            => services.SetService<T, string>();
         private static RepositoryFrameworkService SetService<T, TKey>(this IServiceCollection services)
             where TKey : notnull
-            => services.SetService<T, TKey, State<T>>();
-        private static RepositoryFrameworkService SetService<T, TKey, TState>(this IServiceCollection services)
-            where TKey : notnull
-            where TState : class, IState<T>, new()
         {
             Type entityType = typeof(T);
             Type keyType = typeof(TKey);
-            Type stateType = typeof(TState);
             var service = RepositoryFrameworkRegistry.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
             if (service == null)
             {
@@ -31,7 +26,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddSingleton(RepositoryFrameworkRegistry.Instance);
             }
             service.KeyType = keyType;
-            service.StateType = stateType;
             return service;
         }
         public static IServiceCollection AddService<TService, TImplementation>(this IServiceCollection services,

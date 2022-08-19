@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using RepositoryFramework.UnitTest.AllMethods.Models;
@@ -14,12 +15,7 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
         {
             _database = database;
         }
-        public Task<BatchResults<int, State<Animal>>> BatchAsync(BatchOperations<Animal, int, State<Animal>> operations, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<long> CountAsync(QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
+        public Task<BatchResults<Animal, int>> BatchAsync(BatchOperations<Animal, int> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -44,14 +40,25 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Animal>> QueryAsync(QueryOptions<Animal>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
+            Query query,
+            CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(_database.Animals.Select(x => x.Value).Filter(options).AsEnumerable());
+            throw new NotImplementedException();
+        }
+
+        public async IAsyncEnumerable<Animal> QueryAsync(Query query,
+             [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await Task.Delay(0, cancellationToken);
+            foreach (var entity in query.Filter(_database.Animals))
+                yield return entity;
         }
 
         public Task<State<Animal>> UpdateAsync(int key, Animal value, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
+
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace RepositoryFramework
+﻿using System.Linq.Expressions;
+
+namespace RepositoryFramework
 {
-    public static class QueryOptionsExtensions
+    public static partial class QueryOptionsExtensions
     {
         /// <summary>
         /// Help your context to apply filters. Use in options the Translate method to change the name of the properties.
@@ -11,21 +13,34 @@
         /// <returns>IQueryable<typeparamref name="T"/></returns>
         public static IQueryable<T> Filter<T>(this IEnumerable<T> items, QueryOptions<T>? options)
         {
+#warning Alessandro Rapiti - Adding of select and group makes sense? It's not possible to add IGrouping and ISelect because change the type of the object. I need to think differently.
+            IQueryable<T> query = items.AsQueryable();
             if (options != null)
             {
-                if (options.Predicate != null)
-                    items = items.Where(options.Predicate.Compile());
-                if (options.Order != null)
-                    if (options.IsAscending)
-                        items = items.OrderBy(options.Order.Compile());
+                if (options.Where != null)
+                    query = query.Where(options.Where).AsQueryable();
+                foreach (var order in options.Orders)
+                    if (!order.ThenBy)
+                    {
+                        if (order.IsAscending)
+                            query = query.OrderBy(order.Order).AsQueryable();
+                        else
+                            query = query.OrderByDescending(order.Order).AsQueryable();
+                    }
                     else
-                        items = items.OrderByDescending(options.Order.Compile());
+                    {
+                        if (query is IOrderedQueryable<T> ordered)
+                            if (order.IsAscending)
+                                query = ordered.ThenBy(order.Order).AsQueryable();
+                            else
+                                query = ordered.ThenByDescending(order.Order).AsQueryable();
+                    }
                 if (options.Skip != null)
-                    items = items.Skip(options.Skip.Value);
+                    query = query.Skip(options.Skip.Value);
                 if (options.Top != null)
-                    items = items.Take(options.Top.Value);
+                    query = query.Take(options.Top.Value);
             }
-            return items.AsQueryable();
+            return query;
         }
         /// <summary>
         /// Help your Dictionary/KeyValuePair context to apply filters. Use in options the Translate method to change the name of the properties.
@@ -46,23 +61,7 @@
         /// <param name="options">Query options.</param>
         /// <returns>IAsyncEnumerable<typeparamref name="T"/></returns>
         public static IAsyncEnumerable<T> FilterAsAsyncEnumerable<T>(this IEnumerable<T> items, QueryOptions<T>? options)
-        {
-            if (options != null)
-            {
-                if (options.Predicate != null)
-                    items = items.Where(options.Predicate.Compile());
-                if (options.Order != null)
-                    if (options.IsAscending)
-                        items = items.OrderBy(options.Order.Compile());
-                    else
-                        items = items.OrderByDescending(options.Order.Compile());
-                if (options.Skip != null)
-                    items = items.Skip(options.Skip.Value);
-                if (options.Top != null)
-                    items = items.Take(options.Top.Value);
-            }
-            return items.ToAsyncEnumerable();
-        }
+            => items.Filter(options).ToAsyncEnumerable();
         /// <summary>
         /// Help your Dictionary/KeyValuePair context to apply filters. Use in options the Translate method to change the name of the properties.
         /// </summary>
@@ -85,13 +84,24 @@
         {
             if (options != null)
             {
-                if (options.Predicate != null)
-                    items = items.Where(options.Predicate.Compile());
-                if (options.Order != null)
-                    if (options.IsAscending)
-                        items = items.OrderBy(options.Order.Compile());
+                if (options.Where != null)
+                    items = items.Where(options.Where.Compile());
+                foreach (var order in options.Orders)
+                    if (!order.ThenBy)
+                    {
+                        if (order.IsAscending)
+                            items = items.OrderBy(order.Order.Compile());
+                        else
+                            items = items.OrderByDescending(order.Order.Compile());
+                    }
                     else
-                        items = items.OrderByDescending(options.Order.Compile());
+                    {
+                        if (items is IOrderedAsyncEnumerable<T> ordered)
+                            if (order.IsAscending)
+                                items = ordered.ThenBy(order.Order.Compile());
+                            else
+                                items = ordered.ThenByDescending(order.Order.Compile());
+                    }
                 if (options.Skip != null)
                     items = items.Skip(options.Skip.Value);
                 if (options.Top != null)

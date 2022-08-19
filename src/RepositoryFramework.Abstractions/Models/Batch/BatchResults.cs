@@ -1,23 +1,23 @@
 ﻿namespace RepositoryFramework
 {
-    public sealed class BatchResults<TKey, TState>
+    public sealed class BatchResults<T, TKey>
         where TKey : notnull
     {
-        public static BatchResults<TKey, TState> Empty { get; } = new BatchResults<TKey, TState>();
-        public List<BatchResult<TKey, TState>> Results { get; } = new();
-        public BatchResults<TKey, TState> AddInsert(TKey key, TState state)
+        public static BatchResults<T, TKey> Empty => new();
+        public List<BatchResult<T, TKey>> Results { get; } = new();
+        public BatchResults<T, TKey> AddInsert(TKey key, State<T> state)
         {
-            Results.Add(new BatchResult<TKey, TState>(CommandType.Insert, key, state));
+            Results.Add(new BatchResult<T, TKey>(CommandType.Insert, key, state));
             return this;
         }
-        public BatchResults<TKey, TState> AddUpdate(TKey key, TState state)
+        public BatchResults<T, TKey> AddUpdate(TKey key, State<T> state)
         {
-            Results.Add(new BatchResult<TKey, TState>(CommandType.Update, key, state));
+            Results.Add(new BatchResult<T, TKey>(CommandType.Update, key, state));
             return this;
         }
-        public BatchResults<TKey, TState> AddDelete(TKey key, TState state)
+        public BatchResults<T, TKey> AddDelete(TKey key, State<T> state)
         {
-            Results.Add(new BatchResult<TKey, TState>(CommandType.Delete, key, state));
+            Results.Add(new BatchResult<T, TKey>(CommandType.Delete, key, state));
             return this;
         }
     }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RepositoryFramework.Test.Infrastructure.EntityFramework.Models;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace RepositoryFramework.Test.Infrastructure.EntityFramework
 {
@@ -14,9 +16,9 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             _context = context;
         }
 
-        public async Task<BatchResults<AppUserKey, State<AppUser>>> BatchAsync(BatchOperations<AppUser, AppUserKey, State<AppUser>> operations, CancellationToken cancellationToken = default)
+        public async Task<BatchResults<AppUser, AppUserKey>> BatchAsync(BatchOperations<AppUser, AppUserKey> operations, CancellationToken cancellationToken = default)
         {
-            BatchResults<AppUserKey, State<AppUser>> results = new();
+            BatchResults<AppUser, AppUserKey> results = new();
             foreach (var operation in operations.Values)
             {
                 switch (operation.Command)
@@ -35,15 +37,34 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             return results;
         }
 
-        public async Task<long> CountAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
+        public async ValueTask<TProperty> OperationAsync<TProperty>(
+          OperationType<TProperty> operation,
+          Query query,
+          CancellationToken cancellationToken = default)
         {
-            return await _context.Users.Filter(options?
-                .Translate<User>()
-                .With(x => x.Id, x => x.Identificativo)
-                .With(x => x.Username, x => x.Nome)
-                .With(x => x.Email, x => x.IndirizzoElettronico))
-                .ToAsyncEnumerable()
-                .CountAsync(cancellationToken);
+            var context = query.Filter(_context.Users);
+            object? result = null;
+            if (operation.Operation == Operations.Count)
+            {
+                result = await context.CountAsync(cancellationToken);
+            }
+            else if (operation.Operation == Operations.Min)
+            {
+                result = await query.FilterAsSelect(context).MinAsync(cancellationToken).NoContext();
+            }
+            else if (operation.Operation == Operations.Max)
+            {
+                result = await query.FilterAsSelect(context).MaxAsync(cancellationToken).NoContext();
+            }
+            else if (operation.Operation == Operations.Sum)
+            {
+                result = await context.SumAsync(query.FirstSelect!.AsExpression<User, decimal>(), cancellationToken).NoContext();
+            }
+            else if (operation.Operation == Operations.Average)
+            {
+                result = await context.AverageAsync(query.FirstSelect!.AsExpression<User, decimal>(), cancellationToken).NoContext();
+            }
+            return result.Cast<TProperty>() ?? default!;
         }
 
         public async Task<State<AppUser>> DeleteAsync(AppUserKey key, CancellationToken cancellationToken = default)
@@ -87,16 +108,11 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             };
         }
 
-        public async Task<IEnumerable<AppUser>> QueryAsync(QueryOptions<AppUser>? options = null, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<AppUser> QueryAsync(Query query,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            return (await _context.Users.
-                FilterAsAsyncEnumerable(options?
-                .Translate<User>()
-                .With(x => x.Id, x => x.Identificativo)
-                .With(x => x.Username, x => x.Nome)
-                .With(x => x.Email, x => x.IndirizzoElettronico))
-                .ToListAsync(cancellationToken))
-                .Select(x => new AppUser(x.Identificativo, x.Nome, x.IndirizzoElettronico, new()));
+            await foreach (var user in query.FilterAsAsyncEnumerable(_context.Users))
+                yield return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new());
         }
 
         public async Task<State<AppUser>> UpdateAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)

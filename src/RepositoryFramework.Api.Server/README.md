@@ -13,8 +13,8 @@ In your web application you have only to add one row after service build.
     
 You may add api for each service by
 
-        public static ApiAuthorizationBuilder AddApiForRepository<T>(this IEndpointRouteBuilder app,
-            string startingPath = "api")
+    public static ApiAuthorizationBuilder AddApiForRepository<T>(this IEndpointRouteBuilder app,
+        string startingPath = "api")
 
 ### Startup example
 In the example below you may find the DI for repository with string key for User model, populated with random data in memory, swagger to test the solution, the population method just after the build and the configuration of your API based on repository framework.

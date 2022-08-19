@@ -8,9 +8,11 @@ namespace RepositoryFramework
     /// <typeparam name="T">Model used for your repository.</typeparam>
     internal class RepositoryBuilder<T> : RepositoryBuilder<T, string>, IRepositoryBuilder<T>
     {
-        public RepositoryBuilder(IServiceCollection services, PatternType type, ServiceLifetime serviceLifetime) 
+        public RepositoryBuilder(IServiceCollection services, PatternType type, ServiceLifetime serviceLifetime)
             : base(services, type, serviceLifetime)
         {
         }
+        public new IQueryTranslationBuilder<T, TTranslated> Translate<TTranslated>()
+         => new QueryTranslationBuilder<T, TTranslated>(this);
     }
 }

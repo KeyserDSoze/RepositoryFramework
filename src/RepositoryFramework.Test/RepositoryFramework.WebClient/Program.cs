@@ -1,4 +1,3 @@
-using RepositoryFramework;
 using RepositoryFramework.WebClient.Data;
 using RepositoryFramework.WebClient.Interceptors;
 
@@ -9,9 +8,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddRepositoryApiClient<User>("localhost:7058",
     serviceLifetime: ServiceLifetime.Scoped)
-        .AddApiClientSpecificInterceptor<User, string, State<User>, SpecificInterceptor>();
+        .AddApiClientSpecificInterceptor<User, string, SpecificInterceptor>();
 builder.Services.AddRepositoryApiClient<SuperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryApiClient<IperUser, string, State<IperUser>>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryApiClient<IperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryApiClient<Animal, AnimalKey>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryApiClient<Car, Guid>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryApiClient<Car2, Range>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);

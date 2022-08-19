@@ -42,23 +42,24 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<SuperMigrationUser>(true));
         }
 
-        public Task<IEnumerable<SuperMigrationUser>> QueryAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<SuperMigrationUser> QueryAsync(Query query, CancellationToken cancellationToken = default)
         {
-            var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult(users.AsEnumerable());
+            var users = query.Filter(_users.Select(x => x.Value));
+            return users.ToAsyncEnumerable();
         }
-        public Task<long> CountAsync(QueryOptions<SuperMigrationUser>? options = null, CancellationToken cancellationToken = default)
-        {
-            var users = _users.Select(x => x.Value).Filter(options);
-            return Task.FromResult((long)users.Count());
-        }
+       
         public Task<State<SuperMigrationUser>> UpdateAsync(string key, SuperMigrationUser value, CancellationToken cancellationToken = default)
         {
             _users[key] = value;
             return Task.FromResult(new State<SuperMigrationUser>(true));
         }
 
-        public Task<BatchResults<string, State<SuperMigrationUser>>> BatchAsync(BatchOperations<SuperMigrationUser, string, State<SuperMigrationUser>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<SuperMigrationUser, string>> BatchAsync(BatchOperations<SuperMigrationUser, string> operations, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query,  CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

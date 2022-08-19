@@ -3,6 +3,7 @@ using RepositoryFramework.InMemory;
 using RepositoryFramework.UnitTest.InMemory.Exceptions.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -52,7 +53,9 @@ namespace RepositoryFramework.UnitTest.InMemory.Exceptions
         {
             try
             {
-                var cars = await _car.QueryAsync().NoContext();
+#warning Why does not it see the empty queryasync method?
+#warning think about prefiltering, in installation I can prefilter and send the right context, DI + filter
+                var cars = await _car.ToListAsync().NoContext();
                 Assert.True(false);
                 Assert.Empty(cars);
             }

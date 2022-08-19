@@ -9,7 +9,11 @@ The Methods is a flag that allows to setup what operations have to be cached.
 
 Query -> query will be cached with this key
 
-    string keyAsString = $"{nameof(RepositoryMethod.Query)}_{predicate}_{top}_{skip}";
+    string keyAsString = $"{nameof(RepositoryMethod.Query)}_{your query request as string}";
+
+Operation -> operation will be cached with this key
+
+    string keyAsString = $"{nameof(RepositoryMethod.Operation)}_{type of operation}_{your query request as string}";
 
 Get -> query will be cached with this key
     

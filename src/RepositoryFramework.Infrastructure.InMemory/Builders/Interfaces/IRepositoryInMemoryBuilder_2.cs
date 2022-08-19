@@ -2,18 +2,24 @@
 
 namespace RepositoryFramework.InMemory
 {
-    public interface IRepositoryInMemoryBuilder<T, TKey>: IRepositoryInMemoryBuilder<T, TKey, State<T>>, IRepositoryBuilder<T, TKey>
+    public interface IRepositoryInMemoryBuilder<T, TKey> : IRepositoryBuilder<T, TKey>
         where TKey : notnull
     {
-        new IRepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
+        IRepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(
+            Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
+            where TNextKey : notnull;
+        IRepositoryInMemoryBuilder<TNext> AddRepositoryInMemoryStorage<TNext>(
+            Action<RepositoryBehaviorSettings<TNext>>? settings = default);
+        IRepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,
             string json);
-        new IRepositoryInMemoryBuilder<T, TKey> PopulateWithDataInjection(
+        IRepositoryInMemoryBuilder<T, TKey> PopulateWithDataInjection(
             Expression<Func<T, TKey>> navigationKey,
             IEnumerable<T> elements);
-        new IRepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(
+        IRepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(
             Expression<Func<T, TKey>> navigationKey,
             int numberOfElements = 100,
             int numberOfElementsWhenEnumerableIsFound = 10);
+        new IQueryTranslationInMemoryBuilder<T, TKey, TTranslated> Translate<TTranslated>();
     }
 }

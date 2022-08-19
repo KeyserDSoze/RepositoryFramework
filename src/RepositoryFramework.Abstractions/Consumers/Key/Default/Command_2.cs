@@ -1,10 +1,24 @@
 ﻿namespace RepositoryFramework
 {
-    internal class Command<T, TKey> : Command<T, TKey, State<T>>, ICommand<T, TKey>
+    internal class Command<T, TKey> : ICommand<T, TKey>
         where TKey : notnull
     {
-        public Command(ICommandPattern<T, TKey> command) : base(command)
+        private readonly ICommandPattern<T, TKey> _command;
+
+        public Command(ICommandPattern<T, TKey> command)
         {
+            _command = command;
         }
+        public Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
+            => _command.BatchAsync(operations, cancellationToken);
+
+        public Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+            => _command.DeleteAsync(key, cancellationToken);
+
+        public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+            => _command.InsertAsync(key, value, cancellationToken);
+
+        public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+            => _command.UpdateAsync(key, value, cancellationToken);
     }
 }

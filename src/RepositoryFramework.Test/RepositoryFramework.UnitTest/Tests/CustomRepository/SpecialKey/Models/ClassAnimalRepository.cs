@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,14 +9,20 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
     public class ClassAnimalRepository : IRepository<ClassAnimal, ClassAnimalKey>
     {
         private static readonly Dictionary<string, Dictionary<int, Dictionary<Guid, ClassAnimal>>> _dic = new();
-        public Task<BatchResults<ClassAnimalKey, State<ClassAnimal>>> BatchAsync(BatchOperations<ClassAnimal, ClassAnimalKey, State<ClassAnimal>> operations, CancellationToken cancellationToken = default)
+        public Task<BatchResults<ClassAnimal, ClassAnimalKey>> BatchAsync(BatchOperations<ClassAnimal, ClassAnimalKey> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<long> CountAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(
+         OperationType<TProperty> operation,
+         Query query,
+         CancellationToken cancellationToken = default)
         {
-            return Task.FromResult((long)_dic.Count);
+            if (operation.Operation == Operations.Count)
+                return ValueTask.FromResult((TProperty)(object)_dic.Count);
+            else
+                throw new NotImplementedException();
         }
 
         public async Task<State<ClassAnimal>> DeleteAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
@@ -61,10 +68,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             return false;
         }
 
-        public Task<IEnumerable<ClassAnimal>> QueryAsync(QueryOptions<ClassAnimal>? options = null, CancellationToken cancellationToken = default)
-        {
-            return default!;
-        }
+       
 
         public async Task<State<ClassAnimal>> UpdateAsync(ClassAnimalKey key, ClassAnimal value, CancellationToken cancellationToken = default)
         {
@@ -75,6 +79,11 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
                 return true;
             }
             return false;
+        }
+
+        public IAsyncEnumerable<ClassAnimal> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }
