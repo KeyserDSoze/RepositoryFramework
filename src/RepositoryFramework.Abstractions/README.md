@@ -268,6 +268,28 @@ and you may inject (for ICommand and IQuery is the same)
 
     IRepository<User, Key<int, int>> repository
 
+### Translation
+In some cases you need to "translate" your query for your database context query, for example in case of EF integration.
+
+    .AddDbContext<SampleContext>(options =>
+    {
+        options.UseSqlServer(configuration["Database:ConnectionString"]);
+    }, ServiceLifetime.Scoped)
+    .AddRepository<AppUser, AppUserKey, AppUserStorage>()
+    .Translate<User>()
+        .With(x => x.Id, x => x.Identificativo)
+        .With(x => x.Username, x => x.Nome)
+        .With(x => x.Email, x => x.IndirizzoElettronico)
+
+In this case I'm helping the query class to understand how to transform itself when used in a different context.
+Use Filter methods to help to translate and apply to your context the right query.
+
+    await foreach (var user in query.FilterAsAsyncEnumerable(_context.Users))
+        yield return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new());
+
+You may use Filter for queryable, FilterAsEnumerable for Enumerable and FilterAsAsyncEnumerable for async enumerable context.
+
 ### Entity framework examples
 [Here you may find the example](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Test/RepositoryFramework.Test.Infrastructure.EntityFramework)
+[Repository pattern applied](https://github.com/KeyserDSoze/RepositoryFramework/blob/master/src/RepositoryFramework.Test/RepositoryFramework.Test.Infrastructure.EntityFramework/AppUser.cs)
 [Unit test flow](https://github.com/KeyserDSoze/RepositoryFramework/blob/master/src/RepositoryFramework.Test/RepositoryFramework.UnitTest/Tests/EntityFramework/EntityFrameworkTest.cs)
