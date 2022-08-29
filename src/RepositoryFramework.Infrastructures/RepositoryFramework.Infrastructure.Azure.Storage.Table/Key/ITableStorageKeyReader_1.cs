@@ -1,4 +1,4 @@
 ﻿namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
-    public interface ITableStorageKeyReader<T> : ITableStorageKeyReader<T, string> { }
+    public interface ITableStorageEntityReader<T> : ITableStorageEntityReader<T, string> { }
 }

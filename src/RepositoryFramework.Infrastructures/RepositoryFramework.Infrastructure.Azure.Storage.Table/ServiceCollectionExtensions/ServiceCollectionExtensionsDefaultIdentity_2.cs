@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
             TableServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, endpointUri, clientOptions);
             services.AddSingleton(TableServiceClientFactory.Instance);
             return services.AddRepository<T, TKey, TableStorageRepository<T, TKey>>(ServiceLifetime.Singleton)
-                .WithKeyReader<T, TKey, DefaultKeyReader<T, TKey>>();
+                .WithTableStorageReader<T, TKey, DefaultTableStorageReader<T, TKey>>();
         }
         /// <summary>
         /// Add a default table storage service for your command pattern.
@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
             TableServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, endpointUri, clientOptions);
             services.AddSingleton(TableServiceClientFactory.Instance);
             return services.AddCommand<T, TKey, TableStorageRepository<T, TKey>>(ServiceLifetime.Singleton)
-                .WithKeyReader<T, TKey, DefaultKeyReader<T, TKey>>();
+                .WithTableStorageReader<T, TKey, DefaultTableStorageReader<T, TKey>>();
         }
         /// <summary>
         /// Add a default table storage service for your query pattern.
@@ -70,7 +70,7 @@ namespace Microsoft.Extensions.DependencyInjection
             TableServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, endpointUri, clientOptions);
             services.AddSingleton(TableServiceClientFactory.Instance);
             return services.AddQuery<T, TKey, TableStorageRepository<T, TKey>>(ServiceLifetime.Singleton)
-                .WithKeyReader<T, TKey, DefaultKeyReader<T, TKey>>();
+                .WithTableStorageReader<T, TKey, DefaultTableStorageReader<T, TKey>>();
         }
     }
 }

@@ -26,14 +26,17 @@ namespace RepositoryFramework.UnitTest.Repository
                      }, ServiceLifetime.Scoped)
                        .AddRepository<AppUser, AppUserKey, AppUserStorage>()
                            .Translate<User>()
-                   .With(x => x.Id, x => x.Identificativo)
-                   .With(x => x.Username, x => x.Nome)
-                   .With(x => x.Email, x => x.IndirizzoElettronico);
+                        .With(x => x.Id, x => x.Identificativo)
+                        .With(x => x.Username, x => x.Nome)
+                        .With(x => x.Email, x => x.IndirizzoElettronico);
                     break;
                 case "tablestorage":
                     services
                         .AddRepositoryInTableStorage<AppUser, AppUserKey>(configuration["Storage:ConnectionString"])
-                        .WithKeyReader<AppUser, AppUserKey, TableStorageKeyReader>();
+                        .WithTableStorageReader<AppUser, AppUserKey, TableStorageReader>()
+                        .WithPartitionKey(x => x.Id)
+                        .WithRowKey(x => x.Username)
+                        .WithTimestamp(x => x.CreationTime);
                     break;
                 case "blobstorage":
                     services.AddRepositoryInBlobStorage<AppUser, AppUserKey>(configuration["Storage:ConnectionString"]);
@@ -61,7 +64,7 @@ namespace RepositoryFramework.UnitTest.Repository
             {
                 await _repository.DeleteAsync(new AppUserKey(appUser.Id));
             }
-            var user = new AppUser(3, "Arnold", "Arnold@gmail.com", new());
+            var user = new AppUser(3, "Arnold", "Arnold@gmail.com", new(), DateTime.UtcNow);
             var result = await _repository.InsertAsync(new AppUserKey(3), user);
             Assert.True(result.IsOk);
             user = user with { Id = result.Value!.Id };
@@ -97,7 +100,7 @@ namespace RepositoryFramework.UnitTest.Repository
 
             var batchOperation = _repository.CreateBatchOperation();
             for (int i = 0; i < 10; i++)
-                batchOperation.AddInsert(new AppUserKey(i), new AppUser(i, $"User {i}", $"Email {i}", new()));
+                batchOperation.AddInsert(new AppUserKey(i), new AppUser(i, $"User {i}", $"Email {i}", new(), DateTime.UtcNow));
             await batchOperation.ExecuteAsync();
 
             items = await _repository.Where(x => x.Id >= 0).ToListAsync();
@@ -109,7 +112,7 @@ namespace RepositoryFramework.UnitTest.Repository
 
             batchOperation = _repository.CreateBatchOperation();
             await foreach (var appUser in _repository.QueryAsync())
-                batchOperation.AddUpdate(new AppUserKey(appUser.Id), new AppUser(appUser.Id, $"User Updated {appUser.Id}", $"Email Updated {appUser.Id}", new()));
+                batchOperation.AddUpdate(new AppUserKey(appUser.Id), new AppUser(appUser.Id, $"User Updated {appUser.Id}", $"Email Updated {appUser.Id}", new(), DateTime.UtcNow));
             await batchOperation.ExecuteAsync();
 
             items = await _repository.Where(x => x.Id >= 0).ToListAsync();

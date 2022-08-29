@@ -87,7 +87,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Identificativo == key.Id, cancellationToken);
             if (user != null)
-                return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new());
+                return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new(), default);
             return default;
         }
 
@@ -111,7 +111,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var user in query.FilterAsAsyncEnumerable(_context.Users))
-                yield return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new());
+                yield return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new(), default);
         }
 
         public async Task<State<AppUser>> UpdateAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)
