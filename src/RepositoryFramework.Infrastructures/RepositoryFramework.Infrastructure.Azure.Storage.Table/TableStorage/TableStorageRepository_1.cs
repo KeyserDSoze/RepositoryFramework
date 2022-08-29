@@ -6,7 +6,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
     internal class TableStorageRepository<T> : TableStorageRepository<T, string>, IRepositoryPattern<T>
     {
-        public TableStorageRepository(TableServiceClientFactory clientFactory) : base(clientFactory)
+        public TableStorageRepository(TableServiceClientFactory clientFactory,
+            ITableStorageKeyReader<T> keyReader) : base(clientFactory, keyReader)
         {
         }
     }

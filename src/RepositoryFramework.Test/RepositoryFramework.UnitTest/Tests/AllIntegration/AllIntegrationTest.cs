@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.Test.Domain;
 using RepositoryFramework.Test.Infrastructure.EntityFramework;
 using RepositoryFramework.Test.Infrastructure.EntityFramework.Models;
+using RepositoryFramework.UnitTest.Tests.AllIntegration.TableStorage;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,33 +12,51 @@ using Xunit;
 
 namespace RepositoryFramework.UnitTest.Repository
 {
-    public class EntityFrameworkTest
+    public class AllIntegrationTest
     {
-        private static readonly IServiceProvider ServiceProvider;
-        static EntityFrameworkTest()
+        private static IRepository<AppUser, AppUserKey> GetCorrectIntegration(string injectionedStorage)
         {
-            DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
-                .AddDbContext<SampleContext>(options =>
-                {
-                    options.UseSqlServer(configuration["Database:ConnectionString"]);
-                }, ServiceLifetime.Scoped)
-                .AddRepository<AppUser, AppUserKey, AppUserStorage>()
-                .Translate<User>()
-                    .With(x => x.Id, x => x.Identificativo)
-                    .With(x => x.Username, x => x.Nome)
-                    .With(x => x.Email, x => x.IndirizzoElettronico)
-                .Services
-                .Finalize(out ServiceProvider);
-        }
-        private readonly IRepository<AppUser, AppUserKey> _repository;
-        public EntityFrameworkTest()
-        {
-            _repository = ServiceProvider.GetService<IRepository<AppUser, AppUserKey>>()!;
+            var services = DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration);
+            switch (injectionedStorage)
+            {
+                case "entityframework":
+                    services.AddDbContext<SampleContext>(options =>
+                     {
+                         options.UseSqlServer(configuration["Database:ConnectionString"]);
+                     }, ServiceLifetime.Scoped)
+                       .AddRepository<AppUser, AppUserKey, AppUserStorage>()
+                           .Translate<User>()
+                   .With(x => x.Id, x => x.Identificativo)
+                   .With(x => x.Username, x => x.Nome)
+                   .With(x => x.Email, x => x.IndirizzoElettronico);
+                    break;
+                case "tablestorage":
+                    services
+                        .AddRepositoryInTableStorage<AppUser, AppUserKey>(configuration["Storage:ConnectionString"])
+                        .WithKeyReader<AppUser, AppUserKey, TableStorageKeyReader>();
+                    break;
+                case "blobstorage":
+                    services.AddRepositoryInBlobStorage<AppUser, AppUserKey>(configuration["Storage:ConnectionString"]);
+                    break;
+                case "cosmos":
+                    services.AddRepositoryInCosmosSql<AppUser, AppUserKey>(
+                        x => x.Id,
+                        configuration["Storage:ConnectionString"],
+                        "unittestdatabase");
+                    break;
+            }
+            services.Finalize(out var serviceProvider);
+            return serviceProvider.GetService<IRepository<AppUser, AppUserKey>>()!;
         }
 
-        [Fact]
-        public async Task AllCommandsAndQueryAsync()
+        [Theory]
+        [InlineData("entityframework")]
+        [InlineData("tablestorage")]
+        [InlineData("blobstorage")]
+        [InlineData("cosmos")]
+        public async Task AllCommandsAndQueryAsync(string whatKindOfStorage)
         {
+            var _repository = GetCorrectIntegration(whatKindOfStorage);
             foreach (var appUser in await _repository.ToListAsync())
             {
                 await _repository.DeleteAsync(new AppUserKey(appUser.Id));

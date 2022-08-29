@@ -292,4 +292,4 @@ You may use Filter for queryable, FilterAsEnumerable for Enumerable and FilterAs
 ### Entity framework examples
 [Here you may find the example](https://github.com/KeyserDSoze/RepositoryFramework/tree/master/src/RepositoryFramework.Test/RepositoryFramework.Test.Infrastructure.EntityFramework)
 [Repository pattern applied](https://github.com/KeyserDSoze/RepositoryFramework/blob/master/src/RepositoryFramework.Test/RepositoryFramework.Test.Infrastructure.EntityFramework/AppUser.cs)
-[Unit test flow](https://github.com/KeyserDSoze/RepositoryFramework/blob/master/src/RepositoryFramework.Test/RepositoryFramework.UnitTest/Tests/EntityFramework/EntityFrameworkTest.cs)
+[Unit test flow](https://github.com/KeyserDSoze/RepositoryFramework/blob/master/src/RepositoryFramework.Test/RepositoryFramework.UnitTest/Tests/AllIntegration/AllIntegrationTest.cs)

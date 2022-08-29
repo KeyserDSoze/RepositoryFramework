@@ -30,6 +30,9 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\RepositoryFramework.Cache\RepositoryFramework.Cache\RepositoryFramework.Cache.csproj" />
 		<ProjectReference Include="..\..\RepositoryFramework.Infrastructure.InMemory\RepositoryFramework.Infrastructure.InMemory.csproj" />
+		<ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.Cosmos.Sql\RepositoryFramework.Infrastructure.Azure.Cosmos.Sql.csproj" />
+		<ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.Storage.Blob\RepositoryFramework.Infrastructure.Azure.Storage.Blob.csproj" />
+		<ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Azure.Storage.Table\RepositoryFramework.Infrastructure.Azure.Storage.Table.csproj" />
 		<ProjectReference Include="..\..\RepositoryFramework.MigrationTools\RepositoryFramework.MigrationTools.csproj" />
 		<ProjectReference Include="..\RepositoryFramework.Test.Infrastructure.EntityFramework\RepositoryFramework.Test.Infrastructure.EntityFramework.csproj" />
 	</ItemGroup>

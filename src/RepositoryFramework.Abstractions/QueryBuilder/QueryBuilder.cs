@@ -181,7 +181,14 @@ namespace RepositoryFramework
         /// <returns>IAsyncEnumerable<<typeparamref name="T"/>></returns>
         public IAsyncEnumerable<T> QueryAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_operations, cancellationToken);
-
+        /// <summary>
+        /// Call operation method in your Repository.
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>ValueTask<<typeparamref name="TProperty"/>></returns>
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, CancellationToken cancellationToken = default)
+            => _query.OperationAsync(operation, _operations, cancellationToken);
         /// <summary>
         /// Count the items by your query.
         /// </summary>
