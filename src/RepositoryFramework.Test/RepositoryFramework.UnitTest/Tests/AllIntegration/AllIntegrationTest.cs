@@ -33,7 +33,7 @@ namespace RepositoryFramework.UnitTest.Repository
                 case "tablestorage":
                     services
                         .AddRepositoryInTableStorage<AppUser, AppUserKey>(configuration["Storage:ConnectionString"])
-                        .WithTableStorageReader<AppUser, AppUserKey, TableStorageReader>()
+                        .WithTableStorageKeyReader<TableStorageKeyReader>()
                         .WithPartitionKey(x => x.Id)
                         .WithRowKey(x => x.Username)
                         .WithTimestamp(x => x.CreationTime);

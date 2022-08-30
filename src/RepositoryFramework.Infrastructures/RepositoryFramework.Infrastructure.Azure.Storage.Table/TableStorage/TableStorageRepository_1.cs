@@ -3,7 +3,7 @@
     internal class TableStorageRepository<T> : TableStorageRepository<T, string>, IRepositoryPattern<T>
     {
         public TableStorageRepository(TableServiceClientFactory clientFactory,
-            ITableStorageEntityReader<T> keyReader,
+            ITableStorageKeyReader<T> keyReader,
             TableStorageOptions<T, string> options) : base(clientFactory, keyReader, options)
         {
         }

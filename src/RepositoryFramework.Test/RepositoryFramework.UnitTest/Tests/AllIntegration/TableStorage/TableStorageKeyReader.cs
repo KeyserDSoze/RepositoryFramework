@@ -3,9 +3,9 @@ using RepositoryFramework.Test.Domain;
 
 namespace RepositoryFramework.UnitTest.Tests.AllIntegration.TableStorage
 {
-    internal class TableStorageReader : ITableStorageEntityReader<AppUser, AppUserKey>
+    internal class TableStorageKeyReader : ITableStorageKeyReader<AppUser, AppUserKey>
     {
-        public (string PartitionKey, string RowKey) ReadFromKey(AppUserKey key) 
+        public (string PartitionKey, string RowKey) Read(AppUserKey key) 
             => (key.Id.ToString(), string.Empty);
     }
 }

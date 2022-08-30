@@ -1,4 +1,4 @@
 ﻿namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
-    internal class DefaultTableStorageReader<T> : DefaultTableStorageReader<T, string>, ITableStorageEntityReader<T> { }
+    internal class DefaultTableStorageKeyReader<T> : DefaultTableStorageKeyReader<T, string>, ITableStorageKeyReader<T> { }
 }

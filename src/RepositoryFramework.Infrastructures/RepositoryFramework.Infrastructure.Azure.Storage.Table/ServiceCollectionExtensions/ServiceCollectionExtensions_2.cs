@@ -1,5 +1,4 @@
 ﻿using Azure.Data.Tables;
-using RepositoryFramework;
 using RepositoryFramework.Infrastructure.Azure.Storage.Table;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -17,8 +16,8 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Configure Azure Storage connection strings.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryBuilder<T, TKey> AddRepositoryInTableStorage<T, TKey>(
+        /// <returns>IRepositoryTableStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryTableStorageBuilder<T, TKey> AddRepositoryInTableStorage<T, TKey>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,
@@ -27,8 +26,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             TableServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(TableServiceClientFactory.Instance);
-            return services.AddRepository<T, TKey, TableStorageRepository<T, TKey>>(ServiceLifetime.Singleton)
-                .WithTableStorageReader<T, TKey, DefaultTableStorageReader<T, TKey>>();
+            return new RepositoryTableStorageBuilder<T, TKey>(services.AddRepository<T, TKey, TableStorageRepository<T, TKey>>(ServiceLifetime.Singleton))
+                .WithTableStorageKeyReader<DefaultTableStorageKeyReader<T, TKey>>();
         }
         /// <summary>
         /// Add a default table storage service for your command pattern.
@@ -41,8 +40,8 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Configure Azure Storage connection strings.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryBuilder<T, TKey> AddCommandInTableStorage<T, TKey>(
+        /// <returns>IRepositoryTableStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryTableStorageBuilder<T, TKey> AddCommandInTableStorage<T, TKey>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,
@@ -51,8 +50,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             TableServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(TableServiceClientFactory.Instance);
-            return services.AddCommand<T, TKey, TableStorageRepository<T, TKey>>(ServiceLifetime.Singleton)
-                .WithTableStorageReader<T, TKey, DefaultTableStorageReader<T, TKey>>();
+            return new RepositoryTableStorageBuilder<T, TKey>(services.AddCommand<T, TKey, TableStorageRepository<T, TKey>>(ServiceLifetime.Singleton))
+                .WithTableStorageKeyReader<DefaultTableStorageKeyReader<T, TKey>>();
         }
         /// <summary>
         /// Add a default table storage service for your query pattern.
@@ -65,8 +64,8 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Configure Azure Storage connection strings.</param>
         /// <param name="name">Optional name for your table, if you omit it, the service will use the name of your model.</param>
         /// <param name="clientOptions">Options to configure the requests to the Table service.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryBuilder<T, TKey> AddQueryInTableStorage<T, TKey>(
+        /// <returns>IRepositoryTableStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositoryTableStorageBuilder<T, TKey> AddQueryInTableStorage<T, TKey>(
            this IServiceCollection services,
            string connectionString,
            string? name = null,
@@ -75,9 +74,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             TableServiceClientFactory.Instance.Add(typeof(T).Name, name ?? typeof(T).Name, connectionString, clientOptions);
             services.AddSingleton(TableServiceClientFactory.Instance);
-            return services
-                .AddQuery<T, TKey, TableStorageRepository<T, TKey>>(ServiceLifetime.Singleton)
-                .WithTableStorageReader<T, TKey, DefaultTableStorageReader<T, TKey>>();
+            return new RepositoryTableStorageBuilder<T, TKey>(services
+                .AddQuery<T, TKey, TableStorageRepository<T, TKey>>(ServiceLifetime.Singleton))
+                .WithTableStorageKeyReader<DefaultTableStorageKeyReader<T, TKey>>();
         }
     }
 }

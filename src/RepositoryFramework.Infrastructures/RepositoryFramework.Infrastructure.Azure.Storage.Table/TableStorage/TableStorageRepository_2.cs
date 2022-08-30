@@ -10,11 +10,11 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         where TKey : notnull
     {
         private readonly TableClient _client;
-        private readonly ITableStorageEntityReader<T, TKey> _keyReader;
+        private readonly ITableStorageKeyReader<T, TKey> _keyReader;
         private readonly TableStorageOptions<T, TKey> _options;
 
         public TableStorageRepository(TableServiceClientFactory clientFactory,
-            ITableStorageEntityReader<T, TKey> keyReader,
+            ITableStorageKeyReader<T, TKey> keyReader,
             TableStorageOptions<T, TKey> options)
         {
             _client = clientFactory.Get(typeof(T).Name);
@@ -32,14 +32,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 
         public async Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var realKey = _keyReader.ReadFromKey(key);
+            var realKey = _keyReader.Read(key);
             var response = await _client.DeleteEntityAsync(realKey.PartitionKey, realKey.RowKey, cancellationToken: cancellationToken).NoContext();
             return !response.IsError;
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var realKey = _keyReader.ReadFromKey(key);
+            var realKey = _keyReader.Read(key);
             var response = await _client.GetEntityAsync<TableEntity>(realKey.PartitionKey, realKey.RowKey, cancellationToken: cancellationToken).NoContext();
             if (response?.Value != null)
                 return JsonSerializer.Deserialize<T>(response.Value.Value);
@@ -47,9 +47,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         }
         public async Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var realKey = _keyReader.ReadFromKey(key);
+            var realKey = _keyReader.Read(key);
             await foreach (var entity in _client.QueryAsync<TableEntity>(
-                filter: $"PartitionKey eq '{realKey.PartitionKey}' AndAlso RowKey eq '{realKey.RowKey}'", 1, cancellationToken: cancellationToken))
+                filter: $"PartitionKey eq '{realKey.PartitionKey}' and RowKey eq '{realKey.RowKey}'", 1, cancellationToken: cancellationToken))
                 return new State<T>(true, JsonSerializer.Deserialize<T>(entity.Value));
             return false;
         }
@@ -63,7 +63,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             LambdaExpression? where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
             string? filter = null;
             if (where != null)
-                filter = QueryStrategy.Create(where, _options.PartitionKey.Name, _options.RowKey.Name, _options.Timestamp?.Name);
+                filter = QueryStrategy.Create(where.Body, _options.PartitionKey.Name, _options.RowKey.Name, _options.Timestamp?.Name);
 
             long? top = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Top) as ValueQueryOperation)?.Value;
             long? skip = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Skip) as ValueQueryOperation)?.Value;
@@ -80,7 +80,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                     counter++;
                     if (skip != null && counter <= skip)
                         continue;
-                    haveToBreak = top != null && counter >= (top + skip ?? 0);
+                    haveToBreak = top != null && counter > top + (skip ?? 0);
                     if (haveToBreak)
                         break;
                     var item = JsonSerializer.Deserialize<T>(entity.Value)!;
@@ -131,7 +131,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         }
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var realKey = _keyReader.ReadFromKey(key);
+            var realKey = _keyReader.Read(key);
             var response = await _client.UpsertEntityAsync(new TableEntity
             {
                 PartitionKey = realKey.PartitionKey,
