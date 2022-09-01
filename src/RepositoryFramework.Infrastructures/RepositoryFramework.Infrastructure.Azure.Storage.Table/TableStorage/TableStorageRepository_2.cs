@@ -120,15 +120,16 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             List<T> items = new();
             await foreach (var item in QueryAsync(query, cancellationToken))
                 items.Add(item);
-            LambdaExpression? select = query.FirstSelect;
+            var selected = query.FilterAsSelect(items);
             return (await operation.ExecuteAsync(
-                () => ValueTask.FromResult((TProperty)(object)items.Count),
-                () => ValueTask.FromResult((TProperty)(object)items.Sum(x => select!.InvokeAndTransform<decimal>(x!))),
-                () => ValueTask.FromResult((TProperty)(object)items.Max(x => select!.InvokeAndTransform<decimal>(x!))),
-                () => ValueTask.FromResult((TProperty)(object)items.Min(x => select!.InvokeAndTransform<decimal>(x!))),
-                () => ValueTask.FromResult((TProperty)(object)items.Average(x => select!.InvokeAndTransform<decimal>(x!)))
-                ))!;
+                () => Invoke<TProperty>(selected.Count()),
+                () => Invoke<TProperty>(selected.Sum(x => ((object)x).Cast<decimal>())),
+                () => Invoke<TProperty>(selected.Max()!),
+                () => Invoke<TProperty>(selected.Min()!),
+                () => Invoke<TProperty>(selected.Average(x => ((object)x).Cast<decimal>()))))!;
         }
+        private static ValueTask<TProperty> Invoke<TProperty>(object value)
+            => ValueTask.FromResult((TProperty)Convert.ChangeType(value, typeof(TProperty)));
         public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var realKey = _keyReader.Read(key);

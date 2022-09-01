@@ -131,7 +131,7 @@ namespace RepositoryFramework.InMemory
                     return InMemoryStorage<T, TKey>.SetState(false);
             }, cancellationToken);
 
-        public async IAsyncEnumerable<T> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<TKey, T>> QueryAsync(Query query,
              [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Query);
@@ -147,7 +147,7 @@ namespace RepositoryFramework.InMemory
                 foreach (var item in query.Filter(Values))
                 {
                     if (!cancellationToken.IsCancellationRequested)
-                        yield return item;
+                        yield return IEntity<TKey, T>.Default(default, item);
                     else
                         throw new TaskCanceledException();
                 }
