@@ -14,9 +14,9 @@ namespace RepositoryFramework.InMemory
             _settings = settings;
 
         }
-        private static ConcurrentDictionary<string, T> Values { get; } = new();
+        private static ConcurrentDictionary<string, IEntity<T, TKey>> Values { get; } = new();
         internal static void AddValue(TKey key, T value)
-            => Values.TryAdd(key.AsString(), value);
+            => Values.TryAdd(key.AsString(), IEntity.Default(key, value));
         private static int GetRandomNumber(Range range)
         {
             int maxPlusOne = range.End.Value + 1 - range.Start.Value;
@@ -92,7 +92,7 @@ namespace RepositoryFramework.InMemory
                 if (!cancellationToken.IsCancellationRequested)
                 {
                     string keyAsString = key.AsString();
-                    return Values.ContainsKey(keyAsString) ? Values[keyAsString] : default;
+                    return Values.ContainsKey(keyAsString) ? Values[keyAsString].Value : default;
                 }
                 else
                     throw new TaskCanceledException();
@@ -111,7 +111,7 @@ namespace RepositoryFramework.InMemory
                 string keyAsString = key.AsString();
                 if (!Values.ContainsKey(keyAsString))
                 {
-                    Values.TryAdd(keyAsString, value);
+                    Values.TryAdd(keyAsString, IEntity.Default(key, value));
                     return InMemoryStorage<T, TKey>.SetState(true, value);
                 }
                 else
@@ -124,14 +124,14 @@ namespace RepositoryFramework.InMemory
                 string keyAsString = key.AsString();
                 if (Values.ContainsKey(keyAsString))
                 {
-                    Values[keyAsString] = value;
+                    Values[keyAsString] = IEntity.Default(key, value);
                     return InMemoryStorage<T, TKey>.SetState(true, value);
                 }
                 else
                     return InMemoryStorage<T, TKey>.SetState(false);
             }, cancellationToken);
 
-        public async IAsyncEnumerable<IEntity<TKey, T>> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
              [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Query);
@@ -144,10 +144,10 @@ namespace RepositoryFramework.InMemory
                     await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken).NoContext();
                     throw exception;
                 }
-                foreach (var item in query.Filter(Values))
+                foreach (var item in query.Filter(Values.Select(x => x.Value.Value)))
                 {
                     if (!cancellationToken.IsCancellationRequested)
-                        yield return IEntity<TKey, T>.Default(default, item);
+                        yield return Values.First(x => x.Value.Value.Equals(item)).Value;
                     else
                         throw new TaskCanceledException();
                 }

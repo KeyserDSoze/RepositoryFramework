@@ -47,7 +47,7 @@ namespace RepositoryFramework.UnitTest
             var countries = await _repo.QueryAsync().ToListAsync().NoContext();
             foreach (var country in countries)
             {
-                await _repo.DeleteAsync(new CountryKey(country.Id, country.Abbreviation!));
+                await _repo.DeleteAsync(country.Key);
             }
             countries = await _repo.QueryAsync().ToListAsync().NoContext();
             Assert.Equal(NumberOfEntries, countries.Count);

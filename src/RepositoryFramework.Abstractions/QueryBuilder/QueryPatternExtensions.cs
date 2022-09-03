@@ -12,7 +12,7 @@ namespace System.Linq
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="entity"></param>
         /// <returns>IAsyncEnumerable<typeparamref name="T"/></returns>
-        public static IAsyncEnumerable<T> QueryAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
+        public static IAsyncEnumerable<IEntity<T, TKey>> QueryAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
             CancellationToken cancellationToken = default)
             where TKey : notnull
             => entity.QueryAsync(Query.Empty, cancellationToken);
@@ -89,7 +89,7 @@ namespace System.Linq
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>IEnumerable<IGrouping<<typeparamref name="TProperty"/>, <typeparamref name="T"/>>></returns>
-        public static IAsyncEnumerable<IAsyncGrouping<TProperty, T>> GroupByAsync<TProperty, T, TKey>(this IQueryPattern<T, TKey> entity,
+        public static IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty, T, TKey>(this IQueryPattern<T, TKey> entity,
             Expression<Func<T, TProperty>> predicate,
             CancellationToken cancellationToken = default)
             where TKey : notnull
@@ -117,7 +117,7 @@ namespace System.Linq
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns><typeparamref name="T"/></returns>
-        public static ValueTask<T?> FirstOrDefaultAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
+        public static ValueTask<IEntity<T, TKey>?> FirstOrDefaultAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
             Expression<Func<T, bool>>? predicate = null,
             CancellationToken cancellationToken = default)
             where TKey : notnull
@@ -132,7 +132,7 @@ namespace System.Linq
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns><typeparamref name="T"/></returns>
-        public static ValueTask<T> FirstAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
+        public static ValueTask<IEntity<T, TKey>> FirstAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
             Expression<Func<T, bool>>? predicate = null,
             CancellationToken cancellationToken = default)
             where TKey : notnull
@@ -147,7 +147,7 @@ namespace System.Linq
         /// <param name="pageSize">Number of elements for page. Minimum value is 1.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Paged results.</returns>
-        public static Task<IPage<T>> PageAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
+        public static Task<IPage<T, TKey>> PageAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
             int page,
             int pageSize,
             CancellationToken cancellationToken = default)
@@ -161,7 +161,7 @@ namespace System.Linq
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="cancellationToken"></param>
         /// <returns>List<<typeparamref name="T"/>></returns>
-        public static ValueTask<List<T>> ToListAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
+        public static ValueTask<List<IEntity<T, TKey>>> ToListAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
             CancellationToken cancellationToken = default)
             where TKey : notnull
 

@@ -55,13 +55,13 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
             throw new NotImplementedException();
         }
 
-        public async IAsyncEnumerable<Car> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<Car, int>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken);
             var filtered = query.Filter(_database).ToList();
             foreach (var item in filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }) ?? new List<Car>())
-                yield return item;
+                yield return IEntity.Default(item.Id, item);
         }
 
         public Task<State<Car>> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)

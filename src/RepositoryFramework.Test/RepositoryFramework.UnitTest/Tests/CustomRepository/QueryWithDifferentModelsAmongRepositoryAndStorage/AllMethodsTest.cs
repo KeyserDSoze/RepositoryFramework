@@ -45,7 +45,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
                 .ToListAsync();
             Assert.Equal(numberOfResults, results.Count);
             if (results.Any())
-                Assert.Equal(5, results.First().Id);
+                Assert.Equal(5, results.First().Value.Id);
             var results2 = await _repository.ToListAsync();
             Assert.Equal(5, results2.Count);
             var results3 = await _repository
@@ -53,7 +53,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
                 .PageAsync(1, 2);
             Assert.Equal(2, results3.Items.Count());
             Assert.Equal(5, results3.TotalCount);
-            Assert.Equal(1, results3.Items.First().Id);
+            Assert.Equal(1, results3.Items.First().Value.Id);
         }
     }
 }

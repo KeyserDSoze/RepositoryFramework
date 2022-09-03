@@ -38,11 +38,12 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         public async Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            var response = await blobClient.UploadAsync(new BinaryData(JsonSerializer.Serialize(value)), cancellationToken).NoContext();
+            var entityWithKey = IEntity.Default(key, value);
+            var response = await blobClient.UploadAsync(new BinaryData(entityWithKey.ToJson()), cancellationToken).NoContext();
             return new(response.Value != null, value);
         }
 
-        public async IAsyncEnumerable<T> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             Func<T, bool> predicate = x => true;
@@ -54,8 +55,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             {
                 var blobClient = _client.GetBlobClient(blob.Name);
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
-                var item = JsonSerializer.Deserialize<T>(blobData.Value.Content)!;
-                if (!predicate.Invoke(item))
+                var item = JsonSerializer.Deserialize<IEntity<T, TKey>>(blobData.Value.Content)!;
+                if (!predicate.Invoke(item.Value))
                     continue;
                 yield return item;
             }
@@ -76,7 +77,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
 #warning to refactor
             List<T> items = new();
             await foreach (var item in QueryAsync(query, cancellationToken))
-                items.Add(item);
+                items.Add(item.Value);
             LambdaExpression? select = query.FirstSelect;
             return (await operation.ExecuteAsync(
                 () => items.Count,

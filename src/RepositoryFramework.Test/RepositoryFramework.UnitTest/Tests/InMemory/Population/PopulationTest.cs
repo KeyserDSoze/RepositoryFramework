@@ -67,7 +67,7 @@ namespace RepositoryFramework.UnitTest.InMemory.Population
         [InlineData(2)]
         public async Task TestAsync(int numberOfParameters)
         {
-            IEnumerable<User> users = null!;
+            IEnumerable<IEntity<User, string>> users = null!;
             switch (numberOfParameters)
             {
                 case 1:

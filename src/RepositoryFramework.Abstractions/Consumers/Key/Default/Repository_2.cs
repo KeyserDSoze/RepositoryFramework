@@ -22,7 +22,7 @@
         public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _repository.InsertAsync(key, value, cancellationToken);
 
-        public IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query, CancellationToken cancellationToken = default)
             => _repository.QueryAsync(query.Translate<T>(), cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             Query query,

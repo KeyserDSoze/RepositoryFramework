@@ -48,7 +48,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
         }
 
-        public async IAsyncEnumerable<T> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             IQueryable<T> queryable = query.Filter(_client.GetItemLinqQueryable<T>());
@@ -58,8 +58,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             {
                 if (cancellationToken.IsCancellationRequested)
                     break;
+#warning to retrieve in some way the key
                 foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
-                    yield return item;
+                    yield return IEntity.Default(default(TKey), item);
             }
         }
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,

@@ -47,12 +47,12 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
             throw new NotImplementedException();
         }
 
-        public async IAsyncEnumerable<Animal> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<Animal, int>> QueryAsync(Query query,
              [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken);
             foreach (var entity in query.Filter(_database.Animals))
-                yield return entity;
+                yield return IEntity.Default(entity.Id, entity);
         }
 
         public Task<State<Animal>> UpdateAsync(int key, Animal value, CancellationToken cancellationToken = default)

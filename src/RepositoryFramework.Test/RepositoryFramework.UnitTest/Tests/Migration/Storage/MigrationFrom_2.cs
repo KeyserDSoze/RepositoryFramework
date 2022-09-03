@@ -42,10 +42,13 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(new State<SuperMigrationUser>(true));
         }
 
-        public IAsyncEnumerable<SuperMigrationUser> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<IEntity<SuperMigrationUser, string>> QueryAsync(Query query, CancellationToken cancellationToken = default)
         {
             var users = query.Filter(_users.Select(x => x.Value));
-            return users.ToAsyncEnumerable();
+            await foreach (var user in users.ToAsyncEnumerable())
+            {
+                yield return IEntity.Default(user.Id!, user);
+            }
         }
        
         public Task<State<SuperMigrationUser>> UpdateAsync(string key, SuperMigrationUser value, CancellationToken cancellationToken = default)

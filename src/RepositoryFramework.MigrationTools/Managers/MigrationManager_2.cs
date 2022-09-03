@@ -20,7 +20,6 @@ namespace RepositoryFramework.Migration
         {
             List<Task> setAll = new();
             var entities = await _from.QueryAsync(Query.Empty, cancellationToken: cancellationToken).ToListAsync().NoContext();
-            var keyProperty = navigationKey.GetPropertyBasedOnKey();
             foreach (var entity in entities)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -33,10 +32,9 @@ namespace RepositoryFramework.Migration
                 }
                 async Task TryToMigrate()
                 {
-                    var key = (TKey)keyProperty!.GetValue(entity)!;
-                    if (checkIfExists && (await _to.ExistAsync(key, cancellationToken).NoContext()).IsOk)
+                    if (checkIfExists && (await _to.ExistAsync(entity.Key, cancellationToken).NoContext()).IsOk)
                         return;
-                    await _to.InsertAsync(key, entity!, cancellationToken).NoContext();
+                    await _to.InsertAsync(entity.Key, entity.Value!, cancellationToken).NoContext();
                 }
             }
             return true;

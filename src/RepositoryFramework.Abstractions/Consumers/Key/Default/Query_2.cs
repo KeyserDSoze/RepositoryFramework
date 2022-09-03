@@ -16,7 +16,7 @@ namespace RepositoryFramework
             => _query.ExistAsync(key, cancellationToken);
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.GetAsync(key, cancellationToken);
-        public IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query, CancellationToken cancellationToken = default)
             => _query.QueryAsync(query, cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             Query query,

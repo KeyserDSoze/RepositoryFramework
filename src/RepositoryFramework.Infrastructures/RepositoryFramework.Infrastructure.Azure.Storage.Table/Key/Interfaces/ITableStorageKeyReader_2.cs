@@ -4,5 +4,6 @@
         where TKey : notnull
     {
         (string PartitionKey, string RowKey) Read(TKey key);
+        TKey Read(T entity);
     }
 }

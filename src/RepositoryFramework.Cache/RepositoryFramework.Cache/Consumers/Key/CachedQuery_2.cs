@@ -97,8 +97,8 @@ namespace RepositoryFramework.Cache
 
             return value.Response;
         }
-        private static readonly List<T> Empty = new();
-        public async IAsyncEnumerable<T> QueryAsync(Query query,
+        private static readonly List<IEntity<T, TKey>> Empty = new();
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             string keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{query.ToKey()}";
@@ -106,7 +106,7 @@ namespace RepositoryFramework.Cache
             var value = await RetrieveValueAsync(RepositoryMethods.Query, keyAsString,
                 async () =>
                 {
-                    List<T> items = new();
+                    List<IEntity<T, TKey>> items = new();
                     await foreach (var item in _query.QueryAsync(query, cancellationToken)!)
                         items.Add(item);
                     return items;

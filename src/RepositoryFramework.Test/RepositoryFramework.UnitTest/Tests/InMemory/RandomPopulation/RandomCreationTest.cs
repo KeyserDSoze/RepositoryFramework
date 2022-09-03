@@ -154,7 +154,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
         public async Task TestWithoutRegexAsync()
         {
             var all = await _test.QueryAsync().ToListAsync().NoContext();
-            var theFirst = all.First();
+            var theFirst = all.First().Value;
             Assert.NotEqual(0, theFirst.A);
             Assert.NotNull(theFirst.AA);
             Assert.NotEqual((uint)0, theFirst.B);
@@ -222,10 +222,10 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
         public async Task TestWithRegexAsync()
         {
             var all = await _population.OrderBy(x => x.Id).QueryAsync().ToListAsync().NoContext();
-            var theFirst = all.First();
+            var theFirst = all.First().Value;
             Assert.Equal(90, all.Count);
-            Assert.Equal(0, all.First().Id);
-            Assert.Equal(89, all.Last().Id);
+            Assert.Equal(0, all.First().Value.Id);
+            Assert.Equal(89, all.Last().Value.Id);
             Assert.NotEqual(0, theFirst.A);
             Assert.NotNull(theFirst.AA);
             Assert.NotEqual((uint)0, theFirst.B);
@@ -289,7 +289,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
         public async Task TestWithDelegationAsync()
         {
             var all = await _delegation.QueryAsync().ToListAsync().NoContext();
-            var theFirst = all.First();
+            var theFirst = all.First().Value;
             Assert.Equal(2, theFirst.A);
             Assert.NotNull(theFirst.AA);
             Assert.Equal(2, theFirst.AA);
@@ -368,10 +368,10 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
         {
             var all = await _autoincrementRepository.OrderBy(x => x.Id).QueryAsync().ToListAsync().NoContext();
             var all2 = await _autoincrementRepository2.OrderBy(x => x.Id).QueryAsync().ToListAsync().NoContext();
-            Assert.Equal(0, all.First().Id);
-            Assert.Equal(99, all.Last().Id);
-            Assert.Equal(1, all2.First().Id);
-            Assert.Equal(100, all2.Last().Id);
+            Assert.Equal(0, all.First().Value.Id);
+            Assert.Equal(99, all.Last().Value.Id);
+            Assert.Equal(1, all2.First().Value.Id);
+            Assert.Equal(100, all2.Last().Value.Id);
         }
     }
 }

@@ -71,8 +71,8 @@ namespace RepositoryFramework.UnitTest.AllMethods
             Assert.Equal(10, items.Count);
 
             var page = await _animal.Where(x => x.Id > 0).OrderByDescending(x => x.Id).PageAsync(1, 2);
-            Assert.Equal(9, page.Items.First().Id);
-            Assert.Equal(8, page.Items.Last().Id);
+            Assert.Equal(9, page.Items.First().Value.Id);
+            Assert.Equal(8, page.Items.Last().Value.Id);
 
             batchOperation = _animal.CreateBatchOperation();
             for (int i = 0; i < 10; i++)
@@ -81,7 +81,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
 
             items = await _animal.Where(x => x.Id >= 0).OrderBy(x => x.Id).QueryAsync().ToListAsync();
             Assert.Equal(10, items.Count);
-            Assert.Equal("Animal 0", items.First().Name);
+            Assert.Equal("Animal 0", items.First().Value.Name);
 
             batchOperation = _animal.CreateBatchOperation();
             for (int i = 0; i < 10; i++)
@@ -96,7 +96,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             var all = await _strangeKeyRepository.QueryAsync().ToListAsync();
             Assert.Equal(100, all.Count);
             foreach (var item in all)
-                await _strangeKeyRepository.DeleteAsync(new(item.Id));
+                await _strangeKeyRepository.DeleteAsync(new(item.Value.Id));
 
             var key = new AnimalKey(1);
             var result = await _strangeKeyRepository.InsertAsync(key, new Animal { Id = 1, Name = "Eagle" });
@@ -133,8 +133,8 @@ namespace RepositoryFramework.UnitTest.AllMethods
             Assert.Equal(10, items.Count);
 
             var page = await _strangeKeyRepository.Where(x => x.Id > 0).OrderByDescending(x => x.Id).PageAsync(1, 2);
-            Assert.Equal(9, page.Items.First().Id);
-            Assert.Equal(8, page.Items.Last().Id);
+            Assert.Equal(9, page.Items.First().Value.Id);
+            Assert.Equal(8, page.Items.Last().Value.Id);
 
             batchOperation = _strangeKeyRepository.CreateBatchOperation();
             for (int i = 0; i < 10; i++)
@@ -143,13 +143,13 @@ namespace RepositoryFramework.UnitTest.AllMethods
 
             items = await _strangeKeyRepository.Where(x => x.Id >= 0).OrderBy(x => x.Id).QueryAsync().ToListAsync();
             Assert.Equal(10, items.Count);
-            Assert.Equal("Animal 0", items.First().Name);
+            Assert.Equal("Animal 0", items.First().Value.Name);
 
             batchOperation = _strangeKeyRepository.CreateBatchOperation();
             for (int i = 0; i < 10; i++)
                 batchOperation.AddDelete(new(i));
             await batchOperation.ExecuteAsync();
-            items = await _animal.Where(x => x.Id > 0).QueryAsync().ToListAsync();
+            items = await _strangeKeyRepository.Where(x => x.Id > 0).QueryAsync().ToListAsync();
             Assert.Empty(items);
         }
     }

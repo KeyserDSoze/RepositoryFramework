@@ -53,12 +53,12 @@ namespace RepositoryFramework.UnitTest.Migration
                     Assert.Equal(4, (await _repository1.QueryAsync().ToListAsync().NoContext()).Count);
                     await foreach (var user in _from1.QueryAsync())
                     {
-                        Assert.True(await _repository1.ExistAsync(user.Id!).NoContext());
-                        var newUser = await _repository1.GetAsync(user.Id!).NoContext();
+                        Assert.True(await _repository1.ExistAsync(user.Key).NoContext());
+                        var newUser = await _repository1.GetAsync(user.Key).NoContext();
                         Assert.NotNull(newUser);
-                        Assert.True(newUser!.IsAdmin == user.IsAdmin);
-                        Assert.True(newUser!.Email == user.Email);
-                        Assert.True(newUser!.Name == user.Name);
+                        Assert.True(newUser!.IsAdmin == user.Value.IsAdmin);
+                        Assert.True(newUser!.Email == user.Value.Email);
+                        Assert.True(newUser!.Name == user.Value.Name);
                     }
                     break;
                 case 2:
@@ -66,12 +66,12 @@ namespace RepositoryFramework.UnitTest.Migration
                     Assert.Equal(4, (await _repository2.QueryAsync().ToListAsync().NoContext()).Count);
                     await foreach (var user in _from2.QueryAsync())
                     {
-                        Assert.True(await _repository2.ExistAsync(user.Id!).NoContext());
-                        var newUser = await _repository2.GetAsync(user.Id!).NoContext();
+                        Assert.True(await _repository2.ExistAsync(user.Key).NoContext());
+                        var newUser = await _repository2.GetAsync(user.Key).NoContext();
                         Assert.NotNull(newUser);
-                        Assert.True(newUser!.IsAdmin == user.IsAdmin);
-                        Assert.True(newUser!.Email == user.Email);
-                        Assert.True(newUser!.Name == user.Name);
+                        Assert.True(newUser!.IsAdmin == user.Value.IsAdmin);
+                        Assert.True(newUser!.Email == user.Value.Email);
+                        Assert.True(newUser!.Name == user.Value.Name);
                     }
                     break;
             }

@@ -57,7 +57,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
-        public async IAsyncEnumerable<T> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             LambdaExpression? where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
@@ -91,7 +91,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             }
             if (!cancellationToken.IsCancellationRequested)
                 foreach (var item in Filter(items.AsQueryable(), query))
-                    yield return item;
+                    yield return IEntity.Default(_keyReader.Read(item), item);
         }
         private static IQueryable<T> Filter(IQueryable<T> queryable, Query query)
         {
@@ -119,7 +119,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         {
             List<T> items = new();
             await foreach (var item in QueryAsync(query, cancellationToken))
-                items.Add(item);
+                items.Add(item.Value);
             var selected = query.FilterAsSelect(items);
             return (await operation.ExecuteAsync(
                 () => Invoke<TProperty>(selected.Count()),
@@ -141,7 +141,6 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             }, TableUpdateMode.Replace, cancellationToken).NoContext();
             return new State<T>(!response.IsError, value);
         }
-
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
             BatchResults<T, TKey> results = new();

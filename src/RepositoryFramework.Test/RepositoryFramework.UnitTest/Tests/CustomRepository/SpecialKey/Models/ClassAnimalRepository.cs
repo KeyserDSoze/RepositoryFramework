@@ -81,7 +81,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             return false;
         }
 
-        public IAsyncEnumerable<ClassAnimal> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IEntity<ClassAnimal, ClassAnimalKey>> QueryAsync(Query query, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

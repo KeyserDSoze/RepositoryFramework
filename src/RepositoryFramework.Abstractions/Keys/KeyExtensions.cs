@@ -41,30 +41,5 @@ namespace RepositoryFramework
                     type.FetchProperties().Select(property => Stringify(property.GetValue(item), false, string.Empty))));
             return builder.ToString();
         }
-        public static TKey? AsValue<TKey>(this string keyAsString)
-            => Keyify<TKey>(keyAsString, false, string.Empty);
-        private static TKey? Keyify<TKey>(string item, bool withName, string prefix)
-        {
-            if (item == null)
-                return default;
-            var type = typeof(TKey);
-            StringBuilder builder = new();
-            if (!string.IsNullOrWhiteSpace(prefix))
-            {
-                builder.Append(prefix);
-                builder.Append(DefaultSeparator);
-            }
-            if (withName)
-            {
-                builder.Append(type.Name);
-                builder.Append(DefaultSeparator);
-            }
-            if (item.IsPrimitive())
-                builder.Append(item);
-            else
-                builder.Append(string.Join(DefaultSeparator,
-                    type.FetchProperties().Select(property => Stringify(property.GetValue(item), false, string.Empty))));
-            return builder.ToString();
-        }
     }
 }

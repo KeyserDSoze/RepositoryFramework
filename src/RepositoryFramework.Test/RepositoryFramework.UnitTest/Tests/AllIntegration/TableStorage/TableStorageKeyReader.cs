@@ -7,5 +7,8 @@ namespace RepositoryFramework.UnitTest.Tests.AllIntegration.TableStorage
     {
         public (string PartitionKey, string RowKey) Read(AppUserKey key) 
             => (key.Id.ToString(), string.Empty);
+
+        public AppUserKey Read(AppUser entity) 
+            => new AppUserKey(entity.Id);
     }
 }

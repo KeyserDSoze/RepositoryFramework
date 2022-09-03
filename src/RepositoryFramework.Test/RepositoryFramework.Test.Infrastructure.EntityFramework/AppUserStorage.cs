@@ -107,11 +107,11 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             };
         }
 
-        public async IAsyncEnumerable<AppUser> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<AppUser, AppUserKey>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var user in query.FilterAsAsyncEnumerable(_context.Users))
-                yield return new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new(), default);
+                yield return IEntity.Default(new AppUserKey(user.Identificativo), new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new(), default));
         }
 
         public async Task<State<AppUser>> UpdateAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)

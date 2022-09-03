@@ -88,10 +88,10 @@ namespace RepositoryFramework
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>IEnumerable<IGrouping<<typeparamref name="TProperty"/>, <typeparamref name="T"/>>></returns>
-        public IAsyncEnumerable<IAsyncGrouping<TProperty, T>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
         {
             _ = _operations.GroupBy(predicate);
-            var items = QueryAsync(cancellationToken).GroupBy(predicate.Compile());
+            var items = QueryAsync(cancellationToken).GroupBy(x => predicate.Compile().Invoke(x.Value));
             return items;
         }
         /// <summary>
@@ -110,7 +110,7 @@ namespace RepositoryFramework
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns><typeparamref name="T"/></returns>
-        public ValueTask<T?> FirstOrDefaultAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        public ValueTask<IEntity<T, TKey>?> FirstOrDefaultAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
             if (predicate != null)
                 _ = Where(predicate);
@@ -125,7 +125,7 @@ namespace RepositoryFramework
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns><typeparamref name="T"/></returns>
-        public ValueTask<T> FirstAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        public ValueTask<IEntity<T, TKey>> FirstAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
             if (predicate != null)
                 _ = Where(predicate);
@@ -141,7 +141,7 @@ namespace RepositoryFramework
         /// <param name="pageSize">Number of elements for page. Minimum value is 1.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Paged results.</returns>
-        public Task<IPage<T>> PageAsync(
+        public Task<IPage<T, TKey>> PageAsync(
             int page,
             int pageSize,
             CancellationToken cancellationToken = default)
@@ -152,7 +152,7 @@ namespace RepositoryFramework
                 throw new ArgumentException($"Page size parameter with value {pageSize} is lesser than 1");
             return PageInternalAsync(page, pageSize, cancellationToken);
         }
-        private async Task<IPage<T>> PageInternalAsync(
+        private async Task<IPage<T, TKey>> PageInternalAsync(
             int page,
             int pageSize,
             CancellationToken cancellationToken = default)
@@ -165,21 +165,21 @@ namespace RepositoryFramework
             var query = await ToListAsync(cancellationToken).NoContext();
             var count = await _query.OperationAsync(OperationType<long>.Count, operations, cancellationToken).NoContext();
             long pages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
-            return new Page<T>(query, count, pages);
+            return new Page<T, TKey>(query, count, pages);
         }
         /// <summary>
         /// List the query.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns>List<<typeparamref name="T"/>></returns>
-        public ValueTask<List<T>> ToListAsync(CancellationToken cancellationToken = default)
+        public ValueTask<List<IEntity<T, TKey>>> ToListAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_operations, cancellationToken).ToListAsync(cancellationToken);
         /// <summary>
         /// Call query method in your Repository.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns>IAsyncEnumerable<<typeparamref name="T"/>></returns>
-        public IAsyncEnumerable<T> QueryAsync(CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_operations, cancellationToken);
         /// <summary>
         /// Call operation method in your Repository.

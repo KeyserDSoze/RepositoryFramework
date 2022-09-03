@@ -62,7 +62,7 @@ namespace RepositoryFramework.UnitTest.Repository
             var _repository = GetCorrectIntegration(whatKindOfStorage);
             foreach (var appUser in await _repository.ToListAsync())
             {
-                await _repository.DeleteAsync(new AppUserKey(appUser.Id));
+                await _repository.DeleteAsync(new AppUserKey(appUser.Value.Id));
             }
             var user = new AppUser(3, "Arnold", "Arnold@gmail.com", new(), DateTime.UtcNow);
             var result = await _repository.InsertAsync(new AppUserKey(3), user);
@@ -80,7 +80,7 @@ namespace RepositoryFramework.UnitTest.Repository
                 Assert.Single(items);
                 var actual = await _repository.FirstOrDefaultAsync(x => x.Id > 0);
                 Assert.NotNull(actual);
-                var key = new AppUserKey(actual!.Id);
+                var key = new AppUserKey(actual!.Value.Id);
                 var item = await _repository.GetAsync(key);
                 Assert.NotNull(item);
                 Assert.Equal(name, item!.Username);
@@ -108,16 +108,16 @@ namespace RepositoryFramework.UnitTest.Repository
 
             Expression<Func<AppUser, object>> orderPredicate = x => x.Id;
             var page = await _repository.Where(x => x.Id > 0).OrderByDescending(orderPredicate).PageAsync(1, 2);
-            Assert.True(page.Items.First().Id > page.Items.Last().Id);
+            Assert.True(page.Items.First().Value.Id > page.Items.Last().Value.Id);
 
             batchOperation = _repository.CreateBatchOperation();
             await foreach (var appUser in _repository.QueryAsync())
-                batchOperation.AddUpdate(new AppUserKey(appUser.Id), new AppUser(appUser.Id, $"User Updated {appUser.Id}", $"Email Updated {appUser.Id}", new(), DateTime.UtcNow));
+                batchOperation.AddUpdate(new AppUserKey(appUser.Value.Id), new AppUser(appUser.Value.Id, $"User Updated {appUser.Value.Id}", $"Email Updated {appUser.Value.Id}", new(), DateTime.UtcNow));
             await batchOperation.ExecuteAsync();
 
             items = await _repository.Where(x => x.Id >= 0).ToListAsync();
             Assert.Equal(10, items.Count);
-            Assert.Equal($"Email Updated {items.First().Id}", items.First().Email);
+            Assert.Equal($"Email Updated {items.First().Value.Id}", items.First().Value.Email);
 
             var max = await _repository.MaxAsync(x => x.Id);
             var min = await _repository.MinAsync(x => x.Id);
@@ -132,7 +132,7 @@ namespace RepositoryFramework.UnitTest.Repository
 
             batchOperation = _repository.CreateBatchOperation();
             foreach (var appUser in await _repository.QueryAsync().ToListAsync())
-                batchOperation.AddDelete(new AppUserKey(appUser.Id));
+                batchOperation.AddDelete(new AppUserKey(appUser.Value.Id));
             await batchOperation.ExecuteAsync();
 
             items = await _repository.Where(x => x.Id > 0).QueryAsync().ToListAsync();

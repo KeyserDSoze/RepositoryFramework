@@ -56,14 +56,14 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response!.Content.ReadFromJsonAsync<State<T>>(cancellationToken: cancellationToken).NoContext())!;
         }
-        public async IAsyncEnumerable<T> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Query).NoContext();
             var value = query.Serialize();
             var response = await client.PostAsJsonAsync(nameof(RepositoryMethods.Query), value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<List<T>>(cancellationToken: cancellationToken).NoContext();
+            var result = await response.Content.ReadFromJsonAsync<List<IEntity<T, TKey>>>(cancellationToken: cancellationToken).NoContext();
             if (result != null)
                 foreach (var item in result)
                     if (!cancellationToken.IsCancellationRequested)
