@@ -217,10 +217,9 @@ namespace Microsoft.Extensions.DependencyInjection
         private static Func<string, TKey> GetKeyParser<TKey>()
         {
             Type type = typeof(TKey);
-            bool hasProperties = type.GetProperties().Length > 0;
-            if (hasProperties)
-                return key => key.FromJson<TKey>();
-            if (type == typeof(Guid))
+            if (type == typeof(string))
+                return key => (dynamic)key;
+            else if (type == typeof(Guid))
                 return key => (dynamic)Guid.Parse(key);
             else if (type == typeof(DateTimeOffset))
                 return key => (dynamic)DateTimeOffset.Parse(key);
@@ -231,7 +230,13 @@ namespace Microsoft.Extensions.DependencyInjection
             else if (type == typeof(nuint))
                 return key => (dynamic)nuint.Parse(key);
             else
-                return key => (TKey)Convert.ChangeType(key, type);
+            {
+                bool hasProperties = type.FetchProperties().Length > 0;
+                if (hasProperties)
+                    return key => key.FromJson<TKey>();
+                else
+                    return key => (TKey)Convert.ChangeType(key, type);
+            }
         }
         private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, ApiAuthorization? authorization, RepositoryMethods path)
         {

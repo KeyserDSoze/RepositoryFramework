@@ -17,6 +17,7 @@ builder.Services.AddRepositoryInMemoryStorage<IperUser, string>()
 builder.Services.AddRepositoryInMemoryStorage<Animal, AnimalKey>();
 builder.Services.AddRepositoryInMemoryStorage<Car, Guid>();
 builder.Services.AddRepositoryInMemoryStorage<Car2, Range>();
+
 //builder.Services
 //    .AddRepositoryInTableStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
 builder.Services.AddStackExchangeRedisCache(options =>
