@@ -6,10 +6,4 @@
             where TKey : notnull
             => new Entity<T, TKey>(key, value);
     }
-    public interface IEntity<out T, out TKey> : IEntity
-        where TKey : notnull
-    {
-        TKey Key { get; }
-        T Value { get; }
-    }
 }
