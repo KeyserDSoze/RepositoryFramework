@@ -1,4 +1,5 @@
 using RepositoryFramework;
+using RepositoryFramework.WebApi;
 using RepositoryFramework.WebApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,10 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 //.PopulateWithRandomData(x => x.Email!, 120, 5)
 // Sections of code should not be commented out
 //.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
+builder.Services.AddRepository<IperUser, IperRepositoryStorage>();
 builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
-builder.Services.AddRepositoryInMemoryStorage<IperUser, string>()
+builder.Services.AddRepositoryInMemoryStorage<SuperiorUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com")
 .WithPattern(x => x.Port, @"[1-9]{3,4}");

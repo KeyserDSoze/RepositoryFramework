@@ -23,15 +23,16 @@ namespace Microsoft.Extensions.DependencyInjection
           where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
-            service.RepositoryType = typeof(IRepository<T, TKey>);
+            var currentType = typeof(IRepository<T, TKey>);
+            service.AddOrUpdate(currentType, typeof(TStorage));
             service.NotExposableAsApi = notExposableAsApi;
             services
-                .RemoveServiceIfAlreadyInstalled<TStorage>(service.RepositoryType, typeof(IRepositoryPattern<T, TKey>))
+                .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IRepositoryPattern<T, TKey>))
                 .AddService<IRepositoryPattern<T, TKey>, TStorage>(serviceLifetime)
                 .AddService<IRepository<T, TKey>, Repository<T, TKey>>(serviceLifetime);
             return new RepositoryBuilder<T, TKey>(services, PatternType.Repository, serviceLifetime);
         }
-       
+
 
         /// <summary>
         /// Add Command storage for your CQRS, inject the ICommand<<typeparamref name="T"/>, <typeparamref name="TKey"/>>
@@ -52,10 +53,11 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
-            service.CommandType = typeof(ICommand<T, TKey>);
+            var currentType = typeof(ICommand<T, TKey>);
+            service.AddOrUpdate(currentType, typeof(TStorage));
             service.NotExposableAsApi = notExposableAsApi;
             services
-                .RemoveServiceIfAlreadyInstalled<TStorage>(service.CommandType, typeof(ICommandPattern<T, TKey>))
+                .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(ICommandPattern<T, TKey>))
                 .AddService<ICommandPattern<T, TKey>, TStorage>(serviceLifetime)
                 .AddService<ICommand<T, TKey>, Command<T, TKey>>(serviceLifetime);
             return new RepositoryBuilder<T, TKey>(services, PatternType.Command, serviceLifetime);
@@ -80,10 +82,11 @@ namespace Microsoft.Extensions.DependencyInjection
            where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
-            service.QueryType = typeof(IQuery<T, TKey>);
+            var currentType = typeof(IQuery<T, TKey>);
+            service.AddOrUpdate(currentType, typeof(TStorage));
             service.NotExposableAsApi = notExposableAsApi;
             services
-                .RemoveServiceIfAlreadyInstalled<TStorage>(service.QueryType, typeof(IQueryPattern<T, TKey>))
+                .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IQueryPattern<T, TKey>))
                 .AddService<IQueryPattern<T, TKey>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T, TKey>, Query<T, TKey>>(serviceLifetime);
             return new RepositoryBuilder<T, TKey>(services, PatternType.Query, serviceLifetime);

@@ -21,11 +21,10 @@ namespace Microsoft.Extensions.DependencyInjection
             var service = RepositoryFrameworkRegistry.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
             if (service == null)
             {
-                service = new RepositoryFrameworkService { ModelType = entityType };
+                service = new RepositoryFrameworkService(keyType, entityType);
                 RepositoryFrameworkRegistry.Instance.Services.Add(service);
                 services.TryAddSingleton(RepositoryFrameworkRegistry.Instance);
             }
-            service.KeyType = keyType;
             return service;
         }
         public static IServiceCollection AddService<TService, TImplementation>(this IServiceCollection services,

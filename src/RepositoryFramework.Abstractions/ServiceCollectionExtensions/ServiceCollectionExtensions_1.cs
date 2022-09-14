@@ -21,10 +21,11 @@ namespace Microsoft.Extensions.DependencyInjection
           where TStorage : class, IRepositoryPattern<T>
         {
             var service = services.SetService<T>();
-            service.RepositoryType = typeof(IRepository<T>);
+            var currentType = typeof(IRepository<T>);
+            service.AddOrUpdate(currentType, typeof(TStorage));
             service.NotExposableAsApi = notExposableAsApi;
             services
-                .RemoveServiceIfAlreadyInstalled<TStorage>(service.RepositoryType, typeof(IRepositoryPattern<T>))
+                .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IRepositoryPattern<T>))
                 .AddService<IRepositoryPattern<T>, TStorage>(serviceLifetime)
                 .AddService<IRepository<T>, Repository<T>>(serviceLifetime);
             return new RepositoryBuilder<T>(services, PatternType.Repository, serviceLifetime);
@@ -47,10 +48,11 @@ namespace Microsoft.Extensions.DependencyInjection
             where TStorage : class, ICommandPattern<T>
         {
             var service = services.SetService<T>();
-            service.CommandType = typeof(ICommand<T>);
+            var currentType = typeof(ICommand<T>);
+            service.AddOrUpdate(currentType, typeof(TStorage));
             service.NotExposableAsApi = notExposableAsApi;
             services
-                .RemoveServiceIfAlreadyInstalled<TStorage>(service.CommandType, typeof(ICommandPattern<T>))
+                .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(ICommandPattern<T>))
                 .AddService<ICommandPattern<T>, TStorage>(serviceLifetime)
                 .AddService<ICommand<T>, Command<T>>(serviceLifetime);
             return new RepositoryBuilder<T>(services, PatternType.Command, serviceLifetime);
@@ -73,10 +75,11 @@ namespace Microsoft.Extensions.DependencyInjection
            where TStorage : class, IQueryPattern<T>
         {
             var service = services.SetService<T>();
-            service.QueryType = typeof(IQuery<T>);
+            var currentType = typeof(IQuery<T>);
+            service.AddOrUpdate(currentType, typeof(TStorage));
             service.NotExposableAsApi = notExposableAsApi;
             services
-                .RemoveServiceIfAlreadyInstalled<TStorage>(service.QueryType, typeof(IQueryPattern<T>))
+                .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IQueryPattern<T>))
                 .AddService<IQueryPattern<T>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T>, Query<T>>(serviceLifetime);
             return new RepositoryBuilder<T>(services, PatternType.Query, serviceLifetime);

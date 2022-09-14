@@ -5,13 +5,23 @@
     /// </summary>
     public class RepositoryFrameworkService
     {
-        public bool NotExposableAsApi { get; set; }
-        public Type? RepositoryType { get; set; }
-        public Type? CommandType { get; set; }
-        public Type? QueryType { get; set; }
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public Type KeyType { get; set; }
-        public Type ModelType { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public bool NotExposableAsApi { get; internal set; }
+        public Dictionary<string, (Type InterfaceType, Type CurrentType)> RepositoryTypes { get; }
+        public Type KeyType { get; }
+        public Type ModelType { get; }
+        public RepositoryFrameworkService(Type keyType, Type modelType)
+        {
+            KeyType = keyType;
+            ModelType = modelType;
+            NotExposableAsApi = false;
+            RepositoryTypes = new();
+        }
+        public void AddOrUpdate(Type interfaceType, Type currentType)
+        {
+            if (RepositoryTypes.ContainsKey(interfaceType.Name))
+                RepositoryTypes[interfaceType.Name] = (interfaceType, currentType);
+            else
+                RepositoryTypes.Add(interfaceType.Name, (interfaceType, currentType));
+        }
     }
 }

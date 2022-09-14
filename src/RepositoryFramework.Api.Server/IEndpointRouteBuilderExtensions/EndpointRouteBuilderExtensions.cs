@@ -39,6 +39,19 @@ namespace Microsoft.Extensions.DependencyInjection
                     return app;
                 });
 
+        private const string NotImplementedExceptionIlOperation = "newobj instance void System.NotImplementedException";
+        private static readonly List<string> PossibleMethods = new()
+        {
+            nameof(AddGet),
+            nameof(AddQuery),
+            nameof(AddExist),
+            nameof(AddOperation),
+            nameof(AddInsert),
+            nameof(AddUpdate),
+            nameof(AddDelete),
+            nameof(AddBatch),
+        };
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "I need reflection in this point to allow the creation of T methods at runtime.")]
         private static TEndpointRouteBuilder AddApiForRepository<TEndpointRouteBuilder>(this TEndpointRouteBuilder app, Type modelType, string startingPath = "api", ApiAuthorization? authorization = null)
             where TEndpointRouteBuilder : IEndpointRouteBuilder
@@ -47,42 +60,28 @@ namespace Microsoft.Extensions.DependencyInjection
             var serviceValue = registry!.Services.FirstOrDefault(x => x.ModelType == modelType);
             if (serviceValue == null)
                 throw new ArgumentException($"Please check if your {modelType.Name} model has a service injected for IRepository, IQuery, ICommand.");
-            if (serviceValue.QueryType != null || serviceValue.RepositoryType != null)
-            {
-                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddGet), BindingFlags.NonPublic | BindingFlags.Static)!
-                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
-                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
+            Dictionary<string, bool> configuredMethods = new();
+            foreach (var type in serviceValue.RepositoryTypes.Select(x => x.Value))
+                foreach (var method in type.CurrentType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    var currentMethodName = PossibleMethods.FirstOrDefault(x => x == $"Add{method.Name.Replace("Async", string.Empty)}");
+                    if (!string.IsNullOrWhiteSpace(currentMethodName) && !configuredMethods.ContainsKey(currentMethodName))
+                    {
+                        try
+                        {
+                            var instructions = method.GetBodyAsString();
+                            if (instructions.Contains(NotImplementedExceptionIlOperation))
+                                continue;
+                        }
+                        catch { }
+                        _ = typeof(EndpointRouteBuilderExtensions).GetMethod(currentMethodName, BindingFlags.NonPublic | BindingFlags.Static)!
+                           .MakeGenericMethod(modelType, serviceValue.KeyType, type.InterfaceType)
+                           .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
+                        configuredMethods.Add(currentMethodName, true);
 
-                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddQuery), BindingFlags.NonPublic | BindingFlags.Static)!
-                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
-                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
+                    }
+                }
 
-                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddOperation), BindingFlags.NonPublic | BindingFlags.Static)!
-                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
-                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
-
-                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddExist), BindingFlags.NonPublic | BindingFlags.Static)!
-                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.QueryType ?? serviceValue.RepositoryType)!)
-                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
-            }
-            if (serviceValue.CommandType != null || serviceValue.RepositoryType != null)
-            {
-                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddInsert), BindingFlags.NonPublic | BindingFlags.Static)!
-                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
-                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
-
-                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddUpdate), BindingFlags.NonPublic | BindingFlags.Static)!
-                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
-                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
-
-                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddDelete), BindingFlags.NonPublic | BindingFlags.Static)!
-                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
-                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
-
-                _ = typeof(EndpointRouteBuilderExtensions).GetMethod(nameof(AddBatch), BindingFlags.NonPublic | BindingFlags.Static)!
-                    .MakeGenericMethod(modelType, serviceValue.KeyType, (serviceValue.CommandType ?? serviceValue.RepositoryType)!)
-                    .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
-            }
             return app;
         }
         private static void AddGet<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)

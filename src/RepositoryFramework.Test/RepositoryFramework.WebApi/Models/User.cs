@@ -1,8 +1,8 @@
 ﻿namespace RepositoryFramework.WebApi.Models
 {
-    public class IperUser : User
+    public class SuperiorUser : User
     {
-        public IperUser(string email) : base(email)
+        public SuperiorUser(string email) : base(email)
         {
         }
     }
