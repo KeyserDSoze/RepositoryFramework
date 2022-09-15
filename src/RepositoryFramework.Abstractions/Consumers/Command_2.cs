@@ -12,13 +12,13 @@
         public Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
             => _command.BatchAsync(operations, cancellationToken);
 
-        public Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => _command.DeleteAsync(key, cancellationToken);
 
-        public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _command.InsertAsync(key, value, cancellationToken);
 
-        public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _command.UpdateAsync(key, value, cancellationToken);
     }
 }

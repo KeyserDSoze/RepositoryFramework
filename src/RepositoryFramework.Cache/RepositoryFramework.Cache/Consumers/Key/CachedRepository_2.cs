@@ -51,7 +51,7 @@
             return results;
         }
 
-        public async Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             if ((_cache != null && _cacheOptions.HasCache(RepositoryMethods.Delete))
                 || (_distributed != null && _distributedCacheOptions.HasCache(RepositoryMethods.Delete)))
@@ -61,7 +61,7 @@
             return await (_repository ?? _command!).DeleteAsync(key, cancellationToken).NoContext();
         }
 
-        public async Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             State<T> result = await (_repository ?? _command!).InsertAsync(key, value, cancellationToken).NoContext();
             if ((_cache != null && _cacheOptions.HasCache(RepositoryMethods.Insert))
@@ -74,7 +74,7 @@
             return result;
         }
 
-        public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             State<T> result = await (_repository ?? _command!).UpdateAsync(key, value, cancellationToken).NoContext();
             if ((_cache != null && _cacheOptions.HasCache(RepositoryMethods.Update))

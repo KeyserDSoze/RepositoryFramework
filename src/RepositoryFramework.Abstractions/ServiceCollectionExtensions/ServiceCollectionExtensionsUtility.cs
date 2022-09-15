@@ -11,8 +11,6 @@ namespace Microsoft.Extensions.DependencyInjection
             _throwExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes = true;
             return services;
         }
-        private static RepositoryFrameworkService SetService<T>(this IServiceCollection services)
-            => services.SetService<T, string>();
         private static RepositoryFrameworkService SetService<T, TKey>(this IServiceCollection services)
             where TKey : notnull
         {

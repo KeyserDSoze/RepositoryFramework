@@ -12,7 +12,7 @@ namespace RepositoryFramework
             _query = query;
         }
 
-        public Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.ExistAsync(key, cancellationToken);
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.GetAsync(key, cancellationToken);

@@ -13,7 +13,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         {
             _client = clientFactory.Get(typeof(T).Name);
         }
-        public async Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.DeleteBlobAsync(key!.ToString(), cancellationToken: cancellationToken).NoContext();
             return !response.IsError;
@@ -29,13 +29,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             }
             return default;
         }
-        public async Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
             return new State<T>(await blobClient.ExistsAsync(cancellationToken).NoContext());
         }
 
-        public async Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
             var entityWithKey = IEntity.Default(key, value);
@@ -62,7 +62,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             }
         }
 
-        public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
             var response = await blobClient.UploadAsync(new BinaryData(JsonSerializer.Serialize(value)), true, cancellationToken).NoContext();

@@ -7,9 +7,9 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
     public interface ICommandPattern<T, TKey> : ICommandPattern
         where TKey : notnull
     {
-        Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
         Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default);
     }
 
@@ -17,7 +17,7 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
     public interface IQueryPattern<T, TKey> : IQueryPattern
         where TKey : notnull
     {
-        Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
         IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default);
         ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default);
@@ -29,11 +29,11 @@ Repository pattern is a sum of CQRS interfaces.
     public interface IRepositoryPattern<T, TKey> : ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
         where TKey : notnull
     {
-        Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
         Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default);
-        Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
         IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default);
         ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default);
@@ -43,9 +43,9 @@ Repository pattern is a sum of CQRS interfaces.
 #### Command (Write-Delete)
     public interface ICommandPattern<T> : ICommandPattern<T, string>, ICommandPattern
     {
-        Task<State<T>> InsertAsync(string key, T value, CancellationToken cancellationToken = default);
-        Task<State<T>> UpdateAsync(string key, T value, CancellationToken cancellationToken = default);
-        Task<State<T>> DeleteAsync(string key, CancellationToken cancellationToken = default);
+        Task<IState<T>> InsertAsync(string key, T value, CancellationToken cancellationToken = default);
+        Task<IState<T>> UpdateAsync(string key, T value, CancellationToken cancellationToken = default);
+        Task<IState<T>> DeleteAsync(string key, CancellationToken cancellationToken = default);
         Task<BatchResults<T, string>> BatchAsync(BatchOperations<T, string> operations, CancellationToken cancellationToken = default);
     }
 
@@ -53,7 +53,7 @@ Repository pattern is a sum of CQRS interfaces.
     public interface IQueryPattern<T> : IQueryPattern<T, string>, IQueryPattern
     {
         Task<T?> GetAsync(string key, CancellationToken cancellationToken = default);
-        Task<State<T>> ExistAsync(string key, CancellationToken cancellationToken = default);
+        Task<IState<T>> ExistAsync(string key, CancellationToken cancellationToken = default);
         IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default);
         ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default);
     }

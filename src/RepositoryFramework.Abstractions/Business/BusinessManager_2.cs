@@ -50,7 +50,7 @@ namespace RepositoryFramework
             => _options.Services.Where(x => x.Method == method && x.IsPostRequest == isPostRequest);
         private IEnumerable<TBusiness> GetBusinesses<TBusiness>(IEnumerable<BusinessType> business)
             => business.Select(x => (TBusiness)ServiceProvider.GetService(x.Service)!);
-        public async Task<State<T>> InsertAsync(ICommandPattern<T, TKey> command, TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> InsertAsync(ICommandPattern<T, TKey> command, TKey key, T value, CancellationToken cancellationToken = default)
         {
             var entity = IEntity.Default(key, value);
 
@@ -64,7 +64,7 @@ namespace RepositoryFramework
 
             return response;
         }
-        public async Task<State<T>> UpdateAsync(ICommandPattern<T, TKey> command, TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> UpdateAsync(ICommandPattern<T, TKey> command, TKey key, T value, CancellationToken cancellationToken = default)
         {
             var entity = IEntity.Default(key, value);
 
@@ -78,7 +78,7 @@ namespace RepositoryFramework
 
             return response;
         }
-        public async Task<State<T>> DeleteAsync(ICommandPattern<T, TKey> command, TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> DeleteAsync(ICommandPattern<T, TKey> command, TKey key, CancellationToken cancellationToken = default)
         {
             foreach (var preDeleted in GetBusinesses<IBusinessBeforeDelete<T, TKey>>(PreDeleted))
                 key = await preDeleted.DeleteAsync(key, cancellationToken);
@@ -104,7 +104,7 @@ namespace RepositoryFramework
             return response;
         }
 
-        public async Task<State<T>> ExistAsync(IQueryPattern<T, TKey> query, TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> ExistAsync(IQueryPattern<T, TKey> query, TKey key, CancellationToken cancellationToken = default)
         {
             foreach (var preExisted in GetBusinesses<IBusinessBeforeExist<T, TKey>>(PreExisted))
                 key = await preExisted.ExistAsync(key, cancellationToken);

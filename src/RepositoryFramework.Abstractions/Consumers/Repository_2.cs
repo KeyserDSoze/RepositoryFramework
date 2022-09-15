@@ -12,16 +12,16 @@
             _businessManager = businessManager;
         }
 
-        public Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeDelete == true || _businessManager?.HasBusinessAfterDelete == true ?
                 _businessManager.DeleteAsync(_repository, key, cancellationToken) : _repository.DeleteAsync(key, cancellationToken);
-        public Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeExist == true || _businessManager?.HasBusinessAfterExist == true ?
                 _businessManager.ExistAsync(_repository, key, cancellationToken) : _repository.ExistAsync(key, cancellationToken);
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeGet == true || _businessManager?.HasBusinessAfterGet == true ?
                 _businessManager.GetAsync(_repository, key, cancellationToken) : _repository.GetAsync(key, cancellationToken);
-        public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeInsert == true || _businessManager?.HasBusinessAfterInsert == true ?
                 _businessManager.InsertAsync(_repository, key, value, cancellationToken) : _repository.InsertAsync(key, value, cancellationToken);
         public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query, CancellationToken cancellationToken = default)
@@ -32,7 +32,7 @@
             CancellationToken cancellationToken = default)
            => _businessManager?.HasBusinessBeforeOperation == true || _businessManager?.HasBusinessAfterOperation == true ?
                 _businessManager.OperationAsync(_repository, operation, query, cancellationToken) : _repository.OperationAsync(operation, query, cancellationToken);
-        public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeUpdate == true || _businessManager?.HasBusinessAfterUpdate == true ?
                 _businessManager.UpdateAsync(_repository, key, value, cancellationToken) : _repository.UpdateAsync(key, value, cancellationToken);
         public Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)

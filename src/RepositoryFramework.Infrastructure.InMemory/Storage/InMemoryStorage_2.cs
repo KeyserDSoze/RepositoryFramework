@@ -48,7 +48,7 @@ namespace RepositoryFramework.InMemory
             }
             return default;
         }
-        private async Task<State<T>> ExecuteAsync(RepositoryMethods method, Func<State<T>> action, CancellationToken cancellationToken = default)
+        private async Task<IState<T>> ExecuteAsync(RepositoryMethods method, Func<State<T>> action, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(method);
             await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
@@ -68,7 +68,7 @@ namespace RepositoryFramework.InMemory
             else
                 return InMemoryStorage<T, TKey>.SetState(false);
         }
-        public Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Delete, () =>
             {
                 string keyAsString = key.AsString();
@@ -105,7 +105,7 @@ namespace RepositoryFramework.InMemory
             State<T> state = new(isOk, value);
             return state;
         }
-        public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Insert, () =>
             {
                 string keyAsString = key.AsString();
@@ -118,7 +118,7 @@ namespace RepositoryFramework.InMemory
                     return InMemoryStorage<T, TKey>.SetState(false, value);
             }, cancellationToken);
 
-        public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Update, () =>
             {
                 string keyAsString = key.AsString();
@@ -189,7 +189,7 @@ namespace RepositoryFramework.InMemory
         }
         private static ValueTask<TProperty> Invoke<TProperty>(object value) 
             => ValueTask.FromResult((TProperty)Convert.ChangeType(value, typeof(TProperty)));
-        public Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Exist, () =>
             {
                 string keyAsString = key.AsString();

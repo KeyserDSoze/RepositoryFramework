@@ -66,7 +66,7 @@ namespace RepositoryFramework.Cache
             }
             return Task.WhenAll(toUpdate);
         }
-        public async Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             string keyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Exist)}_{_cacheName}");
             var value = await RetrieveValueAsync(RepositoryMethods.Exist, keyAsString,

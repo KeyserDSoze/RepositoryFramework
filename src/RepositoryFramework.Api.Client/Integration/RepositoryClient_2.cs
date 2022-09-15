@@ -30,7 +30,7 @@ namespace RepositoryFramework.Api.Client
             else
                 return Task.FromResult(_httpClient);
         }
-        public async Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Delete).NoContext();
             string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
@@ -42,13 +42,13 @@ namespace RepositoryFramework.Api.Client
             string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
             return await client.GetFromJsonAsync<T>($"{nameof(RepositoryMethods.Get)}?key={keyAsString}", cancellationToken).NoContext();
         }
-        public async Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Exist).NoContext();
             string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
             return (await client.GetFromJsonAsync<State<T>>($"{nameof(RepositoryMethods.Exist)}?key={keyAsString}", cancellationToken).NoContext())!;
         }
-        public async Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Insert).NoContext();
             string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
@@ -90,7 +90,7 @@ namespace RepositoryFramework.Api.Client
                 return name;
             }
         }
-        public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Update).NoContext();
             string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();

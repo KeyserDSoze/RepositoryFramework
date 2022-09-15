@@ -9,9 +9,9 @@
     public interface ICommandPattern<T, TKey> : ICommandPattern
         where TKey : notnull
     {
-        Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
         Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default);
     }
 }

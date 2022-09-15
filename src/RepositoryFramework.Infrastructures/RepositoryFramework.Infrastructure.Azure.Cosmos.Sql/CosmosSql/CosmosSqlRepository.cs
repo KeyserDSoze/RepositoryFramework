@@ -18,13 +18,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         {
             (_client, _properties) = clientFactory.Get(typeof(T).Name);
         }
-        public async Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
             return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent);
         }
 
-        public async Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
             return new State<T>(response.StatusCode == HttpStatusCode.OK);
@@ -38,7 +38,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             else
                 return default;
         }
-        public async Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var flexible = new ExpandoObject();
             flexible.TryAdd("id", key.ToString());
@@ -77,7 +77,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                 () => queryable.Average(x => select!.InvokeAndTransform<decimal>(x!))
                 )!;
         }
-        public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var flexible = new ExpandoObject();
             flexible.TryAdd("id", key.ToString());

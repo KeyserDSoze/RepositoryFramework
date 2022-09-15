@@ -30,7 +30,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             public global::Azure.ETag ETag { get; set; }
         }
 
-        public async Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var realKey = _keyReader.Read(key);
             var response = await _client.DeleteEntityAsync(realKey.PartitionKey, realKey.RowKey, cancellationToken: cancellationToken).NoContext();
@@ -45,7 +45,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                 return JsonSerializer.Deserialize<T>(response.Value.Value);
             return default;
         }
-        public async Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var realKey = _keyReader.Read(key);
             await foreach (var entity in _client.QueryAsync<TableEntity>(
@@ -54,7 +54,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             return false;
         }
 
-        public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
         public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
@@ -130,7 +130,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         }
         private static ValueTask<TProperty> Invoke<TProperty>(object value)
             => ValueTask.FromResult((TProperty)Convert.ChangeType(value, typeof(TProperty)));
-        public async Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var realKey = _keyReader.Read(key);
             var response = await _client.UpsertEntityAsync(new TableEntity
