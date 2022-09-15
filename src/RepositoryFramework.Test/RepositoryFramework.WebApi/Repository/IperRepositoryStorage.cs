@@ -5,6 +5,13 @@
         public string Id { get; set; }
         public string Name { get; set; }
     }
+    public class IperRepositoryBeforeInsertBusiness : IBusinessBeforeInsert<IperUser>
+    {
+        public Task<IEntity<IperUser, string>> InsertAsync(string key, IperUser value, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(IEntity.Default(key, value));
+        }
+    }
     public class IperRepositoryStorage : IRepository<IperUser>
     {
         public Task<BatchResults<IperUser, string>> BatchAsync(BatchOperations<IperUser, string> operations, CancellationToken cancellationToken = default)
@@ -28,9 +35,10 @@
             return Task.FromResult(new IperUser { Id = "2", Name = "d"});
         }
 
-        public Task<State<IperUser>> InsertAsync(string key, IperUser value, CancellationToken cancellationToken = default)
+        public async Task<State<IperUser>> InsertAsync(string key, IperUser value, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await Task.Delay(0);
+            return true;
         }
 
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default)

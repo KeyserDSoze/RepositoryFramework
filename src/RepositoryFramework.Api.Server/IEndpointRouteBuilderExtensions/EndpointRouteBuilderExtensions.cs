@@ -60,25 +60,28 @@ namespace Microsoft.Extensions.DependencyInjection
             var serviceValue = registry!.Services.FirstOrDefault(x => x.ModelType == modelType);
             if (serviceValue == null)
                 throw new ArgumentException($"Please check if your {modelType.Name} model has a service injected for IRepository, IQuery, ICommand.");
+
             Dictionary<string, bool> configuredMethods = new();
+
             foreach (var type in serviceValue.RepositoryTypes.Select(x => x.Value))
                 foreach (var method in type.CurrentType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
                 {
                     var currentMethodName = PossibleMethods.FirstOrDefault(x => x == $"Add{method.Name.Replace("Async", string.Empty)}");
                     if (!string.IsNullOrWhiteSpace(currentMethodName) && !configuredMethods.ContainsKey(currentMethodName))
                     {
-                        try
+                        bool isNotImplemented = false;
+                        Try.WithDefaultOnCatch(() =>
                         {
                             var instructions = method.GetBodyAsString();
-                            if (instructions.Contains(NotImplementedExceptionIlOperation))
-                                continue;
-                        }
-                        catch { }
+                            isNotImplemented = instructions.Contains(NotImplementedExceptionIlOperation);
+                        });
+                        if (isNotImplemented)
+                            continue;
+
                         _ = typeof(EndpointRouteBuilderExtensions).GetMethod(currentMethodName, BindingFlags.NonPublic | BindingFlags.Static)!
                            .MakeGenericMethod(modelType, serviceValue.KeyType, type.InterfaceType)
                            .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
                         configuredMethods.Add(currentMethodName, true);
-
                     }
                 }
 

@@ -27,6 +27,15 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             return service;
         }
+        public static IServiceCollection AddService<TImplementation>(this IServiceCollection services,
+           ServiceLifetime lifetime)
+           where TImplementation : class
+           => lifetime switch
+           {
+               ServiceLifetime.Transient => services.AddTransient<TImplementation>(),
+               ServiceLifetime.Singleton => services.AddSingleton<TImplementation>(),
+               _ => services.AddScoped<TImplementation>()
+           };
         public static IServiceCollection AddService<TService, TImplementation>(this IServiceCollection services,
             ServiceLifetime lifetime)
             where TImplementation : class, TService
