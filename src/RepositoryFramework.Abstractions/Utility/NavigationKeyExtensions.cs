@@ -16,7 +16,7 @@ namespace RepositoryFramework
             where TKey : notnull
         {
             var keyName = navigationKey.ToString().Split('.').Last();
-            Type type = typeof(T);
+            var type = typeof(T);
             return type.GetProperties().First(x => x.Name == keyName);
         }
     }

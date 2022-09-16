@@ -26,7 +26,6 @@ namespace RepositoryFramework.Customization
         /// <typeparam name="TService">your IPopulationService</typeparam>
         /// <param name="services">IServiceCollection</param>
         /// <returns>IServiceCollection</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed", Justification = "It's not used but it's needed for the return methods that use this class.")]
         public static IServiceCollection AddPopulationService<T, TKey, TService>(
           this IServiceCollection services)
           where TService : class, IPopulationService
@@ -61,7 +60,6 @@ namespace RepositoryFramework.Customization
         /// <typeparam name="T">your IRandomPopulationService</typeparam>
         /// <param name="services">IServiceCollection</param>
         /// <returns>IServiceCollection</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2326:Unused type parameters should be removed", Justification = "It's not used but it's needed for the return methods that use this class.")]
         public static IServiceCollection AddRandomPopulationService<T>(this IServiceCollection services,
             IRandomPopulationService service)
         {

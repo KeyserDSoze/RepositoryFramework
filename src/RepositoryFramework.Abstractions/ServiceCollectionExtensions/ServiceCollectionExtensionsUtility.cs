@@ -5,17 +5,17 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
-        private static bool _throwExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes = false;
+        private static bool s_throwExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes = false;
         public static IServiceCollection ThrowExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes(this IServiceCollection services)
         {
-            _throwExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes = true;
+            s_throwExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes = true;
             return services;
         }
         private static RepositoryFrameworkService SetService<T, TKey>(this IServiceCollection services)
             where TKey : notnull
         {
-            Type entityType = typeof(T);
-            Type keyType = typeof(TKey);
+            var entityType = typeof(T);
+            var keyType = typeof(TKey);
             var service = RepositoryFrameworkRegistry.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
             if (service == null)
             {
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var serviceDescriptors = services.Where(descriptor => descriptor.ServiceType == type).ToList();
                 foreach (var serviceDescriptor in serviceDescriptors)
                 {
-                    if (_throwExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes)
+                    if (s_throwExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes)
                         throw new ArgumentException($"You have two configurations of the same interface {serviceDescriptor.ServiceType.FullName}. {typeof(TStorage).FullName} wants to override {serviceDescriptor.ImplementationType?.FullName} with lifetime {serviceDescriptor.Lifetime}.");
                     services.Remove(serviceDescriptor);
                 }

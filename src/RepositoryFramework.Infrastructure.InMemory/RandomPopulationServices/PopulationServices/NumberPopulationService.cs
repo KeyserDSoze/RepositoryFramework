@@ -10,7 +10,7 @@ namespace RepositoryFramework.InMemory.Population
             if (options.Type.IsEnum)
             {
                 var chances = Enum.GetValues(options.Type);
-                int randomValue = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
+                var randomValue = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
                 return chances.GetValue(randomValue % chances.Length)!;
             }
             else if (options.Type == typeof(int) || options.Type == typeof(int?))

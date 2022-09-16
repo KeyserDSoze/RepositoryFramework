@@ -5,30 +5,21 @@ using System.Text.Json;
 
 namespace RepositoryFramework.InMemory
 {
-    internal class RepositoryInMemoryBuilder<T, TKey> : IRepositoryInMemoryBuilder<T, TKey>
+    internal sealed class RepositoryInMemoryBuilder<T, TKey> : IRepositoryInMemoryBuilder<T, TKey>
         where TKey : notnull
     {
-        private protected readonly CreationSettings _internalBehaviorSettings = new();
-        private protected int _numberOfParameters;
+        private readonly CreationSettings _behaviorSettings = new();
         public IServiceCollection Services { get; }
         public PatternType Type => PatternType.Repository;
         public ServiceLifetime ServiceLifetime => ServiceLifetime.Singleton;
         public RepositoryInMemoryBuilder(IServiceCollection services)
         {
             Services = services;
-            _numberOfParameters = 2;
         }
         private void AddElementBasedOnGenericElements(TKey key, T value)
-        {
-            if (_numberOfParameters == 1)
-                InMemoryStorage<T>.AddValue(key.ToString()!, value);
-            else
-                InMemoryStorage<T, TKey>.AddValue(key, value);
-        }
+            => InMemoryStorage<T, TKey>.AddValue(key, value);
         public IRepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
             where TNextKey : notnull
-            => Services!.AddRepositoryInMemoryStorage(settings);
-        public IRepositoryInMemoryBuilder<TNext> AddRepositoryInMemoryStorage<TNext>(Action<RepositoryBehaviorSettings<TNext>>? settings = default)
             => Services!.AddRepositoryInMemoryStorage(settings);
         public IRepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,
@@ -75,17 +66,17 @@ namespace RepositoryFramework.InMemory
                 new PopulationServiceSettings<T, TKey>
                 {
                     NumberOfElements = numberOfElements,
-                    BehaviorSettings = _internalBehaviorSettings,
+                    BehaviorSettings = _behaviorSettings,
                     NumberOfElementsWhenEnumerableIsFound = numberOfElementsWhenEnumerableIsFound,
                     AddElementToMemory = AddElementBasedOnGenericElements,
                     KeyCalculator = navigationKey.Compile()
                 });
-            return new RepositoryInMemoryCreatorBuilder<T, TKey>(this, _internalBehaviorSettings);
+            return new RepositoryInMemoryCreatorBuilder<T, TKey>(this, _behaviorSettings);
         }
         public IQueryTranslationInMemoryBuilder<T, TKey, TTranslated> Translate<TTranslated>()
           => new QueryTranslationInMemoryBuilder<T, TKey, TTranslated>(this);
 
-        IQueryTranslationBuilder<T, TKey, TTranslated> IRepositoryBuilder<T, TKey>.Translate<TTranslated>() 
+        IQueryTranslationBuilder<T, TKey, TTranslated> IRepositoryBuilder<T, TKey>.Translate<TTranslated>()
             => Translate<TTranslated>();
     }
 }

@@ -5,8 +5,8 @@
     {
         public CommandType Command { get; }
         public TKey Key { get; }
-        public State<T> State { get; }
-        public BatchResult(CommandType command, TKey key, State<T> state)
+        public IState<T> State { get; }
+        public BatchResult(CommandType command, TKey key, IState<T> state)
         {
             Command = command;
             Key = key;

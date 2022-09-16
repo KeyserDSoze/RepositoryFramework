@@ -12,7 +12,7 @@ namespace RepositoryFramework.InMemory.Population
             var valueType = options.Type.GetGenericArguments().Last();
             var dictionaryType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
             var entity = Activator.CreateInstance(dictionaryType)! as IDictionary;
-            for (int i = 0; i < options.NumberOfEntities; i++)
+            for (var i = 0; i < options.NumberOfEntities; i++)
             {
                 var newKey = options.PopulationService.Construct(options.Type.GetGenericArguments().First(),
                     options.NumberOfEntities, options.TreeName, "Key");

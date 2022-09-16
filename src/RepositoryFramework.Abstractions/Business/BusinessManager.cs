@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework
 {
@@ -130,19 +131,19 @@ namespace RepositoryFramework
             return response;
         }
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IQueryPattern<T, TKey> queryPattern, Query query, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IQueryPattern<T, TKey> queryPattern, Query query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             foreach (var preQueried in GetBusinesses<IBusinessBeforeQuery<T, TKey>>(PreQueried))
                 query = await preQueried.QueryAsync(query, cancellationToken);
 
-            var response = queryPattern.QueryAsync(query, cancellationToken);
-
-            foreach (var postGotten in GetBusinesses<IBusinessAfterQuery<T, TKey>>(PostQueried))
-                response = postGotten.QueryAsync(response, query, cancellationToken);
-
-            if (!cancellationToken.IsCancellationRequested)
-                await foreach (var entity in response)
-                    yield return entity;
+            await foreach (var entity in queryPattern.QueryAsync(query, cancellationToken))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var result = entity;
+                foreach (var postGotten in GetBusinesses<IBusinessAfterQuery<T, TKey>>(PostQueried))
+                    result = await postGotten.QueryAsync(entity, query, cancellationToken);
+                yield return result;
+            }
         }
 
         public async ValueTask<TProperty> OperationAsync<TProperty>(IQueryPattern<T, TKey> queryPattern, OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default)

@@ -48,7 +48,7 @@ namespace RepositoryFramework.Cache
             }
             return Task.WhenAll(toDelete);
         }
-        private protected Task UpdateExistAndGetCacheAsync(TKey key, T value, State<T> state, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
+        private protected Task UpdateExistAndGetCacheAsync(TKey key, T value, IState<T> state, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
         {
             string existKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Exist)}_{_cacheName}");
             string getKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Get)}_{_cacheName}");

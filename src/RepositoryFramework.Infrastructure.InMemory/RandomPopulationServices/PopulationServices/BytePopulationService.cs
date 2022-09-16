@@ -14,7 +14,7 @@ namespace RepositoryFramework.InMemory.Population
                 return (sbyte)RandomNumberGenerator.GetBytes(1)[0];
         }
 
-        public bool IsValid(Type type) 
+        public bool IsValid(Type type)
             => type == typeof(byte) || type == typeof(byte?) || type == typeof(sbyte) || type == typeof(sbyte?);
     }
 }

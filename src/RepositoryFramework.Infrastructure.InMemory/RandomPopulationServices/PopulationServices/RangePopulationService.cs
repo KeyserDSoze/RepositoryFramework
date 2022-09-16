@@ -7,8 +7,8 @@ namespace RepositoryFramework.InMemory.Population
         public int Priority => 1;
         public dynamic GetValue(RandomPopulationOptions options)
         {
-            int firstNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
-            int secondNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
+            var firstNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
+            var secondNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
             if (firstNumber < 0)
                 firstNumber *= -1;
             if (secondNumber < 0)
@@ -20,7 +20,7 @@ namespace RepositoryFramework.InMemory.Population
             return new Range(new Index(firstNumber), new Index(secondNumber));
         }
 
-        public bool IsValid(Type type) 
+        public bool IsValid(Type type)
             => type == typeof(Range) || type == typeof(Range?);
     }
 }

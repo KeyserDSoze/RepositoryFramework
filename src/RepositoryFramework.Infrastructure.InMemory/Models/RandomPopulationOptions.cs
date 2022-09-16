@@ -9,7 +9,7 @@
     /// <param name="TreeName">The name that represents the history of creation of this object.
     /// For example, if you are creating an object in a property B of another object A, you may find it valued
     /// as "A.B"</param>
-    public record RandomPopulationOptions(Type Type, 
-        IPopulationService PopulationService, int NumberOfEntities, 
+    public record RandomPopulationOptions(Type Type,
+        IPopulationService PopulationService, int NumberOfEntities,
         string TreeName);
 }

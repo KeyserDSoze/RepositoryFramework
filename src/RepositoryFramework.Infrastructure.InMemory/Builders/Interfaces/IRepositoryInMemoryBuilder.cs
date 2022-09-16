@@ -8,8 +8,6 @@ namespace RepositoryFramework.InMemory
         IRepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(
             Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
             where TNextKey : notnull;
-        IRepositoryInMemoryBuilder<TNext> AddRepositoryInMemoryStorage<TNext>(
-            Action<RepositoryBehaviorSettings<TNext>>? settings = default);
         IRepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,
             string json);

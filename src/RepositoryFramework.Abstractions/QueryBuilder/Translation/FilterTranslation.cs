@@ -8,34 +8,34 @@ namespace RepositoryFramework
     {
         private sealed record TranslationWrapper(Type From, Type To, List<Translation> Translations)
         {
-            private readonly ConcurrentDictionary<string, LambdaExpression> AlreadySerialized = new();
+            private readonly ConcurrentDictionary<string, LambdaExpression> _alreadySerialized = new();
             public LambdaExpression? Transform(string? serialized)
             {
                 if (string.IsNullOrWhiteSpace(serialized))
                     return null;
-                if (!AlreadySerialized.ContainsKey(serialized))
+                if (!_alreadySerialized.ContainsKey(serialized))
                 {
-                    string key = serialized;
+                    var key = serialized;
                     foreach (var translation in Translations)
                     {
                         if (serialized.EndsWith(translation.EndWith))
                         {
-                            int place = serialized.LastIndexOf(translation.EndWith);
+                            var place = serialized.LastIndexOf(translation.EndWith);
                             if (place > -1)
                                 serialized = serialized.Remove(place, translation.EndWith.Length).Insert(place, translation.Value);
                         }
                         var list = translation.Key.Matches(serialized);
-                        for (int i = 0; i < list.Count; i++)
+                        for (var i = 0; i < list.Count; i++)
                         {
-                            Match match = list[i];
+                            var match = list[i];
                             serialized = serialized.Replace(match.Value, $"{translation.Value}{match.Value.Last()}");
                         }
                     }
                     var deserialized = serialized.DeserializeAsDynamic(To);
-                    AlreadySerialized.TryAdd(key, deserialized);
+                    _alreadySerialized.TryAdd(key, deserialized);
                     return deserialized;
                 }
-                return AlreadySerialized[serialized];
+                return _alreadySerialized[serialized];
             }
             public LambdaExpression? Transform(LambdaExpression? from)
                 => Transform(from?.Serialize());
@@ -49,21 +49,21 @@ namespace RepositoryFramework
         private static Regex VariableName(string prefix) => new($@".{prefix}[^a-zA-Z0-9@_\.]{{1}}");
         public void With<T, TTranslated, TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
-            string name = typeof(T).FullName!;
+            var name = typeof(T).FullName!;
             if (!_translations.ContainsKey(name))
                 _translations.Add(name, new(typeof(T), typeof(TTranslated), new()));
-            string propertyName = string.Join(".", property.ToString().Split('.').Skip(1));
-            string translatedPropertyName = $".{string.Join(".", translatedProperty.ToString().Split('.').Skip(1))}";
+            var propertyName = string.Join(".", property.ToString().Split('.').Skip(1));
+            var translatedPropertyName = $".{string.Join(".", translatedProperty.ToString().Split('.').Skip(1))}";
             _translations[name].Translations.Add(new Translation(VariableName(propertyName), $".{propertyName}", translatedPropertyName));
         }
-        public Query Transform<T>(Query _query)
+        public Query Transform<T>(Query transformableQuery)
         {
-            Type fromType = typeof(T);
+            var fromType = typeof(T);
             if (!_translations.ContainsKey(fromType.FullName!))
-                return _query;
-            TranslationWrapper translation = _translations[fromType.FullName!];
+                return transformableQuery;
+            var translation = _translations[fromType.FullName!];
             Query query = new();
-            foreach (var operation in _query.Operations)
+            foreach (var operation in transformableQuery.Operations)
             {
                 if (operation is ValueQueryOperation value)
                     query.Operations.Add(value with { });
@@ -72,14 +72,14 @@ namespace RepositoryFramework
             }
             return query;
         }
-        public Query Transform<T>(SerializableQuery _query)
+        public Query Transform<T>(SerializableQuery serializableQuery)
         {
-            Type fromType = typeof(T);
+            var fromType = typeof(T);
             if (!_translations.ContainsKey(fromType.FullName!))
-                return _query.Deserialize<T>();
-            TranslationWrapper translation = _translations[fromType.FullName!];
+                return serializableQuery.Deserialize<T>();
+            var translation = _translations[fromType.FullName!];
             Query query = new();
-            foreach (var operation in _query.Operations)
+            foreach (var operation in serializableQuery.Operations)
             {
                 if (operation.Operation == QueryOperations.Top || operation.Operation == QueryOperations.Skip)
                 {

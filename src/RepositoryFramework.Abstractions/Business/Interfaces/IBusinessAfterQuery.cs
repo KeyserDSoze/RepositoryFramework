@@ -3,6 +3,6 @@
     public interface IBusinessAfterQuery<T, TKey>
         where TKey : notnull
     {
-        IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IAsyncEnumerable<IEntity<T, TKey>> entities, Query query, CancellationToken cancellationToken = default);
+        Task<IEntity<T, TKey>> QueryAsync(IEntity<T, TKey> entity, Query query, CancellationToken cancellationToken = default);
     }
 }

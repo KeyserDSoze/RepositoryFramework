@@ -10,8 +10,8 @@ namespace RepositoryFramework
         public static OperationType<TProperty> Min { get; } = new() { Operation = Operations.Min };
         public static OperationType<TProperty> Average { get; } = new() { Operation = Operations.Average };
         public Operations Operation { get; init; }
-        private Type? type;
-        public Type Type => type ??= typeof(TProperty);
+        private Type? _type;
+        public Type Type => _type ??= typeof(TProperty);
         public ValueTask<TProperty?> ExecuteAsync(
             Delegate count,
             Delegate sum,
