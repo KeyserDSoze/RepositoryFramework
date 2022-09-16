@@ -6,7 +6,7 @@
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
-    public interface IRepository<T, TKey> : IRepositoryPattern<T, TKey>
+    public interface IRepository<T, TKey> : IRepositoryPattern<T, TKey>, IQuery<T, TKey>, ICommand<T, TKey>
         where TKey : notnull
     {
 

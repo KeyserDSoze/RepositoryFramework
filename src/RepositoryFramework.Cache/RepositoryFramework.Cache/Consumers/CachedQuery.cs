@@ -1,20 +1,18 @@
-﻿using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
+﻿using System.Runtime.CompilerServices;
 
 namespace RepositoryFramework.Cache
 {
     internal class CachedQuery<T, TKey> : IQuery<T, TKey>
          where TKey : notnull
     {
-        private protected readonly IQueryPattern<T, TKey> Query;
+        private protected readonly IQuery<T, TKey> Query;
         private protected readonly ICache<T, TKey>? Cache;
         private protected readonly CacheOptions<T, TKey> CacheOptions;
         private protected readonly IDistributedCache<T, TKey>? Distributed;
         private protected readonly DistributedCacheOptions<T, TKey> DistributedCacheOptions;
         private readonly string _cacheName;
 
-        public CachedQuery(IQueryPattern<T, TKey> query,
+        public CachedQuery(IQuery<T, TKey> query,
             ICache<T, TKey>? cache = null,
             CacheOptions<T, TKey>? cacheOptions = null,
             IDistributedCache<T, TKey>? distributed = null,
@@ -144,9 +142,9 @@ namespace RepositoryFramework.Cache
         private Task SaveOnCacheAsync<TResponse>(string key, TResponse response, Source source, bool inMemory, bool inDistributed, CancellationToken cancellationToken)
         {
             List<Task> cacheSaverTasks = new();
-            if (inMemory && Cache != null && source > Source.InMemory)
+            if (inMemory && Cache != null && source != Source.InMemory)
                 cacheSaverTasks.Add(Cache.SetAsync(key, response, CacheOptions, cancellationToken));
-            if (inDistributed && Distributed != null && source > Source.Distributed)
+            if (inDistributed && Distributed != null && source != Source.Distributed)
                 cacheSaverTasks.Add(Distributed.SetAsync(key, response, DistributedCacheOptions, cancellationToken));
             return Task.WhenAll(cacheSaverTasks);
         }

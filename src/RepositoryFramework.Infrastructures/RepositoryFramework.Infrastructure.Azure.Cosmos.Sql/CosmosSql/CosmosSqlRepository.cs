@@ -60,7 +60,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                     break;
 #warning to retrieve in some way the key
                 foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
-                    yield return IEntity.Default(default(TKey), item);
+                    yield return IEntity.Default(default(TKey)!, item);
             }
         }
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,

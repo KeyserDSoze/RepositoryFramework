@@ -11,16 +11,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (builder.Type == PatternType.Repository)
                 builder.Services
-                    .RemoveServiceIfAlreadyInstalled<CachedRepository<T, TKey>>(typeof(IRepository<T, TKey>))
-                    .AddService<IRepository<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
+                    .Decorate<IRepository<T, TKey>, CachedRepository<T, TKey>>();
             else if (builder.Type == PatternType.Query)
                 builder.Services
-                    .RemoveServiceIfAlreadyInstalled<CachedQuery<T, TKey>>(typeof(IQuery<T, TKey>))
-                    .AddService<IQuery<T, TKey>, CachedQuery<T, TKey>>(builder.ServiceLifetime);
+                    .Decorate<IQuery<T, TKey>, CachedQuery<T, TKey>>();
             else if (options.HasCommandPattern)
                 builder.Services
-                    .RemoveServiceIfAlreadyInstalled<CachedRepository<T, TKey>>(typeof(ICommand<T, TKey>))
-                    .AddService<ICommand<T, TKey>, CachedRepository<T, TKey>>(builder.ServiceLifetime);
+                    .Decorate<ICommand<T, TKey>, CachedRepository<T, TKey>>();
         }
         /// <summary>
         /// Add cache mechanism for your Repository or Query (CQRS), 

@@ -273,7 +273,7 @@ In some cases you need to "translate" your query for your database context query
 
     .AddDbContext<SampleContext>(options =>
     {
-        options.UseSqlServer(configuration["Database:ConnectionString"]);
+        options.UseSqlServer(configuration["ConnectionString:Database"]);
     }, ServiceLifetime.Scoped)
     .AddRepository<AppUser, AppUserKey, AppUserStorage>()
     .Translate<User>()

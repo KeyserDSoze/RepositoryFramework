@@ -3,7 +3,7 @@
 ## Integration with Azure TableStorage and Repository Framework
 
     builder.Services
-        .AddRepositoryInTableStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
+        .AddRepositoryInTableStorage<User, string>(builder.Configuration["ConnectionString:Storage"]);
 
 You found the IRepository<User, string> in DI to play with it.
 

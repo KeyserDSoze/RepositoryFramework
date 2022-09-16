@@ -5,7 +5,7 @@
     builder.Services
          .AddRepositoryInCosmosSql<User, string>(
             x => x.Email!,
-            builder.Configuration["CosmosSql:ConnectionString"],
+            builder.Configuration["ConnectionString:CosmosSql"],
             "BigDatabase");
 
 You found the IRepository<User, string> in DI to play with it.

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework.InMemory;
 using RepositoryFramework.UnitTest.InMemory.Exceptions.Models;
 using System;

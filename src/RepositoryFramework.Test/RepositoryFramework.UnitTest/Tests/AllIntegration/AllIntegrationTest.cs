@@ -22,7 +22,7 @@ namespace RepositoryFramework.UnitTest.Repository
                 case "entityframework":
                     services.AddDbContext<SampleContext>(options =>
                      {
-                         options.UseSqlServer(configuration["Database:ConnectionString"]);
+                         options.UseSqlServer(configuration["ConnectionString:Database"]);
                      }, ServiceLifetime.Scoped)
                        .AddRepository<AppUser, AppUserKey, AppUserStorage>()
                            .Translate<User>()
@@ -32,19 +32,19 @@ namespace RepositoryFramework.UnitTest.Repository
                     break;
                 case "tablestorage":
                     services
-                        .AddRepositoryInTableStorage<AppUser, AppUserKey>(configuration["Storage:ConnectionString"])
+                        .AddRepositoryInTableStorage<AppUser, AppUserKey>(configuration["ConnectionString:Storage"])
                         .WithTableStorageKeyReader<TableStorageKeyReader>()
                         .WithPartitionKey(x => x.Id)
                         .WithRowKey(x => x.Username)
                         .WithTimestamp(x => x.CreationTime);
                     break;
                 case "blobstorage":
-                    services.AddRepositoryInBlobStorage<AppUser, AppUserKey>(configuration["Storage:ConnectionString"]);
+                    services.AddRepositoryInBlobStorage<AppUser, AppUserKey>(configuration["ConnectionString:Storage"]);
                     break;
                 case "cosmos":
                     services.AddRepositoryInCosmosSql<AppUser, AppUserKey>(
                         x => x.Id,
-                        configuration["CosmosSql:ConnectionString"],
+                        configuration["ConnectionString:CosmosSql"],
                         "unittestdatabase");
                     break;
             }

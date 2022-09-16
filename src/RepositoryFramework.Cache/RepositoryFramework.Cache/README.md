@@ -35,7 +35,7 @@ In the example below you're setting up the following behavior: setting up a cach
 ### Setup in DI
 
 	builder.Services
-    .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"])
+    .AddRepositoryInBlobStorage<User, string>(builder.Configuration["ConnectionString:Storage"])
     .WithInMemoryCache(x =>
     {
         x.RefreshTime = TimeSpan.FromSeconds(20);

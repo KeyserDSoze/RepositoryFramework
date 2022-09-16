@@ -49,10 +49,8 @@ namespace RepositoryFramework.WebApi
             throw new NotImplementedException();
         }
 
-        public async IAsyncEnumerable<IEntity<IperUser, string>> QueryAsync(Query query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IEntity<IperUser, string>> QueryAsync(Query query, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(0, cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
             throw new NotImplementedException();
         }
 
