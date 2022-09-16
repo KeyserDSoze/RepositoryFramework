@@ -81,17 +81,17 @@ You may choose to extend ICommandPattern or ICommand, but when you inject you ha
 
     public class UserWriter : ICommandPattern<User, string>
     {
-        public Task<State<User>> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<IState<User>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State<User>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<IState<User>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State<User>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<IState<User>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
@@ -113,7 +113,7 @@ You may choose to extend IQueryPattern or IQuery, but when you inject you have t
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<IState<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
@@ -136,17 +136,17 @@ You may choose to extend IRepositoryPattern or IRepository, but when you inject 
 
     public class UserRepository : IRepositoryPattern<User, string>, IQueryPattern<User, string>, ICommandPattern<User, string>
     {
-        public Task<State<User>> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<IState<User>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State<User>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<IState<User>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State<User>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<IState<User>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
@@ -161,7 +161,7 @@ You may choose to extend IRepositoryPattern or IRepository, but when you inject 
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<State<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<IState<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();

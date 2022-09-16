@@ -4,16 +4,16 @@ using System.Reflection;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
-    internal class RepositoryTableStorageBuilder<T, TKey> : IRepositoryTableStorageBuilder<T, TKey>
+    internal sealed class RepositoryTableStorageBuilder<T, TKey> : IRepositoryTableStorageBuilder<T, TKey>
         where TKey : notnull
     {
         public IRepositoryBuilder<T, TKey> Builder { get; }
-        public RepositoryTableStorageBuilder(IRepositoryBuilder<T, TKey> builder) 
+        public RepositoryTableStorageBuilder(IRepositoryBuilder<T, TKey> builder)
             => Builder = builder;
         public IServiceCollection Services => Builder.Services;
         public PatternType Type => Builder.Type;
         public ServiceLifetime ServiceLifetime => Builder.ServiceLifetime;
-        public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>() 
+        public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
             => Builder.Translate<TTranslated>();
         public IRepositoryTableStorageBuilder<T, TKey> WithPartitionKey<TProperty>(Expression<Func<T, TProperty>> property)
             => WithProperty(nameof(WithPartitionKey), property);
@@ -37,7 +37,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
            string propertyName,
            Expression<Func<T, TProperty>> property)
         {
-            string name = property.Body.ToString().Split('.').Last();
+            var name = property.Body.ToString().Split('.').Last();
             AddPropertyForTableStorageBaseProperties(propertyName, name);
             return this;
         }

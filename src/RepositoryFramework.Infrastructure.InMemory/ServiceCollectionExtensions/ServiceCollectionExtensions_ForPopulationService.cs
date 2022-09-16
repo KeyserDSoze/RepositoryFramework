@@ -21,15 +21,12 @@ namespace RepositoryFramework.Customization
         /// <summary>
         /// Override the population default service.
         /// </summary>
-        /// <typeparam name="T">Model used for your repository</typeparam>
-        /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <typeparam name="TService">your IPopulationService</typeparam>
         /// <param name="services">IServiceCollection</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddPopulationService<T, TKey, TService>(
+        public static IServiceCollection AddPopulationService<TService>(
           this IServiceCollection services)
           where TService : class, IPopulationService
-          where TKey : notnull
           => services.AddSingleton<IPopulationService, TService>();
         /// <summary>
         /// Override the default instance creator for you population service.
@@ -57,10 +54,9 @@ namespace RepositoryFramework.Customization
         /// you may create another string random service with Priority = 2 or greater of 1.
         /// In IsValid method you have to check if type is a string to complete the override.
         /// </summary>
-        /// <typeparam name="T">your IRandomPopulationService</typeparam>
         /// <param name="services">IServiceCollection</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddRandomPopulationService<T>(this IServiceCollection services,
+        public static IServiceCollection AddRandomPopulationService(this IServiceCollection services,
             IRandomPopulationService service)
         {
             PopulationServiceSelector.Instance.TryAdd(service);

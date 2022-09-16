@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
 {
-    internal class BlobStorageRepository<T, TKey> : IRepositoryPattern<T, TKey>
+    internal sealed class BlobStorageRepository<T, TKey> : IRepositoryPattern<T, TKey>
         where TKey : notnull
     {
         private readonly BlobContainerClient _client;
@@ -16,7 +16,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.DeleteBlobAsync(key!.ToString(), cancellationToken: cancellationToken).NoContext();
-            return !response.IsError;
+            return IState.Default<T>(!response.IsError);
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
@@ -32,7 +32,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            return new State<T>(await blobClient.ExistsAsync(cancellationToken).NoContext());
+            return IState.Default<T>(await blobClient.ExistsAsync(cancellationToken).NoContext());
         }
 
         public async Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
@@ -40,7 +40,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             var blobClient = _client.GetBlobClient(key!.ToString());
             var entityWithKey = IEntity.Default(key, value);
             var response = await blobClient.UploadAsync(new BinaryData(entityWithKey.ToJson()), cancellationToken).NoContext();
-            return new(response.Value != null, value);
+            return IState.Default<T>(response.Value != null, value);
         }
 
         public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
@@ -48,11 +48,12 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         {
             Func<T, bool> predicate = x => true;
 #warning to check well, check a new way to create the query
-            LambdaExpression? where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
+            var where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
             if (where != null)
                 predicate = where.AsExpression<T, bool>().Compile();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var blobClient = _client.GetBlobClient(blob.Name);
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
                 var item = JsonSerializer.Deserialize<IEntity<T, TKey>>(blobData.Value.Content)!;
@@ -66,7 +67,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
             var response = await blobClient.UploadAsync(new BinaryData(JsonSerializer.Serialize(value)), true, cancellationToken).NoContext();
-            return new(response.Value != null, value);
+            return IState.Default<T>(response.Value != null, value);
         }
 
         public async ValueTask<TProperty> OperationAsync<TProperty>(
@@ -78,7 +79,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             List<T> items = new();
             await foreach (var item in QueryAsync(query, cancellationToken))
                 items.Add(item.Value);
-            LambdaExpression? select = query.FirstSelect;
+            var select = query.FirstSelect;
             return (await operation.ExecuteAsync(
                 () => items.Count,
                 null!,

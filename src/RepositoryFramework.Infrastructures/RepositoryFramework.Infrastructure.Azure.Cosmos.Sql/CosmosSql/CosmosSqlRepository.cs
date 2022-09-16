@@ -21,13 +21,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-            return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent);
+            return IState.Default<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent);
         }
 
         public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-            return new State<T>(response.StatusCode == HttpStatusCode.OK);
+            return IState.Default<T>(response.StatusCode == HttpStatusCode.OK);
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
@@ -45,15 +45,15 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             foreach (var property in _properties)
                 flexible.TryAdd(property.Name, property.GetValue(value));
             var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-            return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
+            return IState.Default(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
         }
 
         public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            IQueryable<T> queryable = query.Filter(_client.GetItemLinqQueryable<T>());
+            var queryable = query.Filter(_client.GetItemLinqQueryable<T>());
 
-            using FeedIterator<T> iterator = queryable.ToFeedIterator();
+            using var iterator = queryable.ToFeedIterator();
             while (iterator.HasMoreResults)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -67,8 +67,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             Query query,
             CancellationToken cancellationToken = default)
         {
-            IQueryable<T> queryable = query.Filter(_client.GetItemLinqQueryable<T>());
-            LambdaExpression? select = query.FirstSelect;
+            var queryable = query.Filter(_client.GetItemLinqQueryable<T>());
+            var select = query.FirstSelect;
             return operation.ExecuteAsync(
                 () => queryable.CountAsync(cancellationToken)!,
                 () => queryable.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),
@@ -84,7 +84,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             foreach (var property in _properties)
                 flexible.TryAdd(property.Name, property.GetValue(value));
             var response = await _client.UpsertItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-            return new State<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
+            return IState.Default<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {

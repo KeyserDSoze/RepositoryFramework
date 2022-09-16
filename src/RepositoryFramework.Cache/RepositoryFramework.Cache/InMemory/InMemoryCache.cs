@@ -2,7 +2,7 @@
 
 namespace RepositoryFramework.Cache
 {
-    internal class InMemoryCache<T, TKey> : ICache<T, TKey>
+    internal sealed class InMemoryCache<T, TKey> : ICache<T, TKey>
         where TKey : notnull
     {
         private readonly IMemoryCache _memoryCache;
@@ -10,7 +10,7 @@ namespace RepositoryFramework.Cache
             => _memoryCache = memoryCache;
         public Task<CacheResponse<TValue>> RetrieveAsync<TValue>(string key, CancellationToken cancellationToken = default)
         {
-            bool isPresent = _memoryCache.TryGetValue(key, out TValue value);
+            var isPresent = _memoryCache.TryGetValue(key, out TValue value);
             return Task.FromResult(new CacheResponse<TValue>(isPresent, value));
         }
 

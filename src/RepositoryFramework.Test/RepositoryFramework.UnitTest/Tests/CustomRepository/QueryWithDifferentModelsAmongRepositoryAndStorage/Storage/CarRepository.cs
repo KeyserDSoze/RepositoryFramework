@@ -35,12 +35,12 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
                 throw new NotImplementedException();
         }
 
-        public Task<State<Car>> DeleteAsync(int key, CancellationToken cancellationToken = default)
+        public Task<IState<Car>> DeleteAsync(int key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<State<Car>> ExistAsync(int key, CancellationToken cancellationToken = default)
+        public Task<IState<Car>> ExistAsync(int key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -50,7 +50,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
             throw new NotImplementedException();
         }
 
-        public Task<State<Car>> InsertAsync(int key, Car value, CancellationToken cancellationToken = default)
+        public Task<IState<Car>> InsertAsync(int key, Car value, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -64,7 +64,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
                 yield return IEntity.Default(item.Id, item);
         }
 
-        public Task<State<Car>> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)
+        public Task<IState<Car>> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

@@ -1,12 +1,11 @@
-﻿using Azure.Data.Tables;
-using System.Linq.Expressions;
-using System.Reflection;
+﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Azure.Data.Tables;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
-    internal class TableStorageRepository<T, TKey> : IRepositoryPattern<T, TKey>
+    internal sealed class TableStorageRepository<T, TKey> : IRepositoryPattern<T, TKey>
         where TKey : notnull
     {
         private readonly TableClient _client;
@@ -32,26 +31,26 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 
         public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var realKey = _keyReader.Read(key);
-            var response = await _client.DeleteEntityAsync(realKey.PartitionKey, realKey.RowKey, cancellationToken: cancellationToken).NoContext();
-            return !response.IsError;
+            var (partitionKey, rowKey) = _keyReader.Read(key);
+            var response = await _client.DeleteEntityAsync(partitionKey, rowKey, cancellationToken: cancellationToken).NoContext();
+            return IState.Default<T>(!response.IsError);
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var realKey = _keyReader.Read(key);
-            var response = await _client.GetEntityAsync<TableEntity>(realKey.PartitionKey, realKey.RowKey, cancellationToken: cancellationToken).NoContext();
+            var (partitionKey, rowKey) = _keyReader.Read(key);
+            var response = await _client.GetEntityAsync<TableEntity>(partitionKey, rowKey, cancellationToken: cancellationToken).NoContext();
             if (response?.Value != null)
                 return JsonSerializer.Deserialize<T>(response.Value.Value);
             return default;
         }
         public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var realKey = _keyReader.Read(key);
+            var (partitionKey, rowKey) = _keyReader.Read(key);
             await foreach (var entity in _client.QueryAsync<TableEntity>(
-                filter: $"PartitionKey eq '{realKey.PartitionKey}' and RowKey eq '{realKey.RowKey}'", 1, cancellationToken: cancellationToken))
-                return new State<T>(true, JsonSerializer.Deserialize<T>(entity.Value));
-            return false;
+                filter: $"PartitionKey eq '{partitionKey}' and RowKey eq '{rowKey}'", 1, cancellationToken: cancellationToken))
+                return IState.Default(true, JsonSerializer.Deserialize<T>(entity.Value));
+            return IState.Default<T>(false);
         }
 
         public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
@@ -60,21 +59,21 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            LambdaExpression? where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
+            var where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
             string? filter = null;
             if (where != null)
                 filter = QueryStrategy.Create(where.Body, _options.PartitionKey.Name, _options.RowKey.Name, _options.Timestamp?.Name);
 
-            long? top = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Top) as ValueQueryOperation)?.Value;
-            long? skip = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Skip) as ValueQueryOperation)?.Value;
-            int counter = 0;
+            var top = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Top) as ValueQueryOperation)?.Value;
+            var skip = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Skip) as ValueQueryOperation)?.Value;
+            var counter = 0;
             var items = new List<T>();
 
             await foreach (var page in _client.QueryAsync<TableEntity>(filter: filter,
                 maxPerPage: 50,
                 cancellationToken: cancellationToken).AsPages())
             {
-                bool haveToBreak = false;
+                var haveToBreak = false;
                 foreach (var entity in page.Values)
                 {
                     counter++;
@@ -132,14 +131,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             => ValueTask.FromResult((TProperty)Convert.ChangeType(value, typeof(TProperty)));
         public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var realKey = _keyReader.Read(key);
+            var (partitionKey, rowKey) = _keyReader.Read(key);
             var response = await _client.UpsertEntityAsync(new TableEntity
             {
-                PartitionKey = realKey.PartitionKey,
-                RowKey = realKey.RowKey,
+                PartitionKey = partitionKey,
+                RowKey = rowKey,
                 Value = JsonSerializer.Serialize(value)
             }, TableUpdateMode.Replace, cancellationToken).NoContext();
-            return new State<T>(!response.IsError, value);
+            return IState.Default<T>(!response.IsError, value);
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {

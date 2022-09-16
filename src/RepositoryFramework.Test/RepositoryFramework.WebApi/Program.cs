@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 //.PopulateWithRandomData(x => x.Email!, 120, 5)
 // Sections of code should not be commented out
 //.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
-builder.Services.AddRepository<IperUser, IperRepositoryStorage>()
+builder.Services.AddRepository<IperUser, string, IperRepositoryStorage>()
     .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
 builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
@@ -69,13 +69,13 @@ app.AddApiForRepositoryFramework()
     .WithNoAuthorization();
 
 #pragma warning disable S125 // Sections of code should not be commented out
-    //.SetPolicy(RepositoryMethod.Query)
-    //.Empty()
-    //.SetPolicy(RepositoryMethod.Delete)
-    //.With("Admin")
-    //.With("Other")
-    //.And()
-    //.Finalize();
+//.SetPolicy(RepositoryMethod.Query)
+//.Empty()
+//.SetPolicy(RepositoryMethod.Delete)
+//.With("Admin")
+//.With("Other")
+//.And()
+//.Finalize();
 #pragma warning restore S125 // Sections of code should not be commented out
 
 

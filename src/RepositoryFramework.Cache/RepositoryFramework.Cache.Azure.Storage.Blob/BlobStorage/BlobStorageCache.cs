@@ -2,7 +2,7 @@
 
 namespace RepositoryFramework.Cache.Azure.Storage.Blob
 {
-    public class BlobStorageCache<T, TKey> :  IDistributedCache<T, TKey>
+    internal sealed class BlobStorageCache<T, TKey> : IDistributedCache<T, TKey>
         where TKey : notnull
     {
         private readonly IRepository<BlobStorageCacheModel, string> _repository;
@@ -14,7 +14,7 @@ namespace RepositoryFramework.Cache.Azure.Storage.Blob
 
         public async Task<CacheResponse<TValue>> RetrieveAsync<TValue>(string key, CancellationToken cancellationToken = default)
         {
-            if (await _repository.ExistAsync(key, cancellationToken).NoContext())
+            if ((await _repository.ExistAsync(key, cancellationToken).NoContext()).IsOk)
             {
                 var result = await _repository.GetAsync(key, cancellationToken).NoContext();
                 if (DateTime.UtcNow < (result?.Expiration ?? DateTime.MaxValue))
@@ -31,8 +31,8 @@ namespace RepositoryFramework.Cache.Azure.Storage.Blob
             }).NoContext()).IsOk;
         public async Task<bool> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
-            if (await _repository.ExistAsync(key, cancellationToken).NoContext())
-                return await _repository.DeleteAsync(key, cancellationToken).NoContext();
+            if ((await _repository.ExistAsync(key, cancellationToken).NoContext()).IsOk)
+                return (await _repository.DeleteAsync(key, cancellationToken).NoContext()).IsOk;
             return true;
         }
     }

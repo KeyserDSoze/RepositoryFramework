@@ -1,0 +1,184 @@
+﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+
+namespace RepositoryFramework.Cache
+{
+    internal class CachedQuery<T, TKey> : IQuery<T, TKey>
+         where TKey : notnull
+    {
+        private protected readonly IQueryPattern<T, TKey> Query;
+        private protected readonly ICache<T, TKey>? Cache;
+        private protected readonly CacheOptions<T, TKey> CacheOptions;
+        private protected readonly IDistributedCache<T, TKey>? Distributed;
+        private protected readonly DistributedCacheOptions<T, TKey> DistributedCacheOptions;
+        private readonly string _cacheName;
+
+        public CachedQuery(IQueryPattern<T, TKey> query,
+            ICache<T, TKey>? cache = null,
+            CacheOptions<T, TKey>? cacheOptions = null,
+            IDistributedCache<T, TKey>? distributed = null,
+            DistributedCacheOptions<T, TKey>? distributedCacheOptions = null)
+        {
+            Query = query;
+            Cache = cache;
+            CacheOptions = cacheOptions ?? CacheOptions<T, TKey>.Default;
+            Distributed = distributed;
+            DistributedCacheOptions = distributedCacheOptions ?? DistributedCacheOptions<T, TKey>.Default;
+            _cacheName = typeof(T).Name;
+        }
+        private protected Task RemoveExistAndGetCacheAsync(TKey key, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
+        {
+            var existKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Exist)}_{_cacheName}");
+            var getKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Get)}_{_cacheName}");
+            List<Task> toDelete = new();
+            if (inMemory && Cache != null)
+            {
+                if (CacheOptions.HasCache(RepositoryMethods.Get))
+                    toDelete.Add(Cache.DeleteAsync(getKeyAsString, cancellationToken));
+                if (CacheOptions.HasCache(RepositoryMethods.Exist))
+                    toDelete.Add(Cache.DeleteAsync(existKeyAsString, cancellationToken));
+            }
+            if (inDistributed && Distributed != null)
+            {
+                if (DistributedCacheOptions.HasCache(RepositoryMethods.Get))
+                    toDelete.Add(Distributed.DeleteAsync(getKeyAsString, cancellationToken));
+                if (DistributedCacheOptions.HasCache(RepositoryMethods.Exist))
+                    toDelete.Add(Distributed.DeleteAsync(existKeyAsString, cancellationToken));
+            }
+            return Task.WhenAll(toDelete);
+        }
+        private protected Task UpdateExistAndGetCacheAsync(TKey key, T value, IState<T> state, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
+        {
+            var existKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Exist)}_{_cacheName}");
+            var getKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Get)}_{_cacheName}");
+            List<Task> toUpdate = new();
+            if (Cache != null || Distributed != null)
+            {
+                toUpdate.Add(SaveOnCacheAsync(getKeyAsString, value, Source.Repository,
+                    inMemory && CacheOptions?.HasCache(RepositoryMethods.Get) == true,
+                    inDistributed && DistributedCacheOptions?.HasCache(RepositoryMethods.Get) == true,
+                    cancellationToken));
+                toUpdate.Add(SaveOnCacheAsync(existKeyAsString, state, Source.Repository,
+                    inMemory && CacheOptions?.HasCache(RepositoryMethods.Exist) == true,
+                    inDistributed && DistributedCacheOptions?.HasCache(RepositoryMethods.Exist) == true,
+                    cancellationToken));
+            }
+            return Task.WhenAll(toUpdate);
+        }
+        public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            var keyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Exist)}_{_cacheName}");
+            var value = await RetrieveValueAsync(RepositoryMethods.Exist, keyAsString,
+                () => Query.ExistAsync(key, cancellationToken)!,
+                null, cancellationToken).NoContext();
+
+            if (Cache != null || Distributed != null)
+                await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
+                    CacheOptions.HasCache(RepositoryMethods.Exist),
+                    DistributedCacheOptions.HasCache(RepositoryMethods.Exist),
+                    cancellationToken).NoContext();
+
+            return value.Response!;
+        }
+
+        public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            var keyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Get)}_{_cacheName}");
+            var value = await RetrieveValueAsync<T?>(RepositoryMethods.Get, keyAsString,
+                () => Query.GetAsync(key, cancellationToken),
+                null, cancellationToken).NoContext();
+
+            if (Cache != null || Distributed != null)
+                await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
+                    CacheOptions.HasCache(RepositoryMethods.Get),
+                    DistributedCacheOptions.HasCache(RepositoryMethods.Get),
+                    cancellationToken).NoContext();
+
+            return value.Response;
+        }
+        private static readonly List<IEntity<T, TKey>> s_empty = new();
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            var keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{query.ToKey()}";
+
+            var value = await RetrieveValueAsync(RepositoryMethods.Query, keyAsString,
+                async () =>
+                {
+                    List<IEntity<T, TKey>> items = new();
+                    await foreach (var item in Query.QueryAsync(query, cancellationToken)!)
+                        items.Add(item);
+                    return items;
+                },
+                null, cancellationToken).NoContext();
+
+            if (Cache != null || Distributed != null)
+                await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
+                    CacheOptions.HasCache(RepositoryMethods.Query),
+                    DistributedCacheOptions.HasCache(RepositoryMethods.Query),
+                    cancellationToken).NoContext();
+
+            foreach (var item in value.Response ?? s_empty)
+                yield return item;
+        }
+        public async ValueTask<TProperty> OperationAsync<TProperty>(
+            OperationType<TProperty> operation,
+            Query query,
+            CancellationToken cancellationToken = default)
+        {
+            var keyAsString = $"{nameof(RepositoryMethods.Operation)}_{_cacheName}_{query.ToKey()}";
+
+            var value = await RetrieveValueAsync(RepositoryMethods.Operation, keyAsString,
+                null,
+                () => Query.OperationAsync(operation, query, cancellationToken)!, cancellationToken).NoContext();
+
+            if (Cache != null || Distributed != null)
+                await SaveOnCacheAsync(keyAsString, value.Response, value.Source,
+                    CacheOptions.HasCache(RepositoryMethods.Query),
+                    DistributedCacheOptions.HasCache(RepositoryMethods.Query),
+                    cancellationToken).NoContext();
+
+            return value.Response;
+        }
+        private Task SaveOnCacheAsync<TResponse>(string key, TResponse response, Source source, bool inMemory, bool inDistributed, CancellationToken cancellationToken)
+        {
+            List<Task> cacheSaverTasks = new();
+            if (inMemory && Cache != null && source > Source.InMemory)
+                cacheSaverTasks.Add(Cache.SetAsync(key, response, CacheOptions, cancellationToken));
+            if (inDistributed && Distributed != null && source > Source.Distributed)
+                cacheSaverTasks.Add(Distributed.SetAsync(key, response, DistributedCacheOptions, cancellationToken));
+            return Task.WhenAll(cacheSaverTasks);
+        }
+        private async Task<(Source Source, TValue? Response)> RetrieveValueAsync<TValue>(
+            RepositoryMethods method,
+            string key,
+            Func<Task<TValue?>>? action,
+            Func<ValueTask<TValue?>>? actionFromValueTask,
+            CancellationToken cancellationToken)
+        {
+            if (Cache != null && CacheOptions.HasCache(method))
+            {
+                var (isPresent, response) = await Cache.RetrieveAsync<TValue>(key, cancellationToken).NoContext();
+                if (isPresent)
+                    return (Source.InMemory, response);
+            }
+            if (Distributed != null && DistributedCacheOptions.HasCache(method))
+            {
+                var (isPresent, response) = await Distributed.RetrieveAsync<TValue>(key, cancellationToken).NoContext();
+                if (isPresent)
+                    return (Source.Distributed, response);
+            }
+            return (Source.Repository,
+                action == null ?
+                await actionFromValueTask!.Invoke().NoContext() :
+                await action.Invoke().NoContext());
+        }
+        private enum Source
+        {
+            InMemory,
+            Distributed,
+            Repository
+        }
+    }
+}
