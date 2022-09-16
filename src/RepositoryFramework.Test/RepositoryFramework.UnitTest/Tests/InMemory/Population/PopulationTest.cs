@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework.InMemory;
 using RepositoryFramework.UnitTest.InMemory.Population.Models;
 using System;
@@ -11,11 +11,11 @@ namespace RepositoryFramework.UnitTest.InMemory.Population
 {
     public class PopulationTest
     {
-        private static readonly IServiceProvider ServiceProvider;
+        private static readonly IServiceProvider s_serviceProvider;
         static PopulationTest()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
-                 .AddRepositoryInMemoryStorage<User>(options =>
+                 .AddRepositoryInMemoryStorage<User, string>(options =>
                  {
                      var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
                          int.Parse(configuration["data_creation:delay_in_write_to"]));
@@ -52,15 +52,15 @@ namespace RepositoryFramework.UnitTest.InMemory.Population
                 .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com")
                 .And()
                 .Services
-                .Finalize(out ServiceProvider)
+                .Finalize(out s_serviceProvider)
                 .Populate();
         }
-        private readonly IRepository<User> _user1;
+        private readonly IRepository<User, string> _user1;
         private readonly IRepository<SuperUser, string> _user2;
         public PopulationTest()
         {
-            _user1 = ServiceProvider.GetService<IRepository<User>>()!;
-            _user2 = ServiceProvider.GetService<IRepository<SuperUser, string>>()!;
+            _user1 = s_serviceProvider.GetService<IRepository<User, string>>()!;
+            _user2 = s_serviceProvider.GetService<IRepository<SuperUser, string>>()!;
         }
         [Theory]
         [InlineData(1)]

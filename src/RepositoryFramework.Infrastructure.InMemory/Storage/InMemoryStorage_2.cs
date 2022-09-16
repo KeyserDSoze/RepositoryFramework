@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -19,7 +18,7 @@ namespace RepositoryFramework.InMemory
             => Values.TryAdd(key.AsString(), IEntity.Default(key, value));
         private static int GetRandomNumber(Range range)
         {
-            int maxPlusOne = range.End.Value + 1 - range.Start.Value;
+            var maxPlusOne = range.End.Value + 1 - range.Start.Value;
             return RandomNumberGenerator.GetInt32(maxPlusOne) + range.Start.Value;
         }
         private static Exception? GetException(List<ExceptionOdds> odds)
@@ -38,7 +37,7 @@ namespace RepositoryFramework.InMemory
             }
             Range range = new(0, 100 * oddBase);
             var result = GetRandomNumber(range);
-            int total = 0;
+            var total = 0;
             foreach (var odd in normalizedOdds)
             {
                 var value = (int)odd.Percentage;
@@ -48,7 +47,7 @@ namespace RepositoryFramework.InMemory
             }
             return default;
         }
-        private async Task<State<T>> ExecuteAsync(RepositoryMethods method, Func<State<T>> action, CancellationToken cancellationToken = default)
+        private async Task<IState<T>> ExecuteAsync(RepositoryMethods method, Func<IState<T>> action, CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(method);
             await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
@@ -58,23 +57,23 @@ namespace RepositoryFramework.InMemory
                 if (exception != null)
                 {
                     await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken).NoContext();
-                    return InMemoryStorage<T, TKey>.SetState(false);
+                    return SetState(false);
                 }
                 if (!cancellationToken.IsCancellationRequested)
                     return action.Invoke();
                 else
-                    return InMemoryStorage<T, TKey>.SetState(false);
+                    return SetState(false);
             }
             else
-                return InMemoryStorage<T, TKey>.SetState(false);
+                return SetState(false);
         }
-        public Task<State<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Delete, () =>
             {
-                string keyAsString = key.AsString();
+                var keyAsString = key.AsString();
                 if (Values.ContainsKey(keyAsString))
-                    return InMemoryStorage<T, TKey>.SetState(Values.TryRemove(keyAsString, out _));
-                return InMemoryStorage<T, TKey>.SetState(false);
+                    return SetState(Values.TryRemove(keyAsString, out _));
+                return SetState(false);
             }, cancellationToken);
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
@@ -91,7 +90,7 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    string keyAsString = key.AsString();
+                    var keyAsString = key.AsString();
                     return Values.ContainsKey(keyAsString) ? Values[keyAsString].Value : default;
                 }
                 else
@@ -100,35 +99,32 @@ namespace RepositoryFramework.InMemory
             else
                 throw new TaskCanceledException();
         }
-        public static State<T> SetState(bool isOk, T? value = default)
-        {
-            State<T> state = new(isOk, value);
-            return state;
-        }
-        public Task<State<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        private static IState<T> SetState(bool isOk, T? value = default)
+            => IState.Default(isOk, value);
+        public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Insert, () =>
             {
-                string keyAsString = key.AsString();
+                var keyAsString = key.AsString();
                 if (!Values.ContainsKey(keyAsString))
                 {
                     Values.TryAdd(keyAsString, IEntity.Default(key, value));
-                    return InMemoryStorage<T, TKey>.SetState(true, value);
+                    return SetState(true, value);
                 }
                 else
-                    return InMemoryStorage<T, TKey>.SetState(false, value);
+                    return SetState(false, value);
             }, cancellationToken);
 
-        public Task<State<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Update, () =>
             {
-                string keyAsString = key.AsString();
+                var keyAsString = key.AsString();
                 if (Values.ContainsKey(keyAsString))
                 {
                     Values[keyAsString] = IEntity.Default(key, value);
-                    return InMemoryStorage<T, TKey>.SetState(true, value);
+                    return SetState(true, value);
                 }
                 else
-                    return InMemoryStorage<T, TKey>.SetState(false);
+                    return SetState(false);
             }, cancellationToken);
 
         public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
@@ -146,10 +142,8 @@ namespace RepositoryFramework.InMemory
                 }
                 foreach (var item in query.Filter(Values.Select(x => x.Value.Value)))
                 {
-                    if (!cancellationToken.IsCancellationRequested)
-                        yield return Values.First(x => x.Value.Value.Equals(item)).Value;
-                    else
-                        throw new TaskCanceledException();
+                    cancellationToken.ThrowIfCancellationRequested();
+                    yield return Values.First(x => x.Value.Value.Equals(item)).Value;
                 }
             }
             else
@@ -187,13 +181,13 @@ namespace RepositoryFramework.InMemory
             else
                 throw new TaskCanceledException();
         }
-        private static ValueTask<TProperty> Invoke<TProperty>(object value) 
+        private static ValueTask<TProperty> Invoke<TProperty>(object value)
             => ValueTask.FromResult((TProperty)Convert.ChangeType(value, typeof(TProperty)));
-        public Task<State<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Exist, () =>
             {
-                string keyAsString = key.AsString();
-                return InMemoryStorage<T, TKey>.SetState(Values.ContainsKey(keyAsString));
+                var keyAsString = key.AsString();
+                return SetState(Values.ContainsKey(keyAsString));
             }, cancellationToken);
 
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)

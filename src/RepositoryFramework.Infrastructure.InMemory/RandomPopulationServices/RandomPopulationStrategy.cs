@@ -20,7 +20,7 @@
 
             _populationService.Settings = _settings.BehaviorSettings ?? new();
             var properties = typeof(T).GetProperties();
-            for (int i = 0; i < _settings.NumberOfElements; i++)
+            for (var i = 0; i < _settings.NumberOfElements; i++)
             {
                 var entity = _instanceCreator!.CreateInstance(new RandomPopulationOptions(typeof(T),
                     _populationService!, _settings.NumberOfElementsWhenEnumerableIsFound, string.Empty));
@@ -30,8 +30,8 @@
                         property.SetValue(entity, _populationService!.Construct(property.PropertyType,
                             _settings.NumberOfElementsWhenEnumerableIsFound, string.Empty,
                             property.Name));
-                T item = (T)entity!;
-                TKey key = _settings.KeyCalculator!.Invoke(item);
+                var item = (T)entity!;
+                var key = _settings.KeyCalculator!.Invoke(item);
                 _settings.AddElementToMemory?.Invoke(key, item);
             }
         }

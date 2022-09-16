@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework.UnitTest.Cache.Models;
 using System;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace RepositoryFramework.UnitTest
 {
     public class CacheTest
     {
-        private static readonly IServiceProvider ServiceProvider;
+        private static readonly IServiceProvider? s_serviceProvider;
         private const int NumberOfEntries = 100;
 
         static CacheTest()
@@ -17,7 +17,7 @@ namespace RepositoryFramework.UnitTest
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
                 .AddStackExchangeRedisCache(options =>
                 {
-                    options.Configuration = configuration["Redis:ConnectionString"];
+                    options.Configuration = configuration["ConnectionString:Redis"];
                     options.InstanceName = "SampleInstance";
                 })
                 .AddRepositoryInMemoryStorage<Country, CountryKey>()
@@ -32,14 +32,14 @@ namespace RepositoryFramework.UnitTest
                     settings.ExpiringTime = TimeSpan.FromSeconds(10);
                 })
                 .Services
-                .Finalize(out ServiceProvider)
+                .Finalize(out s_serviceProvider)
                 .Populate();
         }
 
         private readonly IRepository<Country, CountryKey> _repo;
         public CacheTest()
         {
-            _repo = ServiceProvider.GetService<IRepository<Country, CountryKey>>()!;
+            _repo = s_serviceProvider!.GetService<IRepository<Country, CountryKey>>()!;
         }
         [Fact]
         public async Task TestAsync()

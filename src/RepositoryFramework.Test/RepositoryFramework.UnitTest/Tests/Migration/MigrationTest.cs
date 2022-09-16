@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework.Migration;
 using RepositoryFramework.UnitTest.Migration.Models;
 using RepositoryFramework.UnitTest.Migration.Storage;
@@ -11,69 +11,39 @@ namespace RepositoryFramework.UnitTest.Migration
 {
     public class MigrationTest
     {
-        private static readonly IServiceProvider ServiceProvider;
+        private static readonly IServiceProvider? s_serviceProvider;
         static MigrationTest()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
-                    .AddRepository<MigrationUser, MigrationTo>()
-                    .AddMigrationSource<MigrationUser, MigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
-                    .Services
                     .AddRepository<SuperMigrationUser, string, SuperMigrationTo>()
                     .AddMigrationSource<SuperMigrationUser, string, SuperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                 .Services
-                .Finalize(out ServiceProvider)
+                .Finalize(out s_serviceProvider)
                 .Populate();
         }
-        private readonly IMigrationManager<MigrationUser> _migrationService1;
-        private readonly IRepository<MigrationUser> _repository1;
-        private readonly IMigrationSource<MigrationUser> _from1;
-        private readonly IMigrationManager<SuperMigrationUser, string> _migrationService2;
-        private readonly IRepository<SuperMigrationUser, string> _repository2;
-        private readonly IMigrationSource<SuperMigrationUser, string> _from2;
+        private readonly IMigrationManager<SuperMigrationUser, string> _migrationService;
+        private readonly IRepository<SuperMigrationUser, string> _repository;
+        private readonly IMigrationSource<SuperMigrationUser, string> _from;
 
         public MigrationTest()
         {
-            _migrationService1 = ServiceProvider.GetService<IMigrationManager<MigrationUser>>()!;
-            _repository1 = ServiceProvider.GetService<IRepository<MigrationUser>>()!;
-            _from1 = ServiceProvider.GetService<IMigrationSource<MigrationUser>>()!;
-            _migrationService2 = ServiceProvider.GetService<IMigrationManager<SuperMigrationUser, string>>()!;
-            _repository2 = ServiceProvider.GetService<IRepository<SuperMigrationUser, string>>()!;
-            _from2 = ServiceProvider.GetService<IMigrationSource<SuperMigrationUser, string>>()!;
+            _migrationService = s_serviceProvider!.GetService<IMigrationManager<SuperMigrationUser, string>>()!;
+            _repository = s_serviceProvider!.GetService<IRepository<SuperMigrationUser, string>>()!;
+            _from = s_serviceProvider!.GetService<IMigrationSource<SuperMigrationUser, string>>()!;
         }
-        [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        public async Task TestAsync(int numberOfParameters)
+        [Fact]
+        public async Task TestAsync()
         {
-            bool migrationResult = false;
-            switch (numberOfParameters)
+            var migrationResult = await _migrationService.MigrateAsync(x => x.Id!, true).NoContext();
+            Assert.Equal(4, (await _repository.QueryAsync().ToListAsync().NoContext()).Count);
+            await foreach (var user in _from.QueryAsync())
             {
-                case 1:
-                    migrationResult = await _migrationService1.MigrateAsync(x => x.Id!, true).NoContext();
-                    Assert.Equal(4, (await _repository1.QueryAsync().ToListAsync().NoContext()).Count);
-                    await foreach (var user in _from1.QueryAsync())
-                    {
-                        Assert.True(await _repository1.ExistAsync(user.Key).NoContext());
-                        var newUser = await _repository1.GetAsync(user.Key).NoContext();
-                        Assert.NotNull(newUser);
-                        Assert.True(newUser!.IsAdmin == user.Value.IsAdmin);
-                        Assert.True(newUser!.Email == user.Value.Email);
-                        Assert.True(newUser!.Name == user.Value.Name);
-                    }
-                    break;
-                case 2:
-                    migrationResult = await _migrationService2.MigrateAsync(x => x.Id!, true).NoContext();
-                    Assert.Equal(4, (await _repository2.QueryAsync().ToListAsync().NoContext()).Count);
-                    await foreach (var user in _from2.QueryAsync())
-                    {
-                        Assert.True(await _repository2.ExistAsync(user.Key).NoContext());
-                        var newUser = await _repository2.GetAsync(user.Key).NoContext();
-                        Assert.NotNull(newUser);
-                        Assert.True(newUser!.IsAdmin == user.Value.IsAdmin);
-                        Assert.True(newUser!.Email == user.Value.Email);
-                        Assert.True(newUser!.Name == user.Value.Name);
-                    }
-                    break;
+                Assert.True((await _repository.ExistAsync(user.Key).NoContext()).IsOk);
+                var newUser = await _repository.GetAsync(user.Key).NoContext();
+                Assert.NotNull(newUser);
+                Assert.True(newUser!.IsAdmin == user.Value.IsAdmin);
+                Assert.True(newUser!.Email == user.Value.Email);
+                Assert.True(newUser!.Name == user.Value.Name);
             }
             Assert.True(migrationResult);
         }

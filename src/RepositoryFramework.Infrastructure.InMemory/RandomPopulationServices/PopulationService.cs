@@ -19,7 +19,7 @@
         {
             if (!string.IsNullOrWhiteSpace(treeName) && !string.IsNullOrWhiteSpace(name))
                 treeName = $"{treeName}.{name}";
-            else if(!string.IsNullOrWhiteSpace(name))
+            else if (!string.IsNullOrWhiteSpace(name))
                 treeName = name;
 
             int? overridedNumberOfEntities = null;

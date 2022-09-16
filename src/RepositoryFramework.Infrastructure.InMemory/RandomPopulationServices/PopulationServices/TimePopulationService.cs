@@ -16,7 +16,7 @@ namespace RepositoryFramework.InMemory.Population
                 return DateTimeOffset.UtcNow;
         }
 
-        public bool IsValid(Type type) 
+        public bool IsValid(Type type)
             => type == typeof(DateTime) || type == typeof(DateTime?) || type == typeof(TimeSpan)
             || type == typeof(TimeSpan?) || type == typeof(DateTimeOffset) || type == typeof(DateTimeOffset?);
     }

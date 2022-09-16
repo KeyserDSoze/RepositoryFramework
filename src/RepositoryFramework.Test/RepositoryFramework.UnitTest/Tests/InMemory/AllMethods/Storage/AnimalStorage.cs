@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,12 +19,12 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
             throw new NotImplementedException();
         }
 
-        public Task<State<Animal>> DeleteAsync(int key, CancellationToken cancellationToken = default)
+        public Task<IState<Animal>> DeleteAsync(int key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<State<Animal>> ExistAsync(int key, CancellationToken cancellationToken = default)
+        public Task<IState<Animal>> ExistAsync(int key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -35,7 +34,7 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
             throw new NotImplementedException();
         }
 
-        public Task<State<Animal>> InsertAsync(int key, Animal value, CancellationToken cancellationToken = default)
+        public Task<IState<Animal>> InsertAsync(int key, Animal value, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -55,7 +54,7 @@ namespace RepositoryFramework.UnitTest.AllMethods.Storage
                 yield return IEntity.Default(entity.Id, entity);
         }
 
-        public Task<State<Animal>> UpdateAsync(int key, Animal value, CancellationToken cancellationToken = default)
+        public Task<IState<Animal>> UpdateAsync(int key, Animal value, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

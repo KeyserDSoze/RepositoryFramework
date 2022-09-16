@@ -5,10 +5,10 @@ namespace RepositoryFramework.UnitTest.Tests.AllIntegration.TableStorage
 {
     internal class TableStorageKeyReader : ITableStorageKeyReader<AppUser, AppUserKey>
     {
-        public (string PartitionKey, string RowKey) Read(AppUserKey key) 
+        public (string PartitionKey, string RowKey) Read(AppUserKey key)
             => (key.Id.ToString(), string.Empty);
 
-        public AppUserKey Read(AppUser entity) 
-            => new AppUserKey(entity.Id);
+        public AppUserKey Read(AppUser entity)
+            => new(entity.Id);
     }
 }

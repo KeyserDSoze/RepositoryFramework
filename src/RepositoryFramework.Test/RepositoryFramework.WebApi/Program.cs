@@ -8,8 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 //.PopulateWithRandomData(x => x.Email!, 120, 5)
 // Sections of code should not be commented out
 //.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
-builder.Services.AddRepository<IperUser, IperRepositoryStorage>()
-    .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
+builder.Services.AddRepository<IperUser, string, IperRepositoryStorage>()
+    .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>()
+    .WithInMemoryCache(x =>
+    {
+        x.ExpiringTime = TimeSpan.FromMilliseconds(100_000);
+    });
 builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
@@ -22,14 +26,14 @@ builder.Services.AddRepositoryInMemoryStorage<Car, Guid>();
 builder.Services.AddRepositoryInMemoryStorage<Car2, Range>();
 
 //builder.Services
-//    .AddRepositoryInTableStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
+//    .AddRepositoryInTableStorage<User, string>(builder.Configuration["ConnectionString:Storage"]);
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration["Redis:ConnectionString"];
+    options.Configuration = builder.Configuration["ConnectionString:Redis"];
     options.InstanceName = "SampleInstance";
 });
 //builder.Services
-//    .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"])
+//    .AddRepositoryInBlobStorage<User, string>(builder.Configuration["ConnectionString:Storage"])
 //    .WithInMemoryCache(x =>
 //    {
 //        x.RefreshTime = TimeSpan.FromSeconds(60);
@@ -40,7 +44,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //        x.RefreshTime = TimeSpan.FromSeconds(120);
 //        x.Methods = RepositoryMethod.All;
 //    });
-//.WithBlobStorageCache(builder.Configuration["Storage:ConnectionString"], settings: x =>
+//.WithBlobStorageCache(builder.Configuration["ConnectionString:Storage"], settings: x =>
 //{
 //    x.RefreshTime = TimeSpan.FromSeconds(120);
 //    x.Methods = RepositoryMethod.All;
@@ -48,7 +52,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services
     .AddRepositoryInCosmosSql<User, string>(
     x => x.Email!,
-    builder.Configuration["CosmosSql:ConnectionString"],
+    builder.Configuration["ConnectionString:CosmosSql"],
     "BigDatabase");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -69,13 +73,13 @@ app.AddApiForRepositoryFramework()
     .WithNoAuthorization();
 
 #pragma warning disable S125 // Sections of code should not be commented out
-    //.SetPolicy(RepositoryMethod.Query)
-    //.Empty()
-    //.SetPolicy(RepositoryMethod.Delete)
-    //.With("Admin")
-    //.With("Other")
-    //.And()
-    //.Finalize();
+//.SetPolicy(RepositoryMethod.Query)
+//.Empty()
+//.SetPolicy(RepositoryMethod.Delete)
+//.With("Admin")
+//.With("Other")
+//.And()
+//.Finalize();
 #pragma warning restore S125 // Sections of code should not be commented out
 
 

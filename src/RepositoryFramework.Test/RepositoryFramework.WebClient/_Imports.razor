@@ -11,7 +11,7 @@
 @using RepositoryFramework.WebClient.Shared
 @using RepositoryFramework.WebClient.Data
 
-@inject IRepository<User> UserClient1
+@inject IRepository<User, string> UserClient1
 @inject IRepository<SuperUser, string> UserClient2
 @inject IRepository<IperUser, string> UserClient3
 @inject IRepository<Animal, AnimalKey> AnimalClient

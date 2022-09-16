@@ -3,7 +3,7 @@
 ## Integration with Azure BlobStorage and Repository Framework
 
     builder.Services
-        .AddRepositoryInBlobStorage<User, string>(builder.Configuration["Storage:ConnectionString"]);
+        .AddRepositoryInBlobStorage<User, string>(builder.Configuration["ConnectionString:Storage"]);
 
 You found the IRepository<User, string> in DI to play with it.
 

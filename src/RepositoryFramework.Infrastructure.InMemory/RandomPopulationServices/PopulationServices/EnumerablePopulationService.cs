@@ -10,7 +10,7 @@ namespace RepositoryFramework.InMemory.Population
             var valueType = options.Type.GetGenericArguments().First();
             var listType = typeof(List<>).MakeGenericType(valueType);
             var entity = Activator.CreateInstance(listType)! as IList;
-            for (int i = 0; i < options.NumberOfEntities; i++)
+            for (var i = 0; i < options.NumberOfEntities; i++)
             {
                 var newValue = options.PopulationService.Construct(options.Type.GetGenericArguments().First(),
                     options.NumberOfEntities, options.TreeName, string.Empty);

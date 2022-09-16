@@ -9,7 +9,7 @@ namespace RepositoryFramework.InMemory.Population
         public dynamic GetValue(RandomPopulationOptions options)
             => RandomNumberGenerator.GetInt32(4) > 1;
 
-        public bool IsValid(Type type) 
+        public bool IsValid(Type type)
             => type == typeof(bool) || type == typeof(bool?);
     }
 }

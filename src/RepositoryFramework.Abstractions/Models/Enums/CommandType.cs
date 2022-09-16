@@ -1,5 +1,8 @@
 ﻿namespace RepositoryFramework
 {
+    /// <summary>
+    /// Command operations for Batch operation.
+    /// </summary>
     public enum CommandType
     {
         Insert = 1,

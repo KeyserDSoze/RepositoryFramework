@@ -1,4 +1,4 @@
-using RepositoryFramework.WebClient.Data;
+﻿using RepositoryFramework.WebClient.Data;
 using RepositoryFramework.WebClient.Interceptors;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddRepositoryApiClient<User>("localhost:7058",
+builder.Services.AddRepositoryApiClient<User, string>("localhost:7058",
     serviceLifetime: ServiceLifetime.Scoped)
         .AddApiClientSpecificInterceptor<User, string, SpecificInterceptor>();
 builder.Services.AddRepositoryApiClient<SuperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);

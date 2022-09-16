@@ -7,7 +7,7 @@
         public dynamic GetValue(RandomPopulationOptions options)
             => Guid.NewGuid();
 
-        public bool IsValid(Type type) 
+        public bool IsValid(Type type)
             => type == typeof(Guid) || type == typeof(Guid?);
     }
 }

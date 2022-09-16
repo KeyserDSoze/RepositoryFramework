@@ -7,7 +7,7 @@
         public dynamic GetValue(RandomPopulationOptions options)
             => $"{options.TreeName}_{Guid.NewGuid()}";
 
-        public bool IsValid(Type type) 
+        public bool IsValid(Type type)
             => type == typeof(string);
     }
 }
