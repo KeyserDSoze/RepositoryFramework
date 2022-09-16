@@ -1,17 +1,16 @@
-﻿using System.Linq.Expressions;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace RepositoryFramework.Api.Client
 {
-    internal class RepositoryClient<T, TKey> : IRepositoryPattern<T, TKey>
+    internal sealed class RepositoryClient<T, TKey> : IRepositoryPattern<T, TKey>
         where TKey : notnull
     {
         private readonly HttpClient _httpClient;
         private readonly IRepositoryClientInterceptor? _clientInterceptor;
         private readonly IRepositoryClientInterceptor<T>? _specificClientInterceptor;
-        private static readonly bool _hasProperties = typeof(TKey).GetProperties().Length > 0;
+        private static readonly bool s_hasProperties = typeof(TKey).GetProperties().Length > 0;
 
         public RepositoryClient(IHttpClientFactory httpClientFactory,
             IRepositoryClientInterceptor? clientInterceptor = null,
@@ -33,25 +32,25 @@ namespace RepositoryFramework.Api.Client
         public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Delete).NoContext();
-            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            var keyAsString = s_hasProperties ? key.ToJson() : key.ToString();
             return (await client.GetFromJsonAsync<State<T>>($"{nameof(RepositoryMethods.Delete)}?key={keyAsString}", cancellationToken).NoContext())!;
         }
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Get).NoContext();
-            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            var keyAsString = s_hasProperties ? key.ToJson() : key.ToString();
             return await client.GetFromJsonAsync<T>($"{nameof(RepositoryMethods.Get)}?key={keyAsString}", cancellationToken).NoContext();
         }
         public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Exist).NoContext();
-            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            var keyAsString = s_hasProperties ? key.ToJson() : key.ToString();
             return (await client.GetFromJsonAsync<State<T>>($"{nameof(RepositoryMethods.Exist)}?key={keyAsString}", cancellationToken).NoContext())!;
         }
         public async Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Insert).NoContext();
-            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            var keyAsString = s_hasProperties ? key.ToJson() : key.ToString();
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Insert)}?key={keyAsString}", value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             return (await response!.Content.ReadFromJsonAsync<State<T>>(cancellationToken: cancellationToken).NoContext())!;
@@ -93,7 +92,7 @@ namespace RepositoryFramework.Api.Client
         public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Update).NoContext();
-            string? keyAsString = _hasProperties ? key.ToJson() : key.ToString();
+            var keyAsString = s_hasProperties ? key.ToJson() : key.ToString();
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Update)}?key={keyAsString}", value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             return (await response.Content.ReadFromJsonAsync<State<T>>(cancellationToken: cancellationToken).NoContext())!;

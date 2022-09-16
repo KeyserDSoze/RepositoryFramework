@@ -11,7 +11,7 @@ namespace RepositoryFramework
     {
         private readonly Func<ApiAuthorization?, IEndpointRouteBuilder> _finalizator;
         internal ApiAuthorization Authorization { get; } = new();
-        internal ApiAuthorizationBuilder(Func<ApiAuthorization?, IEndpointRouteBuilder> finalizator) 
+        internal ApiAuthorizationBuilder(Func<ApiAuthorization?, IEndpointRouteBuilder> finalizator)
             => _finalizator = finalizator;
         /// <summary>
         /// Set authorization with no policies.

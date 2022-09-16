@@ -25,24 +25,5 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddService<IRepositoryClientInterceptor<T>, TInterceptor>(serviceLifetime);
             return builder;
         }
-
-        /// <summary>
-        /// Add specific interceptor for your <typeparamref name="T"/> client. Interceptor runs before every request.
-        /// For example you can add here your JWT retrieve for authorized requests.
-        /// </summary>
-        /// <typeparam name="TInterceptor">Interceptor service.</typeparam>
-        /// <typeparam name="T">Model used for your repository.</typeparam>
-        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>></param>
-        /// <param name="serviceLifetime">Service Lifetime</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>></returns>
-        public static IRepositoryBuilder<T> AddApiClientSpecificInterceptor<T, TInterceptor>(this IRepositoryBuilder<T> builder,
-            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TInterceptor : class, IRepositoryClientInterceptor<T>
-        {
-            builder
-               .Services
-               .AddService<IRepositoryClientInterceptor<T>, TInterceptor>(serviceLifetime);
-            return builder;
-        }
     }
 }

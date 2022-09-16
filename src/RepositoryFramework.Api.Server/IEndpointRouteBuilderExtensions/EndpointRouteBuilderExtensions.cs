@@ -40,7 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 });
 
         private const string NotImplementedExceptionIlOperation = "newobj instance void System.NotImplementedException";
-        private static readonly List<string> PossibleMethods = new()
+        private static readonly List<string> s_possibleMethods = new()
         {
             nameof(AddGet),
             nameof(AddQuery),
@@ -63,13 +63,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
             Dictionary<string, bool> configuredMethods = new();
 
-            foreach (var type in serviceValue.RepositoryTypes.Select(x => x.Value))
-                foreach (var method in type.CurrentType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var (interfaceType, currentType) in serviceValue.RepositoryTypes.Select(x => x.Value))
+                foreach (var method in currentType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
                 {
-                    var currentMethodName = PossibleMethods.FirstOrDefault(x => x == $"Add{method.Name.Replace("Async", string.Empty)}");
+                    var currentMethodName = s_possibleMethods.FirstOrDefault(x => x == $"Add{method.Name.Replace("Async", string.Empty)}");
                     if (!string.IsNullOrWhiteSpace(currentMethodName) && !configuredMethods.ContainsKey(currentMethodName))
                     {
-                        bool isNotImplemented = false;
+                        var isNotImplemented = false;
                         Try.WithDefaultOnCatch(() =>
                         {
                             var instructions = method.GetBodyAsString();
@@ -79,7 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
                             continue;
 
                         _ = typeof(EndpointRouteBuilderExtensions).GetMethod(currentMethodName, BindingFlags.NonPublic | BindingFlags.Static)!
-                           .MakeGenericMethod(modelType, serviceValue.KeyType, type.InterfaceType)
+                           .MakeGenericMethod(modelType, serviceValue.KeyType, interfaceType)
                            .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
                         configuredMethods.Add(currentMethodName, true);
                     }
@@ -122,7 +122,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     [FromBody] SerializableQuery query, [FromServices] TService service) =>
                 {
                     var options = query.DeserializeAndTranslate<T>();
-                    Type type = CalculateTypeFromQuery();
+                    var type = CalculateTypeFromQuery();
                     var queryService = service as IQueryPattern<T, TKey>;
                     var result = await Generics.WithStatic(
                                   typeof(EndpointRouteBuilderExtensions),
@@ -133,7 +133,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     Type CalculateTypeFromQuery()
                     {
-                        Type? calculatedType = typeof(object);
+                        var calculatedType = typeof(object);
                         if (string.IsNullOrWhiteSpace(returnType))
                             return calculatedType;
                         if (PrimitiveMapper.Instance.FromNameToAssemblyQualifiedName.ContainsKey(returnType))
@@ -218,7 +218,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static Func<string, TKey> GetKeyParser<TKey>()
         {
-            Type type = typeof(TKey);
+            var type = typeof(TKey);
             if (type == typeof(string))
                 return key => (dynamic)key;
             else if (type == typeof(Guid))
@@ -233,7 +233,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 return key => (dynamic)nuint.Parse(key);
             else
             {
-                bool hasProperties = type.FetchProperties().Length > 0;
+                var hasProperties = type.FetchProperties().Length > 0;
                 if (hasProperties)
                     return key => key.FromJson<TKey>();
                 else

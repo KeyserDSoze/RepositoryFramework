@@ -12,7 +12,7 @@
         }
         public ApiAuthorizationPolicy With(params string[] policies)
         {
-            foreach(var policy in policies)
+            foreach (var policy in policies)
                 if (!_policies.Contains(policy))
                     _policies.Add(policy);
             return this;
