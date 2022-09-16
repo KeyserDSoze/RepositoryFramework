@@ -11,7 +11,7 @@ namespace RepositoryFramework.UnitTest.InMemory.Exceptions
 {
     public class Exceptions
     {
-        private static readonly IServiceProvider ServiceProvider;
+        private static readonly IServiceProvider? s_serviceProvider;
         static Exceptions()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
@@ -41,12 +41,12 @@ namespace RepositoryFramework.UnitTest.InMemory.Exceptions
                     });
                 })
                 .Services
-                .Finalize(out ServiceProvider);
+                .Finalize(out s_serviceProvider);
         }
         private readonly IRepository<Car, string> _car;
         public Exceptions()
         {
-            _car = ServiceProvider.GetService<IRepository<Car, string>>()!;
+            _car = s_serviceProvider!.GetService<IRepository<Car, string>>()!;
         }
         [Fact]
         public async Task TestAsync()
