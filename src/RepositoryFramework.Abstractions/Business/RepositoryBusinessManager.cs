@@ -53,15 +53,19 @@ namespace RepositoryFramework
             => business.Select(x => (TBusiness)ServiceProvider.GetService(x.Service)!);
         public async Task<IState<T>> InsertAsync(ICommandPattern<T, TKey> command, TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var entity = IEntity.Default(key, value);
+            (IState<T> State, IEntity<T, TKey> Entity) result = (IState.Ok<T>(), IEntity.Default(key, value));
 
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeInsert<T, TKey>>(BeforeInserted))
-                entity = await business.BeforeInsertAsync(entity.Key, entity.Value, cancellationToken);
+            {
+                result = await business.BeforeInsertAsync(result.Entity, cancellationToken);
+                if (!result.State.IsOk)
+                    return result.State;
+            }
 
-            var response = await command.InsertAsync(entity.Key, entity.Value, cancellationToken);
+            var response = await command.InsertAsync(result.Entity.Key, result.Entity.Value, cancellationToken);
 
             foreach (var business in GetBusiness<IRepositoryBusinessAfterInsert<T, TKey>>(AfterInserted))
-                response = await business.AfterInsertAsync(response, entity.Key, entity.Value, cancellationToken);
+                response = await business.AfterInsertAsync(response, result.Entity, cancellationToken);
 
             return response;
         }

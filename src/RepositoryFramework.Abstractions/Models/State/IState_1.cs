@@ -4,5 +4,7 @@
     {
         bool IsOk { get; }
         T? Value { get; }
+        int? Code { get; }
+        string? Message { get; }
     }
 }

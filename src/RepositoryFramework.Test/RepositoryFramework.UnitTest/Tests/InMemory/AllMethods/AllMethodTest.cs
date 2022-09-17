@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.UnitTest.AllMethods.Models;
-using RepositoryFramework.UnitTest.AllMethods.Storage;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.UnitTest.AllMethods.Models;
 using Xunit;
 
 namespace RepositoryFramework.UnitTest.AllMethods
@@ -14,14 +13,13 @@ namespace RepositoryFramework.UnitTest.AllMethods
         static AllMethodTest()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
-                .AddRepositoryInMemoryStorage<Animal, int>()
                 .AddRepositoryInMemoryStorage<Animal, long>()
+                .AddBusinessAfterInsert<AnimalBusiness>()
+                .AddBusinessBeforeInsert<AnimalBusiness>()
+                .Services
                 .AddRepositoryInMemoryStorage<Animal, AnimalKey>()
                 .PopulateWithRandomData(x => new AnimalKey(x.Id), 100)
                 .And()
-                .Services
-                .AddScoped<AnimalDatabase>()
-                .AddRepository<Animal, int, AnimalStorage>()
                 .Services
                 .Finalize(out s_serviceProvider)
                 .Populate();
@@ -89,6 +87,10 @@ namespace RepositoryFramework.UnitTest.AllMethods
             await batchOperation.ExecuteAsync();
             items = await _animal.Where(x => x.Id > 0).QueryAsync().ToListAsync();
             Assert.Empty(items);
+
+            Assert.Equal(AnimalBusiness.Before, AnimalBusiness.After);
+            Assert.Equal(120, AnimalBusiness.After);
+            Assert.Equal(120, AnimalBusiness.Before);
         }
         [Fact]
         public async Task AllCommandsAndQueryWithStrangeKeyAsync()

@@ -8,6 +8,6 @@
     public interface IRepositoryBusinessBeforeInsert<T, TKey>
         where TKey : notnull
     {
-        Task<IEntity<T, TKey>> BeforeInsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<(IState<T> State, IEntity<T, TKey> Entity)> BeforeInsertAsync(IEntity<T, TKey> entity, CancellationToken cancellationToken = default);
     }
 }
