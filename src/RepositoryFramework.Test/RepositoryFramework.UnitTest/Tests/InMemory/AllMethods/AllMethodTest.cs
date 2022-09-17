@@ -88,9 +88,12 @@ namespace RepositoryFramework.UnitTest.AllMethods
             items = await _animal.Where(x => x.Id > 0).QueryAsync().ToListAsync();
             Assert.Empty(items);
 
+            for (var i = 0; i < 10; i++)
+                await _animal.InsertAsync(1, new Animal { Id = i, Name = "Eagle" });
+
             Assert.Equal(AnimalBusiness.Before, AnimalBusiness.After);
-            Assert.Equal(120, AnimalBusiness.After);
-            Assert.Equal(120, AnimalBusiness.Before);
+            Assert.Equal(11, AnimalBusiness.After);
+            Assert.Equal(11, AnimalBusiness.Before);
         }
         [Fact]
         public async Task AllCommandsAndQueryWithStrangeKeyAsync()

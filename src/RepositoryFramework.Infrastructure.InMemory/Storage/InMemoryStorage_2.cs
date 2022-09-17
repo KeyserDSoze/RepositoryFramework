@@ -166,8 +166,8 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    var filterd = query.Filter(Values);
-                    var selected = query.FilterAsSelect(filterd);
+                    var filtered = query.Filter(Values.Select(x => x.Value.Value));
+                    var selected = query.FilterAsSelect(filtered);
                     return (await operation.ExecuteAsync(
                         () => Invoke<TProperty>(selected.Count()),
                         () => Invoke<TProperty>(selected.Sum(x => ((object)x).Cast<decimal>())),
