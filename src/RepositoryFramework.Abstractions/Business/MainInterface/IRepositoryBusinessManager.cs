@@ -1,6 +1,11 @@
 ﻿namespace RepositoryFramework
 {
-    public interface IBusinessManager<T, TKey>
+    /// <summary>
+    /// Business manager interface that allows your business to run before or after a request to repository pattern or CQRS pattern.
+    /// </summary>
+    /// <typeparam name="T">Model used for your repository.</typeparam>
+    /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
+    public interface IRepositoryBusinessManager<T, TKey>
         where TKey : notnull
     {
         bool HasBusinessBeforeInsert { get; }

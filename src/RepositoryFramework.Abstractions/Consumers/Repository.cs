@@ -4,9 +4,9 @@
         where TKey : notnull
     {
         private readonly IRepositoryPattern<T, TKey> _repository;
-        private readonly IBusinessManager<T, TKey>? _businessManager;
+        private readonly IRepositoryBusinessManager<T, TKey>? _businessManager;
 
-        public Repository(IRepositoryPattern<T, TKey> repository, IBusinessManager<T, TKey>? businessManager = null)
+        public Repository(IRepositoryPattern<T, TKey> repository, IRepositoryBusinessManager<T, TKey>? businessManager = null)
         {
             _repository = repository;
             _businessManager = businessManager;

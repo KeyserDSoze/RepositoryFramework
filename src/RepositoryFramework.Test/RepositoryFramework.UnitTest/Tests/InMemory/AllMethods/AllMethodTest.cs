@@ -10,7 +10,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
 {
     public class AllMethodTest
     {
-        private static readonly IServiceProvider ServiceProvider;
+        private static readonly IServiceProvider? s_serviceProvider;
         static AllMethodTest()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
@@ -23,7 +23,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
                 .AddScoped<AnimalDatabase>()
                 .AddRepository<Animal, int, AnimalStorage>()
                 .Services
-                .Finalize(out ServiceProvider)
+                .Finalize(out s_serviceProvider)
                 .Populate();
         }
         private readonly IRepository<Animal, long> _animal;
@@ -31,8 +31,8 @@ namespace RepositoryFramework.UnitTest.AllMethods
 
         public AllMethodTest()
         {
-            _animal = ServiceProvider.GetService<IRepository<Animal, long>>()!;
-            _strangeKeyRepository = ServiceProvider.GetService<IRepository<Animal, AnimalKey>>()!;
+            _animal = s_serviceProvider!.GetService<IRepository<Animal, long>>()!;
+            _strangeKeyRepository = s_serviceProvider!.GetService<IRepository<Animal, AnimalKey>>()!;
         }
         [Fact]
         public async Task AllCommandsAndQueryAsync()
@@ -63,7 +63,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             Assert.Empty(items);
 
             var batchOperation = _animal.CreateBatchOperation();
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
                 batchOperation.AddInsert(i, new Animal { Id = i, Name = i.ToString() });
             await batchOperation.ExecuteAsync();
 
@@ -75,7 +75,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             Assert.Equal(8, page.Items.Last().Value.Id);
 
             batchOperation = _animal.CreateBatchOperation();
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
                 batchOperation.AddUpdate(i, new Animal { Id = i, Name = $"Animal {i}" });
             await batchOperation.ExecuteAsync();
 
@@ -84,7 +84,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             Assert.Equal("Animal 0", items.First().Value.Name);
 
             batchOperation = _animal.CreateBatchOperation();
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
                 batchOperation.AddDelete(i);
             await batchOperation.ExecuteAsync();
             items = await _animal.Where(x => x.Id > 0).QueryAsync().ToListAsync();
@@ -125,7 +125,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             Assert.Empty(items);
 
             var batchOperation = _strangeKeyRepository.CreateBatchOperation();
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
                 batchOperation.AddInsert(new(i), new Animal { Id = i, Name = i.ToString() });
             await batchOperation.ExecuteAsync();
 
@@ -137,7 +137,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             Assert.Equal(8, page.Items.Last().Value.Id);
 
             batchOperation = _strangeKeyRepository.CreateBatchOperation();
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
                 batchOperation.AddUpdate(new(i), new Animal { Id = i, Name = $"Animal {i}" });
             await batchOperation.ExecuteAsync();
 
@@ -146,7 +146,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             Assert.Equal("Animal 0", items.First().Value.Name);
 
             batchOperation = _strangeKeyRepository.CreateBatchOperation();
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
                 batchOperation.AddDelete(new(i));
             await batchOperation.ExecuteAsync();
             items = await _strangeKeyRepository.Where(x => x.Id > 0).QueryAsync().ToListAsync();

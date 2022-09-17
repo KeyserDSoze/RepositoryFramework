@@ -7,9 +7,9 @@ namespace RepositoryFramework.WebApi
         public string Id { get; set; } = null!;
         public string Name { get; set; } = null!;
     }
-    public class IperRepositoryBeforeInsertBusiness : IBusinessBeforeInsert<IperUser, string>
+    public class IperRepositoryBeforeInsertBusiness : IRepositoryBusinessBeforeInsert<IperUser, string>
     {
-        public Task<IEntity<IperUser, string>> InsertAsync(string key, IperUser value, CancellationToken cancellationToken = default)
+        public Task<IEntity<IperUser, string>> BeforeInsertAsync(string key, IperUser value, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(IEntity.Default(key, value));
         }
