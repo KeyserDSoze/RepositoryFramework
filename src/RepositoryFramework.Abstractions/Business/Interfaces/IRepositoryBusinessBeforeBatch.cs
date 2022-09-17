@@ -8,6 +8,6 @@
     public interface IRepositoryBusinessBeforeBatch<T, TKey>
         where TKey : notnull
     {
-        Task<BatchOperations<T, TKey>> BeforeBatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default);
+        Task<BatchResults<T, TKey>> BeforeBatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default);
     }
 }

@@ -8,6 +8,6 @@
     public interface IRepositoryBusinessAfterUpdate<T, TKey>
        where TKey : notnull
     {
-        Task<IState<T>> AfterUpdateAsync(IState<T> state, TKey key, T value, CancellationToken cancellationToken = default);
+        Task<IState<T>> AfterUpdateAsync(IState<T> state, IEntity<T, TKey> entity, CancellationToken cancellationToken = default);
     }
 }
