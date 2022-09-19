@@ -28,6 +28,6 @@ namespace RepositoryFramework
             Query query,
             CancellationToken cancellationToken = default)
            => _businessManager?.HasBusinessBeforeOperation == true || _businessManager?.HasBusinessAfterOperation == true ?
-                _businessManager.OperationAsync(_query, operation, query, cancellationToken) : _query.OperationAsync(operation, query, cancellationToken);
+                _businessManager.OperationAsync(_query, operation, query.Translate<T>(), cancellationToken) : _query.OperationAsync(operation, query.Translate<T>(), cancellationToken);
     }
 }

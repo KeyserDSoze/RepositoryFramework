@@ -6,7 +6,7 @@
            => app.Id;
         public static implicit operator AppUserKey(int app)
             => new(app);
-        public override string ToString() 
+        public override string ToString()
             => Id.ToString();
     }
 }

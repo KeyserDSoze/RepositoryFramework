@@ -11,7 +11,6 @@ namespace RepositoryFramework.InMemory
         public InMemoryStorage(RepositoryBehaviorSettings<T, TKey> settings)
         {
             _settings = settings;
-
         }
         private static ConcurrentDictionary<string, IEntity<T, TKey>> Values { get; } = new();
         internal static void AddValue(TKey key, T value)

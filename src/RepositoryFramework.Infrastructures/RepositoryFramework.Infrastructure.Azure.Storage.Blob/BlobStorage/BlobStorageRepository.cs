@@ -25,7 +25,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             if (await blobClient.ExistsAsync(cancellationToken).NoContext())
             {
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
-                return JsonSerializer.Deserialize<T>(blobData.Value.Content);
+                return JsonSerializer.Deserialize<BlobEntity>(blobData.Value.Content)!.Value;
             }
             return default;
         }
@@ -40,7 +40,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             var blobClient = _client.GetBlobClient(key!.ToString());
             var entityWithKey = IEntity.Default(key, value);
             var response = await blobClient.UploadAsync(new BinaryData(entityWithKey.ToJson()), cancellationToken).NoContext();
-            return IState.Default<T>(response.Value != null, value);
+            return IState.Default(response.Value != null, value);
         }
 
         public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
@@ -51,23 +51,33 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             var where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
             if (where != null)
                 predicate = where.AsExpression<T, bool>().Compile();
+            Dictionary<T, IEntity<T, TKey>> entities = new();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var blobClient = _client.GetBlobClient(blob.Name);
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
-                var item = JsonSerializer.Deserialize<IEntity<T, TKey>>(blobData.Value.Content)!;
-                if (!predicate.Invoke(item.Value))
+                var item = JsonSerializer.Deserialize<BlobEntity>(blobData.Value.Content);
+                if (!predicate.Invoke(item!.Value))
                     continue;
-                yield return item;
+                entities.Add(item.Value, item);
             }
+            foreach (var item in query.Filter(entities.Values.Select(x => x.Value)))
+                yield return entities[item];
+        }
+        private sealed class BlobEntity : IEntity<T, TKey>
+        {
+            public TKey Key { get; init; }
+
+            public T Value { get; init; }
         }
 
         public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            var response = await blobClient.UploadAsync(new BinaryData(JsonSerializer.Serialize(value)), true, cancellationToken).NoContext();
-            return IState.Default<T>(response.Value != null, value);
+            var entityWithKey = IEntity.Default(key, value);
+            var response = await blobClient.UploadAsync(new BinaryData(entityWithKey.ToJson()), true, cancellationToken).NoContext();
+            return IState.Default(response.Value != null, value);
         }
 
         public async ValueTask<TProperty> OperationAsync<TProperty>(
@@ -82,10 +92,10 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             var select = query.FirstSelect;
             return (await operation.ExecuteAsync(
                 () => items.Count,
-                null!,
+               () => items.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),
                 () => items.Select(x => select!.InvokeAndTransform<object>(x!)).Max(),
                 () => items.Select(x => select!.InvokeAndTransform<object>(x!)).Min(),
-                null!))!;
+                () => items.Average(x => select!.InvokeAndTransform<decimal>(x!))))!;
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {

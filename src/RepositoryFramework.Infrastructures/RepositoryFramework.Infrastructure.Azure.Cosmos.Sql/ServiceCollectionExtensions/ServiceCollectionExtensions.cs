@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
             CosmosSqlServiceClientFactory.Instance
                 .Add<T>(databaseName,
                         containerName ?? typeof(T).Name,
-                        navigationKey.ToString().Split('.').Last(),
+                        navigationKey.ToString().Split('.').Last().Split(',').First(),
                         connectionString,
                         clientOptions,
                         databaseOptions,
