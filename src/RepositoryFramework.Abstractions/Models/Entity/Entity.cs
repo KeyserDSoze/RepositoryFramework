@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    internal class Entity<T, TKey> : IEntity<T, TKey>
+    internal sealed class Entity<T, TKey> : IEntity<T, TKey>
         where TKey : notnull
     {
         public TKey Key { get; }

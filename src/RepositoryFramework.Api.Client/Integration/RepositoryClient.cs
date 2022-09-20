@@ -62,7 +62,7 @@ namespace RepositoryFramework.Api.Client
             var value = query.Serialize();
             var response = await client.PostAsJsonAsync(nameof(RepositoryMethods.Query), value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<List<Entity<T, TKey>>>(cancellationToken: cancellationToken).NoContext();
+            var result = await response.Content.ReadFromJsonAsync<List<HttpClientEntity<T, TKey>>>(cancellationToken: cancellationToken).NoContext();
             if (result != null)
                 foreach (var item in result)
                     if (!cancellationToken.IsCancellationRequested)
