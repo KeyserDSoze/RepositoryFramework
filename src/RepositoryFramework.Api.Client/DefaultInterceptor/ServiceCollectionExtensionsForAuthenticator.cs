@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddApiClientAuthorizationInterceptor(this IServiceCollection services,
+        public static IServiceCollection AddDefaultAuthorizationInterceptorForApiHttpClient(this IServiceCollection services,
             Action<AuthenticatorSettings>? settings = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">Settings.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryBuilder<T, TKey> AddApiClientSpecificAuthorizationInterceptor<T, TKey>(
+        public static IRepositoryBuilder<T, TKey> AddCustomAuthorizationInterceptorForApiHttpClient<T, TKey>(
             this IRepositoryBuilder<T, TKey> builder,
             Action<AuthenticatorSettings<T>>? settings = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)

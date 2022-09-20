@@ -1,4 +1,6 @@
-﻿using RepositoryFramework;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
+using RepositoryFramework;
 using RepositoryFramework.WebApi;
 using RepositoryFramework.WebApi.Models;
 
@@ -8,7 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 //.PopulateWithRandomData(x => x.Email!, 120, 5)
 // Sections of code should not be commented out
 //.WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
-builder.Services.AddRepository<IperUser, string, IperRepositoryStorage>()
+//builder.Services.AddRepository<IperUser, string, IperRepositoryStorage>()
+var configurationSection = builder.Configuration.GetSection("AzureAd");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(configurationSection);
+
+builder.Services.AddRepositoryInMemoryStorage<IperUser, string>()
     .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>()
     .WithInMemoryCache(x =>
     {
@@ -24,7 +31,25 @@ builder.Services.AddRepositoryInMemoryStorage<SuperiorUser, string>()
 builder.Services.AddRepositoryInMemoryStorage<Animal, AnimalKey>();
 builder.Services.AddRepositoryInMemoryStorage<Car, Guid>();
 builder.Services.AddRepositoryInMemoryStorage<Car2, Range>();
-
+builder.Services.AddApiFromRepositoryFramework(x =>
+{
+    x.Name = "Repository Api";
+    x.HasSwagger = true;
+    x.HasDocumentation = true;
+    x.Identity.AuthorizationUrl = new Uri($"{builder.Configuration["AzureAd:Instance"]}{builder.Configuration["AzureAd:TenantId"]}/oauth2/v2.0/authorize");
+    x.Identity.TokenUrl = new Uri($"{builder.Configuration["AzureAd:Instance"]}{builder.Configuration["AzureAd:TenantId"]}/oauth2/v2.0/token");
+    x.Identity.ClientId = builder.Configuration["AzureAd:ClientId"];
+    x.Identity.Scopes.AddRange(builder.Configuration["AzureAd:Scopes"].Split(' ')
+        .Select(x => new ApiIdentityScopeSettings()
+        {
+            Value = x,
+            Description = x
+        }));
+});
+builder.Services
+    .AddAuthorization()
+    .AddServerSideBlazor(opts => opts.DetailedErrors = true)
+    .AddMicrosoftIdentityConsentHandler();
 //builder.Services
 //    .AddRepositoryInTableStorage<User, string>(builder.Configuration["ConnectionString:Storage"]);
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -53,24 +78,18 @@ builder.Services
     .AddRepositoryInCosmosSql<User, string>(
     builder.Configuration["ConnectionString:CosmosSql"],
     "BigDatabase");
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
 #pragma warning restore S125 // Sections of code should not be commented out
 
 var app = builder.Build();
 app.Services.Populate();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
-app.AddApiForRepositoryFramework()
-    .WithNoAuthorization();
+app.UseApiFromRepositoryFramework()
+    .WithDefaultAuthorization();
 
+app.UseAuthentication();
+app.UseAuthorization();
 #pragma warning disable S125 // Sections of code should not be commented out
 //.SetPolicy(RepositoryMethod.Query)
 //.Empty()

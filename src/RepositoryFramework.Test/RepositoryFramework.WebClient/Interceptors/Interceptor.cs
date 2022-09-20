@@ -10,7 +10,7 @@ namespace RepositoryFramework.WebClient.Interceptors
     }
     public class SpecificInterceptor : IRepositoryClientInterceptor<User>
     {
-        public Task<HttpClient> EnrichAsync(HttpClient client, RepositoryMethods path) 
+        public Task<HttpClient> EnrichAsync(HttpClient client, RepositoryMethods path)
             => Task.FromResult(client);
     }
 }

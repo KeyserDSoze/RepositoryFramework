@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework.UnitTest.InMemory.RandomPopulation.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
     //https://github.com/moodmosaic/Fare/tree/master/Src/Fare
     public class RandomCreationTest
     {
-        private static readonly IServiceProvider ServiceProvider;
+        private static readonly IServiceProvider s_serviceProvider;
         static RandomCreationTest()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
@@ -114,7 +114,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
                 .WithValue(x => x.J, () =>
                 {
                     List<InnerDelegationPopulation> inners = new();
-                    for (int i = 0; i < 10; i++)
+                    for (var i = 0; i < 10; i++)
                     {
                         inners.Add(new InnerDelegationPopulation()
                         {
@@ -133,7 +133,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
                 .PopulateWithRandomData(x => x.Id)
                 .WithAutoIncrement(x => x.Id, 1)
                 .Services
-                .Finalize(out ServiceProvider)
+                .Finalize(out s_serviceProvider)
                 .Populate();
         }
         private readonly IRepository<PopulationTest, string> _test;
@@ -144,11 +144,11 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
 
         public RandomCreationTest()
         {
-            _test = ServiceProvider.GetService<IRepository<PopulationTest, string>>()!;
-            _population = ServiceProvider.GetService<IRepository<RegexPopulationTest, string>>()!;
-            _delegation = ServiceProvider.GetService<IQueryPattern<DelegationPopulation, string>>()!;
-            _autoincrementRepository = ServiceProvider.GetService<IRepository<AutoincrementModel, int>>()!;
-            _autoincrementRepository2 = ServiceProvider.GetService<IRepository<AutoincrementModel2, int>>()!;
+            _test = s_serviceProvider.GetService<IRepository<PopulationTest, string>>()!;
+            _population = s_serviceProvider.GetService<IRepository<RegexPopulationTest, string>>()!;
+            _delegation = s_serviceProvider.GetService<IQueryPattern<DelegationPopulation, string>>()!;
+            _autoincrementRepository = s_serviceProvider.GetService<IRepository<AutoincrementModel, int>>()!;
+            _autoincrementRepository2 = s_serviceProvider.GetService<IRepository<AutoincrementModel2, int>>()!;
         }
         [Fact]
         public async Task TestWithoutRegexAsync()
@@ -355,7 +355,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
             Assert.Equal(10, theFirst?.W?.Length);
             Assert.NotNull(theFirst?.J);
             Assert.Equal(10, theFirst?.J?.Count);
-            int counter = 0;
+            var counter = 0;
             foreach (var check in theFirst!.J!)
             {
                 Assert.Equal(counter.ToString(), check.A);

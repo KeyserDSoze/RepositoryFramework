@@ -15,10 +15,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="T">Model of your repository or CQRS that you want to add as api</typeparam>
         /// <param name="app">IEndpointRouteBuilder</param>
-        /// <param name="startingPath">By default is "api", but you can choose your path. https://{your domain}/{startingPath}</param>
         /// <returns>ApiAuthorizationBuilder</returns>
-        public static ApiAuthorizationBuilder AddApiForRepository<T>(this IEndpointRouteBuilder app, string startingPath = "api")
-            => new(authorization => app.AddApiForRepository(typeof(T), startingPath, authorization));
+        public static ApiAuthorizationBuilder UseApiFromRepository<T>(this IEndpointRouteBuilder app)
+        {
+            var serviceProvider = app.ServiceProvider.CreateScope().ServiceProvider;
+            var settings = serviceProvider.GetService<ApiSettings>()!;
+            if (settings.HasSwagger && app is IApplicationBuilder applicationBuilder)
+                applicationBuilder.UseSwaggerUiForRepository(settings);
+            return new(authorization => app.UseApiFromRepository(typeof(T), settings, authorization));
+        }
 
         /// <summary>
         /// Add all repository or CQRS services injected as api.
@@ -27,14 +32,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="app">IEndpointRouteBuilder</param>
         /// <param name="startingPath">By default is "api", but you can choose your path. https://{your domain}/{startingPath}</param>
         /// <returns>ApiAuthorizationBuilder</returns>
-        public static ApiAuthorizationBuilder AddApiForRepositoryFramework<TEndpointRouteBuilder>(this TEndpointRouteBuilder app,
-            string startingPath = "api")
+        public static ApiAuthorizationBuilder UseApiFromRepositoryFramework<TEndpointRouteBuilder>(
+            this TEndpointRouteBuilder app)
             where TEndpointRouteBuilder : IEndpointRouteBuilder
         => new(authorization =>
                 {
                     var services = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
+                    var settings = app.ServiceProvider.GetService<ApiSettings>()!;
+                    if (settings.HasSwagger && app is IApplicationBuilder applicationBuilder)
+                        applicationBuilder.UseSwaggerUiForRepository(settings);
                     foreach (var service in services!.Services.Where(x => !x.NotExposableAsApi))
-                        _ = app.AddApiForRepository(service.ModelType, startingPath, authorization);
+                        _ = app.UseApiFromRepository(service.ModelType, settings, authorization);
                     return app;
                 });
 
@@ -52,7 +60,11 @@ namespace Microsoft.Extensions.DependencyInjection
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "I need reflection in this point to allow the creation of T methods at runtime.")]
-        private static TEndpointRouteBuilder AddApiForRepository<TEndpointRouteBuilder>(this TEndpointRouteBuilder app, Type modelType, string startingPath = "api", ApiAuthorization? authorization = null)
+        private static TEndpointRouteBuilder UseApiFromRepository<TEndpointRouteBuilder>(
+            this TEndpointRouteBuilder app,
+            Type modelType,
+            ApiSettings settings,
+            ApiAuthorization? authorization)
             where TEndpointRouteBuilder : IEndpointRouteBuilder
         {
             var registry = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
@@ -79,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                         _ = typeof(EndpointRouteBuilderExtensions).GetMethod(currentMethodName, BindingFlags.NonPublic | BindingFlags.Static)!
                            .MakeGenericMethod(modelType, serviceValue.KeyType, interfaceType)
-                           .Invoke(null, new object[] { app, modelType.Name, startingPath, authorization! });
+                           .Invoke(null, new object[] { app, modelType.Name, settings.StartingPath, authorization! });
                         configuredMethods.Add(currentMethodName, true);
                     }
                 }
@@ -109,7 +121,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     var options = query.DeserializeAndTranslate<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
                     return await queryService!.QueryAsync(options).ToListAsync().NoContext();
-
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Query);
         }
