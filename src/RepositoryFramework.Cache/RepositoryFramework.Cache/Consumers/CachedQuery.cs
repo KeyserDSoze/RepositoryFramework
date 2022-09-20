@@ -29,7 +29,7 @@ namespace RepositoryFramework.Cache
         {
             if (key is IKey customKey)
                 return $"{method}_{_cacheName}_{customKey.AsString()}";
-            return $"{method}_{_cacheName}_{key.ToString()}";
+            return $"{method}_{_cacheName}_{key}";
         }
         private protected Task RemoveExistAndGetCacheAsync(TKey key, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
         {
