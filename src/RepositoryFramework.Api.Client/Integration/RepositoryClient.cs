@@ -33,7 +33,7 @@ namespace RepositoryFramework.Api.Client
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Delete).NoContext();
             var keyAsString = s_hasProperties ? key.ToJson() : key.ToString();
-            return (await client.GetFromJsonAsync<IState<T>>($"{nameof(RepositoryMethods.Delete)}?key={keyAsString}", cancellationToken).NoContext())!;
+            return (await client.GetFromJsonAsync<HttpClientState<T>>($"{nameof(RepositoryMethods.Delete)}?key={keyAsString}", cancellationToken).NoContext())!;
         }
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
@@ -45,7 +45,7 @@ namespace RepositoryFramework.Api.Client
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Exist).NoContext();
             var keyAsString = s_hasProperties ? key.ToJson() : key.ToString();
-            return (await client.GetFromJsonAsync<IState<T>>($"{nameof(RepositoryMethods.Exist)}?key={keyAsString}", cancellationToken).NoContext())!;
+            return (await client.GetFromJsonAsync<HttpClientState<T>>($"{nameof(RepositoryMethods.Exist)}?key={keyAsString}", cancellationToken).NoContext())!;
         }
         public async Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
@@ -53,7 +53,7 @@ namespace RepositoryFramework.Api.Client
             var keyAsString = s_hasProperties ? key.ToJson() : key.ToString();
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Insert)}?key={keyAsString}", value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            return (await response!.Content.ReadFromJsonAsync<IState<T>>(cancellationToken: cancellationToken).NoContext())!;
+            return (await response!.Content.ReadFromJsonAsync<HttpClientState<T>>(cancellationToken: cancellationToken).NoContext())!;
         }
         public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -62,7 +62,7 @@ namespace RepositoryFramework.Api.Client
             var value = query.Serialize();
             var response = await client.PostAsJsonAsync(nameof(RepositoryMethods.Query), value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<List<IEntity<T, TKey>>>(cancellationToken: cancellationToken).NoContext();
+            var result = await response.Content.ReadFromJsonAsync<List<Entity<T, TKey>>>(cancellationToken: cancellationToken).NoContext();
             if (result != null)
                 foreach (var item in result)
                     if (!cancellationToken.IsCancellationRequested)
@@ -95,7 +95,7 @@ namespace RepositoryFramework.Api.Client
             var keyAsString = s_hasProperties ? key.ToJson() : key.ToString();
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Update)}?key={keyAsString}", value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            return (await response.Content.ReadFromJsonAsync<IState<T>>(cancellationToken: cancellationToken).NoContext())!;
+            return (await response.Content.ReadFromJsonAsync<HttpClientState<T>>(cancellationToken: cancellationToken).NoContext())!;
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
