@@ -13,26 +13,42 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
     {
         private readonly Container _client;
         private readonly PropertyInfo[] _properties;
+        private readonly CosmosOptions<T, TKey> _settings;
 
-        public CosmosSqlRepository(CosmosSqlServiceClientFactory clientFactory)
+        public CosmosSqlRepository(CosmosSqlServiceClientFactory clientFactory, CosmosOptions<T, TKey> settings)
         {
             (_client, _properties) = clientFactory.Get(typeof(T).Name);
+            _settings = settings;
+        }
+        private static string GetKeyAsString(TKey key)
+        {
+            if (key is IKey customKey)
+                return customKey.AsString();
+            return key.ToString()!;
         }
         public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var response = await _client.DeleteItemAsync<T>(key.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
+            var keyAsString = GetKeyAsString(key);
+            var response = await _client.DeleteItemAsync<T>(keyAsString, new PartitionKey(keyAsString), cancellationToken: cancellationToken).NoContext();
             return IState.Default<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent);
         }
 
         public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
-            return IState.Default<T>(response.StatusCode == HttpStatusCode.OK);
+            var keyAsString = GetKeyAsString(key);
+            var parameterizedQuery = new QueryDefinition(
+                query: _settings.ExistQuery
+            )
+            .WithParameter("@id", keyAsString);
+            using var filteredFeed = _client.GetItemQueryIterator<T>(queryDefinition: parameterizedQuery);
+            var response = await filteredFeed.ReadNextAsync(cancellationToken);
+            return IState.Default<T>(response.Any());
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var response = await _client.ReadItemAsync<T>(key!.ToString(), new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
+            var keyAsString = GetKeyAsString(key);
+            var response = await _client.ReadItemAsync<T>(keyAsString, new PartitionKey(keyAsString), cancellationToken: cancellationToken).NoContext();
             if (response.StatusCode == HttpStatusCode.OK)
                 return response.Resource;
             else
@@ -40,11 +56,12 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         }
         public async Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
+            var keyAsString = GetKeyAsString(key);
             var flexible = new ExpandoObject();
-            flexible.TryAdd("id", key.ToString());
+            flexible.TryAdd("id", keyAsString);
             foreach (var property in _properties)
                 flexible.TryAdd(property.Name, property.GetValue(value));
-            var response = await _client.CreateItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
+            var response = await _client.CreateItemAsync(flexible, new PartitionKey(keyAsString), cancellationToken: cancellationToken).NoContext();
             return IState.Default(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
         }
 
@@ -79,11 +96,12 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         }
         public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
+            var keyAsString = GetKeyAsString(key);
             var flexible = new ExpandoObject();
-            flexible.TryAdd("id", key.ToString());
+            flexible.TryAdd("id", keyAsString);
             foreach (var property in _properties)
                 flexible.TryAdd(property.Name, property.GetValue(value));
-            var response = await _client.UpsertItemAsync(flexible, new PartitionKey(key.ToString()), cancellationToken: cancellationToken).NoContext();
+            var response = await _client.UpsertItemAsync(flexible, new PartitionKey(keyAsString), cancellationToken: cancellationToken).NoContext();
             return IState.Default<T>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)

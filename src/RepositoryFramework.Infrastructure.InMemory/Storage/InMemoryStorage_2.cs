@@ -12,9 +12,15 @@ namespace RepositoryFramework.InMemory
         {
             _settings = settings;
         }
+        private static string GetKeyAsString(TKey key)
+        {
+            if (key is IKey customKey)
+                return customKey.AsString();
+            return key.ToString()!;
+        }
         private static ConcurrentDictionary<string, IEntity<T, TKey>> Values { get; } = new();
         internal static void AddValue(TKey key, T value)
-            => Values.TryAdd(key.AsString(), IEntity.Default(key, value));
+            => Values.TryAdd(GetKeyAsString(key), IEntity.Default(key, value));
         private static int GetRandomNumber(Range range)
         {
             var maxPlusOne = range.End.Value + 1 - range.Start.Value;
@@ -69,7 +75,7 @@ namespace RepositoryFramework.InMemory
         public Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Delete, () =>
             {
-                var keyAsString = key.AsString();
+                var keyAsString = GetKeyAsString(key);
                 if (Values.ContainsKey(keyAsString))
                     return SetState(Values.TryRemove(keyAsString, out _));
                 return SetState(false);
@@ -89,7 +95,7 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    var keyAsString = key.AsString();
+                    var keyAsString = GetKeyAsString(key);
                     return Values.ContainsKey(keyAsString) ? Values[keyAsString].Value : default;
                 }
                 else
@@ -103,7 +109,7 @@ namespace RepositoryFramework.InMemory
         public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Insert, () =>
             {
-                var keyAsString = key.AsString();
+                var keyAsString = GetKeyAsString(key);
                 if (!Values.ContainsKey(keyAsString))
                 {
                     Values.TryAdd(keyAsString, IEntity.Default(key, value));
@@ -116,7 +122,7 @@ namespace RepositoryFramework.InMemory
         public Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Update, () =>
             {
-                var keyAsString = key.AsString();
+                var keyAsString = GetKeyAsString(key);
                 if (Values.ContainsKey(keyAsString))
                 {
                     Values[keyAsString] = IEntity.Default(key, value);
@@ -185,7 +191,7 @@ namespace RepositoryFramework.InMemory
         public Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => ExecuteAsync(RepositoryMethods.Exist, () =>
             {
-                var keyAsString = key.AsString();
+                var keyAsString = GetKeyAsString(key);
                 return SetState(Values.ContainsKey(keyAsString));
             }, cancellationToken);
 

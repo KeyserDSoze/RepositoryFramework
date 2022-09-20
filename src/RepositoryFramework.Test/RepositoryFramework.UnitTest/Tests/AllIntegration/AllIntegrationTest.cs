@@ -43,7 +43,6 @@ namespace RepositoryFramework.UnitTest.Repository
                     break;
                 case "cosmos":
                     services.AddRepositoryInCosmosSql<AppUser, AppUserKey>(
-                        x => x.Id,
                         configuration["ConnectionString:CosmosSql"],
                         "unittestdatabase");
                     break;

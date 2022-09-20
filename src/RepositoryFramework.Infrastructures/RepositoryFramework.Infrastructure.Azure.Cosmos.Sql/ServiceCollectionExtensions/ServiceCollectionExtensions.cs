@@ -26,7 +26,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> AddRepositoryInCosmosSql<T, TKey>(
            this IServiceCollection services,
-           Expression<Func<T, TKey>> navigationKey,
            string connectionString,
            string databaseName,
            string? containerName = null,
@@ -38,11 +37,12 @@ namespace Microsoft.Extensions.DependencyInjection
             CosmosSqlServiceClientFactory.Instance
                 .Add<T>(databaseName,
                         containerName ?? typeof(T).Name,
-                        navigationKey.ToString().Split('.').Last().Split(',').First(),
+                        "id",
                         connectionString,
                         clientOptions,
                         databaseOptions,
                         containerOptions);
+            services.AddSingleton(new CosmosOptions<T, TKey>(containerName ?? typeof(T).Name));
             services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
             return services.AddRepository<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
         }

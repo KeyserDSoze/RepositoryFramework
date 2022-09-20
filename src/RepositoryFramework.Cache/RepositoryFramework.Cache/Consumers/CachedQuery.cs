@@ -25,10 +25,16 @@ namespace RepositoryFramework.Cache
             DistributedCacheOptions = distributedCacheOptions ?? DistributedCacheOptions<T, TKey>.Default;
             _cacheName = typeof(T).Name;
         }
+        private string GetKeyAsString(RepositoryMethods method, TKey key)
+        {
+            if (key is IKey customKey)
+                return $"{method}_{_cacheName}_{customKey.AsString()}";
+            return $"{method}_{_cacheName}_{key.ToString()}";
+        }
         private protected Task RemoveExistAndGetCacheAsync(TKey key, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
         {
-            var existKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Exist)}_{_cacheName}");
-            var getKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Get)}_{_cacheName}");
+            var existKeyAsString = GetKeyAsString(RepositoryMethods.Exist, key);
+            var getKeyAsString = GetKeyAsString(RepositoryMethods.Get, key);
             List<Task> toDelete = new();
             if (inMemory && Cache != null)
             {
@@ -48,8 +54,8 @@ namespace RepositoryFramework.Cache
         }
         private protected Task UpdateExistAndGetCacheAsync(TKey key, T value, IState<T> state, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
         {
-            var existKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Exist)}_{_cacheName}");
-            var getKeyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Get)}_{_cacheName}");
+            var existKeyAsString = GetKeyAsString(RepositoryMethods.Exist, key);
+            var getKeyAsString = GetKeyAsString(RepositoryMethods.Get, key);
             List<Task> toUpdate = new();
             if (Cache != null || Distributed != null)
             {
@@ -66,7 +72,7 @@ namespace RepositoryFramework.Cache
         }
         public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var keyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Exist)}_{_cacheName}");
+            var keyAsString = GetKeyAsString(RepositoryMethods.Exist, key);
             var value = await RetrieveValueAsync(RepositoryMethods.Exist, keyAsString,
                 () => Query.ExistAsync(key, cancellationToken)!,
                 null, cancellationToken).NoContext();
@@ -82,7 +88,7 @@ namespace RepositoryFramework.Cache
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var keyAsString = key.AsStringWithPrefix($"{nameof(RepositoryMethods.Get)}_{_cacheName}");
+            var keyAsString = GetKeyAsString(RepositoryMethods.Get, key);
             var value = await RetrieveValueAsync<T?>(RepositoryMethods.Get, keyAsString,
                 () => Query.GetAsync(key, cancellationToken),
                 null, cancellationToken).NoContext();
