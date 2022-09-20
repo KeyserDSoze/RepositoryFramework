@@ -51,7 +51,6 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //});
 builder.Services
     .AddRepositoryInCosmosSql<User, string>(
-    x => x.Email!,
     builder.Configuration["ConnectionString:CosmosSql"],
     "BigDatabase");
 builder.Services.AddEndpointsApiExplorer();
