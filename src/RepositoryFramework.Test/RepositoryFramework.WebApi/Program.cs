@@ -36,15 +36,7 @@ builder.Services.AddApiFromRepositoryFramework(x =>
     x.Name = "Repository Api";
     x.HasSwagger = true;
     x.HasDocumentation = true;
-    x.Identity.AuthorizationUrl = new Uri($"{builder.Configuration["AzureAd:Instance"]}{builder.Configuration["AzureAd:TenantId"]}/oauth2/v2.0/authorize");
-    x.Identity.TokenUrl = new Uri($"{builder.Configuration["AzureAd:Instance"]}{builder.Configuration["AzureAd:TenantId"]}/oauth2/v2.0/token");
-    x.Identity.ClientId = builder.Configuration["AzureAd:ClientId"];
-    x.Identity.Scopes.AddRange(builder.Configuration["AzureAd:Scopes"].Split(' ')
-        .Select(x => new ApiIdentityScopeSettings()
-        {
-            Value = x,
-            Description = x
-        }));
+    x.Identity.ConfigureAzureActiveDirectory(builder.Configuration);
 });
 builder.Services
     .AddAuthorization()
