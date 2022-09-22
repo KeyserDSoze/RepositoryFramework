@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace RepositoryFramework
 {
@@ -174,6 +175,35 @@ namespace RepositoryFramework
         /// <returns>List<<typeparamref name="T"/>></returns>
         public ValueTask<List<IEntity<T, TKey>>> ToListAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_operations, cancellationToken).ToListAsync(cancellationToken);
+        /// <summary>
+        /// List the query without TKey.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>List<<typeparamref name="T"/>></returns>
+        public async ValueTask<List<T>> ToListAsEntityAsync(CancellationToken cancellationToken = default)
+        {
+            List<T> entities = new();
+            await foreach (var entity in _query.QueryAsync(_operations, cancellationToken))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                entities.Add(entity.Value);
+            }
+            return entities;
+        }
+        /// <summary>
+        /// Call query method in your Repository and retrieve entity without TKey.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>IAsyncEnumerable<<typeparamref name="T"/>></returns>
+        public async IAsyncEnumerable<T> QueryAsEntityAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var entity in _query.QueryAsync(_operations, cancellationToken))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                yield return entity.Value;
+            }
+        }
+
         /// <summary>
         /// Call query method in your Repository.
         /// </summary>
