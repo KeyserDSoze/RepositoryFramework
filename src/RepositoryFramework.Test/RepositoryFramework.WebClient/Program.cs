@@ -13,8 +13,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddRepositoryApiClient<User, string>("localhost:7058",
-    serviceLifetime: ServiceLifetime.Scoped);
+builder.Services.AddRepositoryApiClient<User, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryApiClient<SuperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryApiClient<IperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
 builder.Services.AddRepositoryApiClient<Animal, AnimalKey>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);

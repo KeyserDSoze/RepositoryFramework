@@ -1,6 +1,4 @@
 ﻿using System.Linq.Expressions;
-using System.Reflection;
-using System.Text.Json;
 
 namespace RepositoryFramework
 {
@@ -35,7 +33,8 @@ namespace RepositoryFramework
         }
         internal Query Where(LambdaExpression expression)
         {
-            Operations.Add(new LambdaQueryOperation(QueryOperations.Where, expression));
+            if (expression != null)
+                Operations.Add(new LambdaQueryOperation(QueryOperations.Where, expression));
             return this;
         }
         internal Query Take(int top)
@@ -50,32 +49,38 @@ namespace RepositoryFramework
         }
         internal Query OrderBy(LambdaExpression expression)
         {
-            Operations.Add(new LambdaQueryOperation(QueryOperations.OrderBy, expression));
+            if (expression != null)
+                Operations.Add(new LambdaQueryOperation(QueryOperations.OrderBy, expression));
             return this;
         }
         internal Query OrderByDescending(LambdaExpression expression)
         {
-            Operations.Add(new LambdaQueryOperation(QueryOperations.OrderByDescending, expression));
+            if (expression != null)
+                Operations.Add(new LambdaQueryOperation(QueryOperations.OrderByDescending, expression));
             return this;
         }
         internal Query ThenBy(LambdaExpression expression)
         {
-            Operations.Add(new LambdaQueryOperation(QueryOperations.ThenBy, expression));
+            if (expression != null)
+                Operations.Add(new LambdaQueryOperation(QueryOperations.ThenBy, expression));
             return this;
         }
         internal Query ThenByDescending(LambdaExpression expression)
         {
-            Operations.Add(new LambdaQueryOperation(QueryOperations.ThenByDescending, expression));
+            if (expression != null)
+                Operations.Add(new LambdaQueryOperation(QueryOperations.ThenByDescending, expression));
             return this;
         }
         internal Query GroupBy(LambdaExpression expression)
         {
-            Operations.Add(new LambdaQueryOperation(QueryOperations.GroupBy, expression));
+            if (expression != null)
+                Operations.Add(new LambdaQueryOperation(QueryOperations.GroupBy, expression));
             return this;
         }
         internal Query Select(LambdaExpression expression)
         {
-            Operations.Add(new LambdaQueryOperation(QueryOperations.Select, expression));
+            if (expression != null)
+                Operations.Add(new LambdaQueryOperation(QueryOperations.Select, expression));
             return this;
         }
         public IQueryable<T> Filter<T>(IEnumerable<T> enumerable)
@@ -86,15 +91,15 @@ namespace RepositoryFramework
         {
             foreach (var operation in Operations)
             {
-                if (operation is LambdaQueryOperation lambda)
+                if (operation is LambdaQueryOperation lambda && lambda.Expression != null)
                 {
                     queryable = lambda.Operation switch
                     {
-                        QueryOperations.Where => queryable.Where(lambda.Expression!.AsExpression<T, bool>()).AsQueryable(),
-                        QueryOperations.OrderBy => queryable.OrderBy(lambda.Expression!),
-                        QueryOperations.OrderByDescending => queryable.OrderByDescending(lambda.Expression!),
-                        QueryOperations.ThenBy => (queryable as IOrderedQueryable<T>)!.ThenBy(lambda.Expression!),
-                        QueryOperations.ThenByDescending => (queryable as IOrderedQueryable<T>)!.ThenByDescending(lambda.Expression!),
+                        QueryOperations.Where => queryable.Where(lambda.Expression.AsExpression<T, bool>()).AsQueryable(),
+                        QueryOperations.OrderBy => queryable.OrderBy(lambda.Expression),
+                        QueryOperations.OrderByDescending => queryable.OrderByDescending(lambda.Expression),
+                        QueryOperations.ThenBy => (queryable as IOrderedQueryable<T>)!.ThenBy(lambda.Expression),
+                        QueryOperations.ThenByDescending => (queryable as IOrderedQueryable<T>)!.ThenByDescending(lambda.Expression),
                         _ => queryable,
                     };
                 }
@@ -117,8 +122,9 @@ namespace RepositoryFramework
         public IQueryable<dynamic> FilterAsSelect<T>(IEnumerable<T> enumerable)
         {
             IQueryable<dynamic>? queryable = null;
-            foreach (var item in Operations.Where(x => x.Operation == QueryOperations.Select))
-                queryable = enumerable.AsQueryable().Select((item as LambdaQueryOperation)!.Expression!);
+            foreach (var lambda in Operations.Where(x => x.Operation == QueryOperations.Select).Select(x => x as LambdaQueryOperation))
+                if (lambda?.Expression != null)
+                    queryable = enumerable.AsQueryable().Select(lambda.Expression);
             return queryable ?? enumerable.Select(x => (dynamic)x!).AsQueryable();
         }
         public IQueryable<dynamic> FilterAsSelect<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)

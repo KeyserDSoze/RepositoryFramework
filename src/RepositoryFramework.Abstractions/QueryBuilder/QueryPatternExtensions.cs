@@ -175,7 +175,6 @@ namespace System.Linq
             int pageSize,
             CancellationToken cancellationToken = default)
             where TKey : notnull
-
            => new QueryBuilder<T, TKey>(query).PageAsync(page, pageSize, cancellationToken);
         /// <summary>
         /// List the query.
@@ -187,7 +186,6 @@ namespace System.Linq
         public static ValueTask<List<IEntity<T, TKey>>> ToListAsync<T, TKey>(this IQueryPattern<T, TKey> query,
             CancellationToken cancellationToken = default)
             where TKey : notnull
-
            => new QueryBuilder<T, TKey>(query).ToListAsync(cancellationToken);
         /// <summary>
         /// Count the items by your query.
