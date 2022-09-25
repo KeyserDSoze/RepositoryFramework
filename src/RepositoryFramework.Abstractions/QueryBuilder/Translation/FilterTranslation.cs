@@ -46,7 +46,7 @@ namespace RepositoryFramework
         private readonly Dictionary<string, TranslationWrapper> _translations = new();
         public bool HasTranslation<T>()
             => _translations.ContainsKey(typeof(T).FullName!);
-        private static Regex VariableName(string prefix) => new($@".{prefix}[^a-zA-Z0-9@_\.]{{1}}");
+        private static Regex VariableName(string prefix) => new($@"\.{prefix}[^a-zA-Z0-9@_\.]{{1}}");
         public void With<T, TTranslated, TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
             var name = typeof(T).FullName!;
