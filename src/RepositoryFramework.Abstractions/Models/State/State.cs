@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    internal sealed class State<T> : IState<T>
+    public sealed class State<T> : IState<T>
     {
         public bool IsOk { get; }
         public T? Value { get; }
