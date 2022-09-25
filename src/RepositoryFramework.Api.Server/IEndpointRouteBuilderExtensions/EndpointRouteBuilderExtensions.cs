@@ -118,7 +118,7 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Query)}",
                 async ([FromBody] SerializableQuery query, [FromServices] TService service) =>
                 {
-                    var options = query.DeserializeAndTranslate<T>();
+                    var options = query.Deserialize<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
                     return await queryService!.QueryAsync(options).ToListAsync().NoContext();
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
@@ -131,7 +131,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 async ([FromQuery] Operations op, [FromQuery] string? returnType,
                     [FromBody] SerializableQuery query, [FromServices] TService service) =>
                 {
-                    var options = query.DeserializeAndTranslate<T>();
+                    var options = query.Deserialize<T>();
                     var type = CalculateTypeFromQuery();
                     var queryService = service as IQueryPattern<T, TKey>;
                     var result = await Generics.WithStatic(
