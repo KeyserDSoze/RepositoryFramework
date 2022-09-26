@@ -9,6 +9,6 @@
     public interface IRepositoryBusinessBeforeQuery<T, TKey>
         where TKey : notnull
     {
-        Task<FilterExpression> BeforeQueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default);
+        Task<IFilterExpression> BeforeQueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default);
     }
 }

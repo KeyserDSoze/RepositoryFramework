@@ -158,11 +158,11 @@ namespace Microsoft.Extensions.DependencyInjection
         private static ValueTask<TProperty> GetResultFromOperation<T, TKey, TProperty>(
             IQueryPattern<T, TKey> queryService,
             Operations operations,
-            FilterExpression options)
+            IFilterExpression filter)
             where TKey : notnull
             => queryService.OperationAsync(
                 new OperationType<TProperty> { Operation = operations },
-                options);
+                filter);
         private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {

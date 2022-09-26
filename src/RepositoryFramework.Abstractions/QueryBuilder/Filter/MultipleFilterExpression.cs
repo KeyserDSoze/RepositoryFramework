@@ -2,7 +2,7 @@
 
 namespace RepositoryFramework
 {
-    public sealed class MultipleFilterExpression : IFilterExpression
+    internal sealed class MultipleFilterExpression : IFilterExpression
     {
         public IFilterExpression FilterByType<T>()
         {

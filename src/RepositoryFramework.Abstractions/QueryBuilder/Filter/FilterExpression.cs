@@ -2,7 +2,7 @@
 
 namespace RepositoryFramework
 {
-    public sealed class FilterExpression : IFilterExpression
+    internal sealed class FilterExpression : IFilterExpression
     {
         public static FilterExpression Empty => new();
         public List<FilteringOperation> Operations { get; } = new();
@@ -31,53 +31,53 @@ namespace RepositoryFramework
                 return ToSerializableQuery().DeserializeAndTranslate<T>();
             return this;
         }
-        internal FilterExpression Where(LambdaExpression expression)
+        internal IFilterExpression Where(LambdaExpression expression)
         {
             if (expression != null)
                 Operations.Add(new LambdaFilterOperation(FilterOperations.Where, expression));
             return this;
         }
-        internal FilterExpression Take(int top)
+        internal IFilterExpression Take(int top)
         {
             Operations.Add(new ValueFilterOperation(FilterOperations.Top, top));
             return this;
         }
-        internal FilterExpression Skip(int skip)
+        internal IFilterExpression Skip(int skip)
         {
             Operations.Add(new ValueFilterOperation(FilterOperations.Skip, skip));
             return this;
         }
-        internal FilterExpression OrderBy(LambdaExpression expression)
+        internal IFilterExpression OrderBy(LambdaExpression expression)
         {
             if (expression != null)
                 Operations.Add(new LambdaFilterOperation(FilterOperations.OrderBy, expression));
             return this;
         }
-        internal FilterExpression OrderByDescending(LambdaExpression expression)
+        internal IFilterExpression OrderByDescending(LambdaExpression expression)
         {
             if (expression != null)
                 Operations.Add(new LambdaFilterOperation(FilterOperations.OrderByDescending, expression));
             return this;
         }
-        internal FilterExpression ThenBy(LambdaExpression expression)
+        internal IFilterExpression ThenBy(LambdaExpression expression)
         {
             if (expression != null)
                 Operations.Add(new LambdaFilterOperation(FilterOperations.ThenBy, expression));
             return this;
         }
-        internal FilterExpression ThenByDescending(LambdaExpression expression)
+        internal IFilterExpression ThenByDescending(LambdaExpression expression)
         {
             if (expression != null)
                 Operations.Add(new LambdaFilterOperation(FilterOperations.ThenByDescending, expression));
             return this;
         }
-        internal FilterExpression GroupBy(LambdaExpression expression)
+        internal IFilterExpression GroupBy(LambdaExpression expression)
         {
             if (expression != null)
                 Operations.Add(new LambdaFilterOperation(FilterOperations.GroupBy, expression));
             return this;
         }
-        internal FilterExpression Select(LambdaExpression expression)
+        internal IFilterExpression Select(LambdaExpression expression)
         {
             if (expression != null)
                 Operations.Add(new LambdaFilterOperation(FilterOperations.Select, expression));
