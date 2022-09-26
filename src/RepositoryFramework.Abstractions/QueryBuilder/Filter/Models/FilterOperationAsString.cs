@@ -2,7 +2,7 @@
 
 namespace RepositoryFramework
 {
-    public sealed record QueryOperationAsString(
-        [property: JsonPropertyName("q")] QueryOperations Operation,
+    public sealed record FilterOperationAsString(
+        [property: JsonPropertyName("q")] FilterOperations Operation,
         [property: JsonPropertyName("v")] string? Value = null);
 }

@@ -43,12 +43,12 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return IState.Default(response.Value != null, value);
         }
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             Func<T, bool> predicate = x => true;
 #warning to check well, check a new way to create the query
-            var where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
+            var where = (query.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Where) as LambdaFilterOperation)?.Expression;
             if (where != null)
                 predicate = where.AsExpression<T, bool>().Compile();
             Dictionary<T, IEntity<T, TKey>> entities = new();
@@ -62,7 +62,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
                     continue;
                 entities.Add(item.Value, item);
             }
-            foreach (var item in query.Filter(entities.Values.Select(x => x.Value)))
+            foreach (var item in query.Apply(entities.Values.Select(x => x.Value)))
                 yield return entities[item];
         }
         private sealed class BlobEntity : IEntity<T, TKey>
@@ -82,17 +82,17 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
 
         public async ValueTask<TProperty> OperationAsync<TProperty>(
          OperationType<TProperty> operation,
-         Query query,
+         IFilterExpression query,
          CancellationToken cancellationToken = default)
         {
 #warning to refactor
             List<T> items = new();
             await foreach (var item in QueryAsync(query, cancellationToken))
                 items.Add(item.Value);
-            var select = query.FirstSelect;
+            var select = query.GetFirstSelect<T>();
             return (await operation.ExecuteAsync(
                 () => items.Count,
-               () => items.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),
+                () => items.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),
                 () => items.Select(x => select!.InvokeAndTransform<object>(x!)).Max(),
                 () => items.Select(x => select!.InvokeAndTransform<object>(x!)).Min(),
                 () => items.Average(x => select!.InvokeAndTransform<decimal>(x!))))!;

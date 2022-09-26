@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,9 +45,29 @@ namespace RepositoryFramework.UnitTest.Unitary
         public string? UtenteCreazione { get; set; }
         public string? UtenteModifica { get; set; }
     }
+    public sealed class ToTranslateSomethingElse
+    {
+        public int Idccnl { get; set; }
+        public int IdccnlValidita { get; set; }
+        public DateTime DataInizio { get; set; }
+        public DateTime? DataFine { get; set; }
+        public int NumeroMensilita { get; set; }
+        public int NumeroGiorniFestivita { get; set; }
+        public decimal FrazioneFestivita { get; set; }
+        public bool DomenicaPasquaRetribuita { get; set; }
+        public bool SoloSecondoGiorno { get; set; }
+        public byte IdtipoRinnovo { get; set; }
+        public byte Stato { get; set; }
+        public bool? Attivo { get; set; }
+        public DateTime? DataCreazione { get; set; }
+        public DateTime? DataModifica { get; set; }
+        public string? UtenteCreazione { get; set; }
+        public string? UtenteModifica { get; set; }
+    }
     public class TranslatableRepository : IRepository<Translatable, string>
     {
         private readonly List<ToTranslateSomething> _toTranslateSomething = new();
+        private readonly List<ToTranslateSomethingElse> _toTranslateSomethingElse = new();
         public Task<BatchResults<Translatable, string>> BatchAsync(BatchOperations<Translatable, string> operations, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
@@ -67,20 +88,57 @@ namespace RepositoryFramework.UnitTest.Unitary
             throw new NotImplementedException();
         }
 
-        public Task<IState<Translatable>> InsertAsync(string key, Translatable value, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async IAsyncEnumerable<IEntity<Translatable, string>> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public async Task<IState<Translatable>> InsertAsync(string key, Translatable value, CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken);
-            foreach (var validitum in query.Filter(_toTranslateSomething))
+            _toTranslateSomething.Add(new ToTranslateSomething
+            {
+                Attivo = true,
+                Idccnl = int.Parse(key),
+                DataCreazione = DateTime.UtcNow,
+                DataFine = DateTime.UtcNow,
+                DataInizio = DateTime.UtcNow,
+            });
+            _toTranslateSomethingElse.Add(new ToTranslateSomethingElse
+            {
+                Attivo = true,
+                Idccnl = int.Parse(key),
+                DataCreazione = DateTime.UtcNow,
+                DataFine = DateTime.UtcNow,
+                DataInizio = DateTime.UtcNow,
+            });
+            return IState.Ok<Translatable>();
+        }
+
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression query, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async IAsyncEnumerable<IEntity<Translatable, string>> QueryAsync(IFilterExpression query,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await Task.Delay(0, cancellationToken);
+
+            foreach (var validitum in query.Apply(_toTranslateSomething))
+                yield return IEntity.Default(Guid.NewGuid().ToString(),
+                    new Translatable(validitum.IdccnlValidita,
+                    validitum.Idccnl,
+                    validitum.DataInizio,
+                    validitum.DataFine,
+                    validitum.NumeroMensilita,
+                    validitum.NumeroGiorniFestivita,
+                    validitum.FrazioneFestivita,
+                    validitum.DomenicaPasquaRetribuita, validitum.SoloSecondoGiorno,
+                    validitum.IdtipoRinnovo,
+                    validitum.Stato,
+                    validitum.Attivo ?? false,
+                    validitum.DataCreazione ?? DateTime.UtcNow,
+                    validitum.DataModifica ?? DateTime.UtcNow,
+                    validitum.UtenteCreazione,
+                    validitum.UtenteModifica));
+
+            foreach (var validitum in query.Apply(_toTranslateSomethingElse))
                 yield return IEntity.Default(Guid.NewGuid().ToString(),
                     new Translatable(validitum.IdccnlValidita,
                     validitum.Idccnl,
@@ -124,6 +182,19 @@ namespace RepositoryFramework.UnitTest.Unitary
                        .With(x => x.RenewalType, x => x.IdtipoRinnovo)
                        .With(x => x.ConsolidateState, x => x.Stato)
                        .With(x => x.Active, x => x.Attivo)
+                    .AndTranslate<ToTranslateSomethingElse>()
+                        .With(x => x.Id, x => x.IdccnlValidita)
+                        .With(x => x.CcnlId, x => x.Idccnl)
+                        .With(x => x.From, x => x.DataInizio)
+                        .With(x => x.To, x => x.DataFine)
+                        .With(x => x.NumberOfMonths, x => x.NumeroMensilita)
+                        .With(x => x.AdditionalHolidays, x => x.NumeroGiorniFestivita)
+                        .With(x => x.HolidaysFraction, x => x.FrazioneFestivita)
+                        .With(x => x.IsEasterPaid, x => x.DomenicaPasquaRetribuita)
+                        .With(x => x.IsHolidayOnlyOnSecondRestDay, x => x.SoloSecondoGiorno)
+                        .With(x => x.RenewalType, x => x.IdtipoRinnovo)
+                        .With(x => x.ConsolidateState, x => x.Stato)
+                        .With(x => x.Active, x => x.Attivo)
                 .Services
                 .Finalize(out s_serviceProvider)
                 .Populate();
@@ -138,9 +209,12 @@ namespace RepositoryFramework.UnitTest.Unitary
         [Fact]
         public async Task TestAsync()
         {
+            for (var i = 1; i <= 10; i++)
+                _ = await _repository.InsertAsync(i.ToString(), default!);
             var items = await _repository.Where(x => x.CcnlId == 4 && x.Active).ToListAsync();
-            Assert.Empty(items);
-            //FilterTranslation.Instance
+            Assert.Equal(2, items.Count);
+            items = await _repository.Where(x => x.CcnlId > 4 && x.Active).ToListAsync();
+            Assert.Equal(12, items.Count);
         }
     }
 }

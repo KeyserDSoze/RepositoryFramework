@@ -7,7 +7,7 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         private readonly IQueryPattern<T, TKey> _query;
-        private readonly Query _operations = new();
+        private readonly FilterExpression _operations = new();
         internal QueryBuilder(IQueryPattern<T, TKey> query)
         {
             _query = query;
@@ -158,9 +158,9 @@ namespace RepositoryFramework
             int pageSize,
             CancellationToken cancellationToken = default)
         {
-            Query operations = new();
-            foreach (var where in _operations.Operations.Where(x => x.Operation == QueryOperations.Where))
-                operations.Where((where as LambdaQueryOperation)!.Expression!);
+            FilterExpression operations = new();
+            foreach (var where in _operations.Operations.Where(x => x.Operation == FilterOperations.Where))
+                operations.Where((where as LambdaFilterOperation)!.Expression!);
             Take(pageSize);
             Skip((page - 1) * pageSize);
             var query = await ToListAsync(cancellationToken).NoContext();

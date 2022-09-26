@@ -16,7 +16,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
 
         public ValueTask<TProperty> OperationAsync<TProperty>(
          OperationType<TProperty> operation,
-         Query query,
+         IFilterExpression query,
          CancellationToken cancellationToken = default)
         {
             if (operation.Operation == Operations.Count)
@@ -79,7 +79,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             return IState.Default<ClassAnimal>(false);
         }
 
-        public IAsyncEnumerable<IEntity<ClassAnimal, ClassAnimalKey>> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IEntity<ClassAnimal, ClassAnimalKey>> QueryAsync(IFilterExpression query, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

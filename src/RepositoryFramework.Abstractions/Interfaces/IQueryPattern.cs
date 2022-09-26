@@ -13,7 +13,7 @@ namespace RepositoryFramework
     {
         Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query, CancellationToken cancellationToken = default);
-        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query, CancellationToken cancellationToken = default);
+        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression query, CancellationToken cancellationToken = default);
     }
 }

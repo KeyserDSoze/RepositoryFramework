@@ -47,13 +47,13 @@ namespace RepositoryFramework.WebApi
             return IState.Default<IperUser>(true);
         }
 
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression query, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             throw new NotImplementedException();
         }
 
-        public IAsyncEnumerable<IEntity<IperUser, string>> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IEntity<IperUser, string>> QueryAsync(IFilterExpression query, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

@@ -65,10 +65,10 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             return IState.Default(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
         }
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var queryable = query.Filter(_client.GetItemLinqQueryable<T>());
+            var queryable = query.Apply(_client.GetItemLinqQueryable<T>());
 
             using var iterator = queryable.ToFeedIterator();
             while (iterator.HasMoreResults)
@@ -81,11 +81,11 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             }
         }
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
-            Query query,
+            IFilterExpression query,
             CancellationToken cancellationToken = default)
         {
-            var queryable = query.Filter(_client.GetItemLinqQueryable<T>());
-            var select = query.FirstSelect;
+            var queryable = query.Apply(_client.GetItemLinqQueryable<T>());
+            var select = query.GetFirstSelect<T>();
             return operation.ExecuteAsync(
                 () => queryable.CountAsync(cancellationToken)!,
                 () => queryable.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),

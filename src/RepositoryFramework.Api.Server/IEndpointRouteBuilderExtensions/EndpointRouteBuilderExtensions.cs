@@ -116,7 +116,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Query)}",
-                async ([FromBody] SerializableQuery query, [FromServices] TService service) =>
+                async ([FromBody] SerializableFilter query, [FromServices] TService service) =>
                 {
                     var options = query.Deserialize<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
@@ -129,7 +129,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
                 async ([FromQuery] Operations op, [FromQuery] string? returnType,
-                    [FromBody] SerializableQuery query, [FromServices] TService service) =>
+                    [FromBody] SerializableFilter query, [FromServices] TService service) =>
                 {
                     var options = query.Deserialize<T>();
                     var type = CalculateTypeFromQuery();
@@ -158,7 +158,7 @@ namespace Microsoft.Extensions.DependencyInjection
         private static ValueTask<TProperty> GetResultFromOperation<T, TKey, TProperty>(
             IQueryPattern<T, TKey> queryService,
             Operations operations,
-            Query options)
+            FilterExpression options)
             where TKey : notnull
             => queryService.OperationAsync(
                 new OperationType<TProperty> { Operation = operations },

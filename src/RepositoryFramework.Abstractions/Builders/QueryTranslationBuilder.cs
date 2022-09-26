@@ -6,7 +6,6 @@ namespace RepositoryFramework
     internal class QueryTranslationBuilder<T, TKey, TTranslated> : IQueryTranslationBuilder<T, TKey, TTranslated>
         where TKey : notnull
     {
-
         private readonly IRepositoryBuilder<T, TKey> _repositoryBuilder;
 
         public QueryTranslationBuilder(IRepositoryBuilder<T, TKey> repositoryBuilder)
@@ -18,6 +17,9 @@ namespace RepositoryFramework
             FilterTranslation.Instance.With(property, translatedProperty);
             return this;
         }
+        public IQueryTranslationBuilder<T, TKey, TFurtherTranslated> AndTranslate<TFurtherTranslated>()
+            => Builder.Translate<TFurtherTranslated>();
+
         public IRepositoryBuilder<T, TKey> Builder => _repositoryBuilder;
         public IServiceCollection Services => _repositoryBuilder.Services;
     }

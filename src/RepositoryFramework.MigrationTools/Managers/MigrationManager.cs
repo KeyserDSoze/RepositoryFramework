@@ -19,7 +19,7 @@ namespace RepositoryFramework.Migration
         public async Task<bool> MigrateAsync(Expression<Func<T, TKey>> navigationKey, bool checkIfExists = false, CancellationToken cancellationToken = default)
         {
             List<Task> setAll = new();
-            var entities = await _from.QueryAsync(Query.Empty, cancellationToken: cancellationToken).ToListAsync().NoContext();
+            var entities = await _from.QueryAsync(FilterExpression.Empty, cancellationToken: cancellationToken).ToListAsync().NoContext();
             foreach (var entity in entities)
             {
                 if (cancellationToken.IsCancellationRequested)

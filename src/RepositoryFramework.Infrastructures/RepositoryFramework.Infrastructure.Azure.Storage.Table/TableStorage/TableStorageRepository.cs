@@ -56,16 +56,16 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var where = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Where) as LambdaQueryOperation)?.Expression;
+            var where = (query.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Where) as LambdaFilterOperation)?.Expression;
             string? filter = null;
             if (where != null)
                 filter = QueryStrategy.Create(where.Body, _options.PartitionKey.Name, _options.RowKey.Name, _options.Timestamp?.Name);
 
-            var top = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Top) as ValueQueryOperation)?.Value;
-            var skip = (query.Operations.FirstOrDefault(x => x.Operation == QueryOperations.Skip) as ValueQueryOperation)?.Value;
+            var top = (query.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Top) as ValueFilterOperation)?.Value;
+            var skip = (query.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Skip) as ValueFilterOperation)?.Value;
             var counter = 0;
             var items = new List<T>();
 
@@ -92,19 +92,19 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                 foreach (var item in Filter(items.AsQueryable(), query))
                     yield return IEntity.Default(_keyReader.Read(item), item);
         }
-        private static IQueryable<T> Filter(IQueryable<T> queryable, Query query)
+        private static IQueryable<T> Filter(IQueryable<T> queryable, IFilterExpression query)
         {
             foreach (var operation in query.Operations)
             {
-                if (operation is LambdaQueryOperation lambda)
+                if (operation is LambdaFilterOperation lambda)
                 {
                     queryable = lambda.Operation switch
                     {
-                        QueryOperations.Where => queryable.Where(lambda.Expression!.AsExpression<T, bool>()).AsQueryable(),
-                        QueryOperations.OrderBy => queryable.OrderBy(lambda.Expression!),
-                        QueryOperations.OrderByDescending => queryable.OrderByDescending(lambda.Expression!),
-                        QueryOperations.ThenBy => (queryable as IOrderedQueryable<T>)!.ThenBy(lambda.Expression!),
-                        QueryOperations.ThenByDescending => (queryable as IOrderedQueryable<T>)!.ThenByDescending(lambda.Expression!),
+                        FilterOperations.Where => queryable.Where(lambda.Expression!.AsExpression<T, bool>()).AsQueryable(),
+                        FilterOperations.OrderBy => queryable.OrderBy(lambda.Expression!),
+                        FilterOperations.OrderByDescending => queryable.OrderByDescending(lambda.Expression!),
+                        FilterOperations.ThenBy => (queryable as IOrderedQueryable<T>)!.ThenBy(lambda.Expression!),
+                        FilterOperations.ThenByDescending => (queryable as IOrderedQueryable<T>)!.ThenByDescending(lambda.Expression!),
                         _ => queryable,
                     };
                 }
@@ -113,13 +113,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
-          Query query,
+          IFilterExpression query,
           CancellationToken cancellationToken = default)
         {
             List<T> items = new();
             await foreach (var item in QueryAsync(query, cancellationToken))
                 items.Add(item.Value);
-            var selected = query.FilterAsSelect(items);
+            var selected = query.ApplyAsSelect(items);
             return (await operation.ExecuteAsync(
                 () => Invoke<TProperty>(selected.Count()),
                 () => Invoke<TProperty>(selected.Sum(x => ((object)x).Cast<decimal>())),

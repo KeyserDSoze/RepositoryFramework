@@ -172,7 +172,7 @@ namespace RepositoryFramework
             return response;
         }
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IQueryPattern<T, TKey> queryPattern, Query query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IQueryPattern<T, TKey> queryPattern, IFilterExpression query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeQuery<T, TKey>>(BeforeQueried))
                 query = await business.BeforeQueryAsync(query, cancellationToken);
@@ -193,9 +193,9 @@ namespace RepositoryFramework
             }
         }
 
-        public async ValueTask<TProperty> OperationAsync<TProperty>(IQueryPattern<T, TKey> queryPattern, OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default)
+        public async ValueTask<TProperty> OperationAsync<TProperty>(IQueryPattern<T, TKey> queryPattern, OperationType<TProperty> operation, IFilterExpression query, CancellationToken cancellationToken = default)
         {
-            (OperationType<TProperty> Operation, Query Query) operationQuery = (operation, query);
+            (OperationType<TProperty> Operation, IFilterExpression Query) operationQuery = (operation, query);
 
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeOperation<T, TKey>>(BeforeOperation))
                 operationQuery = await business.BeforeOperationAsync(operationQuery.Operation, operationQuery.Query, cancellationToken);

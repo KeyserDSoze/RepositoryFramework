@@ -9,6 +9,6 @@
     public interface IRepositoryBusinessBeforeOperation<T, TKey>
         where TKey : notnull
     {
-        ValueTask<(OperationType<TProperty> Operation, Query Query)> BeforeOperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default);
+        ValueTask<(OperationType<TProperty> Operation, IFilterExpression query)> BeforeOperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression query, CancellationToken cancellationToken = default);
     }
 }

@@ -38,10 +38,10 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
 
         public async ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
-          Query query,
+          IFilterExpression query,
           CancellationToken cancellationToken = default)
         {
-            var context = query.Filter(_context.Users);
+            var context = query.Apply(_context.Users);
             object? result = null;
             if (operation.Operation == Operations.Count)
             {
@@ -49,19 +49,21 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             }
             else if (operation.Operation == Operations.Min)
             {
-                result = await query.FilterAsSelect(context).MinAsync(cancellationToken).NoContext();
+                result = await query.ApplyAsSelect(context).MinAsync(cancellationToken).NoContext();
             }
             else if (operation.Operation == Operations.Max)
             {
-                result = await query.FilterAsSelect(context).MaxAsync(cancellationToken).NoContext();
+                result = await query.ApplyAsSelect(context).MaxAsync(cancellationToken).NoContext();
             }
             else if (operation.Operation == Operations.Sum)
             {
-                result = await context.SumAsync(query.FirstSelect!.AsExpression<User, decimal>(), cancellationToken).NoContext();
+                var select = query.GetFirstSelect<User>();
+                result = await context.SumAsync(select!.AsExpression<User, decimal>(), cancellationToken).NoContext();
             }
             else if (operation.Operation == Operations.Average)
             {
-                result = await context.AverageAsync(query.FirstSelect!.AsExpression<User, decimal>(), cancellationToken).NoContext();
+                var select = query.GetFirstSelect<User>();
+                result = await context.AverageAsync(select!.AsExpression<User, decimal>(), cancellationToken).NoContext();
             }
             return result.Cast<TProperty>() ?? default!;
         }
@@ -105,10 +107,10 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
                 value with { Id = user.Identificativo });
         }
 
-        public async IAsyncEnumerable<IEntity<AppUser, AppUserKey>> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<AppUser, AppUserKey>> QueryAsync(IFilterExpression query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            await foreach (var user in query.FilterAsAsyncEnumerable(_context.Users))
+            await foreach (var user in query.ApplyAsAsyncEnumerable(_context.Users))
                 yield return IEntity.Default(new AppUserKey(user.Identificativo), new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new(), default));
         }
 

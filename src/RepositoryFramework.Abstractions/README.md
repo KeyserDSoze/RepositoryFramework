@@ -19,8 +19,8 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
     {
         Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default);
-        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<T> QueryAsync(IQuery query, CancellationToken cancellationToken = default);
+        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IQuery query, CancellationToken cancellationToken = default);
     }
 
 #### Repository Pattern (Write-Delete-Read)
@@ -35,8 +35,8 @@ Repository pattern is a sum of CQRS interfaces.
         Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default);
         Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default);
-        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<T> QueryAsync(IQuery query, CancellationToken cancellationToken = default);
+        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IQuery query, CancellationToken cancellationToken = default);
     }
 
 ### With string as TKey
@@ -54,8 +54,8 @@ Repository pattern is a sum of CQRS interfaces.
     {
         Task<T?> GetAsync(string key, CancellationToken cancellationToken = default);
         Task<IState<T>> ExistAsync(string key, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default);
-        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<T> QueryAsync(IQuery query, CancellationToken cancellationToken = default);
+        ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IQuery query, CancellationToken cancellationToken = default);
     }
 
 #### Repository Pattern (Write-Delete-Read)
@@ -118,12 +118,12 @@ You may choose to extend IQueryPattern or IQuery, but when you inject you have t
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
         }
-        public IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<T> QueryAsync(IQuery query, CancellationToken cancellationToken = default)
         {
             //get a list of items by a predicate with top and skip from DB or storage context
             throw new NotImplementedException();
         }
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IQuery query, CancellationToken cancellationToken = default)
         {
             //get an items count by a predicate with top and skip from DB or storage context or max or min or some other operations
             throw new NotImplementedException();
@@ -166,12 +166,12 @@ You may choose to extend IRepositoryPattern or IRepository, but when you inject 
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
         }
-        public IAsyncEnumerable<T> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<T> QueryAsync(IQuery query, CancellationToken cancellationToken = default)
         {
             //get a list of items by a predicate with top and skip from DB or storage context
             throw new NotImplementedException();
         }
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, Query query, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IQuery query, CancellationToken cancellationToken = default)
         {
             //get an items count by a predicate with top and skip from DB or storage context or max or min or some other operations
             throw new NotImplementedException();

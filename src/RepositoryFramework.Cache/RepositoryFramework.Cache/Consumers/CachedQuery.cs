@@ -102,7 +102,7 @@ namespace RepositoryFramework.Cache
             return value.Response;
         }
         private static readonly List<IEntity<T, TKey>> s_empty = new();
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{query.ToKey()}";
@@ -128,7 +128,7 @@ namespace RepositoryFramework.Cache
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(
             OperationType<TProperty> operation,
-            Query query,
+            IFilterExpression query,
             CancellationToken cancellationToken = default)
         {
             var keyAsString = $"{nameof(RepositoryMethods.Operation)}_{_cacheName}_{query.ToKey()}";

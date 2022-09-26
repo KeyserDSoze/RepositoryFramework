@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    public enum QueryOperations
+    public enum FilterOperations
     {
         Select,
         Where,

@@ -21,11 +21,11 @@ namespace RepositoryFramework
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeGet == true || _businessManager?.HasBusinessAfterGet == true ?
                 _businessManager.GetAsync(_query, key, cancellationToken) : _query.GetAsync(key, cancellationToken);
-        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeQuery == true || _businessManager?.HasBusinessAfterQuery == true ?
                    _businessManager.QueryAsync(_query, query.Translate<T>(), cancellationToken) : _query.QueryAsync(query.Translate<T>(), cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
-            Query query,
+            IFilterExpression query,
             CancellationToken cancellationToken = default)
            => _businessManager?.HasBusinessBeforeOperation == true || _businessManager?.HasBusinessAfterOperation == true ?
                 _businessManager.OperationAsync(_query, operation, query.Translate<T>(), cancellationToken) : _query.OperationAsync(operation, query.Translate<T>(), cancellationToken);

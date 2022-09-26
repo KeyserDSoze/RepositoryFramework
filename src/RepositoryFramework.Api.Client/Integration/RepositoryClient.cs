@@ -55,7 +55,7 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response!.Content.ReadFromJsonAsync<HttpClientState<T>>(cancellationToken: cancellationToken).NoContext())!;
         }
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(Query query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Query).NoContext();
@@ -69,7 +69,7 @@ namespace RepositoryFramework.Api.Client
                         yield return item;
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
-            Query query, CancellationToken cancellationToken = default)
+            IFilterExpression query, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Operation).NoContext();
             var value = query.Serialize();
