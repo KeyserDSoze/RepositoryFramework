@@ -92,7 +92,8 @@ namespace RepositoryFramework
         public IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
         {
             _ = _operations.GroupBy(predicate);
-            var items = QueryAsync(cancellationToken).GroupBy(x => predicate.Compile().Invoke(x.Value));
+            var compiledPredicate = predicate.Compile();
+            var items = QueryAsync(cancellationToken).GroupBy(x => compiledPredicate.Invoke(x.Value));
             return items;
         }
         /// <summary>

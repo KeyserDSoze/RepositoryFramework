@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace RepositoryFramework
+﻿namespace RepositoryFramework
 {
     /// <summary>
     /// Interface for your CQRS pattern, with Get, Query, Count and Exist methods.
