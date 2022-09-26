@@ -1,5 +1,6 @@
 ﻿using RepositoryFramework;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace System.Linq
 {
@@ -16,6 +17,28 @@ namespace System.Linq
             CancellationToken cancellationToken = default)
             where TKey : notnull
             => entity.QueryAsync(FilterExpression.Empty, cancellationToken);
+        /// <summary>
+        /// List the query without TKey.
+        /// </summary>
+        /// <typeparam name="T">Model used for your repository.</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
+        /// <param name="entity"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>List<<typeparamref name="T"/>></returns>
+        public static ValueTask<List<T>> ToListAsEntityAsync<T, TKey>(this IQueryPattern<T, TKey> entity, CancellationToken cancellationToken = default)
+         where TKey : notnull
+           => new QueryBuilder<T, TKey>(entity).ToListAsEntityAsync(cancellationToken);
+        /// <summary>
+        /// Call query method in your Repository and retrieve entity without TKey.
+        /// </summary>
+        /// <typeparam name="T">Model used for your repository.</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
+        /// <param name="entity"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>IAsyncEnumerable<<typeparamref name="T"/>></returns>
+        public static IAsyncEnumerable<T> QueryAsEntityAsync<T, TKey>(this IQueryPattern<T, TKey> entity, CancellationToken cancellationToken = default)
+            where TKey : notnull
+            => new QueryBuilder<T, TKey>(entity).QueryAsEntityAsync(cancellationToken);
         /// <summary>
         /// Take all elements by <paramref name="predicate"/> query.
         /// </summary>
@@ -101,13 +124,14 @@ namespace System.Linq
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="entity"></param>
+        /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>bool</returns>
         public static ValueTask<bool> AnyAsync<T, TKey>(this IQueryPattern<T, TKey> entity,
+            Expression<Func<T, bool>>? predicate = null,
             CancellationToken cancellationToken = default)
             where TKey : notnull
-
-            => new QueryBuilder<T, TKey>(entity).AnyAsync(cancellationToken);
+            => new QueryBuilder<T, TKey>(entity).AnyAsync(predicate, cancellationToken);
         /// <summary>
         /// Take the first value of your query or default value T.
         /// </summary>

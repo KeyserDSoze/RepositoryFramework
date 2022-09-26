@@ -132,7 +132,7 @@ namespace RepositoryFramework.InMemory
                     return SetState(false);
             }, cancellationToken);
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter,
              [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Query);
@@ -145,7 +145,7 @@ namespace RepositoryFramework.InMemory
                     await Task.Delay(GetRandomNumber(settings.MillisecondsOfWaitWhenException), cancellationToken).NoContext();
                     throw exception;
                 }
-                foreach (var item in query.Apply(Values.Select(x => x.Value.Value)))
+                foreach (var item in filter.Apply(Values.Select(x => x.Value.Value)))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     yield return Values.First(x => x.Value.Value.Equals(item)).Value;
@@ -156,7 +156,7 @@ namespace RepositoryFramework.InMemory
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(
            OperationType<TProperty> operation,
-           IFilterExpression query,
+           IFilterExpression filter,
            CancellationToken cancellationToken = default)
         {
             var settings = _settings.Get(RepositoryMethods.Operation);
@@ -171,8 +171,8 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    var filtered = query.Apply(Values.Select(x => x.Value.Value));
-                    var selected = query.ApplyAsSelect(filtered);
+                    var filtered = filter.Apply(Values.Select(x => x.Value.Value));
+                    var selected = filter.ApplyAsSelect(filtered);
                     return (await operation.ExecuteAsync(
                         () => Invoke<TProperty>(selected.Count()),
                         () => Invoke<TProperty>(selected.Sum(x => ((object)x).Cast<decimal>())),

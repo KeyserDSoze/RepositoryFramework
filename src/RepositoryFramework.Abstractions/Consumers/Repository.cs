@@ -17,12 +17,12 @@
             => _query.Value.ExistAsync(key, cancellationToken);
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.Value.GetAsync(key, cancellationToken);
-        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query, CancellationToken cancellationToken = default)
-            => _query.Value.QueryAsync(query, cancellationToken);
+        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
+            => _query.Value.QueryAsync(filter, cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
-            IFilterExpression query,
+            IFilterExpression filter,
             CancellationToken cancellationToken = default)
-           => _query.Value.OperationAsync(operation, query, cancellationToken);
+           => _query.Value.OperationAsync(operation, filter, cancellationToken);
 
         public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _command.Value.InsertAsync(key, value, cancellationToken);

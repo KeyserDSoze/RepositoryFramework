@@ -55,11 +55,11 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response!.Content.ReadFromJsonAsync<HttpClientState<T>>(cancellationToken: cancellationToken).NoContext())!;
         }
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Query).NoContext();
-            var value = query.Serialize();
+            var value = filter.Serialize();
             var response = await client.PostAsJsonAsync(nameof(RepositoryMethods.Query), value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<List<HttpClientEntity<T, TKey>>>(cancellationToken: cancellationToken).NoContext();
@@ -69,10 +69,10 @@ namespace RepositoryFramework.Api.Client
                         yield return item;
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
-            IFilterExpression query, CancellationToken cancellationToken = default)
+            IFilterExpression filter, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Operation).NoContext();
-            var value = query.Serialize();
+            var value = filter.Serialize();
             var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Operation)}?op={operation.Operation}&returnType={GetPrimitiveNameOrAssemblyQualifiedName()}",
                 value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();

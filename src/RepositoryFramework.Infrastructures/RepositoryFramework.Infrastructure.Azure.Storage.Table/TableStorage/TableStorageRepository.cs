@@ -56,20 +56,20 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => UpdateAsync(key, value, cancellationToken);
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var where = (query.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Where) as LambdaFilterOperation)?.Expression;
-            string? filter = null;
+            var where = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Where) as LambdaFilterOperation)?.Expression;
+            string? filterAsString = null;
             if (where != null)
-                filter = QueryStrategy.Create(where.Body, _options.PartitionKey.Name, _options.RowKey.Name, _options.Timestamp?.Name);
+                filterAsString = QueryStrategy.Create(where.Body, _options.PartitionKey.Name, _options.RowKey.Name, _options.Timestamp?.Name);
 
-            var top = (query.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Top) as ValueFilterOperation)?.Value;
-            var skip = (query.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Skip) as ValueFilterOperation)?.Value;
+            var top = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Top) as ValueFilterOperation)?.Value;
+            var skip = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Skip) as ValueFilterOperation)?.Value;
             var counter = 0;
             var items = new List<T>();
 
-            await foreach (var page in _client.QueryAsync<TableEntity>(filter: filter,
+            await foreach (var page in _client.QueryAsync<TableEntity>(filter: filterAsString,
                 maxPerPage: 50,
                 cancellationToken: cancellationToken).AsPages())
             {
@@ -89,12 +89,12 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                     break;
             }
             if (!cancellationToken.IsCancellationRequested)
-                foreach (var item in Filter(items.AsQueryable(), query))
+                foreach (var item in Filter(items.AsQueryable(), filter))
                     yield return IEntity.Default(_keyReader.Read(item), item);
         }
-        private static IQueryable<T> Filter(IQueryable<T> queryable, IFilterExpression query)
+        private static IQueryable<T> Filter(IQueryable<T> queryable, IFilterExpression filter)
         {
-            foreach (var operation in query.Operations)
+            foreach (var operation in filter.Operations)
             {
                 if (operation is LambdaFilterOperation lambda)
                 {
@@ -113,13 +113,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
-          IFilterExpression query,
+          IFilterExpression filter,
           CancellationToken cancellationToken = default)
         {
             List<T> items = new();
-            await foreach (var item in QueryAsync(query, cancellationToken))
+            await foreach (var item in QueryAsync(filter, cancellationToken))
                 items.Add(item.Value);
-            var selected = query.ApplyAsSelect(items);
+            var selected = filter.ApplyAsSelect(items);
             return (await operation.ExecuteAsync(
                 () => Invoke<TProperty>(selected.Count()),
                 () => Invoke<TProperty>(selected.Sum(x => ((object)x).Cast<decimal>())),

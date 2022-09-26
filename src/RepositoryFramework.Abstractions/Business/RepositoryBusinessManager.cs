@@ -172,38 +172,38 @@ namespace RepositoryFramework
             return response;
         }
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IQueryPattern<T, TKey> queryPattern, IFilterExpression query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IQueryPattern<T, TKey> queryPattern, IFilterExpression filter, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeQuery<T, TKey>>(BeforeQueried))
-                query = await business.BeforeQueryAsync(query, cancellationToken);
+                filter = await business.BeforeQueryAsync(filter, cancellationToken);
 
             if (HasBusinessAfterQuery)
             {
-                var items = await queryPattern.QueryAsync(query, cancellationToken).ToListAsync();
+                var items = await queryPattern.QueryAsync(filter, cancellationToken).ToListAsync();
                 foreach (var business in GetBusiness<IRepositoryBusinessAfterQuery<T, TKey>>(AfterQueried))
-                    items = await business.AfterQueryAsync(items, query, cancellationToken);
+                    items = await business.AfterQueryAsync(items, filter, cancellationToken);
 
                 foreach (var item in items)
                     yield return item;
             }
             else
             {
-                await foreach (var item in queryPattern.QueryAsync(query, cancellationToken))
+                await foreach (var item in queryPattern.QueryAsync(filter, cancellationToken))
                     yield return item;
             }
         }
 
-        public async ValueTask<TProperty> OperationAsync<TProperty>(IQueryPattern<T, TKey> queryPattern, OperationType<TProperty> operation, IFilterExpression query, CancellationToken cancellationToken = default)
+        public async ValueTask<TProperty> OperationAsync<TProperty>(IQueryPattern<T, TKey> queryPattern, OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default)
         {
-            (OperationType<TProperty> Operation, IFilterExpression Query) operationQuery = (operation, query);
+            (OperationType<TProperty> Operation, IFilterExpression Filter) operationFilter = (operation, filter);
 
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeOperation<T, TKey>>(BeforeOperation))
-                operationQuery = await business.BeforeOperationAsync(operationQuery.Operation, operationQuery.Query, cancellationToken);
+                operationFilter = await business.BeforeOperationAsync(operationFilter.Operation, operationFilter.Filter, cancellationToken);
 
-            var response = await queryPattern.OperationAsync(operationQuery.Operation, operationQuery.Query, cancellationToken);
+            var response = await queryPattern.OperationAsync(operationFilter.Operation, operationFilter.Filter, cancellationToken);
 
             foreach (var business in GetBusiness<IRepositoryBusinessAfterOperation<T, TKey>>(AfterOperation))
-                response = await business.AfterOperationAsync(response, operationQuery.Operation, operationQuery.Query, cancellationToken);
+                response = await business.AfterOperationAsync(response, operationFilter.Operation, operationFilter.Filter, cancellationToken);
 
             return response;
         }

@@ -98,10 +98,13 @@ namespace RepositoryFramework
         /// <summary>
         /// Check if exists at least one element with the selected query.
         /// </summary>
+        /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>bool</returns>
-        public ValueTask<bool> AnyAsync(CancellationToken cancellationToken = default)
+        public ValueTask<bool> AnyAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
+            if (predicate != null)
+                _ = _operations.Where(predicate);
             Take(1);
             return _query.QueryAsync(_operations, cancellationToken).AnyAsync(cancellationToken);
         }

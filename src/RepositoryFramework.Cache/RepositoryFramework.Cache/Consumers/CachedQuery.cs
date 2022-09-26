@@ -102,16 +102,16 @@ namespace RepositoryFramework.Cache
             return value.Response;
         }
         private static readonly List<IEntity<T, TKey>> s_empty = new();
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{query.ToKey()}";
+            var keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{filter.ToKey()}";
 
             var value = await RetrieveValueAsync(RepositoryMethods.Query, keyAsString,
                 async () =>
                 {
                     List<IEntity<T, TKey>> items = new();
-                    await foreach (var item in Query.QueryAsync(query, cancellationToken)!)
+                    await foreach (var item in Query.QueryAsync(filter, cancellationToken)!)
                         items.Add(item);
                     return items;
                 },
@@ -128,14 +128,14 @@ namespace RepositoryFramework.Cache
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(
             OperationType<TProperty> operation,
-            IFilterExpression query,
+            IFilterExpression filter,
             CancellationToken cancellationToken = default)
         {
-            var keyAsString = $"{nameof(RepositoryMethods.Operation)}_{_cacheName}_{query.ToKey()}";
+            var keyAsString = $"{nameof(RepositoryMethods.Operation)}_{_cacheName}_{filter.ToKey()}";
 
             var value = await RetrieveValueAsync(RepositoryMethods.Operation, keyAsString,
                 null,
-                () => Query.OperationAsync(operation, query, cancellationToken)!, cancellationToken).NoContext();
+                () => Query.OperationAsync(operation, filter, cancellationToken)!, cancellationToken).NoContext();
 
             if (Cache != null || Distributed != null)
                 await SaveOnCacheAsync(keyAsString, value.Response, value.Source,

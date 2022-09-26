@@ -9,6 +9,6 @@
     public interface IRepositoryBusinessAfterOperation<T, TKey>
         where TKey : notnull
     {
-        ValueTask<TProperty> AfterOperationAsync<TProperty>(TProperty result, OperationType<TProperty> operation, IFilterExpression query, CancellationToken cancellationToken = default);
+        ValueTask<TProperty> AfterOperationAsync<TProperty>(TProperty result, OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default);
     }
 }

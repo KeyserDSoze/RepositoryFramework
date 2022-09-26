@@ -43,12 +43,12 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return IState.Default(response.Value != null, value);
         }
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression query,
+        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             Func<T, bool> predicate = x => true;
 #warning to check well, check a new way to create the query
-            var where = (query.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Where) as LambdaFilterOperation)?.Expression;
+            var where = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Where) as LambdaFilterOperation)?.Expression;
             if (where != null)
                 predicate = where.AsExpression<T, bool>().Compile();
             Dictionary<T, IEntity<T, TKey>> entities = new();
@@ -62,7 +62,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
                     continue;
                 entities.Add(item.Value, item);
             }
-            foreach (var item in query.Apply(entities.Values.Select(x => x.Value)))
+            foreach (var item in filter.Apply(entities.Values.Select(x => x.Value)))
                 yield return entities[item];
         }
         private sealed class BlobEntity : IEntity<T, TKey>
@@ -82,14 +82,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
 
         public async ValueTask<TProperty> OperationAsync<TProperty>(
          OperationType<TProperty> operation,
-         IFilterExpression query,
+         IFilterExpression filter,
          CancellationToken cancellationToken = default)
         {
 #warning to refactor
             List<T> items = new();
-            await foreach (var item in QueryAsync(query, cancellationToken))
+            await foreach (var item in QueryAsync(filter, cancellationToken))
                 items.Add(item.Value);
-            var select = query.GetFirstSelect<T>();
+            var select = filter.GetFirstSelect<T>();
             return (await operation.ExecuteAsync(
                 () => items.Count,
                 () => items.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),

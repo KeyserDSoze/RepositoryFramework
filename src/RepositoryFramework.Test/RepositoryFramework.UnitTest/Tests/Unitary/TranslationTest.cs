@@ -110,17 +110,17 @@ namespace RepositoryFramework.UnitTest.Unitary
             return IState.Ok<Translatable>();
         }
 
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression query, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public async IAsyncEnumerable<IEntity<Translatable, string>> QueryAsync(IFilterExpression query,
+        public async IAsyncEnumerable<IEntity<Translatable, string>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken);
 
-            foreach (var validitum in query.Apply(_toTranslateSomething))
+            foreach (var validitum in filter.Apply(_toTranslateSomething))
                 yield return IEntity.Default(Guid.NewGuid().ToString(),
                     new Translatable(validitum.IdccnlValidita,
                     validitum.Idccnl,
@@ -138,7 +138,7 @@ namespace RepositoryFramework.UnitTest.Unitary
                     validitum.UtenteCreazione,
                     validitum.UtenteModifica));
 
-            foreach (var validitum in query.Apply(_toTranslateSomethingElse))
+            foreach (var validitum in filter.Apply(_toTranslateSomethingElse))
                 yield return IEntity.Default(Guid.NewGuid().ToString(),
                     new Translatable(validitum.IdccnlValidita,
                     validitum.Idccnl,

@@ -43,9 +43,9 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(IState.Default<SuperMigrationUser>(true));
         }
 
-        public async IAsyncEnumerable<IEntity<SuperMigrationUser, string>> QueryAsync(IFilterExpression query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<IEntity<SuperMigrationUser, string>> QueryAsync(IFilterExpression filter, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var users = query.Apply(_users.Select(x => x.Value));
+            var users = filter.Apply(_users.Select(x => x.Value));
             await foreach (var user in users.ToAsyncEnumerable())
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -63,7 +63,7 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             throw new NotImplementedException();
         }
 
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression query, CancellationToken cancellationToken = default)
+        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
