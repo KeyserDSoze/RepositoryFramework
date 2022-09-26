@@ -1,8 +1,6 @@
-﻿using System.Linq.Expressions;
-
-namespace RepositoryFramework
+﻿namespace RepositoryFramework
 {
-    internal class Query<T, TKey> : IQuery<T, TKey>
+    internal sealed class Query<T, TKey> : IQuery<T, TKey>
         where TKey : notnull
     {
         private readonly IQueryPattern<T, TKey> _query;
@@ -24,10 +22,5 @@ namespace RepositoryFramework
         public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeQuery == true || _businessManager?.HasBusinessAfterQuery == true ?
                    _businessManager.QueryAsync(_query, filter.Translate<T>(), cancellationToken) : _query.QueryAsync(filter.Translate<T>(), cancellationToken);
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
-            IFilterExpression filter,
-            CancellationToken cancellationToken = default)
-           => _businessManager?.HasBusinessBeforeOperation == true || _businessManager?.HasBusinessAfterOperation == true ?
-                _businessManager.OperationAsync(_query, operation, filter.Translate<T>(), cancellationToken) : _query.OperationAsync(operation, filter.Translate<T>(), cancellationToken);
     }
 }

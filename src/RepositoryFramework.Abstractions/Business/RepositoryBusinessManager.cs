@@ -29,8 +29,6 @@ namespace RepositoryFramework
         private IEnumerable<BusinessType> AfterExisted => GetBusinessTypes(RepositoryMethods.Exist, true);
         private IEnumerable<BusinessType> BeforeQueried => GetBusinessTypes(RepositoryMethods.Query, false);
         private IEnumerable<BusinessType> AfterQueried => GetBusinessTypes(RepositoryMethods.Query, true);
-        private IEnumerable<BusinessType> BeforeOperation => GetBusinessTypes(RepositoryMethods.Operation, false);
-        private IEnumerable<BusinessType> AfterOperation => GetBusinessTypes(RepositoryMethods.Operation, true);
         public bool HasBusinessBeforeInsert => BeforeInserted.Any();
         public bool HasBusinessAfterInsert => AfterInserted.Any();
         public bool HasBusinessBeforeUpdate => BeforeUpdated.Any();
@@ -45,8 +43,6 @@ namespace RepositoryFramework
         public bool HasBusinessAfterExist => AfterExisted.Any();
         public bool HasBusinessBeforeQuery => BeforeQueried.Any();
         public bool HasBusinessAfterQuery => AfterQueried.Any();
-        public bool HasBusinessBeforeOperation => BeforeOperation.Any();
-        public bool HasBusinessAfterOperation => AfterOperation.Any();
         private IEnumerable<BusinessType> GetBusinessTypes(RepositoryMethods method, bool isAfterRequest)
             => _options.Services.Where(x => x.Method == method && x.IsAfterRequest == isAfterRequest);
         private IEnumerable<TBusiness> GetBusiness<TBusiness>(IEnumerable<BusinessType> business)
@@ -191,21 +187,6 @@ namespace RepositoryFramework
                 await foreach (var item in queryPattern.QueryAsync(filter, cancellationToken))
                     yield return item;
             }
-        }
-
-        public async ValueTask<TProperty> OperationAsync<TProperty>(IQueryPattern<T, TKey> queryPattern, OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default)
-        {
-            (OperationType<TProperty> Operation, IFilterExpression Filter) operationFilter = (operation, filter);
-
-            foreach (var business in GetBusiness<IRepositoryBusinessBeforeOperation<T, TKey>>(BeforeOperation))
-                operationFilter = await business.BeforeOperationAsync(operationFilter.Operation, operationFilter.Filter, cancellationToken);
-
-            var response = await queryPattern.OperationAsync(operationFilter.Operation, operationFilter.Filter, cancellationToken);
-
-            foreach (var business in GetBusiness<IRepositoryBusinessAfterOperation<T, TKey>>(AfterOperation))
-                response = await business.AfterOperationAsync(response, operationFilter.Operation, operationFilter.Filter, cancellationToken);
-
-            return response;
         }
     }
 }

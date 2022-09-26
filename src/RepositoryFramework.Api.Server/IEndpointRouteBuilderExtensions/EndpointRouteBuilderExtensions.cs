@@ -52,11 +52,16 @@ namespace Microsoft.Extensions.DependencyInjection
             nameof(AddGet),
             nameof(AddQuery),
             nameof(AddExist),
-            nameof(AddOperation),
             nameof(AddInsert),
             nameof(AddUpdate),
             nameof(AddDelete),
             nameof(AddBatch),
+            nameof(AddCount),
+            nameof(AddAverage),
+            nameof(AddSum),
+            nameof(AddMax),
+            nameof(AddMin),
+            nameof(AddGroupBy)
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "I need reflection in this point to allow the creation of T methods at runtime.")]
@@ -124,21 +129,42 @@ namespace Microsoft.Extensions.DependencyInjection
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Query);
         }
-        private static void AddOperation<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+        private static void AddCount<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+            where TKey : notnull
+            => AddAggregate<T, TKey, TService>(app, name, startingPath, "CountAsync", RepositoryMethods.Count, authorization);
+        private static void AddAverage<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+            where TKey : notnull
+            => AddAggregate<T, TKey, TService>(app, name, startingPath, "AverageAsync", RepositoryMethods.Average, authorization);
+        private static void AddSum<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+            where TKey : notnull
+            => AddAggregate<T, TKey, TService>(app, name, startingPath, "SumAsync", RepositoryMethods.Sum, authorization);
+        private static void AddMax<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+            where TKey : notnull
+            => AddAggregate<T, TKey, TService>(app, name, startingPath, "MaxAsync", RepositoryMethods.Max, authorization);
+        private static void AddMin<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+            where TKey : notnull
+            => AddAggregate<T, TKey, TService>(app, name, startingPath, "MinAsync", RepositoryMethods.Min, authorization);
+        private static void AddGroupBy<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+            where TKey : notnull
+            => AddAggregate<T, TKey, TService>(app, name, startingPath, "GroupByAsync", RepositoryMethods.GroupBy, authorization);
+        private static void AddAggregate<T, TKey, TService>(IEndpointRouteBuilder app,
+            string name,
+            string startingPath,
+            string methodName,
+            RepositoryMethods repositoryMethod,
+            ApiAuthorization? authorization)
             where TKey : notnull
         {
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
-                async ([FromQuery] Operations op, [FromQuery] string? returnType,
-                    [FromBody] SerializableFilter query, [FromServices] TService service) =>
+            _ = app.MapPost($"{startingPath}/{name}/{repositoryMethod}",
+                async ([FromQuery] string? returnType, [FromBody] SerializableFilter query,
+                [FromServices] TService service) =>
                 {
-                    var options = query.Deserialize<T>();
+                    var filter = query.Deserialize<T>();
                     var type = CalculateTypeFromQuery();
-                    var queryService = service as IQueryPattern<T, TKey>;
-                    var result = await Generics.WithStatic(
-                                  typeof(EndpointRouteBuilderExtensions),
-                                  nameof(GetResultFromOperation),
-                                  typeof(T), typeof(TKey), type)
-                                .InvokeAsync(queryService!, op, options)!;
+                    var aggregationService = service as IAggregationPattern<T, TKey>;
+                    var result = await Generics.With<IAggregationPattern<T, TKey>>(methodName, type)
+                        .InvokeAsync(aggregationService!, filter);
+
                     return result;
 
                     Type CalculateTypeFromQuery()
@@ -152,17 +178,9 @@ namespace Microsoft.Extensions.DependencyInjection
                             calculatedType = Type.GetType(returnType);
                         return calculatedType ?? typeof(object);
                     }
-                }).WithName($"{nameof(RepositoryMethods.Operation)}{name}")
-              .AddAuthorization(authorization, RepositoryMethods.Operation);
+                }).WithName($"{methodName}{name}")
+              .AddAuthorization(authorization, repositoryMethod);
         }
-        private static ValueTask<TProperty> GetResultFromOperation<T, TKey, TProperty>(
-            IQueryPattern<T, TKey> queryService,
-            Operations operations,
-            IFilterExpression filter)
-            where TKey : notnull
-            => queryService.OperationAsync(
-                new OperationType<TProperty> { Operation = operations },
-                filter);
         private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {

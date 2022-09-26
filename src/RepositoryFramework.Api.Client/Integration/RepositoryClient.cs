@@ -68,12 +68,14 @@ namespace RepositoryFramework.Api.Client
                     if (!cancellationToken.IsCancellationRequested)
                         yield return item;
         }
-        public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
-            IFilterExpression filter, CancellationToken cancellationToken = default)
+        private async ValueTask<TProperty> OperationAsync<TProperty>(
+            RepositoryMethods repositoryMethods,
+            IFilterExpression filter,
+            CancellationToken cancellationToken = default)
         {
-            var client = await EnrichedClientAsync(RepositoryMethods.Operation).NoContext();
+            var client = await EnrichedClientAsync(repositoryMethods).NoContext();
             var value = filter.Serialize();
-            var response = await client.PostAsJsonAsync($"{nameof(RepositoryMethods.Operation)}?op={operation.Operation}&returnType={GetPrimitiveNameOrAssemblyQualifiedName()}",
+            var response = await client.PostAsJsonAsync($"{repositoryMethods}?returnType={GetPrimitiveNameOrAssemblyQualifiedName()}",
                 value, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<TProperty>(cancellationToken: cancellationToken).NoContext();
@@ -81,7 +83,7 @@ namespace RepositoryFramework.Api.Client
 
             string? GetPrimitiveNameOrAssemblyQualifiedName()
             {
-                var name = operation.Type.AssemblyQualifiedName;
+                var name = typeof(TProperty).AssemblyQualifiedName;
                 if (name == null)
                     return null;
                 if (PrimitiveMapper.Instance.FromAssemblyQualifiedNameToName.ContainsKey(name))
@@ -104,5 +106,17 @@ namespace RepositoryFramework.Api.Client
             response.EnsureSuccessStatusCode();
             return (await response.Content.ReadFromJsonAsync<BatchResults<T, TKey>>(cancellationToken: cancellationToken).NoContext())!;
         }
+        public ValueTask<TProperty> CountAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
+            => OperationAsync<TProperty>(RepositoryMethods.Count, filter, cancellationToken);
+        public ValueTask<TProperty> SumAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
+            => OperationAsync<TProperty>(RepositoryMethods.Sum, filter, cancellationToken);
+        public ValueTask<TProperty> MaxAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
+            => OperationAsync<TProperty>(RepositoryMethods.Max, filter, cancellationToken);
+        public ValueTask<TProperty> MinAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
+            => OperationAsync<TProperty>(RepositoryMethods.Min, filter, cancellationToken);
+        public ValueTask<TProperty> AverageAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
+            => OperationAsync<TProperty>(RepositoryMethods.Average, filter, cancellationToken);
+        public IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
+            => OperationAsync<TProperty>(RepositoryMethods.GroupBy, filter, cancellationToken);
     }
 }

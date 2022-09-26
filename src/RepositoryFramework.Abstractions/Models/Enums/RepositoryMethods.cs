@@ -13,7 +13,12 @@
         Exist = 16,
         Get = 32,
         Query = 64,
-        Operation = 128,
-        All = 256,
+        Count = 128,
+        Average = 256,
+        Sum = 512,
+        Max = 1024,
+        Min = 2048,
+        GroupBy = 4096,
+        All = 8192,
     }
 }

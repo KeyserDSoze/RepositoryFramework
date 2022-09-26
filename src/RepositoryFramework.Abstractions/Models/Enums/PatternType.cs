@@ -7,6 +7,7 @@
     {
         Repository,
         Query,
-        Command
+        Command,
+        Aggregation
     }
 }
