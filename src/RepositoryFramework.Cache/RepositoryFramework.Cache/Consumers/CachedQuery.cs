@@ -131,7 +131,7 @@ namespace RepositoryFramework.Cache
             IFilterExpression filter,
             CancellationToken cancellationToken = default)
         {
-            var keyAsString = $"{nameof(RepositoryMethods.Operation)}_{_cacheName}_{filter.ToKey()}";
+            var keyAsString = $"{nameof(RepositoryMethods.Operation)}_{operation.Name}_{_cacheName}_{filter.ToKey()}";
 
             var value = await RetrieveValueAsync(RepositoryMethods.Operation, keyAsString,
                 null,

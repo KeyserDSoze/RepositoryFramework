@@ -9,19 +9,19 @@ The Methods is a flag that allows to setup what operations have to be cached.
 
 Query -> query will be cached with this key
 
-    var keyAsString = $"{nameof(RepositoryMethod.Query)}_{your query request as string}";
+    var keyAsString = $"{nameof(RepositoryMethods.Query)}_{typeof(T).Name}_{filter.ToKey()}";
 
 Operation -> operation will be cached with this key
 
-    var keyAsString = $"{nameof(RepositoryMethod.Operation)}_{type of operation}_{your query request as string}";
+    var keyAsString = $"{nameof(RepositoryMethods.Operation)}_{operation.Name}_{typeof(T).Name}_{filter.ToKey()}";
 
 Get -> query will be cached with this key
     
-    var keyAsString = $"{nameof(RepositoryMethod.Get)}_{key}";
+    var keyAsString = $"{nameof(RepositoryMethods.Get)}_{typeof(T).Name}_{key.AsString()}";
 
 Exist -> query will be cached with this key
     
-    var keyAsString = $"{nameof(RepositoryMethod.Exist)}_{key}";
+    var keyAsString = $"{nameof(RepositoryMethod.Exist)}_{typeof(T).Name}_{key.AsString()}";
 
 Now you can understand the special behavior for commands. If you set Insert and/or Update and/or Delete, during any command if you allowed it for each command automatically the framework will update the cache value, with updated or inserted value or removing the deleted value.
 The code below allows everything
