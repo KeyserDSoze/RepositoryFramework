@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RepositoryFramework.UnitTest.AllMethods.Models
 {
-    internal class AnimalBusiness : IRepositoryBusinessBeforeInsert<Animal, long>, IRepositoryBusinessAfterInsert<Animal, long>
+    internal sealed class AnimalBusiness : IRepositoryBusinessBeforeInsert<Animal, long>, IRepositoryBusinessAfterInsert<Animal, long>
     {
         public static int After;
         public Task<IState<Animal>> AfterInsertAsync(IState<Animal> state, IEntity<Animal, long> entity, CancellationToken cancellationToken = default)

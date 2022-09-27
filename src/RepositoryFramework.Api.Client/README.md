@@ -7,7 +7,7 @@ You may add a repository client for your model. You may choose the domain (domai
         string domain,
         string startingPath = "api",
         Action<HttpClient>? configureClient = null,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TKey : notnull
 
 You have the same client for CQRS, with command
@@ -16,7 +16,7 @@ You have the same client for CQRS, with command
         string domain,
         string startingPath = "api",
         Action<HttpClient>? configureClient = null,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TKey : notnull
 
 and query
@@ -25,7 +25,7 @@ and query
         string domain,
         string startingPath = "api",
         Action<HttpClient>? configureClient = null,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
+        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TKey : notnull
 
 ### HttpClient to use your API (example)
@@ -63,19 +63,6 @@ And you may inject the objects
     ICommand<User, string> command
     IQuery<User, string> command
 
-### With string as default TKey 
-In DI you install the services
-
-    services.AddRepositoryApiClient<User>("localhost:7058");
-    services.AddCommandApiClient<User>("localhost:7058");
-    services.AddQueryApiClient<User>("localhost:7058");
-
-And you may inject the objects
-    
-    IRepository<User> repository
-    ICommand<User> command
-    IQuery<User> command
-
 ### Interceptors
 You may add a custom interceptor for every request for every model
 
@@ -108,4 +95,4 @@ Automatically it adds the token to each request.
 
 You may use the default identity interceptor not on all repositories, you can specificy them with
 
-    builder.Services.AddApiClientSpecificAuthorizationInterceptor<YourModel>();
+    builder.Services.AddApiClientSpecificAuthorizationInterceptor<T>();

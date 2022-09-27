@@ -10,7 +10,7 @@ namespace RepositoryFramework.Api.Client
         private readonly HttpClient _httpClient;
         private readonly IRepositoryClientInterceptor? _clientInterceptor;
         private readonly IRepositoryClientInterceptor<T>? _specificClientInterceptor;
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2743:Static fields should not be used in generic types", Justification = "Necessary.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2743:Static fields should not be used in generic types", Justification = "Necessary for each T and TKey class.")]
         private static readonly bool s_isJsonable = IsJsonable();
         private static bool IsJsonable()
         {
