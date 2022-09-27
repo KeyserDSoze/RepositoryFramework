@@ -17,7 +17,12 @@ namespace RepositoryFramework
         IQueryable<dynamic> ApplyAsSelect<T>(IEnumerable<T> enumerable);
         IQueryable<dynamic> ApplyAsSelect<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary);
         IQueryable<dynamic> ApplyAsSelect<T>(IQueryable<T> queryable);
+        IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IEnumerable<T> enumerable);
+        IQueryable<IGrouping<dynamic, TValue>> ApplyAsGroupBy<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary);
+        IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IQueryable<T> queryable);
         LambdaExpression? GetFirstSelect<T>();
         LambdaExpression? DefaultSelect { get; }
+        LambdaExpression? DefaultGroupBy { get; }
+        LambdaExpression? GetFirstGroupBy<T>();
     }
 }

@@ -112,7 +112,7 @@ namespace System.Linq
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>IEnumerable<IGrouping<<typeparamref name="TProperty"/>, <typeparamref name="T"/>>></returns>
-        public static IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty, T, TKey>(
+        public static IAsyncEnumerable<IGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty, T, TKey>(
             this IQueryPattern<T, TKey> query,
             Expression<Func<T, TProperty>> predicate,
             CancellationToken cancellationToken = default)

@@ -116,7 +116,13 @@ namespace RepositoryFramework.Api.Client
             => OperationAsync<TProperty>(RepositoryMethods.Min, filter, cancellationToken);
         public ValueTask<TProperty> AverageAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
             => OperationAsync<TProperty>(RepositoryMethods.Average, filter, cancellationToken);
-        public IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
-            => OperationAsync<TProperty>(RepositoryMethods.GroupBy, filter, cancellationToken);
+        public async IAsyncEnumerable<IGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
+        {
+            var results = await OperationAsync<List<IGrouping<TProperty, IEntity<T, TKey>>>>(RepositoryMethods.GroupBy, filter, cancellationToken);
+            foreach (var item in results)
+            {
+                yield return item;
+            }
+        }
     }
 }

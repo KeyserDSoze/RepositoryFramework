@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -154,12 +155,12 @@ namespace RepositoryFramework.InMemory
             else
                 throw new TaskCanceledException();
         }
-        public async ValueTask<TProperty> OperationAsync<TProperty>(
-           OperationType<TProperty> operation,
+        private async ValueTask<TProperty> OperationAsync<TProperty>(
+           RepositoryMethods repositoryMethods,
            IFilterExpression filter,
            CancellationToken cancellationToken = default)
         {
-            var settings = _settings.Get(RepositoryMethods.Operation);
+            var settings = _settings.Get(repositoryMethods);
             await Task.Delay(GetRandomNumber(settings.MillisecondsOfWait), cancellationToken).NoContext();
             if (!cancellationToken.IsCancellationRequested)
             {
@@ -171,14 +172,21 @@ namespace RepositoryFramework.InMemory
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    var filtered = filter.Apply(Values.Select(x => x.Value.Value));
-                    var selected = filter.ApplyAsSelect(filtered);
-                    return (await operation.ExecuteAsync(
-                        () => Invoke<TProperty>(selected.Count()),
-                        () => Invoke<TProperty>(selected.Sum(x => ((object)x).Cast<decimal>())),
-                        () => Invoke<TProperty>(selected.Max()!),
-                        () => Invoke<TProperty>(selected.Min()!),
-                        () => Invoke<TProperty>(selected.Average(x => ((object)x).Cast<decimal>()))))!;
+                    switch (repositoryMethods)
+                    {
+                        case RepositoryMethods.Count:
+                            return (TProperty)Convert.ChangeType(filter.Apply(Values.Select(x => x.Value.Value)).Count(), typeof(TProperty));
+                        case RepositoryMethods.Max:
+                            return (TProperty)Convert.ChangeType(filter.ApplyAsSelect(Values.Select(x => x.Value.Value)).Max(), typeof(TProperty));
+                        case RepositoryMethods.Min:
+                            return (TProperty)Convert.ChangeType(filter.ApplyAsSelect(Values.Select(x => x.Value.Value)).Min(), typeof(TProperty));
+                        case RepositoryMethods.Average:
+                            return (TProperty)Convert.ChangeType(filter.ApplyAsSelect(Values.Select(x => x.Value.Value)).Average(x => ((object)x).Cast<decimal>()), typeof(TProperty));
+                        case RepositoryMethods.Sum:
+                            return (TProperty)Convert.ChangeType(filter.ApplyAsSelect(Values.Select(x => x.Value.Value)).Sum(x => ((object)x).Cast<decimal>()), typeof(TProperty));
+                        default:
+                            return default!;
+                    }
                 }
                 else
                     throw new TaskCanceledException();
@@ -217,33 +225,40 @@ namespace RepositoryFramework.InMemory
         }
 
         public ValueTask<TProperty> CountAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
+            => OperationAsync<TProperty>(RepositoryMethods.Count, filter, cancellationToken);
         public ValueTask<TProperty> SumAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
+            => OperationAsync<TProperty>(RepositoryMethods.Sum, filter, cancellationToken);
         public ValueTask<TProperty> MaxAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
+            => OperationAsync<TProperty>(RepositoryMethods.Max, filter, cancellationToken);
         public ValueTask<TProperty> MinAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
+            => OperationAsync<TProperty>(RepositoryMethods.Min, filter, cancellationToken);
         public ValueTask<TProperty> AverageAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+            => OperationAsync<TProperty>(RepositoryMethods.Average, filter, cancellationToken);
 
-        public IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<IGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(
+            IFilterExpression filter,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            foreach (var element in filter.ApplyAsGroupBy(Values.Values.Select(x => x.Value)))
+            {
+                yield return new Grouping<T, TKey, TProperty>(element.Key, element.Select(item => Values.First(x => x.Value.Value!.Equals(item)).Value));
+            }
         }
+    }
+    internal sealed class Grouping<T, TKey, TProperty> : IGrouping<TProperty, IEntity<T, TKey>>
+        where TKey : notnull
+    {
+        public TProperty Key { get; }
+        public IEnumerable<IEntity<T, TKey>> Entities { get; }
+        public Grouping(TProperty key, IEnumerable<IEntity<T, TKey>> entities)
+        {
+            Key = key;
+            Entities = entities;
+        }
+        public IEnumerator<IEntity<T, TKey>> GetEnumerator()
+            => Entities.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
     }
 }

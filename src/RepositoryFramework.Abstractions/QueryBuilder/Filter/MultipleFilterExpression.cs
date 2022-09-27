@@ -42,9 +42,19 @@ namespace RepositoryFramework
             => ApplyAsSelect(dictionary.Select(x => x.Value));
         public IQueryable<dynamic> ApplyAsSelect<T>(IQueryable<T> queryable)
             => ApplyAsSelect(queryable.AsEnumerable());
+        public IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IEnumerable<T> enumerable)
+          => FilterByType<T>().ApplyAsGroupBy(enumerable);
+        public IQueryable<IGrouping<dynamic, TValue>> ApplyAsGroupBy<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
+            => ApplyAsGroupBy(dictionary.Select(x => x.Value));
+        public IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IQueryable<T> queryable)
+            => ApplyAsGroupBy(queryable.AsEnumerable());
         public LambdaExpression? GetFirstSelect<T>()
             => FilterByType<T>().GetFirstSelect<T>();
         public LambdaExpression? DefaultSelect
             => FilterByDefault().DefaultSelect;
+        public LambdaExpression? GetFirstGroupBy<T>()
+            => FilterByType<T>().GetFirstGroupBy<T>();
+        public LambdaExpression? DefaultGroupBy
+            => FilterByDefault().DefaultGroupBy;
     }
 }

@@ -56,12 +56,6 @@ namespace RepositoryFramework
         public IRepositoryBuilder<T, TKey> AddBusinessAfterQuery<TBusiness>()
             where TBusiness : class, IRepositoryBusinessAfterQuery<T, TKey>
             => AddBusiness<TBusiness>(RepositoryMethods.Query, true);
-        public IRepositoryBuilder<T, TKey> AddBusinessBeforeOperation<TBusiness>()
-           where TBusiness : class, IRepositoryBusinessBeforeOperation<T, TKey>
-           => AddBusiness<TBusiness>(RepositoryMethods.Operation, false);
-        public IRepositoryBuilder<T, TKey> AddBusinessAfterOperation<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessAfterOperation<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Operation, true);
         private IRepositoryBuilder<T, TKey> AddBusiness<TBusiness>(RepositoryMethods method, bool isAfterRequest)
             where TBusiness : class
         {

@@ -91,12 +91,10 @@ namespace RepositoryFramework
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>IEnumerable<IGrouping<<typeparamref name="TProperty"/>, <typeparamref name="T"/>>></returns>
-        public IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
         {
             _ = _filter.GroupBy(predicate);
-            var compiledPredicate = predicate.Compile();
-            var items = QueryAsync(cancellationToken).GroupBy(x => compiledPredicate.Invoke(x.Value));
-            return items;
+            return _function.GroupByAsync<TProperty>(_filter, cancellationToken);
         }
         /// <summary>
         /// Check if exists at least one element with the selected query.

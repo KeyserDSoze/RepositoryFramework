@@ -39,7 +39,7 @@
             => _aggregation.Value.MinAsync<TProperty>(filter, cancellationToken);
         public ValueTask<TProperty> AverageAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
             => _aggregation.Value.AverageAsync<TProperty>(filter, cancellationToken);
-        public IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(IFilterExpression filter, CancellationToken cancellationToken = default)
             => _aggregation.Value.GroupByAsync<TProperty>(filter, cancellationToken);
     }
 }
