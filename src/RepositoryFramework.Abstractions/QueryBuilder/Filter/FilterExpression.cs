@@ -121,20 +121,39 @@ namespace RepositoryFramework
             => Apply(queryable).ToAsyncEnumerable();
         public IQueryable<dynamic> ApplyAsSelect<T>(IEnumerable<T> enumerable)
         {
+            var starter = Apply(enumerable);
             IQueryable<dynamic>? queryable = null;
             foreach (var lambda in Operations.Where(x => x.Operation == FilterOperations.Select).Select(x => x as LambdaFilterOperation))
                 if (lambda?.Expression != null)
-                    queryable = enumerable.AsQueryable().Select(lambda.Expression);
-            return queryable ?? enumerable.Select(x => (dynamic)x!).AsQueryable();
+                    queryable = starter.Select(lambda.Expression);
+            return queryable ?? starter.Select(x => (dynamic)x!);
         }
         public IQueryable<dynamic> ApplyAsSelect<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
             => ApplyAsSelect(dictionary.Select(x => x.Value));
 
         public IQueryable<dynamic> ApplyAsSelect<T>(IQueryable<T> queryable)
             => ApplyAsSelect(queryable.AsEnumerable());
+        public IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IEnumerable<T> enumerable)
+        {
+            var starter = Apply(enumerable);
+            IQueryable<IGrouping<object, T>>? queryable = null;
+            foreach (var lambda in Operations.Where(x => x.Operation == FilterOperations.GroupBy).Select(x => x as LambdaFilterOperation))
+                if (lambda?.Expression != null)
+                    queryable = starter.GroupBy(lambda.Expression);
+            return queryable ?? starter.GroupBy(x => (dynamic)x!);
+        }
+        public IQueryable<IGrouping<dynamic, TValue>> ApplyAsGroupBy<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
+            => ApplyAsGroupBy(dictionary.Select(x => x.Value));
+
+        public IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IQueryable<T> queryable)
+            => ApplyAsGroupBy(queryable.AsEnumerable());
         public LambdaExpression? GetFirstSelect<T>()
             => DefaultSelect;
         public LambdaExpression? DefaultSelect
             => (Operations.FirstOrDefault(x => x.Operation == FilterOperations.Select) as LambdaFilterOperation)?.Expression;
+        public LambdaExpression? GetFirstGroupBy<T>()
+            => DefaultGroupBy;
+        public LambdaExpression? DefaultGroupBy
+            => (Operations.FirstOrDefault(x => x.Operation == FilterOperations.GroupBy) as LambdaFilterOperation)?.Expression;
     }
 }

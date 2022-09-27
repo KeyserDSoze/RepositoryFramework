@@ -90,7 +90,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             await foreach (var item in QueryAsync(filter, cancellationToken))
                 items.Add(item.Value);
             var select = filter.GetFirstSelect<T>();
-            return (await operation.ExecuteAsync(
+            return (await operation.ExecuteDefaultOperationAsync(
                 () => items.Count,
                 () => items.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),
                 () => items.Select(x => select!.InvokeAndTransform<object>(x!)).Max(),

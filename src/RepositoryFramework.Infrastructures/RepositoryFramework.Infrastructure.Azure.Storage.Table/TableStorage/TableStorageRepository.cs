@@ -120,7 +120,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             await foreach (var item in QueryAsync(filter, cancellationToken))
                 items.Add(item.Value);
             var selected = filter.ApplyAsSelect(items);
-            return (await operation.ExecuteAsync(
+            return (await operation.ExecuteDefaultOperationAsync(
                 () => Invoke<TProperty>(selected.Count()),
                 () => Invoke<TProperty>(selected.Sum(x => ((object)x).Cast<decimal>())),
                 () => Invoke<TProperty>(selected.Max()!),

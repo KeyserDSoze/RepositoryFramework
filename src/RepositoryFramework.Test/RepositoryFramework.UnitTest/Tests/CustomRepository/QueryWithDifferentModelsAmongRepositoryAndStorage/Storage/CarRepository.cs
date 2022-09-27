@@ -29,7 +29,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
           IFilterExpression filter,
           CancellationToken cancellationToken = default)
         {
-            if (operation.Operation == Operations.Count)
+            if (operation.Name == DefaultOperations.Count)
                 return ValueTask.FromResult((TProperty)Convert.ChangeType(_database.Count, typeof(TProperty)));
             else
                 throw new NotImplementedException();

@@ -19,7 +19,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
          IFilterExpression filter,
          CancellationToken cancellationToken = default)
         {
-            if (operation.Operation == Operations.Count)
+            if (operation.Name == DefaultOperations.Count)
                 return ValueTask.FromResult((TProperty)(object)s_dic.Count);
             else
                 throw new NotImplementedException();

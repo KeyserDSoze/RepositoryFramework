@@ -51,7 +51,7 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
           IFilterExpression filter,
           CancellationToken cancellationToken = default)
         {
-            if (operation.Operation == Operations.Count)
+            if (operation.Name == DefaultOperations.Count)
             {
                 var users = filter.Apply(_users.Select(x => x.Value));
                 return ValueTask.FromResult((TProperty)(object)users.Count());

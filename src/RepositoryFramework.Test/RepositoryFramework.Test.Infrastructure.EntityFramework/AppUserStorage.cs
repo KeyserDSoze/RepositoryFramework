@@ -43,24 +43,24 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
         {
             var context = filter.Apply(_context.Users);
             object? result = null;
-            if (operation.Operation == Operations.Count)
+            if (operation.Name == DefaultOperations.Count)
             {
                 result = await context.CountAsync(cancellationToken);
             }
-            else if (operation.Operation == Operations.Min)
+            else if (operation.Name == DefaultOperations.Min)
             {
                 result = await filter.ApplyAsSelect(context).MinAsync(cancellationToken).NoContext();
             }
-            else if (operation.Operation == Operations.Max)
+            else if (operation.Name == DefaultOperations.Max)
             {
                 result = await filter.ApplyAsSelect(context).MaxAsync(cancellationToken).NoContext();
             }
-            else if (operation.Operation == Operations.Sum)
+            else if (operation.Name == DefaultOperations.Sum)
             {
                 var select = filter.GetFirstSelect<User>();
                 result = await context.SumAsync(select!.AsExpression<User, decimal>(), cancellationToken).NoContext();
             }
-            else if (operation.Operation == Operations.Average)
+            else if (operation.Name == DefaultOperations.Average)
             {
                 var select = filter.GetFirstSelect<User>();
                 result = await context.AverageAsync(select!.AsExpression<User, decimal>(), cancellationToken).NoContext();

@@ -173,7 +173,7 @@ namespace RepositoryFramework.InMemory
                 {
                     var filtered = filter.Apply(Values.Select(x => x.Value.Value));
                     var selected = filter.ApplyAsSelect(filtered);
-                    return (await operation.ExecuteAsync(
+                    return (await operation.ExecuteDefaultOperationAsync(
                         () => Invoke<TProperty>(selected.Count()),
                         () => Invoke<TProperty>(selected.Sum(x => ((object)x).Cast<decimal>())),
                         () => Invoke<TProperty>(selected.Max()!),

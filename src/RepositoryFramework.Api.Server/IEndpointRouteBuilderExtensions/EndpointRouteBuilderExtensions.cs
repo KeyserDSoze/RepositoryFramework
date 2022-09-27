@@ -128,7 +128,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
-                async ([FromQuery] Operations op, [FromQuery] string? returnType,
+                async ([FromQuery] string op, [FromQuery] string? returnType,
                     [FromBody] SerializableFilter query, [FromServices] TService service) =>
                 {
                     var options = query.Deserialize<T>();
@@ -157,11 +157,11 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static ValueTask<TProperty> GetResultFromOperation<T, TKey, TProperty>(
             IQueryPattern<T, TKey> queryService,
-            Operations operations,
+            string operationName,
             IFilterExpression filter)
             where TKey : notnull
             => queryService.OperationAsync(
-                new OperationType<TProperty> { Operation = operations },
+                new OperationType<TProperty>(operationName),
                 filter);
         private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull

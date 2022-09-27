@@ -86,7 +86,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         {
             var queryable = filter.Apply(_client.GetItemLinqQueryable<T>());
             var select = filter.GetFirstSelect<T>();
-            return operation.ExecuteAsync(
+            return operation.ExecuteDefaultOperationAsync(
                 () => queryable.CountAsync(cancellationToken)!,
                 () => queryable.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),
                 async () => (await queryable.Select(x => select!.InvokeAndTransform<object>(x!)).AsQueryable().MaxAsync(cancellationToken).NoContext()).Resource,
