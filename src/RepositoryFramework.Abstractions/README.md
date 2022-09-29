@@ -53,17 +53,17 @@ Your storage class has to extend ICommand, and use it on injection
 
     public class UserWriter : ICommand<User, string>
     {
-        public Task<IState<User>> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<User, string>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IState<User>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<User, string>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IState<User>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<User, string>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
@@ -85,7 +85,7 @@ Your storage class has to extend IQuery, and use it on injection
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IState<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<User, string>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
@@ -108,17 +108,17 @@ You may choose to extend IRepository, but when you inject you have to use IRepos
 
     public class UserRepository : IRepository<User, string>, IQuery<User, string>, ICommand<User, string>
     {
-        public Task<IState<User>> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<User, string>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             //delete on with DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IState<User>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<User, string>> InsertAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //insert on DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IState<User>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
+        public Task<State<User, string>> UpdateAsync(string key, User value, CancellationToken cancellationToken = default)
         {
             //update on DB or storage context
             throw new NotImplementedException();
@@ -133,7 +133,7 @@ You may choose to extend IRepository, but when you inject you have to use IRepos
             //get an item by key from DB or storage context
             throw new NotImplementedException();
         }
-        public Task<IState<User>> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<User, string>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             //check if an item by key exists in DB or storage context
             throw new NotImplementedException();
@@ -287,16 +287,16 @@ with
     internal sealed class AnimalBusiness : IRepositoryBusinessBeforeInsert<Animal, long>, IRepositoryBusinessAfterInsert<Animal, long>
     {
         public static int After;
-        public Task<IState<Animal>> AfterInsertAsync(IState<Animal> state, IEntity<Animal, long> entity, CancellationToken cancellationToken = default)
+        public Task<State<Animal>> AfterInsertAsync(State<Animal, long> state, Entity<Animal, long> entity, CancellationToken cancellationToken = default)
         {
             After++;
             return Task.FromResult(state);
         }
 
         public static int Before;
-        public Task<IStatedEntity<Animal, long>> BeforeInsertAsync(IEntity<Animal, long> entity, CancellationToken cancellationToken = default)
+        public Task<State<Animal, long>> BeforeInsertAsync(Entity<Animal, long> entity, CancellationToken cancellationToken = default)
         {
             Before++;
-            return Task.FromResult(IStatedEntity.Ok(entity));
+            return Task.FromResult(State.Ok(entity));
         }
     }

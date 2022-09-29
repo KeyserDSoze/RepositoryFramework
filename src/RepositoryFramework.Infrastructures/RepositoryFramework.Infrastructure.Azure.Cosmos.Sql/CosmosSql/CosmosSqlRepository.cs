@@ -71,7 +71,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var queryable = filter.Apply(_client.GetItemLinqQueryable<T>(), AvailableOperations);
-            var entities = new List<Entity<T, TKey>>();
+            var entities = new List<T>();
             using var iterator = queryable.ToFeedIterator();
             while (iterator.HasMoreResults)
             {
@@ -79,10 +79,10 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                     break;
 #warning to retrieve in some way the key
                 foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
-                    entities.Add(Entity.Default(item, default(TKey)!));
+                    entities.Add(item);
             }
             foreach (var item in filter.Apply(entities, NotAvailableOperations))
-                yield return item;
+                yield return Entity.Default(item, default(TKey)!);
         }
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             IFilterExpression filter,
@@ -91,11 +91,11 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             var queryable = filter.Apply(_client.GetItemLinqQueryable<T>());
             var select = filter.GetFirstSelect<T>();
             return operation.ExecuteDefaultOperationAsync(
-                () => queryable.CountAsync(cancellationToken)!,
-                () => queryable.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),
-                async () => (await queryable.Select(x => select!.InvokeAndTransform<object>(x!)).AsQueryable().MaxAsync(cancellationToken).NoContext()).Resource,
-                async () => (await queryable.Select(x => select!.InvokeAndTransform<object>(x!)).AsQueryable().MinAsync(cancellationToken).NoContext()).Resource,
-                () => queryable.Average(x => select!.InvokeAndTransform<decimal>(x!))
+                async () => (await queryable.CountAsync(cancellationToken)!).Resource,
+                () => queryable.Sum(select!),
+                async () => (await queryable.Select(select!).AsQueryable().MaxAsync(cancellationToken).NoContext()).Resource,
+                async () => (await queryable.Select(select!).AsQueryable().MinAsync(cancellationToken).NoContext()).Resource,
+                () => queryable.Average(select!)
                 )!;
         }
         public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
