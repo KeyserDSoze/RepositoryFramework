@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    internal class ApiAuthorization
+    internal sealed class ApiAuthorization
     {
         public Dictionary<RepositoryMethods, string[]?> Policies { get; } = new();
         public string[]? GetPolicy(RepositoryMethods method)

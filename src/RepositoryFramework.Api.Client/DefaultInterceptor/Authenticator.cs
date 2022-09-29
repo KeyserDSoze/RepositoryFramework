@@ -3,14 +3,6 @@ using System.Net.Http.Headers;
 
 namespace RepositoryFramework.Api.Client.DefaultInterceptor
 {
-    internal class Authenticator<T> : Authenticator, IRepositoryClientInterceptor<T>
-    {
-        public Authenticator(ITokenAcquisition tokenProvider,
-            AuthenticatorSettings<T> settings,
-            IServiceProvider provider) : base(tokenProvider, settings, provider)
-        {
-        }
-    }
     internal class Authenticator : IRepositoryClientInterceptor
     {
         private readonly ITokenAcquisition _tokenProvider;
