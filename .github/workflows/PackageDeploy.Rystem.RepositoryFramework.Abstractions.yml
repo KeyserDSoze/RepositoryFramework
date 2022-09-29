@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - src/RepositoryFramework.Abstractions/**
 jobs:
   publish:
     name: build, pack & publish

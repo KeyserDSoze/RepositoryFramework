@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Azure.Storage.Blob/**
 jobs:
   publish:
     name: build, pack & publish

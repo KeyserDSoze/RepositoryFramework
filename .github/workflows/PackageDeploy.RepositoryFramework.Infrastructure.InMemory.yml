@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - src/RepositoryFramework.Infrastructure.InMemory/**
 jobs:
   publish:
     name: build, pack & publish

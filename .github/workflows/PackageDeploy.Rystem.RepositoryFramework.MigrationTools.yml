@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - src/RepositoryFramework.MigrationTools/**
 jobs:
   publish:
     name: build, pack & publish
