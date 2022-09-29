@@ -13,22 +13,22 @@
             _command = new Lazy<Command<T, TKey>>(() => new Command<T, TKey>(repository, businessManager));
         }
 
-        public Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.Value.ExistAsync(key, cancellationToken);
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.Value.GetAsync(key, cancellationToken);
-        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
             => _query.Value.QueryAsync(filter, cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             IFilterExpression filter,
             CancellationToken cancellationToken = default)
            => _query.Value.OperationAsync(operation, filter, cancellationToken);
 
-        public Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _command.Value.InsertAsync(key, value, cancellationToken);
-        public Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
             => _command.Value.UpdateAsync(key, value, cancellationToken);
-        public Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
            => _command.Value.DeleteAsync(key, cancellationToken);
         public Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
             => _command.Value.BatchAsync(operations, cancellationToken);

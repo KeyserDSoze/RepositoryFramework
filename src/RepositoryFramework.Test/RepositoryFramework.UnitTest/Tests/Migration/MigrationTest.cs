@@ -38,12 +38,12 @@ namespace RepositoryFramework.UnitTest.Migration
             Assert.Equal(4, (await _repository.QueryAsync().ToListAsync().NoContext()).Count);
             await foreach (var user in _from.QueryAsync())
             {
-                Assert.True((await _repository.ExistAsync(user.Key).NoContext()).IsOk);
-                var newUser = await _repository.GetAsync(user.Key).NoContext();
+                Assert.True((await _repository.ExistAsync(user.Key!).NoContext()).IsOk);
+                var newUser = await _repository.GetAsync(user.Key!).NoContext();
                 Assert.NotNull(newUser);
-                Assert.True(newUser!.IsAdmin == user.Value.IsAdmin);
-                Assert.True(newUser!.Email == user.Value.Email);
-                Assert.True(newUser!.Name == user.Value.Name);
+                Assert.True(newUser!.IsAdmin == user.Value!.IsAdmin);
+                Assert.True(newUser!.Email == user.Value!.Email);
+                Assert.True(newUser!.Name == user.Value!.Name);
             }
             Assert.True(migrationResult);
         }

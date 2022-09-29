@@ -13,9 +13,10 @@ namespace RepositoryFramework.WebApi
     }
     public class IperRepositoryBeforeInsertBusiness : IRepositoryBusinessBeforeInsert<IperUser, string>
     {
-        public Task<IStatedEntity<IperUser, string>> BeforeInsertAsync(IEntity<IperUser, string> entity, CancellationToken cancellationToken = default)
+        public async Task<State<IperUser, string>> BeforeInsertAsync(Entity<IperUser, string> entity, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(IStatedEntity.Ok(entity));
+            await Task.CompletedTask;
+            return true;
         }
     }
     public class IperRepositoryStorage : IRepository<IperUser, string>
@@ -25,12 +26,12 @@ namespace RepositoryFramework.WebApi
             throw new NotImplementedException();
         }
 
-        public Task<IState<IperUser>> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<IperUser, string>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             throw new ArgumentException("dasdsada");
         }
 
-        public Task<IState<IperUser>> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<IperUser, string>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException("Saalsbury");
         }
@@ -40,11 +41,11 @@ namespace RepositoryFramework.WebApi
             return Task.FromResult(new IperUser { Id = "2", Name = "d" })!;
         }
 
-        public async Task<IState<IperUser>> InsertAsync(string key, IperUser value, CancellationToken cancellationToken = default)
+        public async Task<State<IperUser, string>> InsertAsync(string key, IperUser value, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(0, cancellationToken);
+            await Task.CompletedTask;
             cancellationToken.ThrowIfCancellationRequested();
-            return IState.Default<IperUser>(true);
+            return true;
         }
 
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default)
@@ -53,15 +54,15 @@ namespace RepositoryFramework.WebApi
             throw new NotImplementedException();
         }
 
-        public IAsyncEnumerable<IEntity<IperUser, string>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<Entity<IperUser, string>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IState<IperUser>> UpdateAsync(string key, IperUser value, CancellationToken cancellationToken = default)
+        public async Task<State<IperUser, string>> UpdateAsync(string key, IperUser value, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(0, cancellationToken);
-            return IState.Default<IperUser>(false);
+            await Task.CompletedTask;
+            return false;
         }
     }
 }

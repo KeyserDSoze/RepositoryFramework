@@ -73,12 +73,12 @@ namespace RepositoryFramework.UnitTest.Unitary
             throw new NotImplementedException();
         }
 
-        public Task<IState<Translatable>> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<Translatable, string>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IState<Translatable>> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public Task<State<Translatable, string>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -88,9 +88,9 @@ namespace RepositoryFramework.UnitTest.Unitary
             throw new NotImplementedException();
         }
 
-        public async Task<IState<Translatable>> InsertAsync(string key, Translatable value, CancellationToken cancellationToken = default)
+        public async Task<State<Translatable, string>> InsertAsync(string key, Translatable value, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(0, cancellationToken);
+            await Task.CompletedTask;
             _toTranslateSomething.Add(new ToTranslateSomething
             {
                 Attivo = true,
@@ -107,7 +107,7 @@ namespace RepositoryFramework.UnitTest.Unitary
                 DataFine = DateTime.UtcNow,
                 DataInizio = DateTime.UtcNow,
             });
-            return IState.Ok<Translatable>();
+            return true;
         }
 
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default)
@@ -115,13 +115,13 @@ namespace RepositoryFramework.UnitTest.Unitary
             throw new NotImplementedException();
         }
 
-        public async IAsyncEnumerable<IEntity<Translatable, string>> QueryAsync(IFilterExpression filter,
+        public async IAsyncEnumerable<Entity<Translatable, string>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken);
 
             foreach (var validitum in filter.Apply(_toTranslateSomething))
-                yield return IEntity.Default(Guid.NewGuid().ToString(),
+                yield return Entity.Default(
                     new Translatable(validitum.IdccnlValidita,
                     validitum.Idccnl,
                     validitum.DataInizio,
@@ -136,10 +136,11 @@ namespace RepositoryFramework.UnitTest.Unitary
                     validitum.DataCreazione ?? DateTime.UtcNow,
                     validitum.DataModifica ?? DateTime.UtcNow,
                     validitum.UtenteCreazione,
-                    validitum.UtenteModifica));
+                    validitum.UtenteModifica),
+                    Guid.NewGuid().ToString());
 
             foreach (var validitum in filter.Apply(_toTranslateSomethingElse))
-                yield return IEntity.Default(Guid.NewGuid().ToString(),
+                yield return Entity.Default(
                     new Translatable(validitum.IdccnlValidita,
                     validitum.Idccnl,
                     validitum.DataInizio,
@@ -154,10 +155,11 @@ namespace RepositoryFramework.UnitTest.Unitary
                     validitum.DataCreazione ?? DateTime.UtcNow,
                     validitum.DataModifica ?? DateTime.UtcNow,
                     validitum.UtenteCreazione,
-                    validitum.UtenteModifica));
+                    validitum.UtenteModifica),
+                    Guid.NewGuid().ToString());
         }
 
-        public Task<IState<Translatable>> UpdateAsync(string key, Translatable value, CancellationToken cancellationToken = default)
+        public Task<State<Translatable, string>> UpdateAsync(string key, Translatable value, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

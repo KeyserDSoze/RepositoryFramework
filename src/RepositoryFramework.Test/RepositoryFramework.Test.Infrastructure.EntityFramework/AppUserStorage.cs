@@ -68,21 +68,21 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             return result.Cast<TProperty>() ?? default!;
         }
 
-        public async Task<IState<AppUser>> DeleteAsync(AppUserKey key, CancellationToken cancellationToken = default)
+        public async Task<State<AppUser, AppUserKey>> DeleteAsync(AppUserKey key, CancellationToken cancellationToken = default)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Identificativo == key.Id, cancellationToken);
             if (user != null)
             {
                 _context.Users.Remove(user);
-                return IState.Default<AppUser>(await _context.SaveChangesAsync(cancellationToken) > 0);
+                return await _context.SaveChangesAsync(cancellationToken) > 0;
             }
-            return IState.Default<AppUser>(false);
+            return false;
         }
 
-        public async Task<IState<AppUser>> ExistAsync(AppUserKey key, CancellationToken cancellationToken = default)
+        public async Task<State<AppUser, AppUserKey>> ExistAsync(AppUserKey key, CancellationToken cancellationToken = default)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Identificativo == key.Id, cancellationToken);
-            return IState.Default<AppUser>(user != null);
+            return user != null;
         }
 
         public async Task<AppUser?> GetAsync(AppUserKey key, CancellationToken cancellationToken = default)
@@ -93,7 +93,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
             return default;
         }
 
-        public async Task<IState<AppUser>> InsertAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)
+        public async Task<State<AppUser, AppUserKey>> InsertAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)
         {
             var user = new User
             {
@@ -102,28 +102,30 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
                 Cognome = string.Empty,
             };
             _context.Users.Add(user);
-            return IState.Default(
+            return State.Default(
                 await _context.SaveChangesAsync(cancellationToken) > 0,
-                value with { Id = user.Identificativo });
+                value with { Id = user.Identificativo },
+                key);
         }
 
-        public async IAsyncEnumerable<IEntity<AppUser, AppUserKey>> QueryAsync(IFilterExpression filter,
+        public async IAsyncEnumerable<Entity<AppUser, AppUserKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var user in filter.ApplyAsAsyncEnumerable(_context.Users))
-                yield return IEntity.Default(new AppUserKey(user.Identificativo), new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new(), default));
+                yield return Entity.Default(new AppUser(user.Identificativo, user.Nome, user.IndirizzoElettronico, new(), default),
+                    new AppUserKey(user.Identificativo));
         }
 
-        public async Task<IState<AppUser>> UpdateAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)
+        public async Task<State<AppUser, AppUserKey>> UpdateAsync(AppUserKey key, AppUser value, CancellationToken cancellationToken = default)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Identificativo == key.Id, cancellationToken);
             if (user != null)
             {
                 user.Nome = value.Username;
                 user.IndirizzoElettronico = value.Email;
-                return IState.Default<AppUser>(await _context.SaveChangesAsync(cancellationToken) > 0);
+                return await _context.SaveChangesAsync(cancellationToken) > 0;
             }
-            return IState.Default<AppUser>(false);
+            return false;
         }
     }
 }

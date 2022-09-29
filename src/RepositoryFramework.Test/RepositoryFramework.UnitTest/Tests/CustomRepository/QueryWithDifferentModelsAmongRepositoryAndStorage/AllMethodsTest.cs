@@ -10,7 +10,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
 {
     public class QueryWithDifferentModelsAmongRepositoryAndStorage
     {
-        private static readonly IServiceProvider ServiceProvider;
+        private static readonly IServiceProvider s_serviceProvider;
         static QueryWithDifferentModelsAmongRepositoryAndStorage()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out _)
@@ -23,12 +23,12 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
                 .With(x => x.Driver, x => x.Guidatore)
                 .With(x => x.Driver!.Name, x => x.Guidatore!.Nome)
                 .Services
-                .Finalize(out ServiceProvider);
+                .Finalize(out s_serviceProvider);
         }
         private readonly IRepository<Car, int> _repository;
         public QueryWithDifferentModelsAmongRepositoryAndStorage()
         {
-            _repository = ServiceProvider.GetService<IRepository<Car, int>>()!;
+            _repository = s_serviceProvider.GetService<IRepository<Car, int>>()!;
         }
         [Theory]
         [InlineData(0, 5)]
@@ -45,7 +45,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
                 .ToListAsync();
             Assert.Equal(numberOfResults, results.Count);
             if (results.Any())
-                Assert.Equal(5, results.First().Value.Id);
+                Assert.Equal(5, results.First().Value!.Id);
             var results2 = await _repository.ToListAsync();
             Assert.Equal(5, results2.Count);
             var results3 = await _repository
@@ -53,7 +53,7 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
                 .PageAsync(1, 2);
             Assert.Equal(2, results3.Items.Count());
             Assert.Equal(5, results3.TotalCount);
-            Assert.Equal(1, results3.Items.First().Value.Id);
+            Assert.Equal(1, results3.Items.First().Value!.Id);
         }
     }
 }

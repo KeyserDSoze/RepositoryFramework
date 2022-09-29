@@ -25,22 +25,21 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
                 throw new NotImplementedException();
         }
 
-        public async Task<IState<ClassAnimal>> DeleteAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
+        public async Task<State<ClassAnimal, ClassAnimalKey>> DeleteAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken).NoContext();
             if (s_dic.ContainsKey(key.Id) && s_dic[key.Id].ContainsKey(key.Key) && s_dic[key.Id][key.Key].ContainsKey(key.ValKey))
             {
                 s_dic[key.Id][key.Key].Remove(key.ValKey);
-                return IState.Default<ClassAnimal>(true);
+                return true;
             }
-
-            return IState.Default<ClassAnimal>(false);
+            return false;
         }
 
-        public async Task<IState<ClassAnimal>> ExistAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
+        public async Task<State<ClassAnimal, ClassAnimalKey>> ExistAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken).NoContext();
-            return IState.Default<ClassAnimal>(s_dic.ContainsKey(key.Id) && s_dic[key.Id].ContainsKey(key.Key) && s_dic[key.Id][key.Key].ContainsKey(key.ValKey));
+            return s_dic.ContainsKey(key.Id) && s_dic[key.Id].ContainsKey(key.Key) && s_dic[key.Id][key.Key].ContainsKey(key.ValKey);
         }
 
         public async Task<ClassAnimal?> GetAsync(ClassAnimalKey key, CancellationToken cancellationToken = default)
@@ -53,7 +52,7 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             return default;
         }
 
-        public async Task<IState<ClassAnimal>> InsertAsync(ClassAnimalKey key, ClassAnimal value, CancellationToken cancellationToken = default)
+        public async Task<State<ClassAnimal, ClassAnimalKey>> InsertAsync(ClassAnimalKey key, ClassAnimal value, CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken).NoContext();
             if (!s_dic.ContainsKey(key.Id))
@@ -63,23 +62,23 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys.Models
             if (!s_dic[key.Id][key.Key].ContainsKey(key.ValKey))
             {
                 s_dic[key.Id][key.Key].Add(key.ValKey, value);
-                return IState.Default<ClassAnimal>(true);
+                return true;
             }
-            return IState.Default<ClassAnimal>(false);
+            return false;
         }
 
-        public async Task<IState<ClassAnimal>> UpdateAsync(ClassAnimalKey key, ClassAnimal value, CancellationToken cancellationToken = default)
+        public async Task<State<ClassAnimal, ClassAnimalKey>> UpdateAsync(ClassAnimalKey key, ClassAnimal value, CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken).NoContext();
             if (s_dic.ContainsKey(key.Id) && s_dic[key.Id].ContainsKey(key.Key) && s_dic[key.Id][key.Key].ContainsKey(key.ValKey))
             {
                 s_dic[key.Id][key.Key][key.ValKey] = value;
-                return IState.Default<ClassAnimal>(true);
+                return true;
             }
-            return IState.Default<ClassAnimal>(false);
+            return false;
         }
 
-        public IAsyncEnumerable<IEntity<ClassAnimal, ClassAnimalKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<Entity<ClassAnimal, ClassAnimalKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

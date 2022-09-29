@@ -61,12 +61,12 @@ namespace RepositoryFramework.UnitTest.Repository
             var repository = GetCorrectIntegration(whatKindOfStorage);
             foreach (var appUser in await repository.ToListAsync())
             {
-                await repository.DeleteAsync(new AppUserKey(appUser.Value.Id));
+                await repository.DeleteAsync(new AppUserKey(appUser.Value!.Id));
             }
             var user = new AppUser(3, "Arnold", "Arnold@gmail.com", new(), DateTime.UtcNow);
             var result = await repository.InsertAsync(new AppUserKey(3), user);
             Assert.True(result.IsOk);
-            user = user with { Id = result.Value!.Id };
+            user = user with { Id = result.Entity!.Value!.Id };
             var key = await CheckAsync("Arnold");
 
             result = await repository.UpdateAsync(key, user with { Username = "Fish" });
@@ -79,7 +79,7 @@ namespace RepositoryFramework.UnitTest.Repository
                 Assert.Single(items);
                 var actual = await repository.FirstOrDefaultAsync(x => x.Id > 0);
                 Assert.NotNull(actual);
-                var key = new AppUserKey(actual!.Value.Id);
+                var key = new AppUserKey(actual!.Value!.Id);
                 var item = await repository.GetAsync(key);
                 Assert.NotNull(item);
                 Assert.Equal(name, item!.Username);
@@ -107,16 +107,16 @@ namespace RepositoryFramework.UnitTest.Repository
 
             Expression<Func<AppUser, object>> orderPredicate = x => x.Id;
             var page = await repository.Where(x => x.Id > 0).OrderByDescending(orderPredicate).PageAsync(1, 2);
-            Assert.True(page.Items.First().Value.Id > page.Items.Last().Value.Id);
+            Assert.True(page.Items.First().Value!.Id > page.Items.Last().Value!.Id);
 
             batchOperation = repository.CreateBatchOperation();
             await foreach (var appUser in repository.QueryAsync())
-                batchOperation.AddUpdate(new AppUserKey(appUser.Value.Id), new AppUser(appUser.Value.Id, $"User Updated {appUser.Value.Id}", $"Email Updated {appUser.Value.Id}", new(), DateTime.UtcNow));
+                batchOperation.AddUpdate(new AppUserKey(appUser.Value!.Id), new AppUser(appUser.Value.Id, $"User Updated {appUser.Value.Id}", $"Email Updated {appUser.Value.Id}", new(), DateTime.UtcNow));
             await batchOperation.ExecuteAsync();
 
             items = await repository.Where(x => x.Id >= 0).ToListAsync();
             Assert.Equal(10, items.Count);
-            Assert.Equal($"Email Updated {items.First().Value.Id}", items.First().Value.Email);
+            Assert.Equal($"Email Updated {items.First().Value!.Id}", items.First().Value!.Email);
 
             var max = await repository.MaxAsync(x => x.Id);
             var min = await repository.MinAsync(x => x.Id);
@@ -131,7 +131,7 @@ namespace RepositoryFramework.UnitTest.Repository
 
             batchOperation = repository.CreateBatchOperation();
             foreach (var appUser in await repository.QueryAsync().ToListAsync())
-                batchOperation.AddDelete(new AppUserKey(appUser.Value.Id));
+                batchOperation.AddDelete(new AppUserKey(appUser.Value!.Id));
             await batchOperation.ExecuteAsync();
 
             items = await repository.Where(x => x.Id > 0).QueryAsync().ToListAsync();

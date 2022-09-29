@@ -5,17 +5,17 @@
     {
         public static BatchResults<T, TKey> Empty => new();
         public List<BatchResult<T, TKey>> Results { get; } = new();
-        public BatchResults<T, TKey> AddInsert(TKey key, IState<T> state)
+        public BatchResults<T, TKey> AddInsert(TKey key, State<T, TKey> state)
         {
             Results.Add(new BatchResult<T, TKey>(CommandType.Insert, key, state));
             return this;
         }
-        public BatchResults<T, TKey> AddUpdate(TKey key, IState<T> state)
+        public BatchResults<T, TKey> AddUpdate(TKey key, State<T, TKey> state)
         {
             Results.Add(new BatchResult<T, TKey>(CommandType.Update, key, state));
             return this;
         }
-        public BatchResults<T, TKey> AddDelete(TKey key, IState<T> state)
+        public BatchResults<T, TKey> AddDelete(TKey key, State<T, TKey> state)
         {
             Results.Add(new BatchResult<T, TKey>(CommandType.Delete, key, state));
             return this;

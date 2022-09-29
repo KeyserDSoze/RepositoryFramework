@@ -13,10 +13,10 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         {
             _client = clientFactory.Get(typeof(T).Name);
         }
-        public async Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.DeleteBlobAsync(key!.ToString(), cancellationToken: cancellationToken).NoContext();
-            return IState.Default<T>(!response.IsError);
+            return !response.IsError;
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
@@ -25,25 +25,25 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             if (await blobClient.ExistsAsync(cancellationToken).NoContext())
             {
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
-                return JsonSerializer.Deserialize<BlobEntity>(blobData.Value.Content)!.Value;
+                return JsonSerializer.Deserialize<Entity<T, TKey>>(blobData.Value.Content)!.Value;
             }
             return default;
         }
-        public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            return IState.Default<T>(await blobClient.ExistsAsync(cancellationToken).NoContext());
+            return (await blobClient.ExistsAsync(cancellationToken).NoContext()).Value;
         }
 
-        public async Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            var entityWithKey = IEntity.Default(key, value);
+            var entityWithKey = Entity.Default(value, key);
             var response = await blobClient.UploadAsync(new BinaryData(entityWithKey.ToJson()), cancellationToken).NoContext();
-            return IState.Default(response.Value != null, value);
+            return State.Default<T, TKey>(response.Value != null, value);
         }
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter,
+        public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             Func<T, bool> predicate = x => true;
@@ -51,33 +51,26 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             var where = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Where) as LambdaFilterOperation)?.Expression;
             if (where != null)
                 predicate = where.AsExpression<T, bool>().Compile();
-            Dictionary<T, IEntity<T, TKey>> entities = new();
+            Dictionary<T, Entity<T, TKey>> entities = new();
             await foreach (var blob in _client.GetBlobsAsync(cancellationToken: cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var blobClient = _client.GetBlobClient(blob.Name);
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
-                var item = JsonSerializer.Deserialize<BlobEntity>(blobData.Value.Content);
-                if (!predicate.Invoke(item!.Value))
+                var item = JsonSerializer.Deserialize<Entity<T, TKey>>(blobData.Value.Content);
+                if (!predicate.Invoke(item!.Value!))
                     continue;
-                entities.Add(item.Value, item);
+                entities.Add(item.Value!, item);
             }
             foreach (var item in filter.Apply(entities.Values.Select(x => x.Value)))
-                yield return entities[item];
+                yield return entities[item!];
         }
-        private sealed class BlobEntity : IEntity<T, TKey>
-        {
-            public TKey Key { get; init; }
-
-            public T Value { get; init; }
-        }
-
-        public async Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var blobClient = _client.GetBlobClient(key!.ToString());
-            var entityWithKey = IEntity.Default(key, value);
+            var entityWithKey = Entity.Default(value, key);
             var response = await blobClient.UploadAsync(new BinaryData(entityWithKey.ToJson()), true, cancellationToken).NoContext();
-            return IState.Default(response.Value != null, value);
+            return State.Default<T, TKey>(response.Value != null, value);
         }
 
         public async ValueTask<TProperty> OperationAsync<TProperty>(
@@ -88,7 +81,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
 #warning to refactor
             List<T> items = new();
             await foreach (var item in QueryAsync(filter, cancellationToken))
-                items.Add(item.Value);
+                items.Add(item.Value!);
             var select = filter.GetFirstSelect<T>();
             return (await operation.ExecuteDefaultOperationAsync(
                 () => items.Count,

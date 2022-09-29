@@ -67,17 +67,17 @@ namespace RepositoryFramework.UnitTest.InMemory.Population
         [InlineData(2)]
         public async Task TestAsync(int numberOfParameters)
         {
-            IEnumerable<IEntity<User, string>> users = null!;
             switch (numberOfParameters)
             {
                 case 1:
-                    users = await _user1.QueryAsync().ToListAsync().NoContext();
+                    var users = await _user1.QueryAsync().ToListAsync().NoContext();
+                    Assert.Equal(100, users.Count);
                     break;
                 case 2:
-                    users = await _user2.QueryAsync().ToListAsync().NoContext();
+                    var users2 = await _user2.QueryAsync().ToListAsync().NoContext();
+                    Assert.Equal(100, users2.Count);
                     break;
             }
-            Assert.Equal(100, users.Count());
         }
     }
 }

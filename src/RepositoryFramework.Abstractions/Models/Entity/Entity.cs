@@ -1,14 +1,32 @@
-﻿namespace RepositoryFramework
+﻿using System.Text.Json.Serialization;
+
+namespace RepositoryFramework
 {
-    internal sealed class Entity<T, TKey> : IEntity<T, TKey>
+    public static class Entity
+    {
+        public static Entity<T, TKey> Default<T, TKey>(T value, TKey key)
+            where TKey : notnull
+            => new(value, key);
+    }
+    public class Entity<T, TKey>
         where TKey : notnull
     {
-        public TKey Key { get; }
-        public T Value { get; }
-        public Entity(TKey key, T value)
+        public TKey? Key { get; set; }
+        public T? Value { get; set; }
+        [JsonIgnore]
+        public bool HasValue => Value != null;
+        [JsonIgnore]
+        public bool HasKey => Key != null;
+        public static Entity<T, TKey> Default(T value, TKey key)
+            => new(value, key);
+        public Entity(T? value = default, TKey? key = default)
         {
-            Key = key;
             Value = value;
+            Key = key;
         }
+        public State<T, TKey> ToOkState()
+            => State.Ok(this);
+        public State<T, TKey> ToNotOkState()
+            => State.NotOk(this);
     }
 }

@@ -32,9 +32,9 @@ namespace RepositoryFramework.Migration
                 }
                 async Task TryToMigrate()
                 {
-                    if (checkIfExists && (await _to.ExistAsync(entity.Key, cancellationToken).NoContext()).IsOk)
+                    if (checkIfExists && (await _to.ExistAsync(entity.Key!, cancellationToken).NoContext()).IsOk)
                         return;
-                    await _to.InsertAsync(entity.Key, entity.Value!, cancellationToken).NoContext();
+                    await _to.InsertAsync(entity.Key!, entity.Value!, cancellationToken).NoContext();
                 }
             }
             return true;

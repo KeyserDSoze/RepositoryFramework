@@ -9,9 +9,9 @@
     public interface IQueryPattern<T, TKey> : IQueryPattern
         where TKey : notnull
     {
-        Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default);
         ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default);
     }
 }

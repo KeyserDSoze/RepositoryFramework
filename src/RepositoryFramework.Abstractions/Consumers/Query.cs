@@ -15,13 +15,13 @@ namespace RepositoryFramework
             _businessManager = businessManager;
         }
 
-        public Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeExist == true || _businessManager?.HasBusinessAfterExist == true ?
                 _businessManager.ExistAsync(_query, key, cancellationToken) : _query.ExistAsync(key, cancellationToken);
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeGet == true || _businessManager?.HasBusinessAfterGet == true ?
                 _businessManager.GetAsync(_query, key, cancellationToken) : _query.GetAsync(key, cancellationToken);
-        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default)
             => _businessManager?.HasBusinessBeforeQuery == true || _businessManager?.HasBusinessAfterQuery == true ?
                    _businessManager.QueryAsync(_query, filter.Translate<T>(), cancellationToken) : _query.QueryAsync(filter.Translate<T>(), cancellationToken);
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,

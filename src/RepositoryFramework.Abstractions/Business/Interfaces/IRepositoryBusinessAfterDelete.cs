@@ -8,6 +8,6 @@
     public interface IRepositoryBusinessAfterDelete<T, TKey>
       where TKey : notnull
     {
-        Task<IState<T>> AfterDeleteAsync(IState<T> state, TKey key, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> AfterDeleteAsync(State<T, TKey> state, TKey key, CancellationToken cancellationToken = default);
     }
 }

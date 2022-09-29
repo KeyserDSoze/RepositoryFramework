@@ -1,11 +1,10 @@
-﻿using RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAndStorage.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAndStorage.Models;
 
 namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAndStorage.Storage
 {
@@ -24,6 +23,26 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
             throw new NotImplementedException();
         }
 
+        public Task<State<Car, int>> DeleteAsync(int key, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<State<Car, int>> ExistAsync(int key, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Car?> GetAsync(int key, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<State<Car, int>> InsertAsync(int key, Car value, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public ValueTask<TProperty> OperationAsync<TProperty>(
           OperationType<TProperty> operation,
           IFilterExpression filter,
@@ -35,36 +54,17 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
                 throw new NotImplementedException();
         }
 
-        public Task<IState<Car>> DeleteAsync(int key, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IState<Car>> ExistAsync(int key, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Car?> GetAsync(int key, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IState<Car>> InsertAsync(int key, Car value, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async IAsyncEnumerable<IEntity<Car, int>> QueryAsync(IFilterExpression filter,
+       
+        public async IAsyncEnumerable<Entity<Car, int>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await Task.Delay(0, cancellationToken);
             var filtered = filter.Apply(_database).ToList();
             foreach (var item in filtered?.Select(x => new Car { Id = x.Identificativo, Plate = x.Targa, NumberOfWheels = x.NumeroRuote }) ?? new List<Car>())
-                yield return IEntity.Default(item.Id, item);
+                yield return Entity.Default(item, item.Id);
         }
 
-        public Task<IState<Car>> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)
+        public Task<State<Car, int>> UpdateAsync(int key, Car value, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

@@ -7,9 +7,9 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
     public interface ICommandPattern<T, TKey> : ICommandPattern
         where TKey : notnull
     {
-        Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
         Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default);
     }
 
@@ -17,7 +17,7 @@ Based on CQRS we could split our repository pattern in two main interfaces, one 
     public interface IQueryPattern<T, TKey> : IQueryPattern
         where TKey : notnull
     {
-        Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
         IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default);
         ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default);
@@ -29,11 +29,11 @@ Repository pattern is a sum of CQRS interfaces.
     public interface IRepositoryPattern<T, TKey> : ICommandPattern<T, TKey>, IQueryPattern<T, TKey>, IRepositoryPattern, ICommandPattern, IQueryPattern
         where TKey : notnull
     {
-        Task<IState<T>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<IState<T>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
-        Task<IState<T>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
         Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default);
-        Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default);
         Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default);
         IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter, CancellationToken cancellationToken = default);
         ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation, IFilterExpression filter, CancellationToken cancellationToken = default);

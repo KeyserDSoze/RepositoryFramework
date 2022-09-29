@@ -8,6 +8,6 @@
     public interface IRepositoryBusinessBeforeExist<T, TKey>
         where TKey : notnull
     {
-        Task<IStatedEntity<T, TKey>> BeforeExistAsync(TKey key, CancellationToken cancellationToken = default);
+        Task<State<T, TKey>> BeforeExistAsync(TKey key, CancellationToken cancellationToken = default);
     }
 }

@@ -18,16 +18,18 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             { "3", new SuperMigrationUser { Id = "3", Name = "Alessia", Email = "Alo@gmail.com", IsAdmin = false } },
             { "4", new SuperMigrationUser { Id = "4", Name = "Alisandro", Email = "Ali@gmail.com", IsAdmin = false } },
         };
-        public Task<IState<SuperMigrationUser>> DeleteAsync(string key, CancellationToken cancellationToken = default)
+        public async Task<State<SuperMigrationUser, string>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
+            await Task.CompletedTask;
             if (_users.ContainsKey(key))
-                return Task.FromResult(IState.Default<SuperMigrationUser>(_users.Remove(key)));
-            return Task.FromResult(IState.Default<SuperMigrationUser>(true));
+                return _users.Remove(key);
+            return true;
         }
 
-        public Task<IState<SuperMigrationUser>> ExistAsync(string key, CancellationToken cancellationToken = default)
+        public async Task<State<SuperMigrationUser, string>> ExistAsync(string key, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(IState.Default<SuperMigrationUser>(_users.ContainsKey(key)));
+            await Task.CompletedTask;
+            return _users.ContainsKey(key);
         }
 
         public Task<SuperMigrationUser?> GetAsync(string key, CancellationToken cancellationToken = default)
@@ -37,25 +39,27 @@ namespace RepositoryFramework.UnitTest.Migration.Storage
             return Task.FromResult(default(SuperMigrationUser));
         }
 
-        public Task<IState<SuperMigrationUser>> InsertAsync(string key, SuperMigrationUser value, CancellationToken cancellationToken = default)
+        public async Task<State<SuperMigrationUser, string>> InsertAsync(string key, SuperMigrationUser value, CancellationToken cancellationToken = default)
         {
+            await Task.CompletedTask;
             _users.Add(key, value);
-            return Task.FromResult(IState.Default<SuperMigrationUser>(true));
+            return true;
         }
 
-        public async IAsyncEnumerable<IEntity<SuperMigrationUser, string>> QueryAsync(IFilterExpression filter, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<Entity<SuperMigrationUser, string>> QueryAsync(IFilterExpression filter, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var users = filter.Apply(_users.Select(x => x.Value));
             await foreach (var user in users.ToAsyncEnumerable())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                yield return IEntity.Default(user.Id!, user);
+                yield return Entity.Default(user, user.Id!);
             }
         }
-        public Task<IState<SuperMigrationUser>> UpdateAsync(string key, SuperMigrationUser value, CancellationToken cancellationToken = default)
+        public async Task<State<SuperMigrationUser, string>> UpdateAsync(string key, SuperMigrationUser value, CancellationToken cancellationToken = default)
         {
+            await Task.CompletedTask;
             _users[key] = value;
-            return Task.FromResult(IState.Default<SuperMigrationUser>(true));
+            return true;
         }
 
         public Task<BatchResults<SuperMigrationUser, string>> BatchAsync(BatchOperations<SuperMigrationUser, string> operations, CancellationToken cancellationToken = default)

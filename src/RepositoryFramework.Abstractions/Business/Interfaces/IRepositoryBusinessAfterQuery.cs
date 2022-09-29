@@ -8,6 +8,6 @@
     public interface IRepositoryBusinessAfterQuery<T, TKey>
         where TKey : notnull
     {
-        Task<List<IEntity<T, TKey>>> AfterQueryAsync(List<IEntity<T, TKey>> entities, IFilterExpression filter, CancellationToken cancellationToken = default);
+        Task<List<Entity<T, TKey>>> AfterQueryAsync(List<Entity<T, TKey>> entities, IFilterExpression filter, CancellationToken cancellationToken = default);
     }
 }

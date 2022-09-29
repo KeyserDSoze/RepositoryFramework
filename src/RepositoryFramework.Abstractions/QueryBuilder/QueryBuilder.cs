@@ -89,11 +89,11 @@ namespace RepositoryFramework
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>IEnumerable<IGrouping<<typeparamref name="TProperty"/>, <typeparamref name="T"/>>></returns>
-        public IAsyncEnumerable<IAsyncGrouping<TProperty, IEntity<T, TKey>>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<IAsyncGrouping<TProperty, Entity<T, TKey>>> GroupByAsync<TProperty>(Expression<Func<T, TProperty>> predicate, CancellationToken cancellationToken = default)
         {
             _ = _operations.GroupBy(predicate);
             var compiledPredicate = predicate.Compile();
-            var items = QueryAsync(cancellationToken).GroupBy(x => compiledPredicate.Invoke(x.Value));
+            var items = QueryAsync(cancellationToken).GroupBy(x => compiledPredicate.Invoke(x.Value!));
             return items;
         }
         /// <summary>
@@ -115,7 +115,7 @@ namespace RepositoryFramework
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns><typeparamref name="T"/></returns>
-        public ValueTask<IEntity<T, TKey>?> FirstOrDefaultAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        public ValueTask<Entity<T, TKey>?> FirstOrDefaultAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
             if (predicate != null)
                 _ = Where(predicate);
@@ -130,7 +130,7 @@ namespace RepositoryFramework
         /// <param name="predicate">Expression query.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns><typeparamref name="T"/></returns>
-        public ValueTask<IEntity<T, TKey>> FirstAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        public ValueTask<Entity<T, TKey>> FirstAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
         {
             if (predicate != null)
                 _ = Where(predicate);
@@ -146,7 +146,7 @@ namespace RepositoryFramework
         /// <param name="pageSize">Number of elements for page. Minimum value is 1.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Paged results.</returns>
-        public Task<IPage<T, TKey>> PageAsync(
+        public Task<Page<T, TKey>> PageAsync(
             int page,
             int pageSize,
             CancellationToken cancellationToken = default)
@@ -157,7 +157,7 @@ namespace RepositoryFramework
                 throw new ArgumentException($"Page size parameter with value {pageSize} is lesser than 1");
             return PageInternalAsync(page, pageSize, cancellationToken);
         }
-        private async Task<IPage<T, TKey>> PageInternalAsync(
+        private async Task<Page<T, TKey>> PageInternalAsync(
             int page,
             int pageSize,
             CancellationToken cancellationToken = default)
@@ -177,7 +177,7 @@ namespace RepositoryFramework
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns>List<<typeparamref name="T"/>></returns>
-        public ValueTask<List<IEntity<T, TKey>>> ToListAsync(CancellationToken cancellationToken = default)
+        public ValueTask<List<Entity<T, TKey>>> ToListAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_operations, cancellationToken).ToListAsync(cancellationToken);
         /// <summary>
         /// List the query without TKey.
@@ -190,7 +190,8 @@ namespace RepositoryFramework
             await foreach (var entity in _query.QueryAsync(_operations, cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                entities.Add(entity.Value);
+                if (entity.Value != null)
+                    entities.Add(entity.Value);
             }
             return entities;
         }
@@ -204,7 +205,7 @@ namespace RepositoryFramework
             await foreach (var entity in _query.QueryAsync(_operations, cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                yield return entity.Value;
+                yield return entity.Value!;
             }
         }
 
@@ -213,7 +214,7 @@ namespace RepositoryFramework
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns>IAsyncEnumerable<<typeparamref name="T"/>></returns>
-        public IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<Entity<T, TKey>> QueryAsync(CancellationToken cancellationToken = default)
             => _query.QueryAsync(_operations, cancellationToken);
         /// <summary>
         /// Call operation method in your Repository.

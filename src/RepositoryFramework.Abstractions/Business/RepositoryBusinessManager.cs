@@ -51,64 +51,82 @@ namespace RepositoryFramework
             => _options.Services.Where(x => x.Method == method && x.IsAfterRequest == isAfterRequest);
         private IEnumerable<TBusiness> GetBusiness<TBusiness>(IEnumerable<BusinessType> business)
             => business.Select(x => (TBusiness)ServiceProvider.GetService(x.Service)!);
-        public async Task<IState<T>> InsertAsync(ICommandPattern<T, TKey> command, TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<State<T, TKey>> InsertAsync(ICommandPattern<T, TKey> command, TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var result = IStatedEntity.Ok(key, value);
+            var entity = Entity.Default(value, key);
+            var result = entity.ToOkState();
 
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeInsert<T, TKey>>(BeforeInserted))
             {
-                result = await business.BeforeInsertAsync(result.Entity, cancellationToken);
-                if (!result.State.IsOk)
-                    return result.State;
+                result = await business.BeforeInsertAsync(result.Entity!, cancellationToken);
+                if (!result.HasEntity)
+                    result.Entity = entity;
+                if (!result.IsOk)
+                    return result;
             }
 
-            var response = await command.InsertAsync(result.Entity.Key, result.Entity.Value, cancellationToken);
+            result = await command.InsertAsync(result.Entity!.Key!, result.Entity!.Value!, cancellationToken);
+            entity = result.Entity;
 
             foreach (var business in GetBusiness<IRepositoryBusinessAfterInsert<T, TKey>>(AfterInserted))
-                response = await business.AfterInsertAsync(response, result.Entity, cancellationToken);
+            {
+                result = await business.AfterInsertAsync(result, result.Entity!, cancellationToken);
+                if (!result.HasEntity)
+                    result.Entity = entity;
+            }
 
-            return response;
+            return result;
         }
-        public async Task<IState<T>> UpdateAsync(ICommandPattern<T, TKey> command, TKey key, T value, CancellationToken cancellationToken = default)
+        public async Task<State<T, TKey>> UpdateAsync(ICommandPattern<T, TKey> command, TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var result = IStatedEntity.Ok(key, value);
+            var entity = Entity.Default(value, key);
+            var result = entity.ToOkState();
 
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeUpdate<T, TKey>>(BeforeUpdated))
             {
-                result = await business.BeforeUpdateAsync(result.Entity, cancellationToken);
-                if (!result.State.IsOk)
-                    return result.State;
+                result = await business.BeforeUpdateAsync(result.Entity!, cancellationToken);
+                if (!result.HasEntity)
+                    result.Entity = entity;
+                if (!result.IsOk)
+                    return result;
             }
 
-            var response = await command.UpdateAsync(result.Entity.Key, result.Entity.Value, cancellationToken);
+            result = await command.UpdateAsync(result.Entity!.Key!, result.Entity!.Value!, cancellationToken);
+            entity = result.Entity!;
 
             foreach (var business in GetBusiness<IRepositoryBusinessAfterUpdate<T, TKey>>(AfterUpdated))
-                response = await business.AfterUpdateAsync(response, result.Entity, cancellationToken);
+            {
+                result = await business.AfterUpdateAsync(result, result.Entity!, cancellationToken);
+                if (!result.HasEntity)
+                    result.Entity = entity;
+            }
 
-            return response;
+            return result;
         }
-        public async Task<IState<T>> DeleteAsync(ICommandPattern<T, TKey> command, TKey key, CancellationToken cancellationToken = default)
+        public async Task<State<T, TKey>> DeleteAsync(ICommandPattern<T, TKey> command, TKey key, CancellationToken cancellationToken = default)
         {
-            var result = IStatedEntity.Ok(key, default(T));
+            var entity = Entity.Default(default(T)!, key);
+            var result = entity.ToOkState();
 
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeDelete<T, TKey>>(BeforeDeleted))
             {
-                result = await business.BeforeDeleteAsync(key, cancellationToken);
-                if (!result.State.IsOk)
-                    return result.State!;
+                result = await business.BeforeDeleteAsync(result.Entity!.Key!, cancellationToken);
+                if (!result.IsOk)
+                    return result;
             }
 
-            var response = await command.DeleteAsync(result.Entity.Key, cancellationToken);
+            result = await command.DeleteAsync(result.Entity!.Key!, cancellationToken);
 
             foreach (var business in GetBusiness<IRepositoryBusinessAfterDelete<T, TKey>>(AfterDeleted))
-                response = await business.AfterDeleteAsync(response, result.Entity.Key, cancellationToken);
+                result = await business.AfterDeleteAsync(result, result.Entity!.Key!, cancellationToken);
 
-            return response;
+            return result;
         }
 
         public async Task<BatchResults<T, TKey>> BatchAsync(ICommandPattern<T, TKey> command, BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
             var results = BatchResults<T, TKey>.Empty;
+
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeBatch<T, TKey>>(BeforeBatched))
             {
                 results = await business.BeforeBatchAsync(operations, cancellationToken);
@@ -132,47 +150,49 @@ namespace RepositoryFramework
             return results;
         }
 
-        public async Task<IState<T>> ExistAsync(IQueryPattern<T, TKey> query, TKey key, CancellationToken cancellationToken = default)
+        public async Task<State<T, TKey>> ExistAsync(IQueryPattern<T, TKey> query, TKey key, CancellationToken cancellationToken = default)
         {
-            var result = IStatedEntity.Ok(key, default(T)!);
+            var entity = Entity.Default(default(T)!, key);
+            var result = entity.ToOkState();
 
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeExist<T, TKey>>(BeforeExisted))
             {
-                result = await business.BeforeExistAsync(result.Entity.Key, cancellationToken);
-                if (!result.State.IsOk)
-                    return result.State!;
+                result = await business.BeforeExistAsync(result.Entity!.Key!, cancellationToken);
+                if (!result.IsOk)
+                    return result;
             }
 
-            var response = await query.ExistAsync(result.Entity.Key, cancellationToken);
+            var response = await query.ExistAsync(result.Entity!.Key!, cancellationToken);
 
             foreach (var business in GetBusiness<IRepositoryBusinessAfterExist<T, TKey>>(AfterExisted))
-                response = await business.AfterExistAsync(response, result.Entity.Key, cancellationToken);
+                response = await business.AfterExistAsync(response, result.Entity!.Key!, cancellationToken);
 
             return response;
         }
 
         public async Task<T?> GetAsync(IQueryPattern<T, TKey> query, TKey key, CancellationToken cancellationToken = default)
         {
-            var result = IStatedEntity.Ok(key, default(T)!);
+            var entity = Entity.Default(default(T)!, key);
+            var result = entity.ToOkState();
 
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeGet<T, TKey>>(BeforeGotten))
             {
-                result = await business.BeforeGetAsync(result.Entity.Key, cancellationToken);
-                if (result.Entity.Value != null)
+                result = await business.BeforeGetAsync(result.Entity!.Key!, cancellationToken);
+                if (result.HasEntity && result.Entity!.HasValue)
                     return result.Entity.Value;
-                if (!result.State.IsOk)
+                else if (!result.IsOk)
                     return default;
             }
 
-            var response = await query.GetAsync(result.Entity.Key, cancellationToken);
+            var response = await query.GetAsync(result.Entity!.Key!, cancellationToken);
 
             foreach (var business in GetBusiness<IRepositoryBusinessAfterGet<T, TKey>>(AfterGotten))
-                response = await business.AfterGetAsync(response, result.Entity.Key, cancellationToken);
+                response = await business.AfterGetAsync(response, result.Entity!.Key!, cancellationToken);
 
             return response;
         }
 
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IQueryPattern<T, TKey> queryPattern, IFilterExpression filter, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IQueryPattern<T, TKey> queryPattern, IFilterExpression filter, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             foreach (var business in GetBusiness<IRepositoryBusinessBeforeQuery<T, TKey>>(BeforeQueried))
                 filter = await business.BeforeQueryAsync(filter, cancellationToken);

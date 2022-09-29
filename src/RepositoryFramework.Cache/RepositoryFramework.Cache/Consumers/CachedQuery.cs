@@ -52,7 +52,7 @@ namespace RepositoryFramework.Cache
             }
             return Task.WhenAll(toDelete);
         }
-        private protected Task UpdateExistAndGetCacheAsync(TKey key, T value, IState<T> state, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
+        private protected Task UpdateExistAndGetCacheAsync(TKey key, T value, State<T, TKey> state, bool inMemory, bool inDistributed, CancellationToken cancellationToken = default)
         {
             var existKeyAsString = GetKeyAsString(RepositoryMethods.Exist, key);
             var getKeyAsString = GetKeyAsString(RepositoryMethods.Get, key);
@@ -70,7 +70,7 @@ namespace RepositoryFramework.Cache
             }
             return Task.WhenAll(toUpdate);
         }
-        public async Task<IState<T>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
+        public async Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var keyAsString = GetKeyAsString(RepositoryMethods.Exist, key);
             var value = await RetrieveValueAsync(RepositoryMethods.Exist, keyAsString,
@@ -101,8 +101,8 @@ namespace RepositoryFramework.Cache
 
             return value.Response;
         }
-        private static readonly List<IEntity<T, TKey>> s_empty = new();
-        public async IAsyncEnumerable<IEntity<T, TKey>> QueryAsync(IFilterExpression filter,
+        private static readonly List<Entity<T, TKey>> s_empty = new();
+        public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var keyAsString = $"{nameof(RepositoryMethods.Query)}_{_cacheName}_{filter.ToKey()}";
@@ -110,7 +110,7 @@ namespace RepositoryFramework.Cache
             var value = await RetrieveValueAsync(RepositoryMethods.Query, keyAsString,
                 async () =>
                 {
-                    List<IEntity<T, TKey>> items = new();
+                    List<Entity<T, TKey>> items = new();
                     await foreach (var item in Query.QueryAsync(filter, cancellationToken)!)
                         items.Add(item);
                     return items;
