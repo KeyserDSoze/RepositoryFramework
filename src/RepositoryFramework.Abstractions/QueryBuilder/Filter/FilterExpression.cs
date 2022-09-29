@@ -1,8 +1,9 @@
 ﻿using System.Linq.Expressions;
+using System.Linq;
 
 namespace RepositoryFramework
 {
-    internal sealed class FilterExpression : IFilterExpression
+    public sealed class FilterExpression : IFilterExpression
     {
         public static FilterExpression Empty => new();
         public List<FilteringOperation> Operations { get; } = new();
@@ -83,13 +84,14 @@ namespace RepositoryFramework
                 Operations.Add(new LambdaFilterOperation(FilterOperations.Select, expression));
             return this;
         }
-        public IQueryable<T> Apply<T>(IEnumerable<T> enumerable)
-            => Apply(enumerable.AsQueryable());
-        public IQueryable<TValue> Apply<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
-            => Apply(dictionary.Select(x => x.Value).AsQueryable());
-        public IQueryable<T> Apply<T>(IQueryable<T> queryable)
+        public IQueryable<T> Apply<T>(IEnumerable<T> enumerable, FilterOperations operations = IFilterExpression.DefaultOperations)
+            => Apply(enumerable.AsQueryable(), operations);
+        public IQueryable<TValue> Apply<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary, FilterOperations operations = IFilterExpression.DefaultOperations)
+            => Apply(dictionary.Select(x => x.Value).AsQueryable(), operations);
+        public IQueryable<T> Apply<T>(IQueryable<T> queryable, FilterOperations operations = IFilterExpression.DefaultOperations)
         {
-            foreach (var operation in Operations)
+            foreach (var operation in Operations
+                .Where(operation => operations.HasFlag(operation.Operation)))
             {
                 if (operation is LambdaFilterOperation lambda && lambda.Expression != null)
                 {
@@ -113,40 +115,41 @@ namespace RepositoryFramework
                     };
                 }
             }
+
             return queryable;
         }
-        public IAsyncEnumerable<T> ApplyAsAsyncEnumerable<T>(IEnumerable<T> enumerable)
-            => Apply(enumerable).ToAsyncEnumerable();
-        public IAsyncEnumerable<T> ApplyAsAsyncEnumerable<T>(IQueryable<T> queryable)
-            => Apply(queryable).ToAsyncEnumerable();
-        public IQueryable<dynamic> ApplyAsSelect<T>(IEnumerable<T> enumerable)
+        public IAsyncEnumerable<T> ApplyAsAsyncEnumerable<T>(IEnumerable<T> enumerable, FilterOperations operations = IFilterExpression.DefaultOperations)
+            => Apply(enumerable, operations).ToAsyncEnumerable();
+        public IAsyncEnumerable<T> ApplyAsAsyncEnumerable<T>(IQueryable<T> queryable, FilterOperations operations = IFilterExpression.DefaultOperations)
+            => Apply(queryable, operations).ToAsyncEnumerable();
+        public IQueryable<dynamic> ApplyAsSelect<T>(IEnumerable<T> enumerable, FilterOperations operations = IFilterExpression.DefaultOperations)
         {
-            var starter = Apply(enumerable);
+            var starter = Apply(enumerable, operations);
             IQueryable<dynamic>? queryable = null;
             foreach (var lambda in Operations.Where(x => x.Operation == FilterOperations.Select).Select(x => x as LambdaFilterOperation))
                 if (lambda?.Expression != null)
                     queryable = starter.Select(lambda.Expression);
             return queryable ?? starter.Select(x => (dynamic)x!);
         }
-        public IQueryable<dynamic> ApplyAsSelect<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
-            => ApplyAsSelect(dictionary.Select(x => x.Value));
+        public IQueryable<dynamic> ApplyAsSelect<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary, FilterOperations operations = IFilterExpression.DefaultOperations)
+            => ApplyAsSelect(dictionary.Select(x => x.Value), operations);
 
-        public IQueryable<dynamic> ApplyAsSelect<T>(IQueryable<T> queryable)
-            => ApplyAsSelect(queryable.AsEnumerable());
-        public IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IEnumerable<T> enumerable)
+        public IQueryable<dynamic> ApplyAsSelect<T>(IQueryable<T> queryable, FilterOperations operations = IFilterExpression.DefaultOperations)
+            => ApplyAsSelect(queryable.AsEnumerable(), operations);
+        public IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IEnumerable<T> enumerable, FilterOperations operations = IFilterExpression.DefaultOperations)
         {
-            var starter = Apply(enumerable);
+            var starter = Apply(enumerable, operations);
             IQueryable<IGrouping<object, T>>? queryable = null;
             foreach (var lambda in Operations.Where(x => x.Operation == FilterOperations.GroupBy).Select(x => x as LambdaFilterOperation))
                 if (lambda?.Expression != null)
                     queryable = starter.GroupBy(lambda.Expression);
             return queryable ?? starter.GroupBy(x => (dynamic)x!);
         }
-        public IQueryable<IGrouping<dynamic, TValue>> ApplyAsGroupBy<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
-            => ApplyAsGroupBy(dictionary.Select(x => x.Value));
+        public IQueryable<IGrouping<dynamic, TValue>> ApplyAsGroupBy<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary, FilterOperations operations = IFilterExpression.DefaultOperations)
+            => ApplyAsGroupBy(dictionary.Select(x => x.Value), operations);
 
-        public IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IQueryable<T> queryable)
-            => ApplyAsGroupBy(queryable.AsEnumerable());
+        public IQueryable<IGrouping<dynamic, T>> ApplyAsGroupBy<T>(IQueryable<T> queryable, FilterOperations operations = IFilterExpression.DefaultOperations)
+            => ApplyAsGroupBy(queryable.AsEnumerable(), operations);
         public LambdaExpression? GetFirstSelect<T>()
             => DefaultSelect;
         public LambdaExpression? DefaultSelect

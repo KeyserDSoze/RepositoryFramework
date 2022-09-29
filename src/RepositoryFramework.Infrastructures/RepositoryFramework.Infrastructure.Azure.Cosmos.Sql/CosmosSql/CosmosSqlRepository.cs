@@ -64,12 +64,14 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             var response = await _client.CreateItemAsync(flexible, new PartitionKey(keyAsString), cancellationToken: cancellationToken).NoContext();
             return State.Default<T, TKey>(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created, value);
         }
-
+        private const FilterOperations AvailableOperations = FilterOperations.Where;
+        private const FilterOperations NotAvailableOperations = FilterOperations.OrderBy | FilterOperations.Top | FilterOperations.Skip |
+            FilterOperations.OrderByDescending | FilterOperations.ThenBy | FilterOperations.ThenByDescending;
         public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var queryable = filter.Apply(_client.GetItemLinqQueryable<T>());
-
+            var queryable = filter.Apply(_client.GetItemLinqQueryable<T>(), AvailableOperations);
+            var entities = new List<Entity<T, TKey>>();
             using var iterator = queryable.ToFeedIterator();
             while (iterator.HasMoreResults)
             {
@@ -77,8 +79,10 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
                     break;
 #warning to retrieve in some way the key
                 foreach (var item in await iterator.ReadNextAsync(cancellationToken).NoContext())
-                    yield return Entity.Default(item, default(TKey)!);
+                    entities.Add(Entity.Default(item, default(TKey)!));
             }
+            foreach (var item in filter.Apply(entities, NotAvailableOperations))
+                yield return item;
         }
         public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             IFilterExpression filter,
