@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - src/RepositoryFramework.ApiServer/**
+      - src/RepositoryFramework.Api.Server/**
 jobs:
   publish:
     name: build, pack & publish

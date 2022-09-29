@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - src/RepositoryFramework.Cache/RepositoryFramwork.Cache/**
+      - src/RepositoryFramework.Cache/RepositoryFramework.Cache/**
 jobs:
   publish:
     name: build, pack & publish

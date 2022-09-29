@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - src/RepositoryFramework.Cache/RepositoryFramwork.Cache.Azure.Storage.Blob/**
+      - src/RepositoryFramework.Cache/RepositoryFramework.Cache.Azure.Storage.Blob/**
 jobs:
   publish:
     name: build, pack & publish
