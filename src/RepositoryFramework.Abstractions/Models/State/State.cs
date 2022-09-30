@@ -32,6 +32,8 @@ namespace RepositoryFramework
         public string? Message { get; set; }
         [JsonIgnore]
         public bool HasEntity => Entity != null;
+        // Used for correct Deserialization
+        public State() { }
         public State(bool isOk, T? value = default, TKey? key = default, int? code = default, string? message = default)
             : this(isOk, value != null || key != null ? new Entity<T, TKey>(value!, key) : default, code, message)
         {
