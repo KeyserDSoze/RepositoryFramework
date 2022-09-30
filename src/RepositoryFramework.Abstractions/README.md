@@ -282,9 +282,17 @@ In this example BeforeInsertAsync runs before InsertAsync of IRepository/IComman
         .AddBusinessAfterInsert<AnimalBusiness>()
         .AddBusinessBeforeInsert<AnimalBusiness>()
 
-with
+more interesting usage comes to move business in another project, you can add to your infrastructure in the following way
 
-    internal sealed class AnimalBusiness : IRepositoryBusinessBeforeInsert<Animal, long>, IRepositoryBusinessAfterInsert<Animal, long>
+    .AddBusinessForRepository<Animal, long>()
+        .AddBusinessAfterInsert<AnimalBusiness>()
+        .AddBusinessBeforeInsert<AnimalBusiness>()
+
+Then, you could have a library for infrastructure (or more than one) and a library for business to separate furthermore the concepts.
+
+The animal business to inject will be the following one.
+
+    public sealed class AnimalBusiness : IRepositoryBusinessBeforeInsert<Animal, long>, IRepositoryBusinessAfterInsert<Animal, long>
     {
         public static int After;
         public Task<State<Animal>> AfterInsertAsync(State<Animal, long> state, Entity<Animal, long> entity, CancellationToken cancellationToken = default)
@@ -300,3 +308,5 @@ with
             return Task.FromResult(State.Ok(entity));
         }
     }
+
+You have to create the class as public to allow the dependency injection to instastiate it. It's added directly to DI.
