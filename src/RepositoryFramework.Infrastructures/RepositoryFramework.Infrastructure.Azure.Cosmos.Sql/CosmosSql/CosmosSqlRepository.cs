@@ -48,11 +48,17 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var keyAsString = GetKeyAsString(key);
-            var response = await _client.ReadItemAsync<T>(keyAsString, new PartitionKey(keyAsString), cancellationToken: cancellationToken).NoContext();
-            if (response.StatusCode == HttpStatusCode.OK)
-                return response.Resource;
-            else
+            try
+            {
+                var response = await _client.ReadItemAsync<T>(keyAsString, new PartitionKey(keyAsString), cancellationToken: cancellationToken).NoContext();
+                if (response.StatusCode == HttpStatusCode.OK)
+                    return response.Resource;
                 return default;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
         }
         public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
