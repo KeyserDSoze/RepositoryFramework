@@ -18,7 +18,6 @@
             _repository = repository;
             _command = command;
         }
-
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
             var results = await (_repository ?? _command!).BatchAsync(operations, cancellationToken).NoContext();

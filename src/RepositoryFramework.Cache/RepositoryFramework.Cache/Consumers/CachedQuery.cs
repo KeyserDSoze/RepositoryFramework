@@ -85,7 +85,6 @@ namespace RepositoryFramework.Cache
 
             return value.Response!;
         }
-
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var keyAsString = GetKeyAsString(RepositoryMethods.Get, key);
