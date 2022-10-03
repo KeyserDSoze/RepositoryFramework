@@ -21,10 +21,6 @@ namespace RepositoryFramework
                         if (place > -1)
                             serialized = serialized.Remove(place, translation.EndWith.Length).Insert(place, translation.Value);
                     }
-                    if (serialized.Contains(translation.InTheMiddleWith))
-                    {
-                        serialized = serialized.Replace(translation.InTheMiddleWith, translation.ValueInTheMiddle);
-                    }
                     var list = translation.Key.Matches(serialized);
                     for (var i = 0; i < list.Count; i++)
                     {
@@ -38,11 +34,11 @@ namespace RepositoryFramework
         }
         public static FilterTranslation Instance { get; } = new();
         private FilterTranslation() { }
-        private sealed record Translation(Regex Key, string EndWith, string InTheMiddleWith, string Value, string ValueInTheMiddle);
+        private sealed record Translation(Regex Key, string EndWith, string Value);
         private readonly Dictionary<string, Dictionary<string, TranslationWrapper>> _translations = new();
         public bool HasTranslation<T>()
             => _translations.ContainsKey(typeof(T).FullName!);
-        private static Regex VariableName(string prefix) => new($@"\.{prefix}[^a-zA-Z0-9@_\.]{{1}}");
+        private static Regex VariableName(string prefix) => new($@"\.{prefix}[^a-zA-Z0-9@_]{{1}}");
         public void With<T, TTranslated, TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
             var name = typeof(T).FullName!;
@@ -54,7 +50,7 @@ namespace RepositoryFramework
 
             var propertyName = string.Join(".", property.ToString().Split('.').Skip(1));
             var translatedPropertyName = $".{string.Join(".", translatedProperty.ToString().Split('.').Skip(1))}";
-            _translations[name][translatedName].Translations.Add(new Translation(VariableName(propertyName), $".{propertyName}", $".{propertyName}.", translatedPropertyName, $"{translatedPropertyName}."));
+            _translations[name][translatedName].Translations.Add(new Translation(VariableName(propertyName), $".{propertyName}", translatedPropertyName));
         }
         public IFilterExpression Transform<T>(SerializableFilter serializableFilter)
         {
