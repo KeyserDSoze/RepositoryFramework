@@ -21,7 +21,8 @@ namespace RepositoryFramework.UnitTest.Unitary
             DateTimeOffset CreationDate,
             DateTimeOffset LastChangeDate,
             string? CreatedBy,
-            string? ChangedBy
+            string? ChangedBy,
+            string? Foolish = null
             )
     {
         public string Currency { get; set; } = "€";
@@ -29,6 +30,7 @@ namespace RepositoryFramework.UnitTest.Unitary
     public sealed class ToTranslateSomething
     {
         public int Idccnl { get; set; }
+        public string Folle { get; set; }
         public int IdccnlValidita { get; set; }
         public DateTime DataInizio { get; set; }
         public DateTime? DataFine { get; set; }
@@ -49,6 +51,7 @@ namespace RepositoryFramework.UnitTest.Unitary
     {
         public int Idccnl { get; set; }
         public int IdccnlValidita { get; set; }
+        public string Folle { get; set; }
         public DateTime DataInizio { get; set; }
         public DateTime? DataFine { get; set; }
         public int NumeroMensilita { get; set; }
@@ -98,6 +101,7 @@ namespace RepositoryFramework.UnitTest.Unitary
                 DataCreazione = DateTime.UtcNow,
                 DataFine = DateTime.UtcNow,
                 DataInizio = DateTime.UtcNow,
+                Folle = "fool"
             });
             _toTranslateSomethingElse.Add(new ToTranslateSomethingElse
             {
@@ -106,6 +110,7 @@ namespace RepositoryFramework.UnitTest.Unitary
                 DataCreazione = DateTime.UtcNow,
                 DataFine = DateTime.UtcNow,
                 DataInizio = DateTime.UtcNow,
+                Folle = "fool"
             });
             return true;
         }
@@ -136,7 +141,7 @@ namespace RepositoryFramework.UnitTest.Unitary
                     validitum.DataCreazione ?? DateTime.UtcNow,
                     validitum.DataModifica ?? DateTime.UtcNow,
                     validitum.UtenteCreazione,
-                    validitum.UtenteModifica),
+                    validitum.UtenteModifica, "fools"),
                     Guid.NewGuid().ToString());
 
             foreach (var validitum in filter.Apply(_toTranslateSomethingElse))
@@ -155,7 +160,8 @@ namespace RepositoryFramework.UnitTest.Unitary
                     validitum.DataCreazione ?? DateTime.UtcNow,
                     validitum.DataModifica ?? DateTime.UtcNow,
                     validitum.UtenteCreazione,
-                    validitum.UtenteModifica),
+                    validitum.UtenteModifica)
+                    { Foolish = "fools" },
                     Guid.NewGuid().ToString());
         }
 
@@ -172,6 +178,7 @@ namespace RepositoryFramework.UnitTest.Unitary
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
                     .AddRepository<Translatable, string, TranslatableRepository>()
                     .Translate<ToTranslateSomething>()
+                       .With(x => x.Foolish, x => x.Folle)
                        .With(x => x.Id, x => x.IdccnlValidita)
                        .With(x => x.CcnlId, x => x.Idccnl)
                        .With(x => x.From, x => x.DataInizio)
@@ -185,6 +192,7 @@ namespace RepositoryFramework.UnitTest.Unitary
                        .With(x => x.ConsolidateState, x => x.Stato)
                        .With(x => x.Active, x => x.Attivo)
                     .AndTranslate<ToTranslateSomethingElse>()
+                        .With(x => x.Foolish, x => x.Folle)
                         .With(x => x.Id, x => x.IdccnlValidita)
                         .With(x => x.CcnlId, x => x.Idccnl)
                         .With(x => x.From, x => x.DataInizio)
@@ -207,7 +215,7 @@ namespace RepositoryFramework.UnitTest.Unitary
         {
             _repository = s_serviceProvider!.GetService<IRepository<Translatable, string>>()!;
         }
-
+        private const string FoolishName = "FOOL";
         [Fact]
         public async Task TestAsync()
         {
@@ -217,6 +225,10 @@ namespace RepositoryFramework.UnitTest.Unitary
             Assert.Equal(2, items.Count);
             items = await _repository.Where(x => x.CcnlId > 4 && x.Active).ToListAsync();
             Assert.Equal(12, items.Count);
+            items = await _repository
+                .Where(x => x.Foolish.ToLower().Contains(RepositoryFramework.UnitTest.Unitary.TranslationTest.FoolishName.ToLower()))
+                .ToListAsync().NoContext();
+            Assert.Equal(20, items.Count);
         }
     }
 }
