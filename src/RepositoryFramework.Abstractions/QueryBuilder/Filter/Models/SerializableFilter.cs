@@ -7,6 +7,7 @@ namespace RepositoryFramework
     {
         [JsonPropertyName("o")]
         public List<FilterOperationAsString> Operations { get; init; } = new();
+        public static SerializableFilter Empty => new();
         public IFilterExpression Deserialize<T>()
         {
             FilterExpression query = new();

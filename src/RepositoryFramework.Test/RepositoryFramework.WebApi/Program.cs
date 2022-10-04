@@ -31,13 +31,12 @@ builder.Services.AddRepositoryInMemoryStorage<SuperiorUser, string>()
 builder.Services.AddRepositoryInMemoryStorage<Animal, AnimalKey>();
 builder.Services.AddRepositoryInMemoryStorage<Car, Guid>();
 builder.Services.AddRepositoryInMemoryStorage<Car2, Range>();
-builder.Services.AddApiFromRepositoryFramework(x =>
-{
-    x.Name = "Repository Api";
-    x.HasSwagger = true;
-    x.HasDocumentation = true;
-    x.Identity.ConfigureAzureActiveDirectory(builder.Configuration);
-});
+builder.Services.AddApiFromRepositoryFramework()
+    .WithName("Repository Api")
+    .WithSwagger()
+    .WithDocumentation()
+    .ConfigureAzureActiveDirectory(builder.Configuration);
+
 builder.Services
     .AddAuthorization()
     .AddServerSideBlazor(opts => opts.DetailedErrors = true)

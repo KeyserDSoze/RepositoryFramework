@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework
 {
-    public class ApiAuthorizationPolicy
+    internal sealed class ApiAuthorizationPolicy : IApiAuthorizationPolicy
     {
         private readonly RepositoryMethods _method;
         private readonly ApiAuthorizationBuilder _authorizationBuilder;
@@ -10,19 +10,19 @@
             _method = method;
             _authorizationBuilder = authorization;
         }
-        public ApiAuthorizationPolicy With(params string[] policies)
+        public IApiAuthorizationPolicy With(params string[] policies)
         {
             foreach (var policy in policies)
                 if (!_policies.Contains(policy))
                     _policies.Add(policy);
             return this;
         }
-        public ApiAuthorizationBuilder Empty()
+        public IApiAuthorizationBuilder Empty()
         {
             _authorizationBuilder.Authorization.Policies[_method] = Array.Empty<string>();
             return _authorizationBuilder;
         }
-        public ApiAuthorizationBuilder And()
+        public IApiAuthorizationBuilder And()
         {
             _authorizationBuilder.Authorization.Policies[_method] = _policies.ToArray();
             return _authorizationBuilder;

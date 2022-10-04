@@ -7,7 +7,7 @@ namespace RepositoryFramework
     /// You may set build your custom authorization (for example only for Insert and Update),
     /// and you may set the Policies that must be met.
     /// </summary>
-    public class ApiAuthorizationBuilder
+    internal sealed class ApiAuthorizationBuilder : IApiAuthorizationBuilder
     {
         private readonly Func<ApiAuthorization?, IEndpointRouteBuilder> _finalizator;
         internal ApiAuthorization Authorization { get; } = new();
@@ -26,7 +26,7 @@ namespace RepositoryFramework
         /// Set policies for a specific repository method.
         /// </summary>
         /// <returns>IEndpointRouteBuilder</returns>
-        public ApiAuthorizationPolicy SetPolicy(RepositoryMethods method)
+        public IApiAuthorizationPolicy SetPolicy(RepositoryMethods method)
         {
             Authorization.Policies.Add(method, Array.Empty<string>());
             return new ApiAuthorizationPolicy(method, this);
@@ -35,7 +35,7 @@ namespace RepositoryFramework
         /// Set policies one time for every repository method.
         /// </summary>
         /// <returns>ApiAuthorizationPolicy</returns>
-        public ApiAuthorizationPolicy SetPolicyForAll()
+        public IApiAuthorizationPolicy SetPolicyForAll()
         {
             Authorization.Policies.Add(RepositoryMethods.All, Array.Empty<string>());
             return new ApiAuthorizationPolicy(RepositoryMethods.All, this);

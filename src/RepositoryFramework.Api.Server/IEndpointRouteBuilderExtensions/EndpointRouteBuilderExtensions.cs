@@ -16,13 +16,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model of your repository or CQRS that you want to add as api</typeparam>
         /// <param name="app">IEndpointRouteBuilder</param>
         /// <returns>ApiAuthorizationBuilder</returns>
-        public static ApiAuthorizationBuilder UseApiFromRepository<T>(this IEndpointRouteBuilder app)
+        public static IApiAuthorizationBuilder UseApiFromRepository<T>(this IEndpointRouteBuilder app)
         {
-            var serviceProvider = app.ServiceProvider.CreateScope().ServiceProvider;
-            var settings = serviceProvider.GetService<ApiSettings>()!;
-            if (settings.HasSwagger && app is IApplicationBuilder applicationBuilder)
-                applicationBuilder.UseSwaggerUiForRepository(settings);
-            return new(authorization => app.UseApiFromRepository(typeof(T), settings, authorization));
+            if (ApiSettings.Instance.HasSwagger && app is IApplicationBuilder applicationBuilder)
+                applicationBuilder.UseSwaggerUiForRepository(ApiSettings.Instance);
+            return new ApiAuthorizationBuilder(authorization => app.UseApiFromRepository(typeof(T), ApiSettings.Instance, authorization));
         }
 
         /// <summary>
@@ -32,19 +30,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="app">IEndpointRouteBuilder</param>
         /// <param name="startingPath">By default is "api", but you can choose your path. https://{your domain}/{startingPath}</param>
         /// <returns>ApiAuthorizationBuilder</returns>
-        public static ApiAuthorizationBuilder UseApiFromRepositoryFramework<TEndpointRouteBuilder>(
+        public static IApiAuthorizationBuilder UseApiFromRepositoryFramework<TEndpointRouteBuilder>(
             this TEndpointRouteBuilder app)
             where TEndpointRouteBuilder : IEndpointRouteBuilder
-        => new(authorization =>
-                {
-                    var services = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
-                    var settings = app.ServiceProvider.GetService<ApiSettings>()!;
-                    if (settings.HasSwagger && app is IApplicationBuilder applicationBuilder)
-                        applicationBuilder.UseSwaggerUiForRepository(settings);
-                    foreach (var service in services!.Services.Where(x => !x.NotExposableAsApi))
-                        _ = app.UseApiFromRepository(service.ModelType, settings, authorization);
-                    return app;
-                });
+        => new ApiAuthorizationBuilder(authorization =>
+            {
+                var services = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
+                if (ApiSettings.Instance.HasSwagger && app is IApplicationBuilder applicationBuilder)
+                    applicationBuilder.UseSwaggerUiForRepository(ApiSettings.Instance);
+                foreach (var service in services!.Services.Where(x => !x.NotExposableAsApi))
+                    _ = app.UseApiFromRepository(service.ModelType, ApiSettings.Instance, authorization);
+                return app;
+            });
 
         private const string NotImplementedExceptionIlOperation = "newobj instance void System.NotImplementedException";
         private static readonly List<string> s_possibleMethods = new()
@@ -116,11 +113,11 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Query)}",
-                async ([FromBody] SerializableFilter query, [FromServices] TService service) =>
+                async ([FromBody] SerializableFilter? serializableFilter, [FromServices] TService service) =>
                 {
-                    var options = query.Deserialize<T>();
+                    var filter = (serializableFilter ?? SerializableFilter.Empty).Deserialize<T>();
                     var queryService = service as IQueryPattern<T, TKey>;
-                    return await queryService!.QueryAsync(options).ToListAsync().NoContext();
+                    return await queryService!.QueryAsync(filter).ToListAsync().NoContext();
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Query);
         }
@@ -129,16 +126,16 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Operation)}",
                 async ([FromQuery] string op, [FromQuery] string? returnType,
-                    [FromBody] SerializableFilter query, [FromServices] TService service) =>
+                    [FromBody] SerializableFilter? serializableFilter, [FromServices] TService service) =>
                 {
-                    var options = query.Deserialize<T>();
+                    var filter = (serializableFilter ?? SerializableFilter.Empty).Deserialize<T>();
                     var type = CalculateTypeFromQuery();
                     var queryService = service as IQueryPattern<T, TKey>;
                     var result = await Generics.WithStatic(
                                   typeof(EndpointRouteBuilderExtensions),
                                   nameof(GetResultFromOperation),
                                   typeof(T), typeof(TKey), type)
-                                .InvokeAsync(queryService!, op, options)!;
+                                .InvokeAsync(queryService!, op, filter)!;
                     return result;
 
                     Type CalculateTypeFromQuery()
