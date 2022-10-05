@@ -18,8 +18,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>ApiAuthorizationBuilder</returns>
         public static IApiAuthorizationBuilder UseApiFromRepository<T>(this IEndpointRouteBuilder app)
         {
-            if (ApiSettings.Instance.HasSwagger && app is IApplicationBuilder applicationBuilder)
-                applicationBuilder.UseSwaggerUiForRepository(ApiSettings.Instance);
+            if (app is IApplicationBuilder applicationBuilder)
+            {
+                if (ApiSettings.Instance.HasSwagger && !ApiSettings.Instance.SwaggerInstalled)
+                {
+                    applicationBuilder.UseSwaggerUiForRepository(ApiSettings.Instance);
+                    ApiSettings.Instance.SwaggerInstalled = true;
+                }
+                if (ApiSettings.Instance.HasDefaultCors && !ApiSettings.Instance.CorsInstalled)
+                {
+                    applicationBuilder.UseCors(ApiSettings.AllowSpecificOrigins);
+                    ApiSettings.Instance.CorsInstalled = true;
+                }
+            }
             return new ApiAuthorizationBuilder(authorization => app.UseApiFromRepository(typeof(T), ApiSettings.Instance, authorization));
         }
 

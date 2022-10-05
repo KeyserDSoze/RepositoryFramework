@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework
 {
@@ -45,6 +46,42 @@ namespace RepositoryFramework
         public IApiBuilder WithVersion(string version)
         {
             ApiSettings.Instance.Version = version;
+            return this;
+        }
+        public IApiBuilder WithDefaultCorsWithAllOrigins()
+        {
+            ApiSettings.Instance.HasDefaultCors = true;
+            Services.AddCors(options =>
+            {
+                options.AddPolicy(name: ApiSettings.AllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy
+                                        .AllowAnyOrigin()
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                                  });
+            });
+            return this;
+        }
+        public IApiBuilder WithDefaultCors(params string[] domains)
+        {
+            ApiSettings.Instance.HasDefaultCors = true;
+            Services.AddCors(options =>
+            {
+                options.AddPolicy(name: ApiSettings.AllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.WithOrigins(domains)
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                                  });
+            });
+            return this;
+        }
+        public IApiBuilder WithCors(Action<CorsOptions> options)
+        {
+            Services.AddCors(options);
             return this;
         }
     }

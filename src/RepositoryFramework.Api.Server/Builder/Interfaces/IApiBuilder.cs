@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework
 {
@@ -11,5 +12,8 @@ namespace RepositoryFramework
         IApiBuilder WithDocumentation();
         IApiBuilder WithSwagger();
         IPolicyApiBuilder WithOpenIdAuthentication(Action<ApiIdentitySettings> settings);
+        IApiBuilder WithDefaultCorsWithAllOrigins();
+        IApiBuilder WithDefaultCors(params string[] domains);
+        IApiBuilder WithCors(Action<CorsOptions> options);
     }
 }

@@ -23,17 +23,18 @@ namespace Microsoft.Extensions.DependencyInjection
                 if (options.BaseAddress == null)
                     options.BaseAddress = new Uri($"https://{domain}");
             });
-            services.AddSingleton(new RepositoryFrameworkOptions<T, TKey>()
-            {
-                HasToTranslate = false,
-                IsNotExposableAsApi = true
-            });
             return clientType switch
             {
-                PatternType.Query => services.AddQuery<T, TKey, RepositoryClient<T, TKey>>(serviceLifetime),
-                PatternType.Command => services.AddCommand<T, TKey, RepositoryClient<T, TKey>>(serviceLifetime),
-                _ => services.AddRepository<T, TKey, RepositoryClient<T, TKey>>(serviceLifetime),
+                PatternType.Query => services.AddQuery<T, TKey, RepositoryClient<T, TKey>>(serviceLifetime, SetOptionsForClient),
+                PatternType.Command => services.AddCommand<T, TKey, RepositoryClient<T, TKey>>(serviceLifetime, SetOptionsForClient),
+                _ => services.AddRepository<T, TKey, RepositoryClient<T, TKey>>(serviceLifetime, SetOptionsForClient),
             };
+
+            static void SetOptionsForClient(RepositoryFrameworkOptions<T, TKey> options)
+            {
+                options.HasToTranslate = false;
+                options.IsNotExposableAsApi = true;
+            }
         }
         /// <summary>
         /// Add a Repository Client as IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>> with a domain and a starting path

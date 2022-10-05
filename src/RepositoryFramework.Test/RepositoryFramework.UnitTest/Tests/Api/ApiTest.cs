@@ -71,7 +71,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                         .WithPath(Path)
                                         .WithSwagger()
                                         .WithVersion(Version)
-                                        .WithDocumentation();
+                                        .WithDocumentation()
+                                        .WithDefaultCors("http://localhost");
                             //.ConfigureAzureActiveDirectory(configuration);
                         });
                     }).Build();
