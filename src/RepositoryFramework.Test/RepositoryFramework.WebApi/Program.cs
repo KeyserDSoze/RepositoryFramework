@@ -68,7 +68,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services
     .AddRepositoryInCosmosSql<User, string>(
     builder.Configuration["ConnectionString:CosmosSql"],
-    "BigDatabase");
+    "BigDatabase")
+    .WithId(x => x.Email!);
 
 #pragma warning restore S125 // Sections of code should not be commented out
 

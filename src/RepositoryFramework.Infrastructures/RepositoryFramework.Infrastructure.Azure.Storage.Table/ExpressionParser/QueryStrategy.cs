@@ -1,24 +1,18 @@
 ﻿using System.Linq.Expressions;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
     internal static class QueryStrategy
     {
-        internal static string? Create(Expression expression, string partitionKey, string rowKey, string? timestamp)
+        internal static string? Create(Expression expression, string partitionKey, string? rowKey, string? timestamp)
         {
             IExpressionStrategy expressionFactory = new BinaryExpressionStrategy(partitionKey, rowKey, timestamp);
             if (expression is MethodCallExpression)
             {
                 expressionFactory = new MethodCallerExpressionStrategy(partitionKey, rowKey, timestamp);
-            }
-            else if (expression is UnaryExpression)
-            {
-                expressionFactory = new UnaryExpressionStrategy();
-            }
-            else if (expression.GetType().Name == "PropertyExpression")
-            {
-                expressionFactory = new MemberExpressionStrategy();
             }
             return expressionFactory.Convert(expression);
         }

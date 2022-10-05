@@ -97,17 +97,23 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddGet<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
            where TKey : notnull
-        {
-            var parser = GetKeyParser<TKey>();
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Get)}",
-                async ([FromQuery] string key, [FromServices] TService service) =>
-            {
-                var queryService = service as IQueryPattern<T, TKey>;
-                var keyAsValue = parser(key);
-                return await queryService!.GetAsync(keyAsValue).NoContext();
-            }).WithName($"{nameof(RepositoryMethods.Get)}{name}")
-               .AddAuthorization(authorization, RepositoryMethods.Get);
-        }
+            => app.AddApi<T, TKey, TService, T?>(name, startingPath, authorization,
+                RepositoryMethods.Get, null,
+                (TKey key, TService service) =>
+                {
+                    var queryService = service as IQueryPattern<T, TKey>;
+                    return queryService!.GetAsync(key);
+                });
+        private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+           where TKey : notnull
+           => app.AddApi<T, TKey, TService, State<T, TKey>>(name, startingPath, authorization,
+               RepositoryMethods.Exist, null,
+               (TKey key, TService service) =>
+               {
+                   var queryService = service as IQueryPattern<T, TKey>;
+                   return queryService!.ExistAsync(key);
+               }
+           );
 #warning think about to have more than one api with the same name and a dictionary? Problem with change of mind? the key name can be used?
         private static void AddQuery<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
@@ -160,45 +166,38 @@ namespace Microsoft.Extensions.DependencyInjection
             => queryService.OperationAsync(
                 new OperationType<TProperty>(operationName),
                 filter);
-        private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
-            where TKey : notnull
-        {
-            var parser = GetKeyParser<TKey>();
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Exist)}",
-                async ([FromQuery] string key, [FromServices] TService service) =>
-            {
-                var queryService = service as IQueryPattern<T, TKey>;
-                var keyAsValue = parser(key);
-                return await queryService!.ExistAsync(keyAsValue).NoContext();
-            }).WithName($"{nameof(RepositoryMethods.Exist)}{name}")
-               .AddAuthorization(authorization, RepositoryMethods.Exist);
-        }
         private static void AddInsert<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
-        {
-            var parser = GetKeyParser<TKey>();
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Insert)}",
-                async ([FromQuery] string key, [FromBody] T entity, [FromServices] TService service) =>
-            {
-                var commandService = service as ICommandPattern<T, TKey>;
-                var keyAsValue = parser(key);
-                return await commandService!.InsertAsync(keyAsValue, entity).NoContext();
-            }).WithName($"{nameof(RepositoryMethods.Insert)}{name}")
-            .AddAuthorization(authorization, RepositoryMethods.Insert);
-        }
+            => app.AddApi(name, startingPath, authorization,
+                RepositoryMethods.Insert,
+                (T entity, TKey key, TService service) =>
+                {
+                    var commandService = service as ICommandPattern<T, TKey>;
+                    return commandService!.InsertAsync(key, entity);
+                },
+                null
+            );
         private static void AddUpdate<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
-        {
-            var parser = GetKeyParser<TKey>();
-            _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Update)}",
-                async ([FromQuery] string key, [FromBody] T entity, [FromServices] TService service) =>
-            {
-                var commandService = service as ICommandPattern<T, TKey>;
-                var keyAsValue = parser(key);
-                return await commandService!.UpdateAsync(keyAsValue, entity).NoContext();
-            }).WithName($"{nameof(RepositoryMethods.Update)}{name}")
-            .AddAuthorization(authorization, RepositoryMethods.Update);
-        }
+            => app.AddApi(name, startingPath, authorization,
+                RepositoryMethods.Update,
+                (T entity, TKey key, TService service) =>
+                {
+                    var commandService = service as ICommandPattern<T, TKey>;
+                    return commandService!.UpdateAsync(key, entity);
+                },
+                null
+            );
+        private static void AddDelete<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+            where TKey : notnull
+            => app.AddApi<T, TKey, TService, State<T, TKey>>(name, startingPath, authorization,
+                RepositoryMethods.Delete, null,
+                (TKey key, TService service) =>
+                {
+                    var commandService = service as ICommandPattern<T, TKey>;
+                    return commandService!.DeleteAsync(key);
+                }
+            );
         private static void AddBatch<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {
@@ -210,18 +209,45 @@ namespace Microsoft.Extensions.DependencyInjection
             }).WithName($"{nameof(RepositoryMethods.Batch)}{name}")
             .AddAuthorization(authorization, RepositoryMethods.Batch);
         }
-        private static void AddDelete<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
+        private static void AddApi<T, TKey, TService, TResult>(this IEndpointRouteBuilder app,
+            string name,
+            string startingPath,
+            ApiAuthorization? authorization,
+            RepositoryMethods method,
+            Func<T, TKey, TService, Task<TResult>>? action,
+            Func<TKey, TService, Task<TResult>>? actionWithNoEntity)
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
-            _ = app.MapGet($"{startingPath}/{name}/{nameof(RepositoryMethods.Delete)}",
-                async ([FromQuery] string key, [FromServices] TService service) =>
+            var keyType = typeof(TKey);
+            RouteHandlerBuilder? apiMapped = null;
+            if (IKey.IsJsonable(keyType) && actionWithNoEntity != null)
             {
-                var commandService = service as ICommandPattern<T, TKey>;
-                var keyAsValue = parser(key);
-                return await commandService!.DeleteAsync(keyAsValue).NoContext();
-            }).WithName($"{nameof(RepositoryMethods.Delete)}{name}")
-                .AddAuthorization(authorization, RepositoryMethods.Delete);
+                apiMapped = app.MapPost($"{startingPath}/{name}/{method}",
+                ([FromBody] TKey key, [FromServices] TService service)
+                    => actionWithNoEntity.Invoke(key, service));
+            }
+            else if (IKey.IsJsonable(keyType) && action != null)
+            {
+                apiMapped = app.MapPost($"{startingPath}/{name}/{method}",
+                ([FromBody] Entity<T, TKey> entity, [FromServices] TService service)
+                    => action.Invoke(entity.Value!, entity.Key!, service));
+            }
+            else if (!IKey.IsJsonable(keyType) && action != null)
+            {
+                apiMapped = app.MapPost($"{startingPath}/{name}/{method}",
+                ([FromQuery] string key, [FromBody] T entity, [FromServices] TService service)
+                    => action.Invoke(entity, parser(key), service));
+            }
+            else
+            {
+                apiMapped = app.MapGet($"{startingPath}/{name}/{method}",
+                    ([FromQuery] string key, [FromServices] TService service)
+                        => actionWithNoEntity!.Invoke(parser(key), service));
+            }
+            _ = apiMapped!
+                    .WithName($"{method}{name}")
+                    .AddAuthorization(authorization, method);
         }
         private static Func<string, TKey> GetKeyParser<TKey>()
         {

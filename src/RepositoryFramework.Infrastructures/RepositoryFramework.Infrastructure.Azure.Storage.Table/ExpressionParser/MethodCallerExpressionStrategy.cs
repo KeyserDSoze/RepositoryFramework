@@ -5,9 +5,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
     internal sealed class MethodCallerExpressionStrategy : IExpressionStrategy
     {
         private readonly string _partitionKey;
-        private readonly string _rowKey;
+        private readonly string? _rowKey;
         private readonly string? _timestamp;
-        public MethodCallerExpressionStrategy(string partitionKey, string rowKey, string? timestamp)
+        public MethodCallerExpressionStrategy(string partitionKey, string? rowKey, string? timestamp)
         {
             _partitionKey = partitionKey;
             _rowKey = rowKey;
@@ -20,14 +20,20 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             {
                 dynamic argument = methodCallExpression.Arguments[0];
                 string name = argument.Member.Name;
-                if (name == _partitionKey)
+                var isEntered = false;
+                if (isEntered = name == _partitionKey)
                     name = IExpressionStrategy.PartitionKey;
-                else if (name == _rowKey)
+                else if (isEntered = name == _rowKey)
                     name = IExpressionStrategy.RowKey;
-                else if (name == _timestamp)
+                else if (isEntered = name == _timestamp)
                     name = IExpressionStrategy.Timestamp;
-                var value = Expression.Lambda(methodCallExpression.Arguments[1]).Compile().DynamicInvoke();
-                return $"{name}{((ExpressionType)Enum.Parse(typeof(ExpressionType), methodCallExpression.Method.Name)).MakeLogic()}{QueryStrategy.ValueToString(value!)}";
+                if (isEntered)
+                {
+                    var value = Expression.Lambda(methodCallExpression.Arguments[1]).Compile().DynamicInvoke();
+                    return $"{name}{((ExpressionType)Enum.Parse(typeof(ExpressionType), methodCallExpression.Method.Name)).MakeLogic()}{QueryStrategy.ValueToString(value!)}";
+                }
+                else
+                    return null;
             }
             return null;
         }

@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Azure;
 using Azure.Data.Tables;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
@@ -39,9 +40,15 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var (partitionKey, rowKey) = _keyReader.Read(key);
-            var response = await _client.GetEntityAsync<TableEntity>(partitionKey, rowKey, cancellationToken: cancellationToken).NoContext();
-            if (response?.Value != null)
-                return JsonSerializer.Deserialize<T>(response.Value.Value);
+            try
+            {
+                var response = await _client.GetEntityAsync<TableEntity>(partitionKey, rowKey, cancellationToken: cancellationToken).NoContext();
+                if (response?.Value != null)
+                    return JsonSerializer.Deserialize<T>(response.Value.Value);
+            }
+            catch (RequestFailedException)
+            {
+            }
             return default;
         }
         public async Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
@@ -62,7 +69,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             var where = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Where) as LambdaFilterOperation)?.Expression;
             string? filterAsString = null;
             if (where != null)
-                filterAsString = QueryStrategy.Create(where.Body, _options.PartitionKey.Name, _options.RowKey.Name, _options.Timestamp?.Name);
+                filterAsString = QueryStrategy.Create(where.Body, _options.PartitionKey, _options.RowKey, _options.Timestamp);
 
             var top = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Top) as ValueFilterOperation)?.Value;
             var skip = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Skip) as ValueFilterOperation)?.Value;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RepositoryFramework.UnitTest.Tests.Api.TableStorage;
 using RepositoryFramework.WebApi;
 using RepositoryFramework.WebApi.Models;
 using Xunit;
@@ -57,8 +59,13 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                             .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com")
                                             .WithPattern(x => x.Port, @"[1-9]{3,4}");
                             services.AddRepositoryInMemoryStorage<Animal, AnimalKey>();
-                            services.AddRepositoryInMemoryStorage<Car, Guid>();
-                            services.AddRepositoryInMemoryStorage<Car2, Range>();
+                            services.AddRepositoryInBlobStorage<Car, Guid>(configuration["ConnectionString:Storage"]);
+                            services.AddRepositoryInTableStorage<SuperCar, Guid>(
+                                    configuration["ConnectionString:Storage"])
+                                .WithPartitionKey(x => x.Id, x => x)
+                                .WithRowKey(x => x.Name)
+                                .WithTimestamp(x => x.Time)
+                                .WithTableStorageKeyReader<Car2KeyStorageReader>();
                             services.AddRepositoryInCosmosSql<User, string>(
                                         configuration["ConnectionString:CosmosSql"],
                                     "BigDatabase")
@@ -93,44 +100,82 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             services
                 .AddRepositoryApiClient<Car, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
             services
-                .AddRepositoryApiClient<Car2, Range>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                .AddRepositoryApiClient<SuperCar, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
 
             services.Finalize(out var serviceProvider);
             return serviceProvider;
         }
         [Fact]
-        public async Task TestAsync()
+        public async Task TableStorageAsync()
+        {
+            var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
+            var repository = serviceProvider.GetService<IRepository<SuperCar, Guid>>()!;
+            var id = Guid.NewGuid();
+            var car = new SuperCar() { Name = "name", Id = id, Other = "daa", Time = DateTime.UtcNow };
+            await TestRepository(repository!, id, car,
+                x => x.Id,
+                x => x.Name == "name",
+                x => x.Name != "name");
+        }
+        [Fact]
+        public async Task BlobStorageAsync()
+        {
+            var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
+            var repository = serviceProvider.GetService<IRepository<Car, Guid>>()!;
+            var id = Guid.NewGuid();
+            var car = new Car() { Name = "name", Id = id };
+            await TestRepository(repository!, id, car,
+                x => x.Id,
+                x => x.Name == "name",
+                x => x.Name != "name");
+        }
+        [Fact]
+        public async Task CosmosSqlAsync()
         {
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
             var userRepository = serviceProvider.GetService<IRepository<User, string>>()!;
             var email = "dasdasdsa@gmail.com";
-            foreach (var deletableUser in await userRepository.ToListAsync())
-                await userRepository.DeleteAsync(deletableUser.Key!);
-            var hasUser = await userRepository.ExistAsync(email);
+            await TestRepository(userRepository!, email, new User(email),
+                x => x.Email!,
+                x => x.Email!.Contains("sda"),
+                x => x.Email!.Contains("ads"));
+        }
+        private async Task TestRepository<T, TKey>(
+            IRepository<T, TKey> repository,
+            TKey testKey,
+            T testEntity,
+            Func<T, TKey> keyRetriever,
+            Expression<Func<T, bool>> ok,
+            Expression<Func<T, bool>> ko)
+            where TKey : notnull
+        {
+            foreach (var deletable in await repository.ToListAsync())
+                await repository.DeleteAsync(deletable.Key!);
+            var hasUser = await repository.ExistAsync(testKey);
             Assert.False(hasUser);
-            var users = await userRepository.ToListAsync();
+            var users = await repository.ToListAsync();
             Assert.Empty(users);
-            var addUser = await userRepository.InsertAsync(email, new User(email));
+            var addUser = await repository.InsertAsync(testKey, testEntity);
             Assert.True(addUser);
-            hasUser = await userRepository.ExistAsync(email);
+            hasUser = await repository.ExistAsync(testKey);
             Assert.True(hasUser);
-            users = await userRepository.ToListAsync();
+            users = await repository.ToListAsync();
             Assert.Single(users);
-            var user = await userRepository.GetAsync(email);
-            Assert.Equal(email, user!.Email);
-            users = await userRepository.Where(x => x.Email!.Contains("sda")).ToListAsync();
+            var user = await repository.GetAsync(testKey);
+            Assert.Equal(testKey, keyRetriever(user!));
+            users = await repository.Where(ok).ToListAsync();
             Assert.Single(users);
-            users = await userRepository.Where(x => x.Email!.Contains("ads")).ToListAsync();
+            users = await repository.Where(ko).ToListAsync();
             Assert.Empty(users);
-            var deleted = await userRepository.DeleteAsync(email);
+            var deleted = await repository.DeleteAsync(testKey);
             Assert.True(deleted);
-            users = await userRepository.Where(x => x.Email!.Contains("ads")).ToListAsync();
+            users = await repository.Where(ok).ToListAsync();
             Assert.Empty(users);
-            users = await userRepository.ToListAsync();
+            users = await repository.ToListAsync();
             Assert.Empty(users);
-            hasUser = await userRepository.ExistAsync(email);
+            hasUser = await repository.ExistAsync(testKey);
             Assert.False(hasUser);
-            user = await userRepository.GetAsync(email);
+            user = await repository.GetAsync(testKey);
             Assert.Null(user);
         }
     }

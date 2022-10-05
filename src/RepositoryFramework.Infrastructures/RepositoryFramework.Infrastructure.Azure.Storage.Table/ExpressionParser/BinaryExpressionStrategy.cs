@@ -5,9 +5,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
     internal sealed class BinaryExpressionStrategy : IExpressionStrategy
     {
         private readonly string _partitionKey;
-        private readonly string _rowKey;
+        private readonly string? _rowKey;
         private readonly string? _timestamp;
-        public BinaryExpressionStrategy(string partitionKey, string rowKey, string? timestamp)
+        public BinaryExpressionStrategy(string partitionKey, string? rowKey, string? timestamp)
         {
             _partitionKey = partitionKey;
             _rowKey = rowKey;
@@ -20,14 +20,20 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             {
                 dynamic leftPart = binaryExpression.Left;
                 string name = leftPart.Member.Name;
-                if (name == _partitionKey)
+                var isEntered = false;
+                if (isEntered = name == _partitionKey)
                     name = IExpressionStrategy.PartitionKey;
-                else if (name == _rowKey)
+                else if (isEntered = name == _rowKey)
                     name = IExpressionStrategy.RowKey;
-                else if (name == _timestamp)
+                else if (isEntered = name == _timestamp)
                     name = IExpressionStrategy.Timestamp;
-                var rightPart = Expression.Lambda(binaryExpression.Right).Compile().DynamicInvoke();
-                return $"{name}{binaryExpression.NodeType.MakeLogic()}{QueryStrategy.ValueToString(rightPart!)}";
+                if (isEntered)
+                {
+                    var rightPart = Expression.Lambda(binaryExpression.Right).Compile().DynamicInvoke();
+                    return $"{name}{binaryExpression.NodeType.MakeLogic()}{QueryStrategy.ValueToString(rightPart!)}";
+                }
+                else
+                    return null;
             }
             return null;
         }

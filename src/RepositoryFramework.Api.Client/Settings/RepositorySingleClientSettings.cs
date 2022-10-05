@@ -17,21 +17,31 @@
         {
             StartingPath = startingPath;
             Version = version;
-            if (keyType == typeof(string) || keyType == typeof(Guid) ||
-                keyType == typeof(DateTimeOffset) || keyType == typeof(TimeSpan) ||
-                keyType == typeof(nint) || keyType == typeof(nuint))
-                IsJsonableKey = false;
-            else
-                IsJsonableKey = keyType.GetProperties().Length > 0;
+            IsJsonableKey = IKey.IsJsonable(keyType);
 
             var basePath = $"{StartingPath}/{(string.IsNullOrWhiteSpace(Version) ? string.Empty : $"{Version}/")}{modelType.Name}/";
-            GetPath = $"{basePath}{nameof(RepositoryMethods.Get)}?key={{0}}";
-            ExistPath = $"{basePath}{nameof(RepositoryMethods.Exist)}?key={{0}}";
-            DeletePath = $"{basePath}{nameof(RepositoryMethods.Delete)}?key={{0}}";
+            if (IsJsonableKey)
+                GetPath = $"{basePath}{nameof(RepositoryMethods.Get)}";
+            else
+                GetPath = $"{basePath}{nameof(RepositoryMethods.Get)}?key={{0}}";
+            if (IsJsonableKey)
+                ExistPath = $"{basePath}{nameof(RepositoryMethods.Exist)}";
+            else
+                ExistPath = $"{basePath}{nameof(RepositoryMethods.Exist)}?key={{0}}";
+            if (IsJsonableKey)
+                DeletePath = $"{basePath}{nameof(RepositoryMethods.Delete)}";
+            else
+                DeletePath = $"{basePath}{nameof(RepositoryMethods.Delete)}?key={{0}}";
             QueryPath = $"{basePath}{nameof(RepositoryMethods.Query)}";
             OperationPath = $"{basePath}{nameof(RepositoryMethods.Operation)}?op={{0}}&returnType={{1}}";
-            InsertPath = $"{basePath}{nameof(RepositoryMethods.Insert)}?key={{0}}";
-            UpdatePath = $"{basePath}{nameof(RepositoryMethods.Update)}?key={{0}}";
+            if (IsJsonableKey)
+                InsertPath = $"{basePath}{nameof(RepositoryMethods.Insert)}";
+            else
+                InsertPath = $"{basePath}{nameof(RepositoryMethods.Insert)}?key={{0}}";
+            if (IsJsonableKey)
+                UpdatePath = $"{basePath}{nameof(RepositoryMethods.Update)}";
+            else
+                UpdatePath = $"{basePath}{nameof(RepositoryMethods.Update)}?key={{0}}";
             BatchPath = $"{basePath}{nameof(RepositoryMethods.Batch)}";
         }
     }

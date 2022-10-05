@@ -35,31 +35,51 @@ namespace RepositoryFramework.Api.Client
             else
                 return Task.FromResult(_httpClient);
         }
+        private static async Task<TResult> PostAsJson<TMessage, TResult>(HttpClient client, string path, TMessage message, CancellationToken cancellationToken)
+        {
+            var response = await client.PostAsJsonAsync(path, message, cancellationToken).NoContext();
+            response.EnsureSuccessStatusCode();
+            return (await response!.Content.ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken).NoContext())!;
+        }
+        private static string GetCorrectUriWithKey(string path, TKey key)
+        {
+            if (key is IKey keyAsIKey)
+                return string.Format(path, keyAsIKey.AsString());
+            else
+                return string.Format(path, key.ToString());
+        }
+
         public async Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Delete).NoContext();
-            var keyAsString = s_settings.IsJsonableKey ? key.ToJson() : key.ToString();
-            return (await client.GetFromJsonAsync<State<T, TKey>>(string.Format(s_settings.DeletePath, keyAsString), cancellationToken).NoContext())!;
+            if (s_settings.IsJsonableKey)
+                return await PostAsJson<TKey, State<T, TKey>>(client, s_settings.DeletePath, key, cancellationToken).NoContext();
+            else
+                return (await client.GetFromJsonAsync<State<T, TKey>>(GetCorrectUriWithKey(s_settings.DeletePath, key), cancellationToken).NoContext())!;
         }
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Get).NoContext();
-            var keyAsString = s_settings.IsJsonableKey ? key.ToJson() : key.ToString();
-            return await client.GetFromJsonAsync<T>(string.Format(s_settings.GetPath, keyAsString), cancellationToken).NoContext();
+            if (s_settings.IsJsonableKey)
+                return await PostAsJson<TKey, T>(client, s_settings.GetPath, key, cancellationToken).NoContext();
+            else
+                return await client.GetFromJsonAsync<T>(GetCorrectUriWithKey(s_settings.GetPath, key), cancellationToken).NoContext();
         }
         public async Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Exist).NoContext();
-            var keyAsString = s_settings.IsJsonableKey ? key.ToJson() : key.ToString();
-            return (await client.GetFromJsonAsync<State<T, TKey>>(string.Format(s_settings.ExistPath, keyAsString), cancellationToken).NoContext())!;
+            if (s_settings.IsJsonableKey)
+                return await PostAsJson<TKey, State<T, TKey>>(client, s_settings.ExistPath, key, cancellationToken).NoContext();
+            else
+                return (await client.GetFromJsonAsync<State<T, TKey>>(GetCorrectUriWithKey(s_settings.ExistPath, key), cancellationToken).NoContext())!;
         }
         public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Insert).NoContext();
-            var keyAsString = s_settings.IsJsonableKey ? key.ToJson() : key.ToString();
-            var response = await client.PostAsJsonAsync(string.Format(s_settings.InsertPath, keyAsString), value, cancellationToken).NoContext();
-            response.EnsureSuccessStatusCode();
-            return (await response!.Content.ReadFromJsonAsync<State<T, TKey>>(cancellationToken: cancellationToken).NoContext())!;
+            if (s_settings.IsJsonableKey)
+                return await PostAsJson<Entity<T, TKey>, State<T, TKey>>(client, s_settings.InsertPath, new(value, key), cancellationToken).NoContext();
+            else
+                return await PostAsJson<T, State<T, TKey>>(client, GetCorrectUriWithKey(s_settings.InsertPath, key), value, cancellationToken).NoContext();
         }
         public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -101,10 +121,10 @@ namespace RepositoryFramework.Api.Client
         public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Update).NoContext();
-            var keyAsString = s_settings.IsJsonableKey ? key.ToJson() : key.ToString();
-            var response = await client.PostAsJsonAsync(string.Format(s_settings.UpdatePath, keyAsString), value, cancellationToken).NoContext();
-            response.EnsureSuccessStatusCode();
-            return (await response.Content.ReadFromJsonAsync<State<T, TKey>>(cancellationToken: cancellationToken).NoContext())!;
+            if (s_settings.IsJsonableKey)
+                return await PostAsJson<Entity<T, TKey>, State<T, TKey>>(client, s_settings.UpdatePath, new(value, key), cancellationToken).NoContext();
+            else
+                return await PostAsJson<T, State<T, TKey>>(client, GetCorrectUriWithKey(s_settings.UpdatePath, key), value, cancellationToken).NoContext();
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {

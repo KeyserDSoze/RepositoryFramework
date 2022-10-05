@@ -34,7 +34,7 @@ namespace RepositoryFramework.UnitTest.Repository
                     services
                         .AddRepositoryInTableStorage<AppUser, AppUserKey>(configuration["ConnectionString:Storage"])
                         .WithTableStorageKeyReader<TableStorageKeyReader>()
-                        .WithPartitionKey(x => x.Id)
+                        .WithPartitionKey(x => x.Id, x => x.Id)
                         .WithRowKey(x => x.Username)
                         .WithTimestamp(x => x.CreationTime);
                     break;

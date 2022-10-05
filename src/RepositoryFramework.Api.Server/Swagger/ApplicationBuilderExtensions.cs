@@ -6,6 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     internal static class ApplicationBuilderExtensions
     {
+        private const string DefaultVersion = "v1";
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "It's a not configurable uri, it's correct to hardcode it.")]
         public static IApplicationBuilder UseSwaggerUiForRepository<TBuilder>(this TBuilder app,
             ApiSettings settings)
@@ -14,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint($"/swagger/{settings.Version}/swagger.json", $"{settings.Name} {settings.Version}");
+                options.SwaggerEndpoint($"/swagger/{settings.Version ?? DefaultVersion}/swagger.json", $"{settings.Name} {settings.Version ?? DefaultVersion}");
                 if (settings.HasOpenIdAuthentication)
                 {
                     options.OAuthClientId(settings.OpenIdIdentity.ClientId);
