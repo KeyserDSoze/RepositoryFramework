@@ -1,4 +1,4 @@
-﻿namespace RepositoryFramework.WebApi.Models
+﻿namespace RepositoryFramework.Test.Models
 {
     public class Animal
     {

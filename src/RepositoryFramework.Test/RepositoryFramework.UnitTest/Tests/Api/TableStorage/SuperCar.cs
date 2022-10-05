@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RepositoryFramework.UnitTest.Tests.Api.TableStorage
+namespace RepositoryFramework.Test.Models
 {
     public class SuperCar
     {

@@ -15,7 +15,8 @@
         public TimeSpan ExpiringTime { get; set; }
         public bool HasCommandPattern => Methods.HasFlag(RepositoryMethods.Insert)
             || Methods.HasFlag(RepositoryMethods.Update)
-            || Methods.HasFlag(RepositoryMethods.Delete);
+            || Methods.HasFlag(RepositoryMethods.Delete)
+            || Methods.HasFlag(RepositoryMethods.All);
         public bool HasCache(RepositoryMethods method) => Methods.HasFlag(RepositoryMethods.All) || Methods.HasFlag(method);
         public RepositoryMethods Methods { get; set; } = RepositoryMethods.Query | RepositoryMethods.Get | RepositoryMethods.Exist;
         internal static CacheOptions<T, TKey> Default { get; } = new CacheOptions<T, TKey>()

@@ -1,20 +1,8 @@
 ﻿using System;
 
-namespace RepositoryFramework.WebApi.Models
+namespace RepositoryFramework.Test.Models
 {
-    public class SuperiorUser : User
-    {
-        public SuperiorUser(string email) : base(email)
-        {
-        }
-    }
-    public class SuperUser : User
-    {
-        public SuperUser(string email) : base(email)
-        {
-        }
-    }
-    public class User
+    public class SuperUser
     {
         public string? Id { get; set; }
         public string? Name { get; set; }
@@ -22,7 +10,7 @@ namespace RepositoryFramework.WebApi.Models
         public int Port { get; set; }
         public bool IsAdmin { get; set; }
         public Guid GroupId { get; set; }
-        public User(string email)
+        public SuperUser(string email)
         {
             Email = email;
         }

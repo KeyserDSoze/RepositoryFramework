@@ -25,7 +25,7 @@ namespace RepositoryFramework
         public SerializableFilter Serialize()
             => ToSerializableQuery();
         public string ToKey()
-            => ToSerializableQuery().ToString()!;
+            => ToSerializableQuery().AsString();
         public IFilterExpression Translate<T>()
         {
             if (FilterTranslation.Instance.HasTranslation<T>())

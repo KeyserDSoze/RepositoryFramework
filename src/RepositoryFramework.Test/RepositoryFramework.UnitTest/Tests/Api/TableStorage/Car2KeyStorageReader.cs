@@ -1,7 +1,7 @@
 ﻿using System;
 using RepositoryFramework.Infrastructure.Azure.Storage.Table;
 
-namespace RepositoryFramework.UnitTest.Tests.Api.TableStorage
+namespace RepositoryFramework.Test.Models
 {
     internal sealed class Car2KeyStorageReader : ITableStorageKeyReader<SuperCar, Guid>
     {

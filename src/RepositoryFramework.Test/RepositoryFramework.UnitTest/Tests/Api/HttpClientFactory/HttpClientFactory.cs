@@ -11,6 +11,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
     {
         public static HttpClientFactory Instance { get; } = new HttpClientFactory();
         public IHost? Host { get; set; }
+        public IServiceProvider? ServiceProvider { get; set; }
         private HttpClientFactory() { }
         public HttpClient CreateClient(string name)
             => Host!.GetTestServer().CreateClient();
