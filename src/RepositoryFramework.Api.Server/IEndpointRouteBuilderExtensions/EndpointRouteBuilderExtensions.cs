@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var services = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
                 if (ApiSettings.Instance.HasSwagger && app is IApplicationBuilder applicationBuilder)
                     applicationBuilder.UseSwaggerUiForRepository(ApiSettings.Instance);
-                foreach (var service in services!.Services.Where(x => !x.NotExposableAsApi))
+                foreach (var service in services!.Services)
                     _ = app.UseApiFromRepository(service.ModelType, ApiSettings.Instance, authorization);
                 return app;
             });
@@ -70,29 +70,30 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentException($"Please check if your {modelType.Name} model has a service injected for IRepository, IQuery, ICommand.");
 
             Dictionary<string, bool> configuredMethods = new();
-
-            foreach (var (interfaceType, currentType) in serviceValue.RepositoryTypes.Select(x => x.Value))
-                foreach (var method in currentType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
-                {
-                    var currentMethodName = s_possibleMethods.FirstOrDefault(x => x == $"Add{method.Name.Replace("Async", string.Empty)}");
-                    if (!string.IsNullOrWhiteSpace(currentMethodName) && !configuredMethods.ContainsKey(currentMethodName))
+            if (app.ServiceProvider.GetService(typeof(RepositoryFrameworkOptions<,>).MakeGenericType(serviceValue.ModelType, serviceValue.KeyType)) is IRepositoryFrameworkOptions options && !options.IsNotExposableAsApi)
+            {
+                foreach (var (interfaceType, currentType) in serviceValue.RepositoryTypes.Select(x => x.Value))
+                    foreach (var method in currentType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
                     {
-                        var isNotImplemented = false;
-                        Try.WithDefaultOnCatch(() =>
+                        var currentMethodName = s_possibleMethods.FirstOrDefault(x => x == $"Add{method.Name.Replace("Async", string.Empty)}");
+                        if (!string.IsNullOrWhiteSpace(currentMethodName) && !configuredMethods.ContainsKey(currentMethodName))
                         {
-                            var instructions = method.GetBodyAsString();
-                            isNotImplemented = instructions.Contains(NotImplementedExceptionIlOperation);
-                        });
-                        if (isNotImplemented)
-                            continue;
+                            var isNotImplemented = false;
+                            Try.WithDefaultOnCatch(() =>
+                            {
+                                var instructions = method.GetBodyAsString();
+                                isNotImplemented = instructions.Contains(NotImplementedExceptionIlOperation);
+                            });
+                            if (isNotImplemented)
+                                continue;
 
-                        _ = typeof(EndpointRouteBuilderExtensions).GetMethod(currentMethodName, BindingFlags.NonPublic | BindingFlags.Static)!
-                           .MakeGenericMethod(modelType, serviceValue.KeyType, interfaceType)
-                           .Invoke(null, new object[] { app, modelType.Name, settings.StartingPath, authorization! });
-                        configuredMethods.Add(currentMethodName, true);
+                            _ = typeof(EndpointRouteBuilderExtensions).GetMethod(currentMethodName, BindingFlags.NonPublic | BindingFlags.Static)!
+                               .MakeGenericMethod(modelType, serviceValue.KeyType, interfaceType)
+                               .Invoke(null, new object[] { app, modelType.Name, settings.StartingPath, authorization! });
+                            configuredMethods.Add(currentMethodName, true);
+                        }
                     }
-                }
-
+            }
             return app;
         }
         private static void AddGet<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)

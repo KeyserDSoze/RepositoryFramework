@@ -20,15 +20,8 @@ namespace RepositoryFramework.UnitTest.Repository
             switch (injectionedStorage)
             {
                 case "entityframework":
-                    services.AddDbContext<SampleContext>(options =>
-                     {
-                         options.UseSqlServer(configuration["ConnectionString:Database"]);
-                     }, ServiceLifetime.Scoped)
-                       .AddRepository<AppUser, AppUserKey, AppUserStorage>()
-                           .Translate<User>()
-                        .With(x => x.Id, x => x.Identificativo)
-                        .With(x => x.Username, x => x.Nome)
-                        .With(x => x.Email, x => x.IndirizzoElettronico);
+                    services
+                        .AddUserRepositoryWithDatabaseSqlAndEntityFramework(configuration);
                     break;
                 case "tablestorage":
                     services

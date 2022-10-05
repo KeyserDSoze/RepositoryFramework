@@ -13,19 +13,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TStorage">Repository pattern storage.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <param name="notExposableAsApi">It's a parameter used by framework to understand the level of privacy,
-        /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
+        /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> AddRepository<T, TKey, TStorage>(this IServiceCollection services,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
-          bool notExposableAsApi = false)
+          Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
           where TStorage : class, IRepositoryPattern<T, TKey>
           where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
             var currentType = typeof(IRepository<T, TKey>);
             service.AddOrUpdate(currentType, typeof(TStorage));
-            service.NotExposableAsApi = notExposableAsApi;
+            var options = new RepositoryFrameworkOptions<T, TKey>();
+            settings?.Invoke(options);
+            services.AddSingleton(options);
             return services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IRepositoryPattern<T, TKey>))
                 .AddService<IRepositoryPattern<T, TKey>, TStorage>(serviceLifetime)
@@ -43,20 +44,21 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TStorage">Command pattern storage.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <param name="notExposableAsApi">It's a parameter used by framework to understand the level of privacy,
-        /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
+        /// <param name="settings">Settings for your command.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> AddCommand<T, TKey, TStorage>(this IServiceCollection services,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
-            bool notExposableAsApi = false)
+            Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TStorage : class, ICommandPattern<T, TKey>
             where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
             var currentType = typeof(ICommand<T, TKey>);
             service.AddOrUpdate(currentType, typeof(TStorage));
-            service.NotExposableAsApi = notExposableAsApi;
+            var options = new RepositoryFrameworkOptions<T, TKey>();
+            settings?.Invoke(options);
             return services
+                .AddSingleton(options)
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(ICommandPattern<T, TKey>))
                 .AddService<ICommandPattern<T, TKey>, TStorage>(serviceLifetime)
                 .AddService<ICommand<T, TKey>, Command<T, TKey>>(serviceLifetime)
@@ -72,20 +74,21 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TStorage">Query pattern storage.</typeparam>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
-        /// <param name="notExposableAsApi">It's a parameter used by framework to understand the level of privacy,
-        /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.</param>
+        /// <param name="settings">Settings for your query.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> AddQuery<T, TKey, TStorage>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
-           bool notExposableAsApi = false)
+           Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
            where TStorage : class, IQueryPattern<T, TKey>
            where TKey : notnull
         {
             var service = services.SetService<T, TKey>();
             var currentType = typeof(IQuery<T, TKey>);
             service.AddOrUpdate(currentType, typeof(TStorage));
-            service.NotExposableAsApi = notExposableAsApi;
+            var options = new RepositoryFrameworkOptions<T, TKey>();
+            settings?.Invoke(options);
             return services
+                .AddSingleton(options)
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IQueryPattern<T, TKey>))
                 .AddService<IQueryPattern<T, TKey>, TStorage>(serviceLifetime)
                 .AddService<IQuery<T, TKey>, Query<T, TKey>>(serviceLifetime)

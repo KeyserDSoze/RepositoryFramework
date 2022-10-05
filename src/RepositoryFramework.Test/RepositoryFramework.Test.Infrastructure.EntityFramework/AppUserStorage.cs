@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RepositoryFramework.Test.Domain;
 using RepositoryFramework.Test.Infrastructure.EntityFramework.Models;
+using RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace RepositoryFramework.Test.Infrastructure.EntityFramework
 {
-    public class AppUserStorage : IRepository<AppUser, AppUserKey>
+    internal sealed class AppUserStorage : IRepository<AppUser, AppUserKey>
     {
         private readonly SampleContext _context;
 
@@ -97,6 +98,7 @@ namespace RepositoryFramework.Test.Infrastructure.EntityFramework
         {
             var user = new User
             {
+                Identificativo = key.Id,
                 IndirizzoElettronico = value.Email,
                 Nome = value.Username,
                 Cognome = string.Empty,

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RepositoryFramework.Test.Infrastructure.EntityFramework.Models
+namespace RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal
 {
     public partial class User
     {

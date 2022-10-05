@@ -23,6 +23,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 if (options.BaseAddress == null)
                     options.BaseAddress = new Uri($"https://{domain}");
             });
+            services.AddSingleton(new RepositoryFrameworkOptions<T, TKey>()
+            {
+                HasToTranslate = false,
+                IsNotExposableAsApi = true
+            });
             return clientType switch
             {
                 PatternType.Query => services.AddQuery<T, TKey, RepositoryClient<T, TKey>>(serviceLifetime),

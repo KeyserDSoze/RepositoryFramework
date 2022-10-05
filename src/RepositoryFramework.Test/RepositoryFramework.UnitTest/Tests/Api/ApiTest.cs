@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RepositoryFramework.Test.Domain;
 using RepositoryFramework.UnitTest.Tests.Api.TableStorage;
 using RepositoryFramework.WebApi;
 using RepositoryFramework.WebApi.Models;
@@ -46,18 +48,10 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                             services.AddHealthChecks();
                             services.AddControllers();
                             services.AddRepositoryInMemoryStorage<IperUser, string>()
-                            .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>()
-                            .WithInMemoryCache(x =>
-                            {
-                                x.ExpiringTime = TimeSpan.FromMilliseconds(100_000);
-                            });
-                            services.AddRepositoryInMemoryStorage<SuperUser, string>()
-                                            .PopulateWithRandomData(x => x.Email!, 120, 5)
-                                            .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
-                            services.AddRepositoryInMemoryStorage<SuperiorUser, string>()
-                                            .PopulateWithRandomData(x => x.Email!, 120, 5)
-                                            .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com")
-                                            .WithPattern(x => x.Port, @"[1-9]{3,4}");
+                                .PopulateWithRandomData(x => x.Email!, 120, 5)
+                                .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com")
+                                .And()
+                                .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
                             services.AddRepositoryInMemoryStorage<Animal, AnimalKey>();
                             services.AddRepositoryInBlobStorage<Car, Guid>(configuration["ConnectionString:Storage"]);
                             services.AddRepositoryInTableStorage<SuperCar, Guid>(
@@ -70,6 +64,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                         configuration["ConnectionString:CosmosSql"],
                                     "BigDatabase")
                                     .WithId(x => x.Email!);
+                            services
+                                .AddUserRepositoryWithDatabaseSqlAndEntityFramework(configuration);
                             services.AddApiFromRepositoryFramework()
                                         .WithName("Repository Api")
                                         .WithPath(Path)
@@ -92,7 +88,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             services
                 .AddRepositoryApiClient<User, string>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
             services
-                .AddRepositoryApiClient<SuperUser, string>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                .AddRepositoryApiClient<AppUser, AppUserKey>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
             services
                 .AddRepositoryApiClient<IperUser, string>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
             services
@@ -106,13 +102,49 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             return serviceProvider;
         }
         [Fact]
+        public async Task InMemoryWithComplexKeyAsync()
+        {
+            var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
+            var repository = serviceProvider.GetService<IRepository<Animal, AnimalKey>>()!;
+            var id = new AnimalKey(Guid.NewGuid().ToString(), 2, Guid.NewGuid());
+            var entity = new Animal { Id = id, Name = "Horse" };
+            await TestRepository(repository!, id, entity,
+                x => x.Id,
+                x => x.Name == "Horse",
+                x => x.Name != "Horse");
+        }
+        [Fact]
+        public async Task InMemoryAsync()
+        {
+            var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
+            var repository = serviceProvider.GetService<IRepository<IperUser, string>>()!;
+            var id = Guid.NewGuid().ToString();
+            var entity = new IperUser { Id = id, GroupId = Guid.NewGuid(), IsAdmin = true, Email = "alekud@drasda.it", Name = "Alekud", Port = 23 };
+            await TestRepository(repository!, id, entity,
+                x => x.Id,
+                x => x.Name.Contains("eku"),
+                x => !x.Name.Contains("eku"));
+        }
+        [Fact]
+        public async Task SqlWithEntityFrameworkAsync()
+        {
+            var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
+            var repository = serviceProvider.GetService<IRepository<AppUser, AppUserKey>>()!;
+            var id = new AppUserKey(23);
+            var entity = new AppUser(23, "alekud", "alekud@drasda.it", new(), DateTime.UtcNow);
+            await TestRepository(repository!, id, entity,
+                x => x.Id,
+                x => x.Username.Contains("eku"),
+                x => !x.Username.Contains("eku"));
+        }
+        [Fact]
         public async Task TableStorageAsync()
         {
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
             var repository = serviceProvider.GetService<IRepository<SuperCar, Guid>>()!;
             var id = Guid.NewGuid();
-            var car = new SuperCar() { Name = "name", Id = id, Other = "daa", Time = DateTime.UtcNow };
-            await TestRepository(repository!, id, car,
+            var entity = new SuperCar() { Name = "name", Id = id, Other = "daa", Time = DateTime.UtcNow };
+            await TestRepository(repository!, id, entity,
                 x => x.Id,
                 x => x.Name == "name",
                 x => x.Name != "name");
@@ -123,8 +155,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
             var repository = serviceProvider.GetService<IRepository<Car, Guid>>()!;
             var id = Guid.NewGuid();
-            var car = new Car() { Name = "name", Id = id };
-            await TestRepository(repository!, id, car,
+            var entity = new Car() { Name = "name", Id = id };
+            await TestRepository(repository!, id, entity,
                 x => x.Id,
                 x => x.Name == "name",
                 x => x.Name != "name");
@@ -134,8 +166,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
         {
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
             var userRepository = serviceProvider.GetService<IRepository<User, string>>()!;
-            var email = "dasdasdsa@gmail.com";
-            await TestRepository(userRepository!, email, new User(email),
+            var id = "dasdasdsa@gmail.com";
+            await TestRepository(userRepository!, id, new User(id),
                 x => x.Email!,
                 x => x.Email!.Contains("sda"),
                 x => x.Email!.Contains("ads"));

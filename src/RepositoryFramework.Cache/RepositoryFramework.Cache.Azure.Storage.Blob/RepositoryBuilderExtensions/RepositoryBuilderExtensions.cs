@@ -31,7 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             builder.Services
-                  .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(connectionString, name, clientOptions, true);
+                  .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(connectionString, name, clientOptions);
             return builder.WithDistributedCache<T, TKey, BlobStorageCache<T, TKey>>(settings, ServiceLifetime.Singleton);
         }
         /// <summary>
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             builder.Services
-                  .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(endpointUri, clientOptions, true);
+                  .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(endpointUri, clientOptions);
             return builder.WithDistributedCache<T, TKey, BlobStorageCache<T, TKey>>(settings, ServiceLifetime.Singleton);
         }
     }

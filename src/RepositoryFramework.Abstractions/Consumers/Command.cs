@@ -4,12 +4,15 @@
         where TKey : notnull
     {
         private readonly ICommandPattern<T, TKey> _command;
+        private readonly RepositoryFrameworkOptions<T, TKey> _settings;
         private readonly IRepositoryBusinessManager<T, TKey>? _businessManager;
 
         public Command(ICommandPattern<T, TKey> command,
+            RepositoryFrameworkOptions<T, TKey> settings,
             IRepositoryBusinessManager<T, TKey>? businessManager = null)
         {
             _command = command;
+            _settings = settings;
             _businessManager = businessManager;
         }
         public Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace RepositoryFramework.Test.Infrastructure.EntityFramework.Models
+namespace RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal
 {
     public partial class SampleContext : DbContext
     {

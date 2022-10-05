@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         /// <summary>
         /// Add a default cosmos sql service for your repository pattern
-        // with default credential integration (managed identity)
+        /// with default credential integration (managed identity)
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
@@ -22,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
+        /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryCosmosSqlBuilder<T, TKey> AddRepositoryInCosmosSql<T, TKey>(
            this IServiceCollection services,
@@ -31,7 +32,8 @@ namespace Microsoft.Extensions.DependencyInjection
            string? containerName = null,
            CosmosClientOptions? clientOptions = null,
            CosmosOptions? databaseOptions = null,
-           CosmosOptions? containerOptions = null)
+           CosmosOptions? containerOptions = null,
+           Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
             CosmosSqlServiceClientFactory.Instance
@@ -43,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         databaseOptions,
                         containerOptions);
             services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            return new RepositoryCosmosSqlBuilder<T, TKey>(services.AddRepository<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton));
+            return new RepositoryCosmosSqlBuilder<T, TKey>(services.AddRepository<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
         /// <summary>
         /// Add a default cosmos sql service for your command pattern.
@@ -60,6 +62,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
+        /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryCosmosSqlBuilder<T, TKey> AddCommandInCosmosSql<T, TKey>(
            this IServiceCollection services,
@@ -69,7 +72,8 @@ namespace Microsoft.Extensions.DependencyInjection
            string? containerName = null,
            CosmosClientOptions? clientOptions = null,
            CosmosOptions? databaseOptions = null,
-           CosmosOptions? containerOptions = null)
+           CosmosOptions? containerOptions = null,
+           Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
             CosmosSqlServiceClientFactory.Instance
@@ -81,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         databaseOptions,
                         containerOptions);
             services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            return new RepositoryCosmosSqlBuilder<T, TKey>(services.AddCommand<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton));
+            return new RepositoryCosmosSqlBuilder<T, TKey>(services.AddCommand<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
         /// <summary>
         /// Add a default cosmos sql service for your query pattern.
@@ -98,6 +102,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="clientOptions">Options for cosmos db client.</param>
         /// <param name="databaseOptions">Options for cosmos database.</param>
         /// <param name="containerOptions">Options for cosmos container.</param>
+        /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryCosmosSqlBuilder<T, TKey> AddQueryInCosmosSql<T, TKey>(
            this IServiceCollection services,
@@ -107,7 +112,8 @@ namespace Microsoft.Extensions.DependencyInjection
            string? containerName = null,
            CosmosClientOptions? clientOptions = null,
            CosmosOptions? databaseOptions = null,
-           CosmosOptions? containerOptions = null)
+           CosmosOptions? containerOptions = null,
+           Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
             CosmosSqlServiceClientFactory.Instance
@@ -119,7 +125,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         databaseOptions,
                         containerOptions);
             services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            return new RepositoryCosmosSqlBuilder<T, TKey>(services.AddQuery<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton));
+            return new RepositoryCosmosSqlBuilder<T, TKey>(services.AddQuery<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
     }
 }
