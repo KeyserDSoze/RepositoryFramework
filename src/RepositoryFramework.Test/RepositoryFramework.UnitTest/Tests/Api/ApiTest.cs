@@ -58,7 +58,9 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                     .And()
                                     .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
                                 services
-                                    .AddRepositoryInMemoryStorage<Animal, AnimalKey>();
+                                    .AddRepositoryInMemoryStorage<Animal, AnimalKey>()
+                                    .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert>()
+                                    .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert2>();
                                 services
                                     .AddRepositoryInMemoryStorage<Plant, int>()
                                         .WithInMemoryCache(x =>
@@ -69,16 +71,23 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                 services
                                     .AddRepository<ExtremelyRareUser, string, ExtremelyRareUserRepositoryStorage>();
                                 services
-                                    .AddRepositoryInBlobStorage<Car, Guid>(configuration["ConnectionString:Storage"]);
+                                    .AddRepositoryInBlobStorage<Car, Guid>(configuration["ConnectionString:Storage"])
+                                    .AddBusinessBeforeInsert<CarBeforeInsertBusiness>()
+                                    .AddBusinessBeforeInsert<CarBeforeInsertBusiness2>();
                                 services
                                     .AddRepositoryInTableStorage<SuperCar, Guid>(configuration["ConnectionString:Storage"])
                                         .WithPartitionKey(x => x.Id, x => x)
                                         .WithRowKey(x => x.Name)
                                         .WithTimestamp(x => x.Time)
-                                        .WithTableStorageKeyReader<Car2KeyStorageReader>();
-                                services.AddRepositoryInCosmosSql<SuperUser, string>(configuration["ConnectionString:CosmosSql"],
+                                        .WithTableStorageKeyReader<Car2KeyStorageReader>()
+                                        .AddBusinessBeforeInsert<SuperCarBeforeInsertBusiness>()
+                                        .AddBusinessBeforeInsert<SuperCarBeforeInsertBusiness2>();
+                                services
+                                    .AddRepositoryInCosmosSql<SuperUser, string>(configuration["ConnectionString:CosmosSql"],
                                         "BigDatabase")
-                                        .WithId(x => x.Email!);
+                                        .WithId(x => x.Email!)
+                                        .AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness>()
+                                        .AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness2>();
                                 services
                                     .AddUserRepositoryWithDatabaseSqlAndEntityFramework(configuration);
                                 services.AddApiFromRepositoryFramework()
@@ -140,13 +149,18 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             var repository = serviceProvider.GetService<IRepository<Animal, AnimalKey>>()!;
             var id = new AnimalKey(Guid.NewGuid().ToString(), 2, Guid.NewGuid());
             var entity = new Animal { Id = id, Name = "Horse" };
+            var idNoInsert = new AnimalKey(Guid.NewGuid().ToString(), 4, Guid.NewGuid());
+            var entityNoInsert = new Animal { Id = idNoInsert, Name = "Mouse", Paws = 120 };
             List<Entity<Animal, AnimalKey>> entities = new();
             for (var i = 0; i < 10; i++)
             {
                 var batchId = new AnimalKey(Guid.NewGuid().ToString(), i, Guid.NewGuid());
                 entities.Add(new Entity<Animal, AnimalKey>(new Animal { Id = batchId, Name = "Horse", Paws = i }, batchId));
             }
-            await TestRepositoryAsync(repository!, id, entity, entities,
+            await TestRepositoryAsync(repository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
                 x => x.Id,
                 x => x.Name == "Horse",
                 x => x.Name != "Horse",
@@ -164,13 +178,18 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             var repository = serviceProvider.GetService<IRepository<IperUser, string>>()!;
             var id = Guid.NewGuid().ToString();
             var entity = new IperUser { Id = id, GroupId = Guid.NewGuid(), IsAdmin = true, Email = "alekud@drasda.it", Name = "Alekud", Port = 23 };
+            var idNoInsert = Guid.NewGuid().ToString();
+            var entityNoInsert = new IperUser { Id = id, GroupId = Guid.NewGuid(), IsAdmin = true, Email = "alekud@drasda.it", Name = "Alekud", Port = 120 };
             List<Entity<IperUser, string>> entities = new();
             for (var i = 0; i < 10; i++)
             {
                 var batchId = Guid.NewGuid().ToString();
                 entities.Add(new Entity<IperUser, string>(new IperUser { Id = id, GroupId = Guid.NewGuid(), IsAdmin = true, Email = "alekud@drasda.it", Name = "Alekud", Port = i }, batchId));
             }
-            await TestRepositoryAsync(repository!, id, entity, entities,
+            await TestRepositoryAsync(repository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
                 x => x.Id,
                 x => x.Name.Contains("eku"),
                 x => !x.Name.Contains("eku"),
@@ -188,13 +207,18 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             var repository = serviceProvider.GetService<IRepository<AppUser, AppUserKey>>()!;
             var id = new AppUserKey(23);
             var entity = new AppUser(23, "alekud", "alekud@drasda.it", new(), DateTime.UtcNow);
+            var idNoInsert = new AppUserKey(120);
+            var entityNoInsert = new AppUser(120, "alekud", "alekud@drasda.it", new(), DateTime.UtcNow);
             List<Entity<AppUser, AppUserKey>> entities = new();
             for (var i = 2; i <= 11; i++)
             {
                 var batchId = new AppUserKey(i);
                 entities.Add(new Entity<AppUser, AppUserKey>(new AppUser(i, "alekud", "alekud@drasda.it", new(), DateTime.UtcNow), batchId));
             }
-            await TestRepositoryAsync(repository!, id, entity, entities,
+            await TestRepositoryAsync(repository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
                 x => x.Id,
                 x => x.Username.Contains("eku"),
                 x => !x.Username.Contains("eku"),
@@ -211,14 +235,19 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
             var repository = serviceProvider.GetService<IRepository<SuperCar, Guid>>()!;
             var id = Guid.NewGuid();
-            var entity = new SuperCar() { Name = "name", Id = id, Other = "daa", Time = DateTime.UtcNow };
+            var entity = new SuperCar() { Name = "name", Id = id, Other = "daa", Time = DateTime.UtcNow, Wheels = 2 };
+            var idNoInsert = Guid.NewGuid();
+            var entityNoInsert = new SuperCar() { Name = "name", Id = idNoInsert, Other = "daa", Time = DateTime.UtcNow, Wheels = 120 };
             List<Entity<SuperCar, Guid>> entities = new();
             for (var i = 0; i < 10; i++)
             {
                 var batchId = Guid.NewGuid();
                 entities.Add(new Entity<SuperCar, Guid>(new SuperCar { Id = batchId, Name = "name", Wheels = i }, batchId));
             }
-            await TestRepositoryAsync(repository!, id, entity, entities,
+            await TestRepositoryAsync(repository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
                 x => x.Id,
                 x => x.Name == "name",
                 x => x.Name != "name",
@@ -235,14 +264,19 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
             var repository = serviceProvider.GetService<IRepository<Car, Guid>>()!;
             var id = Guid.NewGuid();
-            var entity = new Car() { Name = "name", Id = id };
+            var entity = new Car() { Name = "name", Id = id, Wheels = 2 };
+            var idNoInsert = Guid.NewGuid();
+            var entityNoInsert = new Car() { Name = "name", Id = idNoInsert, Wheels = 120 };
             List<Entity<Car, Guid>> entities = new();
             for (var i = 0; i < 10; i++)
             {
                 var batchId = Guid.NewGuid();
                 entities.Add(new Entity<Car, Guid>(new Car { Id = batchId, Name = "name", Wheels = i }, batchId));
             }
-            await TestRepositoryAsync(repository!, id, entity, entities,
+            await TestRepositoryAsync(repository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
                 x => x.Id,
                 x => x.Name == "name",
                 x => x.Name != "name",
@@ -259,13 +293,19 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
             var userRepository = serviceProvider.GetService<IRepository<SuperUser, string>>()!;
             var id = "dasdasdsa@gmail.com";
+            var entity = new SuperUser(id);
+            var idNoInsert = "dasdasdsa120@gmail.com";
+            var entityNoInsert = new SuperUser(idNoInsert) { Port = 120 };
             List<Entity<SuperUser, string>> entities = new();
             for (var i = 0; i < 10; i++)
             {
                 var batchId = $"dasdasdsa{i}@gmail.com";
                 entities.Add(new Entity<SuperUser, string>(new SuperUser(batchId) { Port = i }, batchId));
             }
-            await TestRepositoryAsync(userRepository!, id, new SuperUser(id), entities,
+            await TestRepositoryAsync(userRepository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
                 x => x.Email!,
                 x => x.Email!.Contains("sda"),
                 x => x.Email!.Contains("ads"),
@@ -292,6 +332,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             IRepository<T, TKey> repository,
             TKey testKey,
             T testEntity,
+            TKey keyNotInsertedForBusinessReason,
+            T entityNotInsertedForBusinessReason,
             List<Entity<T, TKey>> elements,
             Func<T, TKey> keyRetriever,
             Expression<Func<T, bool>> ok,
@@ -311,6 +353,9 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             Assert.True(addUser);
             hasUser = await repository.ExistAsync(testKey);
             Assert.True(hasUser);
+            addUser = await repository.InsertAsync(keyNotInsertedForBusinessReason, entityNotInsertedForBusinessReason);
+            Assert.False(addUser);
+            Assert.Equal(100, addUser.Code!);
             users = await repository.ToListAsync();
             Assert.Single(users);
             var user = await repository.GetAsync(testKey);

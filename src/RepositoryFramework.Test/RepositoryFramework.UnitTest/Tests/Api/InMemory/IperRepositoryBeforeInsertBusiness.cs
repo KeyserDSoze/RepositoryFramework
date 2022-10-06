@@ -8,6 +8,8 @@ namespace RepositoryFramework.Test.Models
         public async Task<State<IperUser, string>> BeforeInsertAsync(Entity<IperUser, string> entity, CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;
+            if (entity.Value!.Port == 120)
+                return new State<IperUser, string>(false, default, default, 100);
             return true;
         }
     }
