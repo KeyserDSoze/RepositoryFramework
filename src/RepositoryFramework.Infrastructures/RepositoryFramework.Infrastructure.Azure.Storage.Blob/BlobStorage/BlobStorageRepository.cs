@@ -9,8 +9,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         where TKey : notnull
     {
         private readonly BlobContainerClient _client;
-        private readonly BlobStorageOptions<T, TKey> _options;
-        public BlobStorageRepository(BlobServiceClientFactory clientFactory, BlobStorageOptions<T, TKey> options)
+        private readonly BlobStorageOptions<T, TKey>? _options;
+        public BlobStorageRepository(BlobServiceClientFactory clientFactory, BlobStorageOptions<T, TKey>? options = null)
         {
             _client = clientFactory.Get(typeof(T).Name);
             _options = options;
@@ -22,7 +22,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
             return key.ToString()!;
         }
         private string GetFullPath(TKey key, T? entity = default)
-            => $"{_options.GetCurrentPath(entity)}/{GetFileName(key)}";
+            => $"{_options?.GetCurrentPath(entity)}{GetFileName(key)}";
         public async Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var response = await _client.DeleteBlobAsync(GetFullPath(key), cancellationToken: cancellationToken).NoContext();
