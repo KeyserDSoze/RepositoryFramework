@@ -9,19 +9,29 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         where TKey : notnull
     {
         private readonly BlobContainerClient _client;
-        public BlobStorageRepository(BlobServiceClientFactory clientFactory)
+        private readonly BlobStorageOptions<T, TKey> _options;
+        public BlobStorageRepository(BlobServiceClientFactory clientFactory, BlobStorageOptions<T, TKey> options)
         {
             _client = clientFactory.Get(typeof(T).Name);
+            _options = options;
         }
+        private static string GetFileName(TKey key)
+        {
+            if (key is IKey keyAsString)
+                return keyAsString.AsString();
+            return key.ToString()!;
+        }
+        private string GetFullPath(TKey key, T? entity = default)
+            => $"{_options.GetCurrentPath(entity)}/{GetFileName(key)}";
         public async Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var response = await _client.DeleteBlobAsync(key!.ToString(), cancellationToken: cancellationToken).NoContext();
+            var response = await _client.DeleteBlobAsync(GetFullPath(key), cancellationToken: cancellationToken).NoContext();
             return !response.IsError;
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var blobClient = _client.GetBlobClient(key!.ToString());
+            var blobClient = _client.GetBlobClient(GetFullPath(key));
             if (await blobClient.ExistsAsync(cancellationToken).NoContext())
             {
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
@@ -31,13 +41,13 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         }
         public async Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var blobClient = _client.GetBlobClient(key!.ToString());
+            var blobClient = _client.GetBlobClient(GetFullPath(key));
             return (await blobClient.ExistsAsync(cancellationToken).NoContext()).Value;
         }
 
         public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var blobClient = _client.GetBlobClient(key!.ToString());
+            var blobClient = _client.GetBlobClient(GetFullPath(key));
             var entityWithKey = Entity.Default(value, key);
             var response = await blobClient.UploadAsync(new BinaryData(entityWithKey.ToJson()), cancellationToken).NoContext();
             return State.Default<T, TKey>(response.Value != null, value);
@@ -67,7 +77,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         }
         public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var blobClient = _client.GetBlobClient(key!.ToString());
+            var blobClient = _client.GetBlobClient(GetFullPath(key));
             var entityWithKey = Entity.Default(value, key);
             var response = await blobClient.UploadAsync(new BinaryData(entityWithKey.ToJson()), true, cancellationToken).NoContext();
             return State.Default<T, TKey>(response.Value != null, value);
