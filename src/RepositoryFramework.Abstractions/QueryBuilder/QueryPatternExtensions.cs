@@ -73,7 +73,6 @@ namespace System.Linq
         public static QueryBuilder<T, TKey> Skip<T, TKey>(this IQueryPattern<T, TKey> entity,
             int skip)
             where TKey : notnull
-
             => new QueryBuilder<T, TKey>(entity).Skip(skip);
         /// <summary>
         /// Order by ascending with your query.
@@ -86,7 +85,18 @@ namespace System.Linq
         public static QueryBuilder<T, TKey> OrderBy<T, TKey>(this IQueryPattern<T, TKey> entity,
             Expression<Func<T, object>> predicate)
             where TKey : notnull
-
+            => new QueryBuilder<T, TKey>(entity).OrderBy(predicate);
+        /// <summary>
+        /// Order by ascending with your query.
+        /// </summary>
+        /// <typeparam name="T">Model used for your repository.</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
+        /// <param name="entity"></param>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static QueryBuilder<T, TKey> OrderBy<T, TKey, TProperty>(this IQueryPattern<T, TKey> entity,
+            Expression<Func<T, TProperty>> predicate)
+            where TKey : notnull
             => new QueryBuilder<T, TKey>(entity).OrderBy(predicate);
         /// <summary>
         /// Order by descending with your query.
@@ -99,7 +109,18 @@ namespace System.Linq
         public static QueryBuilder<T, TKey> OrderByDescending<T, TKey>(this IQueryPattern<T, TKey> entity,
             Expression<Func<T, object>> predicate)
             where TKey : notnull
-
+            => new QueryBuilder<T, TKey>(entity).OrderByDescending(predicate);
+        /// <summary>
+        /// Order by descending with your query.
+        /// </summary>
+        /// <typeparam name="T">Model used for your repository.</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
+        /// <param name="entity"></param>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static QueryBuilder<T, TKey> OrderByDescending<T, TKey, TProperty>(this IQueryPattern<T, TKey> entity,
+            Expression<Func<T, TProperty>> predicate)
+            where TKey : notnull
             => new QueryBuilder<T, TKey>(entity).OrderByDescending(predicate);
         /// <summary>
         /// Group by a value your query.

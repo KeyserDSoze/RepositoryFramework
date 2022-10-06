@@ -92,10 +92,10 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             var select = filter.GetFirstSelect<T>();
             return operation.ExecuteDefaultOperationAsync(
                 async () => (await queryable.CountAsync(cancellationToken)!).Resource,
-                () => queryable.Sum(select!),
+                async () => (await queryable.Select(select!).Select(x => (decimal)x).AsQueryable().SumAsync()).Resource,
                 async () => (await queryable.Select(select!).AsQueryable().MaxAsync(cancellationToken).NoContext()).Resource,
                 async () => (await queryable.Select(select!).AsQueryable().MinAsync(cancellationToken).NoContext()).Resource,
-                () => queryable.Average(select!)
+                async () => (await queryable.Select(select!).Select(x => (decimal)x).AsQueryable().AverageAsync()).Resource
                 )!;
         }
         public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)

@@ -37,7 +37,8 @@ namespace RepositoryFramework.UnitTest.Repository
                 case "cosmos":
                     services.AddRepositoryInCosmosSql<AppUser, AppUserKey>(
                         configuration["ConnectionString:CosmosSql"],
-                        "unittestdatabase");
+                        "unittestdatabase")
+                        .WithId(x => new AppUserKey(x.Id));
                     break;
             }
             services.Finalize(out var serviceProvider);

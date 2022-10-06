@@ -48,6 +48,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             }
             catch (RequestFailedException)
             {
+                return default;
             }
             return default;
         }

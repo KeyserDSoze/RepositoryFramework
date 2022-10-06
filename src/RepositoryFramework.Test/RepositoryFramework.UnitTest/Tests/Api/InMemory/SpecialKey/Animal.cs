@@ -4,5 +4,6 @@
     {
         public AnimalKey Id { get; set; }
         public string? Name { get; set; }
+        public int Paws { get; set; }
     }
 }

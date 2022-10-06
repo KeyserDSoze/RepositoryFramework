@@ -20,13 +20,16 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             {
                 dynamic leftPart = binaryExpression.Left;
                 string name = leftPart.Member.Name;
-                var isEntered = false;
-                if (isEntered = name == _partitionKey)
+                var isEntered = true;
+                if (name == _partitionKey)
                     name = IExpressionStrategy.PartitionKey;
-                else if (isEntered = name == _rowKey)
+                else if (name == _rowKey)
                     name = IExpressionStrategy.RowKey;
-                else if (isEntered = name == _timestamp)
+                else if (name == _timestamp)
                     name = IExpressionStrategy.Timestamp;
+                else
+                    isEntered = false;
+
                 if (isEntered)
                 {
                     var rightPart = Expression.Lambda(binaryExpression.Right).Compile().DynamicInvoke();

@@ -59,7 +59,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             }
             else
             {
-                string name = property.Body.ToString().Split('.').Last();
+                var name = property.Body.ToString().Split('.').Last();
                 var compiledProperty = property.Compile();
                 var compiledKeyProperty = keyProperty?.Compile();
                 if (propertyName == nameof(WithPartitionKey))

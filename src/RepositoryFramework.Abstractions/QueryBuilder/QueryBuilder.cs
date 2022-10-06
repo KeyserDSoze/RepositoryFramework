@@ -53,11 +53,31 @@ namespace RepositoryFramework
             return this;
         }
         /// <summary>
+        /// Order by ascending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> OrderBy<TProperty>(Expression<Func<T, TProperty>> predicate)
+        {
+            _ = _operations.OrderBy(predicate);
+            return this;
+        }
+        /// <summary>
         /// Order by descending with your query.
         /// </summary>
         /// <param name="predicate">Expression query.</param>
         /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public QueryBuilder<T, TKey> OrderByDescending(Expression<Func<T, object>> predicate)
+        {
+            _ = _operations.OrderByDescending(predicate);
+            return this;
+        }
+        /// <summary>
+        /// Order by descending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> OrderByDescending<TProperty>(Expression<Func<T, TProperty>> predicate)
         {
             _ = _operations.OrderByDescending(predicate);
             return this;
@@ -73,11 +93,31 @@ namespace RepositoryFramework
             return this;
         }
         /// <summary>
+        /// Then by ascending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> ThenBy<TProperty>(Expression<Func<T, TProperty>> predicate)
+        {
+            _ = _operations.ThenBy(predicate);
+            return this;
+        }
+        /// <summary>
         /// Then by descending with your query.
         /// </summary>
         /// <param name="predicate">Expression query.</param>
         /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public QueryBuilder<T, TKey> ThenByDescending(Expression<Func<T, object>> predicate)
+        {
+            _ = _operations.ThenByDescending(predicate);
+            return this;
+        }
+        /// <summary>
+        /// Then by descending with your query.
+        /// </summary>
+        /// <param name="predicate">Expression query.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public QueryBuilder<T, TKey> ThenByDescending<TProperty>(Expression<Func<T, TProperty>> predicate)
         {
             _ = _operations.ThenByDescending(predicate);
             return this;

@@ -20,13 +20,16 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             {
                 dynamic argument = methodCallExpression.Arguments[0];
                 string name = argument.Member.Name;
-                var isEntered = false;
-                if (isEntered = name == _partitionKey)
+                var isEntered = true;
+                if (name == _partitionKey)
                     name = IExpressionStrategy.PartitionKey;
-                else if (isEntered = name == _rowKey)
+                else if (name == _rowKey)
                     name = IExpressionStrategy.RowKey;
-                else if (isEntered = name == _timestamp)
+                else if (name == _timestamp)
                     name = IExpressionStrategy.Timestamp;
+                else
+                    isEntered = false;
+
                 if (isEntered)
                 {
                     var value = Expression.Lambda(methodCallExpression.Arguments[1]).Compile().DynamicInvoke();

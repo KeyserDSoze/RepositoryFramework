@@ -199,7 +199,7 @@ namespace RepositoryFramework
 
             if (HasBusinessAfterQuery)
             {
-                var items = await queryPattern.QueryAsync(filter, cancellationToken).ToListAsync();
+                var items = await queryPattern.QueryAsync(filter, cancellationToken).ToListAsync().NoContext();
                 foreach (var business in GetBusiness<IRepositoryBusinessAfterQuery<T, TKey>>(AfterQueried))
                     items = await business.AfterQueryAsync(items, filter, cancellationToken);
 
