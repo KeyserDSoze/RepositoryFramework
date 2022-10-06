@@ -16,23 +16,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model of your repository or CQRS that you want to add as api</typeparam>
         /// <param name="app">IEndpointRouteBuilder</param>
         /// <returns>ApiAuthorizationBuilder</returns>
-        public static IApiAuthorizationBuilder UseApiFromRepository<T>(this IEndpointRouteBuilder app)
-        {
-            if (app is IApplicationBuilder applicationBuilder)
-            {
-                if (ApiSettings.Instance.HasSwagger && !ApiSettings.Instance.SwaggerInstalled)
-                {
-                    applicationBuilder.UseSwaggerUiForRepository(ApiSettings.Instance);
-                    ApiSettings.Instance.SwaggerInstalled = true;
-                }
-                if (ApiSettings.Instance.HasDefaultCors && !ApiSettings.Instance.CorsInstalled)
-                {
-                    applicationBuilder.UseCors(ApiSettings.AllowSpecificOrigins);
-                    ApiSettings.Instance.CorsInstalled = true;
-                }
-            }
-            return new ApiAuthorizationBuilder(authorization => app.UseApiFromRepository(typeof(T), ApiSettings.Instance, authorization));
-        }
+        public static IApiAuthorizationBuilder UseApiFromRepository<T>(this IEndpointRouteBuilder app) 
+            => new ApiAuthorizationBuilder(authorization => app.UseApiFromRepository(typeof(T), ApiSettings.Instance, authorization));
 
         /// <summary>
         /// Add all repository or CQRS services injected as api.
@@ -47,8 +32,6 @@ namespace Microsoft.Extensions.DependencyInjection
         => new ApiAuthorizationBuilder(authorization =>
             {
                 var services = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
-                if (ApiSettings.Instance.HasSwagger && app is IApplicationBuilder applicationBuilder)
-                    applicationBuilder.UseSwaggerUiForRepository(ApiSettings.Instance);
                 foreach (var service in services!.Services)
                     _ = app.UseApiFromRepository(service.ModelType, ApiSettings.Instance, authorization);
                 return app;
@@ -79,7 +62,19 @@ namespace Microsoft.Extensions.DependencyInjection
             var serviceValue = registry!.Services.FirstOrDefault(x => x.ModelType == modelType);
             if (serviceValue == null)
                 throw new ArgumentException($"Please check if your {modelType.Name} model has a service injected for IRepository, IQuery, ICommand.");
-
+            if (app is IApplicationBuilder applicationBuilder)
+            {
+                if (ApiSettings.Instance.HasSwagger && !ApiSettings.Instance.SwaggerInstalled)
+                {
+                    applicationBuilder.UseSwaggerUiForRepository(ApiSettings.Instance);
+                    ApiSettings.Instance.SwaggerInstalled = true;
+                }
+                if (ApiSettings.Instance.HasDefaultCors && !ApiSettings.Instance.CorsInstalled)
+                {
+                    applicationBuilder.UseCors(ApiSettings.AllowSpecificOrigins);
+                    ApiSettings.Instance.CorsInstalled = true;
+                }
+            }
             Dictionary<string, bool> configuredMethods = new();
             if (app.ServiceProvider.GetService(typeof(RepositoryFrameworkOptions<,>).MakeGenericType(serviceValue.ModelType, serviceValue.KeyType)) is IRepositoryFrameworkOptions options && !options.IsNotExposableAsApi)
             {

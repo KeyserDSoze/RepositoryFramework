@@ -35,7 +35,8 @@ builder.Services.AddApiFromRepositoryFramework()
     .WithName("Repository Api")
     .WithSwagger()
     .WithDocumentation()
-    .ConfigureAzureActiveDirectory(builder.Configuration);
+    .WithDefaultCorsWithAllOrigins();
+    //.ConfigureAzureActiveDirectory(builder.Configuration);
 
 builder.Services
     .AddAuthorization()
@@ -78,10 +79,11 @@ app.Services.Populate();
 
 app.UseHttpsRedirection();
 app.UseApiFromRepositoryFramework()
-    .WithDefaultAuthorization();
+    .WithNoAuthorization();
+    //.WithDefaultAuthorization();
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 #pragma warning disable S125 // Sections of code should not be commented out
 //.SetPolicy(RepositoryMethod.Query)
 //.Empty()
