@@ -12,14 +12,19 @@ namespace RepositoryFramework.UnitTest.Tests.Api
         public static HttpClientFactory Instance { get; } = new HttpClientFactory();
         public IHost? Host { get; set; }
         public IServiceProvider? ServiceProvider { get; set; }
+        private HttpClient _httpClient;
         private HttpClientFactory() { }
         public HttpClient CreateClient(string name)
-            => Host!.GetTestServer().CreateClient();
+            => _httpClient;
         public async Task<HttpClient> StartAsync()
         {
             await Host!.StartAsync();
             var server = Host.GetTestServer();
-            return server.CreateClient();
+            _httpClient = server.CreateClient();
+            _httpClient.DefaultRequestHeaders.Add("Origin", "http://example.com");
+            _httpClient.DefaultRequestHeaders.Add("Access-Control-Request-Method", "POST");
+            _httpClient.DefaultRequestHeaders.Add("Access-Control-Request-Headers", "X-Requested-With");
+            return _httpClient;
         }
     }
 }
