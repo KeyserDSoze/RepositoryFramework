@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.Cache.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.Test.Infrastructure.EntityFramework", "src\RepositoryFramework.Test\RepositoryFramework.Test.Infrastructure.EntityFramework\RepositoryFramework.Test.Infrastructure.EntityFramework.csproj", "{EB66A0D8-8F61-4076-8905-360258C11BFA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.Infrastructure.Dynamics.Dataverse", "src\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.Dynamics.Dataverse\RepositoryFramework.Infrastructure.Dynamics.Dataverse.csproj", "{00DD287A-EC36-4614-AFA9-6FD4A14BA7F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +128,10 @@ Global
 		{EB66A0D8-8F61-4076-8905-360258C11BFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB66A0D8-8F61-4076-8905-360258C11BFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB66A0D8-8F61-4076-8905-360258C11BFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00DD287A-EC36-4614-AFA9-6FD4A14BA7F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00DD287A-EC36-4614-AFA9-6FD4A14BA7F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00DD287A-EC36-4614-AFA9-6FD4A14BA7F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00DD287A-EC36-4614-AFA9-6FD4A14BA7F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +147,7 @@ Global
 		{0A2A0C73-15E6-483A-9017-249A8AB6B452} = {9547851D-6AEF-40BE-B71B-ECC0C0DFD156}
 		{0F631E6C-00A1-460D-AA88-59F869C6910B} = {617B922F-00AB-4FBC-B68D-C4799163815E}
 		{EB66A0D8-8F61-4076-8905-360258C11BFA} = {1C3E945D-92FF-46AF-ABA7-DF0B3655C9FF}
+		{00DD287A-EC36-4614-AFA9-6FD4A14BA7F0} = {9547851D-6AEF-40BE-B71B-ECC0C0DFD156}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15846BE9-69D7-49D6-8E61-F58E9927D291}

@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using Azure.Core;
+using Azure.Identity;
 using Microsoft.Azure.Cosmos;
 using System.Net;
 using System.Reflection;
@@ -12,10 +13,21 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         private readonly Dictionary<string, (Container Container, PropertyInfo[] Properties)> _containerServices = new();
         public (Container Container, PropertyInfo[] Properties) Get(string name)
             => _containerServices[name];
-        internal CosmosSqlServiceClientFactory Add<T>(string databaseName, string name, string keyName, Uri endpoint, CosmosClientOptions? clientOptions, CosmosOptions? databaseOptions, CosmosOptions? containerOptions)
+        internal CosmosSqlServiceClientFactory Add<T>(CosmosSettings settings)
         {
-            CosmosClient cosmosClient = new(endpoint.AbsoluteUri, new DefaultAzureCredential(), clientOptions);
-            return Add<T>(databaseName, name, keyName, cosmosClient, databaseOptions, containerOptions);
+            if (settings.ConnectionString == null && settings.EndpointUri != null)
+            {
+                CosmosClient cosmosClient = new(settings.EndpointUri.AbsoluteUri,
+                    settings.IdentityClientId == null ? new DefaultAzureCredential() : new ManagedIdentityCredential(settings.IdentityClientId),
+                    settings.ClientOptions);
+                return Add<T>(settings.DatabaseName, settings.ContainerName ?? typeof(T).Name, "id", cosmosClient, settings.DatabaseOptions, settings.ContainerOptions);
+            }
+            else if (settings.ConnectionString != null)
+            {
+                CosmosClient cosmosClient = new(settings.ConnectionString, settings.ClientOptions);
+                return Add<T>(settings.DatabaseName, settings.ContainerName ?? typeof(T).Name, "id", cosmosClient, settings.DatabaseOptions, settings.ContainerOptions);
+            }
+            throw new ArgumentException($"Wrong installation for {typeof(T).Name} model in your repository cosmos sql database. Use managed identity or a connection string.");
         }
         internal CosmosSqlServiceClientFactory Add<T>(string databaseName, string name, string keyName, string connectionString, CosmosClientOptions? clientOptions, CosmosOptions? databaseOptions, CosmosOptions? containerOptions)
         {

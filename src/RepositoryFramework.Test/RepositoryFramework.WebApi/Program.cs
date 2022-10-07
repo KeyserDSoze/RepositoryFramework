@@ -36,7 +36,7 @@ builder.Services.AddApiFromRepositoryFramework()
     .WithSwagger()
     .WithDocumentation()
     .WithDefaultCorsWithAllOrigins();
-    //.ConfigureAzureActiveDirectory(builder.Configuration);
+//.ConfigureAzureActiveDirectory(builder.Configuration);
 
 builder.Services
     .AddAuthorization()
@@ -68,8 +68,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //});
 builder.Services
     .AddRepositoryInCosmosSql<User, string>(
-    builder.Configuration["ConnectionString:CosmosSql"],
-    "BigDatabase")
+    x =>
+    {
+        x.ConnectionString = builder.Configuration["ConnectionString:CosmosSql"];
+        x.DatabaseName = "BigDatabase";
+    })
     .WithId(x => x.Email!);
 
 #pragma warning restore S125 // Sections of code should not be commented out
@@ -80,7 +83,7 @@ app.Services.Populate();
 app.UseHttpsRedirection();
 app.UseApiFromRepositoryFramework()
     .WithNoAuthorization();
-    //.WithDefaultAuthorization();
+//.WithDefaultAuthorization();
 
 //app.UseAuthentication();
 //app.UseAuthorization();

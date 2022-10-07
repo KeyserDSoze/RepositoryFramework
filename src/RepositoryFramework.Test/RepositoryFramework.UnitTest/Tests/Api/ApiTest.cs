@@ -83,8 +83,11 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                         .AddBusinessBeforeInsert<SuperCarBeforeInsertBusiness>()
                                         .AddBusinessBeforeInsert<SuperCarBeforeInsertBusiness2>();
                                 services
-                                    .AddRepositoryInCosmosSql<SuperUser, string>(configuration["ConnectionString:CosmosSql"],
-                                        "BigDatabase")
+                                    .AddRepositoryInCosmosSql<SuperUser, string>(x =>
+                                    {
+                                        x.ConnectionString = configuration["ConnectionString:CosmosSql"];
+                                        x.DatabaseName = "BigDatabase";
+                                    })
                                         .WithId(x => x.Email!)
                                         .AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness>()
                                         .AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness2>();

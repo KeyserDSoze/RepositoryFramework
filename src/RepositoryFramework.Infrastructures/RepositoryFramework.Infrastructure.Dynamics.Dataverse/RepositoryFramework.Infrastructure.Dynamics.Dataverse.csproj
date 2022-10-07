@@ -15,23 +15,17 @@
 		<Product>Rystem.RepositoryFramework</Product>
 		<Description>Rystem.RepositoryFramework allows you to use correctly concepts like repository pattern, CQRS and DDD. You have interfaces for your domains, auto-generated api, auto-generated HttpClient to simplify connection "api to front-end", a functionality for auto-population in memory of your models, a functionality to simulate exceptions and waiting time from external sources to improve your implementation/business test and load test.</Description>
 		<Copyright>2022</Copyright>
-		<PackageIcon>rystem.repositoryframework.infrastructure.azure.cosmos.sql.png</PackageIcon>
+		<PackageIcon>rystem.repositoryframework.infrastructure.dynamics.dataverse.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
-		<PackageId>Rystem.RepositoryFramework.Infrastructure.Azure.Cosmos.Sql</PackageId>
+		<PackageId>Rystem.RepositoryFramework.Infrastructure.Dynamics.Dataverse</PackageId>
 		<Version>3.0.10</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <Content Remove="C:\Users\aless\.nuget\packages\microsoft.azure.cosmos\3.31.0\contentFiles\any\netstandard2.0\ThirdPartyNotice.txt" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Azure.Identity" Version="1.7.0" />
-		<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.31.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+    <ItemGroup>
+        <PackageReference Include="Microsoft.PowerPlatform.Dataverse.Client" Version="1.0.9" />
 	</ItemGroup>
 
 	<Choose>
@@ -48,7 +42,7 @@
 	</Choose>
 
 	<ItemGroup>
-		<None Include="rystem.repositoryframework.infrastructure.azure.cosmos.sql.png">
+		<None Include="rystem.repositoryframework.infrastructure.dynamics.dataverse.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>

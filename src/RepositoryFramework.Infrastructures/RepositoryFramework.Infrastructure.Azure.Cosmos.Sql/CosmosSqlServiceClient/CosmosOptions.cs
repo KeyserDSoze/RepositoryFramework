@@ -9,7 +9,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
     {
         /// <summary>
         /// Represents a throughput of the resources in the Azure Cosmos DB service. It is
-        //     the standard pricing for the resource in the Azure Cosmos DB service.
+        /// the standard pricing for the resource in the Azure Cosmos DB service.
         /// </summary>
         public ThroughputProperties? ThroughputProperties { get; set; }
         /// <summary>

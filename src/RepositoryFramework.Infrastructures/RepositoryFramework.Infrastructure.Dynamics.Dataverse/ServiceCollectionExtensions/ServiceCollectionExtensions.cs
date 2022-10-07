@@ -1,5 +1,5 @@
 ﻿using RepositoryFramework;
-using RepositoryFramework.Infrastructure.Azure.Cosmos.Sql;
+using RepositoryFramework.Infrastructure.Dynamics.Dataverse;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -11,21 +11,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <param name="services">IServiceCollection</param>
-        /// <param name="cosmosSettings">Settings for your Cosmos database.</param>
+        /// <param name="options">Settings for your dataverse connection.</param>
         /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryCosmosSqlBuilder<T, TKey> AddRepositoryInCosmosSql<T, TKey>(
+        public static IRepositoryDataverseBuilder<T, TKey> AddRepositoryDataverse<T, TKey>(
            this IServiceCollection services,
-                Action<CosmosSettings> cosmosSettings,
+                Action<DataverseOptions<T, TKey>> options,
                 Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
-            var options = new CosmosSettings();
-            cosmosSettings.Invoke(options);
-            CosmosSqlServiceClientFactory.Instance.Add<T>(options);
-            services.AddSingleton(new CosmosOptions<T, TKey>(options.ContainerName ?? typeof(T).Name));
-            services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            return new RepositoryCosmosSqlBuilder<T, TKey>(services.AddRepository<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
+            var option = new DataverseOptions<T, TKey>();
+            options.Invoke(option);
+            services.AddSingleton(option);
+            DataverseIntegrations.Instance.Options.Add(option);
+            return new RepositoryDataverseBuilder<T, TKey>(services.AddRepository<T, TKey, DataverseRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
         /// <summary>
         /// Add a default cosmos sql service for your command pattern.
@@ -33,20 +32,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <param name="services">IServiceCollection</param>
-        /// <param name="cosmosSettings">Settings for your Cosmos database.</param>
+        /// <param name="options">Settings for your dataverse connection.</param>
         /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryCosmosSqlBuilder<T, TKey> AddCommandInCosmosSql<T, TKey>(
+        public static IRepositoryDataverseBuilder<T, TKey> AddCommandInDataverse<T, TKey>(
            this IServiceCollection services,
-                Action<CosmosSettings> cosmosSettings,
+                Action<DataverseOptions<T, TKey>> options,
                 Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
-            var options = new CosmosSettings();
-            cosmosSettings.Invoke(options);
-            CosmosSqlServiceClientFactory.Instance.Add<T>(options);
-            services.AddSingleton(new CosmosOptions<T, TKey>(options.ContainerName ?? typeof(T).Name));
-            return new RepositoryCosmosSqlBuilder<T, TKey>(services.AddCommand<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
+            var option = new DataverseOptions<T, TKey>();
+            options.Invoke(option);
+            services.AddSingleton(option);
+            DataverseIntegrations.Instance.Options.Add(option);
+            return new RepositoryDataverseBuilder<T, TKey>(services.AddCommand<T, TKey, DataverseRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
         /// <summary>
         /// Add a default cosmos sql service for your query pattern.
@@ -54,20 +53,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
         /// <param name="services">IServiceCollection</param>
-        /// <param name="cosmosSettings">Settings for your Cosmos database.</param>
+        /// <param name="options">Settings for your dataverse connection.</param>
         /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryCosmosSqlBuilder<T, TKey> AddQueryInCosmosSql<T, TKey>(
+        public static IRepositoryDataverseBuilder<T, TKey> AddQueryInDataverse<T, TKey>(
            this IServiceCollection services,
-                Action<CosmosSettings> cosmosSettings,
+                Action<DataverseOptions<T, TKey>> options,
                 Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
-            var options = new CosmosSettings();
-            cosmosSettings.Invoke(options);
-            CosmosSqlServiceClientFactory.Instance.Add<T>(options);
-            services.AddSingleton(new CosmosOptions<T, TKey>(options.ContainerName ?? typeof(T).Name));
-            return new RepositoryCosmosSqlBuilder<T, TKey>(services.AddQuery<T, TKey, CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
+            var option = new DataverseOptions<T, TKey>();
+            options.Invoke(option);
+            services.AddSingleton(option);
+            DataverseIntegrations.Instance.Options.Add(option);
+            return new RepositoryDataverseBuilder<T, TKey>(services.AddQuery<T, TKey, DataverseRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
     }
 }
