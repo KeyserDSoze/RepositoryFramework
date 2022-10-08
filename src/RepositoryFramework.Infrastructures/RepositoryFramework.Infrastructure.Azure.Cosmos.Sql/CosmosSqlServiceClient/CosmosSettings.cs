@@ -8,7 +8,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
     public sealed class CosmosSettings
     {
         public Uri? EndpointUri { get; set; }
-        public string? IdentityClientId { get; set; }
+        public string? ManagedIdentityClientId { get; set; }
         public string? ConnectionString { get; set; }
         public string DatabaseName { get; set; } = null!;
         public string? ContainerName { get; set; }

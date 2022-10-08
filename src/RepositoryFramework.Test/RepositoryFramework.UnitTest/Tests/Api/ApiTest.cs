@@ -71,11 +71,13 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                 services
                                     .AddRepository<ExtremelyRareUser, string, ExtremelyRareUserRepositoryStorage>();
                                 services
-                                    .AddRepositoryInBlobStorage<Car, Guid>(configuration["ConnectionString:Storage"])
+                                    .AddRepositoryInBlobStorage<Car, Guid>(
+                                        x => { x.ConnectionString = configuration["ConnectionString:Storage"]; })
                                     .AddBusinessBeforeInsert<CarBeforeInsertBusiness>()
                                     .AddBusinessBeforeInsert<CarBeforeInsertBusiness2>();
                                 services
-                                    .AddRepositoryInTableStorage<SuperCar, Guid>(configuration["ConnectionString:Storage"])
+                                    .AddRepositoryInTableStorage<SuperCar, Guid>(
+                                        x => { x.ConnectionString = configuration["ConnectionString:Storage"]; })
                                         .WithPartitionKey(x => x.Id, x => x)
                                         .WithRowKey(x => x.Name)
                                         .WithTimestamp(x => x.Time)

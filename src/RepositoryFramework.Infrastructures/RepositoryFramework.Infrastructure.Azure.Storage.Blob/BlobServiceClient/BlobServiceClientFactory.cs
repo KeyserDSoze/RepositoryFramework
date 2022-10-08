@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using Azure.Core;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
@@ -10,16 +11,21 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         private readonly Dictionary<string, BlobContainerClient> _containerClientFactories = new();
         public BlobContainerClient Get(string name)
             => _containerClientFactories[name];
-        internal BlobServiceClientFactory Add(string name, string containerName, string connectionString,  BlobClientOptions? clientOptions)
+        internal BlobServiceClientFactory Add<T>(BlobStorageSettings settings)
         {
-            var containerClient = new BlobContainerClient(connectionString, containerName.ToLower(), clientOptions);
-            return Add(name, containerClient);
-        }
-        internal BlobServiceClientFactory Add(string name, Uri endpointUri, BlobClientOptions? clientOptions)
-        {
-            var defaultCredential = new DefaultAzureCredential();
-            var containerClient = new BlobContainerClient(endpointUri, defaultCredential, clientOptions);
-            return Add(name, containerClient);
+            if (settings.ConnectionString != null)
+            {
+                var containerClient = new BlobContainerClient(settings.ConnectionString,
+                    settings.ContainerName?.ToLower() ?? typeof(T).Name.ToLower(), settings.ClientOptions);
+                return Add(typeof(T).Name, containerClient);
+            }
+            else if (settings.EndpointUri != null)
+            {
+                TokenCredential defaultCredential = settings.ManagedIdentityClientId == null ? new DefaultAzureCredential() : new ManagedIdentityCredential(settings.ManagedIdentityClientId);
+                var containerClient = new BlobContainerClient(settings.EndpointUri, defaultCredential, settings.ClientOptions);
+                return Add(typeof(T).Name, containerClient);
+            }
+            throw new ArgumentException($"Wrong installation for {typeof(T).Name} model in your repository blob storage. Use managed identity or a connection string.");
         }
         private BlobServiceClientFactory Add(string name, BlobContainerClient containerClient)
         {

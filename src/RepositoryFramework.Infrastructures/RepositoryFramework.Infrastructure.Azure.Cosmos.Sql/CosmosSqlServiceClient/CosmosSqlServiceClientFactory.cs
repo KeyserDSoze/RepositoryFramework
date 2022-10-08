@@ -18,7 +18,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             if (settings.ConnectionString == null && settings.EndpointUri != null)
             {
                 CosmosClient cosmosClient = new(settings.EndpointUri.AbsoluteUri,
-                    settings.IdentityClientId == null ? new DefaultAzureCredential() : new ManagedIdentityCredential(settings.IdentityClientId),
+                    settings.ManagedIdentityClientId == null ? new DefaultAzureCredential() : new ManagedIdentityCredential(settings.ManagedIdentityClientId),
                     settings.ClientOptions);
                 return Add<T>(settings.DatabaseName, settings.ContainerName ?? typeof(T).Name, "id", cosmosClient, settings.DatabaseOptions, settings.ContainerOptions);
             }

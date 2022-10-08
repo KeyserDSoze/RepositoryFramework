@@ -1,7 +1,7 @@
-﻿using Azure.Storage.Blobs;
-using RepositoryFramework;
+﻿using RepositoryFramework;
 using RepositoryFramework.Cache;
 using RepositoryFramework.Cache.Azure.Storage.Blob;
+using RepositoryFramework.Infrastructure.Azure.Storage.Blob;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,46 +15,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
-        /// <param name="connectionString">A connection string includes the authentication information required for your
-        ///     application to access data in an Azure Storage account at runtime. For more information,
-        ///     Configure Azure Storage connection strings.</param>
-        /// <param name="name">Optional name for your container, if you omit it, the service will use the name of your model.</param>
-        /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
+        /// <param name="options">Settings for your storage connection.</param>
         /// <param name="settings">Settings for your cache.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> WithBlobStorageCache<T, TKey>(
            this IRepositoryBuilder<T, TKey> builder,
-           string connectionString,
-           string? name = null,
-           BlobClientOptions? clientOptions = null,
-           Action<DistributedCacheOptions<T, TKey>>? settings = null)
+                Action<BlobStorageSettings> options,
+                Action<DistributedCacheOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
             builder.Services
-                  .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(connectionString, name, clientOptions);
-            return builder.WithDistributedCache<T, TKey, BlobStorageCache<T, TKey>>(settings, ServiceLifetime.Singleton);
-        }
-        /// <summary>
-        /// Add Azure Blob Storage cache mechanism for your Repository or Query (CQRS), 
-        /// injected directly in the IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>> interface
-        /// or IQuery<<typeparamref name="T"/>, <typeparamref name="TKey"/>> interface
-        /// </summary>
-        /// <typeparam name="T">Model used for your repository.</typeparam>
-        /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
-        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
-        /// <param name="endpointUri">Uri of your storage.</param>
-        /// <param name="clientOptions">Options to configure the requests to the Blob service.</param>
-        /// <param name="settings">Settings for your cache.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryBuilder<T, TKey> WithBlobStorageCache<T, TKey>(
-           this IRepositoryBuilder<T, TKey> builder,
-           Uri endpointUri,
-           BlobClientOptions? clientOptions = null,
-           Action<DistributedCacheOptions<T, TKey>>? settings = null)
-            where TKey : notnull
-        {
-            builder.Services
-                  .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(endpointUri, clientOptions);
+                  .AddRepositoryInBlobStorage<BlobStorageCacheModel, string>(options);
             return builder.WithDistributedCache<T, TKey, BlobStorageCache<T, TKey>>(settings, ServiceLifetime.Singleton);
         }
     }

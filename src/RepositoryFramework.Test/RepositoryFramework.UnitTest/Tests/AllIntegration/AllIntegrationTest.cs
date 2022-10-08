@@ -25,14 +25,16 @@ namespace RepositoryFramework.UnitTest.Repository
                     break;
                 case "tablestorage":
                     services
-                        .AddRepositoryInTableStorage<AppUser, AppUserKey>(configuration["ConnectionString:Storage"])
+                        .AddRepositoryInTableStorage<AppUser, AppUserKey>(
+                            x => { x.ConnectionString = configuration["ConnectionString:Storage"]; })
                         .WithTableStorageKeyReader<TableStorageKeyReader>()
                         .WithPartitionKey(x => x.Id, x => x.Id)
                         .WithRowKey(x => x.Username)
                         .WithTimestamp(x => x.CreationTime);
                     break;
                 case "blobstorage":
-                    services.AddRepositoryInBlobStorage<AppUser, AppUserKey>(configuration["ConnectionString:Storage"]);
+                    services.AddRepositoryInBlobStorage<AppUser, AppUserKey>(
+                        x => { x.ConnectionString = configuration["ConnectionString:Storage"]; });
                     break;
                 case "cosmos":
                     services.AddRepositoryInCosmosSql<AppUser, AppUserKey>(

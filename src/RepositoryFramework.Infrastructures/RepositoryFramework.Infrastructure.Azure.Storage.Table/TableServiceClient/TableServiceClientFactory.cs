@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using Azure.Core;
+using Azure.Data.Tables;
 using Azure.Identity;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
@@ -10,18 +11,22 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         private readonly Dictionary<string, TableClient> _tableServiceClientFactories = new();
         public TableClient Get(string name)
             => _tableServiceClientFactories[name];
-        internal TableServiceClientFactory Add(string name, string tableName, string connectionString, TableClientOptions? clientOptions)
+        internal TableServiceClientFactory Add<T>(TableStorageSettings settings)
         {
-            var serviceClient = new TableServiceClient(connectionString, clientOptions);
-            var tableClient = new TableClient(connectionString, tableName, clientOptions);
-            return Add(name, serviceClient, tableClient);
-        }
-        internal TableServiceClientFactory Add(string name, string tableName, Uri endpointUri, TableClientOptions? clientOptions)
-        {
-            var defaultCredential = new DefaultAzureCredential();
-            var serviceClient = new TableServiceClient(endpointUri, defaultCredential, clientOptions);
-            var tableClient = new TableClient(endpointUri, tableName, defaultCredential, clientOptions);
-            return Add(name, serviceClient, tableClient);
+            if (settings.ConnectionString != null)
+            {
+                var serviceClient = new TableServiceClient(settings.ConnectionString, settings.ClientOptions);
+                var tableClient = new TableClient(settings.ConnectionString, settings.TableName ?? typeof(T).Name, settings.ClientOptions);
+                return Add(typeof(T).Name, serviceClient, tableClient);
+            }
+            else if (settings.EndpointUri != null)
+            {
+                TokenCredential defaultCredential = settings.ManagedIdentityClientId == null ? new DefaultAzureCredential() : new ManagedIdentityCredential(settings.ManagedIdentityClientId);
+                var serviceClient = new TableServiceClient(settings.EndpointUri, defaultCredential, settings.ClientOptions);
+                var tableClient = new TableClient(settings.EndpointUri, settings.TableName ?? typeof(T).Name, defaultCredential, settings.ClientOptions);
+                return Add(typeof(T).Name, serviceClient, tableClient);
+            }
+            throw new ArgumentException($"Wrong installation for {typeof(T).Name} model in your repository table storage. Use managed identity or a connection string.");
         }
         private TableServiceClientFactory Add(string name, TableServiceClient serviceClient, TableClient tableClient)
         {
