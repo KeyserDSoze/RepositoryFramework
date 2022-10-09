@@ -13,7 +13,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
         private readonly Dictionary<string, (Container Container, PropertyInfo[] Properties)> _containerServices = new();
         public (Container Container, PropertyInfo[] Properties) Get(string name)
             => _containerServices[name];
-        internal CosmosSqlServiceClientFactory Add<T>(CosmosSettings settings)
+        internal CosmosSqlServiceClientFactory Add<T>(CosmosSqlConnectionSettings settings)
         {
             if (settings.ConnectionString == null && settings.EndpointUri != null)
             {
@@ -29,12 +29,12 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
             }
             throw new ArgumentException($"Wrong installation for {typeof(T).Name} model in your repository cosmos sql database. Use managed identity or a connection string.");
         }
-        internal CosmosSqlServiceClientFactory Add<T>(string databaseName, string name, string keyName, string connectionString, CosmosClientOptions? clientOptions, CosmosOptions? databaseOptions, CosmosOptions? containerOptions)
+        internal CosmosSqlServiceClientFactory Add<T>(string databaseName, string name, string keyName, string connectionString, CosmosClientOptions? clientOptions, CosmosSettings? databaseOptions, CosmosSettings? containerOptions)
         {
             CosmosClient cosmosClient = new(connectionString, clientOptions);
             return Add<T>(databaseName, name, keyName, cosmosClient, databaseOptions, containerOptions);
         }
-        private CosmosSqlServiceClientFactory Add<T>(string databaseName, string name, string keyName, CosmosClient cosmosClient, CosmosOptions? databaseOptions, CosmosOptions? containerOptions)
+        private CosmosSqlServiceClientFactory Add<T>(string databaseName, string name, string keyName, CosmosClient cosmosClient, CosmosSettings? databaseOptions, CosmosSettings? containerOptions)
         {
             if (!_containerServices.ContainsKey(name))
             {

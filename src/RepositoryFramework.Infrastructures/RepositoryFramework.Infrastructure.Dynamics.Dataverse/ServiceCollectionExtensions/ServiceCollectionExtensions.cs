@@ -20,10 +20,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
-            var option = new DataverseOptions<T, TKey>();
-            options.Invoke(option);
-            services.AddSingleton(option);
-            DataverseIntegrations.Instance.Options.Add(option);
+            options.Invoke(DataverseOptions<T, TKey>.Instance);
+            services.AddSingleton(DataverseOptions<T, TKey>.Instance);
+            DataverseIntegrations.Instance.Options.Add(DataverseOptions<T, TKey>.Instance);
             return new RepositoryDataverseBuilder<T, TKey>(services.AddRepository<T, TKey, DataverseRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
         /// <summary>
@@ -41,10 +40,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
-            var option = new DataverseOptions<T, TKey>();
-            options.Invoke(option);
-            services.AddSingleton(option);
-            DataverseIntegrations.Instance.Options.Add(option);
+            options.Invoke(DataverseOptions<T, TKey>.Instance);
+            services.AddSingleton(DataverseOptions<T, TKey>.Instance);
+            DataverseIntegrations.Instance.Options.Add(DataverseOptions<T, TKey>.Instance);
             return new RepositoryDataverseBuilder<T, TKey>(services.AddCommand<T, TKey, DataverseRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
         /// <summary>
@@ -62,10 +60,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {
-            var option = new DataverseOptions<T, TKey>();
-            options.Invoke(option);
-            services.AddSingleton(option);
-            DataverseIntegrations.Instance.Options.Add(option);
+            options.Invoke(DataverseOptions<T, TKey>.Instance);
+            services.AddSingleton(DataverseOptions<T, TKey>.Instance);
+            DataverseIntegrations.Instance.Options.Add(DataverseOptions<T, TKey>.Instance);
             return new RepositoryDataverseBuilder<T, TKey>(services.AddQuery<T, TKey, DataverseRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
     }

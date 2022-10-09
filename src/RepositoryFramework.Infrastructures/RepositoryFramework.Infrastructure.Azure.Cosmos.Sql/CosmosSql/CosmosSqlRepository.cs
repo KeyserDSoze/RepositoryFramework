@@ -12,11 +12,11 @@ namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
     {
         private readonly Container _client;
         private readonly PropertyInfo[] _properties;
-        private readonly CosmosOptions<T, TKey> _settings;
+        private readonly CosmosSettings<T, TKey> _settings;
         private readonly ICosmosSqlKeyManager<T, TKey> _keyManager;
 
         public CosmosSqlRepository(CosmosSqlServiceClientFactory clientFactory,
-            CosmosOptions<T, TKey> settings,
+            CosmosSettings<T, TKey> settings,
             ICosmosSqlKeyManager<T, TKey> keyManager)
         {
             (_client, _properties) = clientFactory.Get(typeof(T).Name);

@@ -50,12 +50,12 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         {
             if (property == null)
             {
-                TableStorageOptions<T, TKey>.Instance.PartitionKeyFunction = x => typeof(T).FetchProperties().First().GetValue(x)!.ToString()!;
-                TableStorageOptions<T, TKey>.Instance.RowKeyFunction = x => typeof(T).FetchProperties().Skip(1).First().GetValue(x)!.ToString()!;
-                TableStorageOptions<T, TKey>.Instance.TimestampFunction = x => (DateTime)(typeof(T).FetchProperties().FirstOrDefault(x => x.PropertyType == typeof(DateTime))?.GetValue(x) ?? DateTime.MinValue);
-                TableStorageOptions<T, TKey>.Instance.PartitionKey = typeof(T).FetchProperties().First().Name;
-                TableStorageOptions<T, TKey>.Instance.RowKey = typeof(T).FetchProperties().Skip(1).First().Name;
-                TableStorageOptions<T, TKey>.Instance.Timestamp = typeof(T).FetchProperties().FirstOrDefault(x => x.PropertyType == typeof(DateTime))?.Name;
+                TableStorageSettings<T, TKey>.Instance.PartitionKeyFunction = x => typeof(T).FetchProperties().First().GetValue(x)!.ToString()!;
+                TableStorageSettings<T, TKey>.Instance.RowKeyFunction = x => typeof(T).FetchProperties().Skip(1).First().GetValue(x)!.ToString()!;
+                TableStorageSettings<T, TKey>.Instance.TimestampFunction = x => (DateTime)(typeof(T).FetchProperties().FirstOrDefault(x => x.PropertyType == typeof(DateTime))?.GetValue(x) ?? DateTime.MinValue);
+                TableStorageSettings<T, TKey>.Instance.PartitionKey = typeof(T).FetchProperties().First().Name;
+                TableStorageSettings<T, TKey>.Instance.RowKey = typeof(T).FetchProperties().Skip(1).First().Name;
+                TableStorageSettings<T, TKey>.Instance.Timestamp = typeof(T).FetchProperties().FirstOrDefault(x => x.PropertyType == typeof(DateTime))?.Name;
             }
             else
             {
@@ -64,27 +64,27 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                 var compiledKeyProperty = keyProperty?.Compile();
                 if (propertyName == nameof(WithPartitionKey))
                 {
-                    TableStorageOptions<T, TKey>.Instance.PartitionKeyFunction = x => compiledProperty(x)!.ToString()!;
-                    TableStorageOptions<T, TKey>.Instance.PartitionKey = name;
+                    TableStorageSettings<T, TKey>.Instance.PartitionKeyFunction = x => compiledProperty(x)!.ToString()!;
+                    TableStorageSettings<T, TKey>.Instance.PartitionKey = name;
                     if (compiledKeyProperty != null)
-                        TableStorageOptions<T, TKey>.Instance.PartitionKeyFromKeyFunction = x => compiledKeyProperty(x)!.ToString()!;
+                        TableStorageSettings<T, TKey>.Instance.PartitionKeyFromKeyFunction = x => compiledKeyProperty(x)!.ToString()!;
                 }
                 else if (propertyName == nameof(WithRowKey))
                 {
-                    TableStorageOptions<T, TKey>.Instance.RowKeyFunction = x => compiledProperty(x)!.ToString()!;
+                    TableStorageSettings<T, TKey>.Instance.RowKeyFunction = x => compiledProperty(x)!.ToString()!;
                     if (compiledKeyProperty != null)
                     {
-                        TableStorageOptions<T, TKey>.Instance.RowKey = name;
-                        TableStorageOptions<T, TKey>.Instance.RowKeyFromKeyFunction = x => compiledKeyProperty(x)!.ToString()!;
+                        TableStorageSettings<T, TKey>.Instance.RowKey = name;
+                        TableStorageSettings<T, TKey>.Instance.RowKeyFromKeyFunction = x => compiledKeyProperty(x)!.ToString()!;
                     }
                 }
                 else
                 {
-                    TableStorageOptions<T, TKey>.Instance.TimestampFunction = x => Convert.ToDateTime(compiledProperty(x)!);
-                    TableStorageOptions<T, TKey>.Instance.Timestamp = name;
+                    TableStorageSettings<T, TKey>.Instance.TimestampFunction = x => Convert.ToDateTime(compiledProperty(x)!);
+                    TableStorageSettings<T, TKey>.Instance.Timestamp = name;
                 }
             }
-            Builder.Services.AddSingleton(TableStorageOptions<T, TKey>.Instance);
+            Builder.Services.AddSingleton(TableStorageSettings<T, TKey>.Instance);
         }
     }
 }

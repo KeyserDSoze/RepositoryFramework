@@ -20,8 +20,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         {
             var name = property.Body.ToString().Split('.').Last();
             var compiledProperty = property.Compile();
-            BlobStorageOptions<T, TKey>.Instance.Paths.Add(new BlobStoragePathComposer<T>(x => compiledProperty.Invoke(x)?.ToString(), name));
-            Builder.Services.AddSingleton(BlobStorageOptions<T, TKey>.Instance);
+            BlobStorageSettings<T, TKey>.Instance.Paths.Add(new BlobStoragePathComposer<T>(x => compiledProperty.Invoke(x)?.ToString(), name));
+            Builder.Services.AddSingleton(BlobStorageSettings<T, TKey>.Instance);
             return this;
         }
     }

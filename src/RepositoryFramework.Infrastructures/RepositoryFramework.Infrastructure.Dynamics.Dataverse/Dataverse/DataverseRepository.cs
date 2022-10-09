@@ -1,8 +1,9 @@
-﻿using System.Dynamic;
-using System.Net;
-using System.Reflection;
+﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using Microsoft.PowerPlatform.Dataverse.Client;
+using Microsoft.Rest;
+using Microsoft.Xrm.Sdk.Query;
 
 namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
 {
@@ -10,49 +11,122 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
         where TKey : notnull
     {
         private readonly ServiceClient _client;
-        private readonly PropertyInfo[] _properties;
         private readonly DataverseOptions<T, TKey> _settings;
-        private readonly IDataverseKeyManager<T, TKey> _keyManager;
 
-        public DataverseRepository(DataverseOptions<T, TKey> settings,
-            IDataverseKeyManager<T, TKey> keyManager)
+        public DataverseRepository(DataverseOptions<T, TKey> settings)
         {
             _client = settings.GetClient();
             _settings = settings;
-            _keyManager = keyManager;
         }
         public async Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = new QueryExpression(_settings.LogicalTableName)
+            {
+                TopCount = 1,
+                Criteria = new Microsoft.Xrm.Sdk.Query.FilterExpression(LogicalOperator.And)
+            };
+            query.Criteria.AddCondition(_settings.LogicalPrimaryKey, ConditionOperator.Equal, _settings.KeyIsPrimitive ? key.ToString() : key.ToJson());
+            var queryResult = await _client.RetrieveMultipleAsync(query, cancellationToken);
+            var entityRetrieved = queryResult.Entities.FirstOrDefault();
+            if (entityRetrieved != null)
+            {
+                await _client.DeleteAsync(_settings.LogicalTableName, entityRetrieved.Id, cancellationToken);
+                return true;
+            }
+            return false;
         }
 
         public async Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = new QueryExpression(_settings.LogicalTableName)
+            {
+                TopCount = 1,
+                Criteria = new Microsoft.Xrm.Sdk.Query.FilterExpression(LogicalOperator.And)
+            };
+            query.Criteria.AddCondition(_settings.LogicalPrimaryKey, ConditionOperator.Equal, _settings.KeyIsPrimitive ? key.ToString() : key.ToJson());
+            var queryResult = await _client.RetrieveMultipleAsync(query, cancellationToken);
+            var entityRetrieved = queryResult.Entities.FirstOrDefault();
+            return entityRetrieved != null;
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = new QueryExpression(_settings.LogicalTableName)
+            {
+                TopCount = 1,
+                Criteria = new Microsoft.Xrm.Sdk.Query.FilterExpression(LogicalOperator.And)
+            };
+            query.Criteria.AddCondition(_settings.LogicalPrimaryKey, ConditionOperator.Equal, _settings.KeyIsPrimitive ? key.ToString() : key.ToJson());
+            var queryResult = await _client.RetrieveMultipleAsync(query, cancellationToken);
+            var entityRetrieved = queryResult.Entities.FirstOrDefault();
+            if (entityRetrieved != null)
+            {
+                var entity = Activator.CreateInstance<T>();
+                _settings.SetEntity(entityRetrieved, entity);
+                return entity;
+            }
+            return default;
         }
         public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var dataverseEntity = new Microsoft.Xrm.Sdk.Entity(_settings.LogicalTableName);
+            _settings.SetDataverseEntity(dataverseEntity, value, key);
+            await _client.CreateAsync(dataverseEntity);
+            return new State<T, TKey>(true, value, key);
         }
-        public IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
+        public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = new QueryExpression(_settings.LogicalTableName)
+            {
+                TopCount = 100,
+                Criteria = new Microsoft.Xrm.Sdk.Query.FilterExpression(LogicalOperator.And)
+            };
+            var queryResult = await _client.RetrieveMultipleAsync(query);
+            var entities = queryResult.Entities.Select(x =>
+            {
+                var entity = Activator.CreateInstance<T>();
+                var key = _settings.SetEntity(x, entity);
+                return (entity, new Entity<T, TKey>(entity, key));
+            }).ToDictionary(x => x.entity, x => x.Item2);
+            foreach (var entity in filter.Apply(entities.Keys))
+                yield return entities[entity];
         }
-        public ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
+        public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             IFilterExpression filter,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+#warning to refactor
+            List<T> items = new();
+            await foreach (var item in QueryAsync(filter, cancellationToken))
+                items.Add(item.Value!);
+            var select = filter.GetFirstSelect<T>();
+            return (await operation.ExecuteDefaultOperationAsync(
+                () => items.Count,
+                () => items.Sum(x => select!.InvokeAndTransform<decimal>(x!)!),
+                () => items.Select(x => select!.InvokeAndTransform<object>(x!)).Max(),
+                () => items.Select(x => select!.InvokeAndTransform<object>(x!)).Min(),
+                () => items.Average(x => select!.InvokeAndTransform<decimal>(x!))))!;
         }
         public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = new QueryExpression(_settings.LogicalTableName)
+            {
+                TopCount = 1,
+                Criteria = new Microsoft.Xrm.Sdk.Query.FilterExpression(LogicalOperator.And)
+            };
+            query.Criteria.AddCondition(_settings.LogicalPrimaryKey, ConditionOperator.Equal, _settings.KeyIsPrimitive ? key.ToString() : key.ToJson());
+            var queryResult = await _client.RetrieveMultipleAsync(query, cancellationToken);
+            var entityRetrieved = queryResult.Entities.FirstOrDefault();
+            if (entityRetrieved != null)
+            {
+                var dataverseEntity = new Microsoft.Xrm.Sdk.Entity(_settings.LogicalTableName);
+                dataverseEntity.Id = entityRetrieved.Id;
+                _settings.SetDataverseEntity(dataverseEntity, value, key);
+                await _client.UpdateAsync(dataverseEntity);
+                return new State<T, TKey>(true, value, key);
+            }
+            return false;
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {

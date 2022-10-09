@@ -11,7 +11,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         private readonly Dictionary<string, BlobContainerClient> _containerClientFactories = new();
         public BlobContainerClient Get(string name)
             => _containerClientFactories[name];
-        internal BlobServiceClientFactory Add<T>(BlobStorageSettings settings)
+        internal BlobServiceClientFactory Add<T>(BlobStorageConnectionSettings settings)
         {
             if (settings.ConnectionString != null)
             {

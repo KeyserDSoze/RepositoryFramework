@@ -3,17 +3,18 @@
 namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
 {
     /// <summary>
-    /// Settings for your cosmos db and container.
+    /// Options used for database creation and container creation.
     /// </summary>
     public sealed class CosmosSettings
     {
-        public Uri? EndpointUri { get; set; }
-        public string? ManagedIdentityClientId { get; set; }
-        public string? ConnectionString { get; set; }
-        public string DatabaseName { get; set; } = null!;
-        public string? ContainerName { get; set; }
-        public CosmosClientOptions? ClientOptions { get; set; }
-        public CosmosOptions? DatabaseOptions { get; set; }
-        public CosmosOptions? ContainerOptions { get; set; }
+        /// <summary>
+        /// Represents a throughput of the resources in the Azure Cosmos DB service. It is
+        /// the standard pricing for the resource in the Azure Cosmos DB service.
+        /// </summary>
+        public ThroughputProperties? ThroughputProperties { get; set; }
+        /// <summary>
+        /// The default cosmos request options.
+        /// </summary>
+        public RequestOptions? RequestOptions { get; set; }
     }
 }

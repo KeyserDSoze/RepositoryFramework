@@ -9,11 +9,11 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
         where TKey : notnull
     {
         private readonly BlobContainerClient _client;
-        private readonly BlobStorageOptions<T, TKey>? _options;
-        public BlobStorageRepository(BlobServiceClientFactory clientFactory, BlobStorageOptions<T, TKey>? options = null)
+        private readonly BlobStorageSettings<T, TKey>? _settings;
+        public BlobStorageRepository(BlobServiceClientFactory clientFactory, BlobStorageSettings<T, TKey>? settings = null)
         {
             _client = clientFactory.Get(typeof(T).Name);
-            _options = options;
+            _settings = settings;
         }
         private static string GetFileName(TKey key)
         {

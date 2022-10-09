@@ -1,13 +1,10 @@
-﻿using Azure.Storage.Blobs;
-
-namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
+﻿namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
 {
-    public class BlobStorageSettings
+    public class BlobStorageSettings<T, TKey>
+        where TKey : notnull
     {
-        public Uri? EndpointUri { get; set; }
-        public string? ManagedIdentityClientId { get; set; }
-        public string? ConnectionString { get; set; }
-        public string? ContainerName { get; set; }
-        public BlobClientOptions? ClientOptions { get; set; }
+        internal static BlobStorageSettings<T, TKey> Instance { get; } = new BlobStorageSettings<T, TKey>();
+        public List<BlobStoragePathComposer<T>> Paths { get; } = new();
+        public string GetCurrentPath(T? entity) => Paths.Count > 0 && entity != null ? $"{string.Join('/', Paths.Select(x => x.Retriever(entity)))}/" : string.Empty;
     }
 }

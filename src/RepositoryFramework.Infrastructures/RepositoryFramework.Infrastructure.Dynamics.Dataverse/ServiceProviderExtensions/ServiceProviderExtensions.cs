@@ -1,4 +1,8 @@
-﻿using RepositoryFramework.Infrastructure.Dynamics.Dataverse;
+﻿using System.Reflection;
+using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
+using RepositoryFramework.Infrastructure.Dynamics.Dataverse;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -9,16 +13,52 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="serviceProvider">IServiceProvider</param>
         /// <returns>IServiceProvider</returns>
-        public static async ValueTask<IServiceProvider> CreateTableOrMergeNewColumnsInExistingTableAsync(this IServiceProvider serviceProvider)
+        public static async ValueTask<IServiceProvider> DataverseCreateTableOrMergeNewColumnsInExistingTableAsync(this IServiceProvider serviceProvider)
         {
             foreach (var options in DataverseIntegrations.Instance.Options)
             {
-                var client = options.GetClient();
-                //to check if a table with that name exists
-                //after that check if all the column exists
-                //if they don't exist, create all the missing columns
-                //change the value of a column
-                //for complex column use json
+                var serviceClient = options.GetClient();
+                RetrieveEntityRequest retrieveEntityRequest = new()
+                {
+                    LogicalName = options.LogicalTableName,
+                    EntityFilters = EntityFilters.All
+                };
+                var response = await Try.WithDefaultOnCatchAsync(
+                    () => serviceClient.ExecuteAsync(retrieveEntityRequest));
+                if (response.Entity == default)
+                {
+                    CreateEntityRequest createrequest = new()
+                    {
+                        SolutionUniqueName = options.SolutionName,
+                        //Define the entity
+                        Entity = new EntityMetadata
+                        {
+                            SchemaName = options.TableNameWithPrefix,
+                            DisplayName = new Label(options.TableName, 1033),
+                            DisplayCollectionName = new Label(options.TableName, 1033),
+                            Description = new Label(options.Description ?? $"A table to store information about {options.TableName} entity.", 1033),
+                            OwnershipType = OwnershipTypes.UserOwned,
+                            IsActivity = false,
+
+                        },
+                        // Define the primary attribute for the entity
+                        PrimaryAttribute = new StringAttributeMetadata
+                        {
+                            SchemaName = options.PrimaryKeyWithPrefix,
+                            RequiredLevel = new AttributeRequiredLevelManagedProperty(AttributeRequiredLevel.None),
+                            MaxLength = 100,
+                            FormatName = StringFormatName.Text,
+                            DisplayName = new Label(options.PrimaryKey, 1033),
+                            Description = new Label($"The primary attribute for the {options.TableName} entity.", 1033)
+                        }
+
+                    };
+                    var creationResponse = await Try.WithDefaultOnCatchAsync(
+                        () => serviceClient.ExecuteAsync(createrequest));
+                    if (creationResponse.Entity == default)
+                        throw new ArgumentException($"Error in table creation for {options.TableName}");
+                }
+                await options.CheckIfExistColumnsAsync();
             }
             return serviceProvider;
         }

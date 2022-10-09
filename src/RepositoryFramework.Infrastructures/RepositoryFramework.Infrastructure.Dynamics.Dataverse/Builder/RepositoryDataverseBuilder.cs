@@ -14,19 +14,12 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
         public ServiceLifetime ServiceLifetime => Builder.ServiceLifetime;
         public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
             => Builder.Translate<TTranslated>();
-        public IRepositoryDataverseBuilder<T, TKey> WithKeyManager<TKeyReader>()
-            where TKeyReader : class, IDataverseKeyManager<T, TKey>
+        public IRepositoryDataverseBuilder<T, TKey> WithColumn<TProperty>(Expression<Func<T, TProperty>> property,
+            string? customPrefix = null)
         {
-            Builder.Services
-                .AddSingleton<IDataverseKeyManager<T, TKey>, TKeyReader>();
-            return this;
-        }
-        public IRepositoryDataverseBuilder<T, TKey> WithId(Expression<Func<T, TKey>> property)
-        {
-            var compiled = property.Compile();
-            Builder.Services
-                .AddSingleton<IDataverseKeyManager<T, TKey>>(
-                new DefaultDataverseKeyManager<T, TKey>(x => compiled.Invoke(x)));
+            var name = property.Body.ToString().Split('.').Last();
+            var prop = DataverseOptions<T, TKey>.Instance.Properties.First(x => x.Name == name);
+            prop.Prefix = customPrefix;
             return this;
         }
     }

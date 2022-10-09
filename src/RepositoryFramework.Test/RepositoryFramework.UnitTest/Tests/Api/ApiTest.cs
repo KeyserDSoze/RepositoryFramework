@@ -30,23 +30,34 @@ namespace RepositoryFramework.UnitTest.Tests.Api
         {
             if (HttpClientFactory.Instance.Host == null)
             {
+                var iAmWaiting = true;
+                Exception? exception = null;
                 var services = DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration);
                 HttpClientFactory.Instance.Host = new HostBuilder()
                     .ConfigureWebHost(webHostBuilder =>
                         {
                             webHostBuilder
                             .UseTestServer()
-                            .Configure(app =>
+                            .Configure(async app =>
                             {
-                                app.UseRouting();
-                                app.ApplicationServices.Populate();
-                                app.UseEndpoints(endpoints =>
+                                try
                                 {
-                                    endpoints.MapHealthChecks("/healthz");
-                                    endpoints
-                                        .UseApiFromRepositoryFramework()
-                                        .WithNoAuthorization();
-                                });
+                                    app.UseRouting();
+                                    app.ApplicationServices.Populate();
+                                    await app.ApplicationServices.DataverseCreateTableOrMergeNewColumnsInExistingTableAsync();
+                                    app.UseEndpoints(endpoints =>
+                                    {
+                                        endpoints.MapHealthChecks("/healthz");
+                                        endpoints
+                                            .UseApiFromRepositoryFramework()
+                                            .WithNoAuthorization();
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    exception = ex;
+                                }
+                                iAmWaiting = false;
                             })
                             .ConfigureServices(services =>
                             {
@@ -95,6 +106,15 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                         .AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness2>();
                                 services
                                     .AddUserRepositoryWithDatabaseSqlAndEntityFramework(configuration);
+                                services.
+                                    AddRepositoryDataverse<CalamityUniverseUser, string>(x =>
+                                    {
+                                        x.Prefix = "new_";
+                                        x.SolutionName = "TestAlessandro";
+                                        x.Environment = configuration["ConnectionString:Dataverse:Environment"];
+                                        x.ApplicationIdentity = new(configuration["ConnectionString:Dataverse:ClientId"],
+                                         configuration["ConnectionString:Dataverse:ClientSecret"]);
+                                    });
                                 services.AddApiFromRepositoryFramework()
                                             .WithName("Repository Api")
                                             .WithPath(Path)
@@ -105,7 +125,12 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                 //.ConfigureAzureActiveDirectory(configuration);
                             });
                         }).Build();
-
+                while (iAmWaiting)
+                {
+                    await Task.Delay(100);
+                }
+                if (exception != null)
+                    throw exception;
                 var client = await HttpClientFactory.Instance.StartAsync();
 
                 var response = await client.GetAsync("/healthz");
@@ -322,6 +347,35 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                 entities.Sum(x => x.Value!.Port));
         }
         [Fact, Priority(7)]
+        public async Task DataverseAsync()
+        {
+            var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
+            var repository = serviceProvider.GetService<IRepository<CalamityUniverseUser, string>>()!;
+            var id = "dasdasdsa@gmail.com";
+            var entity = new CalamityUniverseUser { Email = id };
+            var idNoInsert = "dasdasdsa120@gmail.com";
+            var entityNoInsert = new CalamityUniverseUser { Email = idNoInsert, Port = 120 };
+            List<Entity<CalamityUniverseUser, string>> entities = new();
+            for (var i = 0; i < 10; i++)
+            {
+                var batchId = $"dasdasdsa{i}@gmail.com";
+                entities.Add(new Entity<CalamityUniverseUser, string>(new CalamityUniverseUser { Email = batchId, Port = i }, batchId));
+            }
+            await TestRepositoryAsync(repository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
+                x => x.Email!,
+                x => x.Email!.Contains("sda"),
+                x => x.Email!.Contains("ads"),
+                x => x.Port,
+                (x, y) => x.Port > y.Port,
+                entities.Max(x => x.Value!.Port),
+                entities.Min(x => x.Value!.Port),
+                (int)entities.Average(x => x.Value!.Port),
+                entities.Sum(x => x.Value!.Port));
+        }
+        [Fact, Priority(8)]
         public async Task InMemoryWithCacheAsync()
         {
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;

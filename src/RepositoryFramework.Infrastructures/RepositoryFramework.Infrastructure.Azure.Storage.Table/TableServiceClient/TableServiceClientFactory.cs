@@ -11,7 +11,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         private readonly Dictionary<string, TableClient> _tableServiceClientFactories = new();
         public TableClient Get(string name)
             => _tableServiceClientFactories[name];
-        internal TableServiceClientFactory Add<T>(TableStorageSettings settings)
+        internal TableServiceClientFactory Add<T>(TableStorageConnectionSettings settings)
         {
             if (settings.ConnectionString != null)
             {

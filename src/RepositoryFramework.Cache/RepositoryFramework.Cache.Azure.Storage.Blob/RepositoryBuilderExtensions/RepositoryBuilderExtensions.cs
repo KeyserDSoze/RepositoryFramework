@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBuilder<T, TKey> WithBlobStorageCache<T, TKey>(
            this IRepositoryBuilder<T, TKey> builder,
-                Action<BlobStorageSettings> options,
+                Action<BlobStorageConnectionSettings> options,
                 Action<DistributedCacheOptions<T, TKey>>? settings = null)
             where TKey : notnull
         {

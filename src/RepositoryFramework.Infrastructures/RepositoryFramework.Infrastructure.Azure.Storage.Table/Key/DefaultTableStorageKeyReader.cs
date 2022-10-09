@@ -5,8 +5,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
     internal sealed class DefaultTableStorageKeyReader<T, TKey> : ITableStorageKeyReader<T, TKey>
         where TKey : notnull
     {
-        private readonly TableStorageOptions<T, TKey> _options;
-        public DefaultTableStorageKeyReader(TableStorageOptions<T, TKey> options)
+        private readonly TableStorageSettings<T, TKey> _options;
+        public DefaultTableStorageKeyReader(TableStorageSettings<T, TKey> options)
         {
             _options = options;
         }

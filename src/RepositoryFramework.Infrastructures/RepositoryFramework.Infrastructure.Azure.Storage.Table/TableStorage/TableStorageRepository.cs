@@ -11,15 +11,15 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
     {
         private readonly TableClient _client;
         private readonly ITableStorageKeyReader<T, TKey> _keyReader;
-        private readonly TableStorageOptions<T, TKey> _options;
+        private readonly TableStorageSettings<T, TKey> _settings;
 
         public TableStorageRepository(TableServiceClientFactory clientFactory,
             ITableStorageKeyReader<T, TKey> keyReader,
-            TableStorageOptions<T, TKey> options)
+            TableStorageSettings<T, TKey> settings)
         {
             _client = clientFactory.Get(typeof(T).Name);
             _keyReader = keyReader;
-            _options = options;
+            _settings = settings;
         }
         private sealed class TableEntity : ITableEntity
         {
@@ -70,7 +70,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
             var where = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Where) as LambdaFilterOperation)?.Expression;
             string? filterAsString = null;
             if (where != null)
-                filterAsString = QueryStrategy.Create(where.Body, _options.PartitionKey, _options.RowKey, _options.Timestamp);
+                filterAsString = QueryStrategy.Create(where.Body, _settings.PartitionKey, _settings.RowKey, _settings.Timestamp);
 
             var top = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Top) as ValueFilterOperation)?.Value;
             var skip = (filter.Operations.FirstOrDefault(x => x.Operation == FilterOperations.Skip) as ValueFilterOperation)?.Value;
