@@ -1,20 +1,27 @@
 ﻿using System.Reflection;
 using System.Text.Json;
-using System.Xml.Linq;
-using Microsoft.Extensions.Options;
 using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Rest;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
-using Newtonsoft.Json.Linq;
+using Microsoft.Xrm.Sdk.Query;
 
 namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
 {
     public sealed class DataverseOptions<T, TKey> : IDataverseOptions
     {
         public string Environment { get; set; } = null!;
-        public string Prefix { get; set; } = "new_";
+        private string _prefix = "new_";
+        public string Prefix
+        {
+            get => _prefix;
+            set
+            {
+                _prefix = value;
+                ColumnSet = new ColumnSet(Properties.Select(x => x.LogicalName).Concat(new List<string> { LogicalPrimaryKey }).ToArray());
+            }
+        }
         public string TableName { get; set; } = typeof(T).Name;
         public string LogicalTableName => $"{Prefix}{TableName.ToLower()}";
         public string TableNameWithPrefix => $"{Prefix}{TableName}";
@@ -29,6 +36,7 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
         public string PrimaryKeyWithPrefix => $"{Prefix}{PrimaryKey}";
         internal List<PropertyHelper<T>> Properties { get; } = new();
         internal static DataverseOptions<T, TKey> Instance { get; } = new();
+        public ColumnSet ColumnSet { get; private set; }
         private DataverseOptions()
         {
             foreach (var property in typeof(T).GetProperties())
@@ -40,6 +48,7 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
                     Property = property,
                 });
             }
+            ColumnSet = new ColumnSet(Properties.Select(x => x.LogicalName).Concat(new List<string> { LogicalPrimaryKey }).ToArray());
         }
         public void SetDataverseEntity(Microsoft.Xrm.Sdk.Entity dataverseEntity, T entity, TKey key)
         {
@@ -105,6 +114,6 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
                     property.Prefix ??= string.Empty;
             }
         }
-        public ServiceClient GetClient() => new(@$"Url=https://{Environment}.dynamics.com;AuthType=ClientSecret;ClientId={ApplicationIdentity!.ClientId};ClientSecret={ApplicationIdentity!.ClientSecret};RequireNewInstance=true");
+        public ServiceClient GetClient() => new($"Url=https://{Environment}.dynamics.com;AuthType=ClientSecret;ClientId={ApplicationIdentity!.ClientId};ClientSecret={ApplicationIdentity!.ClientSecret};RequireNewInstance=true");
     }
 }

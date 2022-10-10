@@ -16,9 +16,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
         private HttpClientFactory() { }
         public HttpClient CreateClient(string name)
             => _httpClient;
-        public async Task<HttpClient> StartAsync()
+        public HttpClient CreateServerAndClient()
         {
-            await Host!.StartAsync();
             var server = Host.GetTestServer();
             _httpClient = server.CreateClient();
             _httpClient.DefaultRequestHeaders.Add("Origin", "http://example.com");

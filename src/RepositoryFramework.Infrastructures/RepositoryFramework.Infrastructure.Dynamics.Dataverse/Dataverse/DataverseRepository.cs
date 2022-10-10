@@ -54,6 +54,7 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
             var query = new QueryExpression(_settings.LogicalTableName)
             {
                 TopCount = 1,
+                ColumnSet = _settings.ColumnSet,
                 Criteria = new Microsoft.Xrm.Sdk.Query.FilterExpression(LogicalOperator.And)
             };
             query.Criteria.AddCondition(_settings.LogicalPrimaryKey, ConditionOperator.Equal, _settings.KeyIsPrimitive ? key.ToString() : key.ToJson());
@@ -80,6 +81,7 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
             var query = new QueryExpression(_settings.LogicalTableName)
             {
                 TopCount = 100,
+                ColumnSet = _settings.ColumnSet,
                 Criteria = new Microsoft.Xrm.Sdk.Query.FilterExpression(LogicalOperator.And)
             };
             var queryResult = await _client.RetrieveMultipleAsync(query);
@@ -130,7 +132,23 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            BatchResults<T, TKey> results = new();
+            foreach (var operation in operations.Values)
+            {
+                switch (operation.Command)
+                {
+                    case CommandType.Delete:
+                        results.AddDelete(operation.Key, await DeleteAsync(operation.Key, cancellationToken).NoContext());
+                        break;
+                    case CommandType.Insert:
+                        results.AddInsert(operation.Key, await InsertAsync(operation.Key, operation.Value!, cancellationToken).NoContext());
+                        break;
+                    case CommandType.Update:
+                        results.AddUpdate(operation.Key, await UpdateAsync(operation.Key, operation.Value!, cancellationToken).NoContext());
+                        break;
+                }
+            }
+            return results;
         }
     }
 }

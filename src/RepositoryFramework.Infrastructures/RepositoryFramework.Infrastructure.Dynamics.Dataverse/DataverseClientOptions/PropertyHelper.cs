@@ -30,9 +30,12 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
         }
         public void SetEntity(Microsoft.Xrm.Sdk.Entity dataverseEntity, T entity)
         {
-            var value = dataverseEntity[LogicalName];
-            if (value != null)
-                Property.SetValue(entity, IsPrimitive ? value.Cast(Type) : value.ToString()!.FromJson(Type));
+            if (dataverseEntity.Contains(LogicalName))
+            {
+                var value = dataverseEntity[LogicalName];
+                if (value != null)
+                    Property.SetValue(entity, IsPrimitive ? value.Cast(Type) : value.ToString()!.FromJson(Type));
+            }
         }
     }
 }

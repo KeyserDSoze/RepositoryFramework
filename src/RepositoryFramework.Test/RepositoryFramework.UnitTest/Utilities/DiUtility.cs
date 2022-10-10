@@ -4,6 +4,10 @@ using System;
 
 namespace RepositoryFramework.UnitTest
 {
+    public class Startup
+    {
+
+    }
     internal static class DiUtility
     {
         public class ForUserSecrets { }

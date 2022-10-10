@@ -38,13 +38,13 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                         {
                             webHostBuilder
                             .UseTestServer()
-                            .Configure(async app =>
+                            .Configure(app =>
                             {
                                 try
                                 {
                                     app.UseRouting();
                                     app.ApplicationServices.Populate();
-                                    await app.ApplicationServices.DataverseCreateTableOrMergeNewColumnsInExistingTableAsync();
+                                    app.ApplicationServices.DataverseCreateTableOrMergeNewColumnsInExistingTableAsync().ToResult();
                                     app.UseEndpoints(endpoints =>
                                     {
                                         endpoints.MapHealthChecks("/healthz");
@@ -109,12 +109,14 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                 services.
                                     AddRepositoryDataverse<CalamityUniverseUser, string>(x =>
                                     {
-                                        x.Prefix = "new_";
+                                        x.Prefix = "repo_";
                                         x.SolutionName = "TestAlessandro";
                                         x.Environment = configuration["ConnectionString:Dataverse:Environment"];
                                         x.ApplicationIdentity = new(configuration["ConnectionString:Dataverse:ClientId"],
                                          configuration["ConnectionString:Dataverse:ClientSecret"]);
-                                    });
+                                    })
+                                    .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness>()
+                                    .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness2>();
                                 services.AddApiFromRepositoryFramework()
                                             .WithName("Repository Api")
                                             .WithPath(Path)
@@ -125,13 +127,14 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                 //.ConfigureAzureActiveDirectory(configuration);
                             });
                         }).Build();
+                await HttpClientFactory.Instance.Host!.StartAsync();
                 while (iAmWaiting)
                 {
                     await Task.Delay(100);
                 }
                 if (exception != null)
                     throw exception;
-                var client = await HttpClientFactory.Instance.StartAsync();
+                var client = HttpClientFactory.Instance.CreateServerAndClient();
 
                 var response = await client.GetAsync("/healthz");
 
@@ -166,6 +169,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                     .AddRepositoryApiClient<Car, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
                 services
                     .AddRepositoryApiClient<SuperCar, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                services
+                    .AddRepositoryApiClient<CalamityUniverseUser, string>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
 
                 services.Finalize(out var serviceProvider);
                 HttpClientFactory.Instance.ServiceProvider = serviceProvider;
