@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -37,7 +37,7 @@
 		</When>
 		<When Condition=" '$(Configuration)'!='Debug' ">
 			<ItemGroup>
-				<PackageReference Include="Rystem.RepositoryFramework.Abstractions" Version="3.0.10" />
+				<PackageReference Include="Rystem.RepositoryFramework.Abstractions" Version="3.0.11" />
 			</ItemGroup>
 		</When>
 	</Choose>

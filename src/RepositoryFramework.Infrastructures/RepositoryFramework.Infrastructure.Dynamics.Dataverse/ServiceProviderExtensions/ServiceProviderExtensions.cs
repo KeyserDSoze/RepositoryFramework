@@ -30,7 +30,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     CreateEntityRequest createrequest = new()
                     {
                         SolutionUniqueName = options.SolutionName,
-                        //Define the entity
                         Entity = new EntityMetadata
                         {
                             SchemaName = options.TableNameWithPrefix,
@@ -41,7 +40,6 @@ namespace Microsoft.Extensions.DependencyInjection
                             IsActivity = false,
 
                         },
-                        // Define the primary attribute for the entity
                         PrimaryAttribute = new StringAttributeMetadata
                         {
                             SchemaName = options.PrimaryKeyWithPrefix,
