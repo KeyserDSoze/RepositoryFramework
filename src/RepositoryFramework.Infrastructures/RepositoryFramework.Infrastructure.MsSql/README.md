@@ -1,19 +1,25 @@
 ﻿### [What is Rystem?](https://github.com/KeyserDSoze/RystemV3)
 
-## Integration with Dataverse (Dynamics) and Repository Framework
+## Integration with MsSql and Repository Framework
 
-     builder.Services.AddRepositoryDataverse<CalamityUniverseUser, string>(x =>
-        {
-            x.Prefix = "repo_";
-            x.SolutionName = "TestAlessandro";
-            x.Environment = configuration["ConnectionString:Dataverse:Environment"];
-            x.ApplicationIdentity = new(configuration["ConnectionString:Dataverse:ClientId"],
-                configuration["ConnectionString:Dataverse:ClientSecret"]);
-        })
-        .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness>()
-        .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness2>();
+     builder.Services.AddRepositoryInMsSql<Cat, Guid>(x =>
+            {
+                x.Schema = "repo";
+                x.ConnectionString = configuration["ConnectionString:Database"];
+            })
+            .WithPrimaryKey(x => x.Id, x =>
+            {
+                x.ColumnName = "Key";
+            })
+            .WithColumn(x => x.Paws, x =>
+            {
+                x.ColumnName = "Zampe";
+                x.IsNullable = true;
+            })
+            .AddBusinessBeforeInsert<CatBeforeInsertBusiness>()
+            .AddBusinessBeforeInsert<CatBeforeInsertBusiness2>()
 
-You found the IRepository<CalamityUniverseUser, string> in DI to play with it.
+You found the IRepository<Cat, Guid> in DI to play with it.
 
 ### Automated api with Rystem.RepositoryFramework.Api.Server package
 With automated api, you may have the api implemented with your dataverse integration.

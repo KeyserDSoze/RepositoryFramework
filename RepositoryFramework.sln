@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.Storage.Table.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Azure.Storage.Table.yml
 		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Dynamics.Dataverse.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.Dynamics.Dataverse.yml
 		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.InMemory.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.InMemory.yml
+		.github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.MsSql.yml = .github\workflows\PackageDeploy.RepositoryFramework.Infrastructure.MsSql.yml
 		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Abstractions.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Abstractions.yml
 		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Client.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Client.yml
 		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Server.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Api.Server.yml
