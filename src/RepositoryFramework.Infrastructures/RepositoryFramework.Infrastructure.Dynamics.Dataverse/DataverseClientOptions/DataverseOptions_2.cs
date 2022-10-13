@@ -22,6 +22,11 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
                 ColumnSet = new ColumnSet(Properties.Select(x => x.LogicalName).Concat(new List<string> { LogicalPrimaryKey }).ToArray());
             }
         }
+        public void SetConnection(string environment, DataverseAppRegistrationAccount identity)
+        {
+            Environment = environment;
+            ApplicationIdentity = identity;
+        }
         public string TableName { get; set; } = typeof(T).Name;
         public string LogicalTableName => $"{Prefix}{TableName.ToLower()}";
         public string TableNameWithPrefix => $"{Prefix}{TableName}";

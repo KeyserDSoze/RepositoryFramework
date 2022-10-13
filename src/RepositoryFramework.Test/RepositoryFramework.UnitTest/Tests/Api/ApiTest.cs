@@ -45,6 +45,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                     app.UseRouting();
                                     app.ApplicationServices.Populate();
                                     app.ApplicationServices.DataverseCreateTableOrMergeNewColumnsInExistingTableAsync().ToResult();
+                                    app.ApplicationServices.MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync().ToResult();
                                     app.UseEndpoints(endpoints =>
                                     {
                                         endpoints.MapHealthChecks("/healthz");
@@ -107,16 +108,33 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                 services
                                     .AddUserRepositoryWithDatabaseSqlAndEntityFramework(configuration);
                                 services.
-                                    AddRepositoryDataverse<CalamityUniverseUser, string>(x =>
+                                    AddRepositoryInDataverse<CalamityUniverseUser, string>(x =>
                                     {
                                         x.Prefix = "repo_";
                                         x.SolutionName = "TestAlessandro";
-                                        x.Environment = configuration["ConnectionString:Dataverse:Environment"];
-                                        x.ApplicationIdentity = new(configuration["ConnectionString:Dataverse:ClientId"],
-                                         configuration["ConnectionString:Dataverse:ClientSecret"]);
+                                        x.SetConnection(configuration["ConnectionString:Dataverse:Environment"],
+                                            new(configuration["ConnectionString:Dataverse:ClientId"],
+                                         configuration["ConnectionString:Dataverse:ClientSecret"]));
                                     })
                                     .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness>()
                                     .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness2>();
+                                services.
+                                   AddRepositoryInMsSql<Cat, Guid>(x =>
+                                   {
+                                       x.Schema = "repo";
+                                       x.ConnectionString = configuration["ConnectionString:Database"];
+                                   })
+                                   .WithPrimaryKey(x => x.Id, x =>
+                                   {
+                                       x.ColumnName = "Key";
+                                   })
+                                   .WithColumn(x => x.Paws, x =>
+                                   {
+                                       x.ColumnName = "Zampe";
+                                       x.IsNullable = true;
+                                   })
+                                   .AddBusinessBeforeInsert<CatBeforeInsertBusiness>()
+                                   .AddBusinessBeforeInsert<CatBeforeInsertBusiness2>();
                                 services.AddApiFromRepositoryFramework()
                                             .WithName("Repository Api")
                                             .WithPath(Path)
@@ -171,6 +189,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                     .AddRepositoryApiClient<SuperCar, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
                 services
                     .AddRepositoryApiClient<CalamityUniverseUser, string>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                services
+                    .AddRepositoryApiClient<Cat, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
 
                 services.Finalize(out var serviceProvider);
                 HttpClientFactory.Instance.ServiceProvider = serviceProvider;
@@ -381,6 +401,35 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                 entities.Sum(x => x.Value!.Port));
         }
         [Fact, Priority(8)]
+        public async Task MsSqlAsync()
+        {
+            var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
+            var repository = serviceProvider.GetService<IRepository<Cat, Guid>>()!;
+            var id = Guid.NewGuid();
+            var entity = new Cat() { Name = "name", Id = id, Paws = 2, Rooms = new List<Room> { new Room { IsSpecial = true, Name = "Solution" } } };
+            var idNoInsert = Guid.NewGuid();
+            var entityNoInsert = new Cat() { Name = "name", Id = idNoInsert, Paws = 120, Rooms = new List<Room> { new Room { IsSpecial = true, Name = "Solution" } } };
+            List<Entity<Cat, Guid>> entities = new();
+            for (var i = 0; i < 10; i++)
+            {
+                var batchId = Guid.NewGuid();
+                entities.Add(new Entity<Cat, Guid>(new Cat { Id = batchId, Name = "name", Paws = i, Rooms = new List<Room> { new Room { IsSpecial = i % 2 == 0, Name = "Solution" } } }, batchId));
+            }
+            await TestRepositoryAsync(repository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
+                x => x.Id,
+                x => x.Name == "name",
+                x => x.Name != "name",
+                x => x.Paws,
+                (x, y) => x.Paws > y.Paws,
+                entities.Max(x => x.Value!.Paws),
+                entities.Min(x => x.Value!.Paws),
+                (int)entities.Average(x => x.Value!.Paws),
+                entities.Sum(x => x.Value!.Paws));
+        }
+        [Fact, Priority(9)]
         public async Task InMemoryWithCacheAsync()
         {
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
