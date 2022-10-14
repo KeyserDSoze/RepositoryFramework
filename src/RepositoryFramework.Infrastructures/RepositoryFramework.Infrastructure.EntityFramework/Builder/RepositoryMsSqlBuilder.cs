@@ -2,8 +2,9 @@
 
 namespace RepositoryFramework.Infrastructure.EntityFramework
 {
-    internal sealed class RepositoryEntityFrameworkBuilder<T, TKey> : IRepositoryEntityFrameworkBuilder<T, TKey>
+    internal sealed class RepositoryEntityFrameworkBuilder<T, TKey, TEntityModel> : IRepositoryEntityFrameworkBuilder<T, TKey, TEntityModel>
         where TKey : notnull
+        where TEntityModel : class
     {
         public IRepositoryBuilder<T, TKey> Builder { get; }
         public RepositoryEntityFrameworkBuilder(IRepositoryBuilder<T, TKey> builder)
@@ -13,5 +14,11 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
         public ServiceLifetime ServiceLifetime => Builder.ServiceLifetime;
         public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
             => Builder.Translate<TTranslated>();
+        public IQueryTranslationBuilder<T, TKey, TEntityModel> AddMap<TMap>()
+            where TMap : class, IRepositoryMap<T, TKey, TEntityModel>
+        {
+            Builder.Services.AddSingleton<IRepositoryMap<T, TKey, TEntityModel>, TMap>();
+            return Builder.Translate<TEntityModel>();
+        }
     }
 }

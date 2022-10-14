@@ -1,25 +1,20 @@
 ﻿### [What is Rystem?](https://github.com/KeyserDSoze/RystemV3)
 
-## Integration with MsSql and Repository Framework
+## Integration with Entity Framework and Repository Framework
 
-     builder.Services.AddRepositoryInMsSql<Cat, Guid>(x =>
+     builder.Services
+        .AddRepositoryInEntityFramework<MappingUser, int, User, SampleContext>(
+            x =>
             {
-                x.Schema = "repo";
-                x.ConnectionString = configuration["ConnectionString:Database"];
+                x.DbSet = x => x.Users;
+                x.IncludingDbSet = x => x.Include(x => x.IdGruppos);
             })
-            .WithPrimaryKey(x => x.Id, x =>
-            {
-                x.ColumnName = "Key";
-            })
-            .WithColumn(x => x.Paws, x =>
-            {
-                x.ColumnName = "Zampe";
-                x.IsNullable = true;
-            })
-            .AddBusinessBeforeInsert<CatBeforeInsertBusiness>()
-            .AddBusinessBeforeInsert<CatBeforeInsertBusiness2>()
+        .AddMap<MappingUserMapper>()
+            .Builder
+        .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
+        .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();
 
-You found the IRepository<Cat, Guid> in DI to play with it.
+You found the IRepository<MappingUser, int> in DI to play with it.
 
 ### Automated api with Rystem.RepositoryFramework.Api.Server package
 With automated api, you may have the api implemented with your dataverse integration.

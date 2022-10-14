@@ -5,23 +5,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework.Infrastructure.EntityFramework
 {
-    internal sealed class EntityFrameworkRepository<T, TKey, TContext> : IRepositoryPattern<T, TKey>
-        where T : class
+    internal sealed class EntityFrameworkRepository<T, TKey, TEntityModel, TContext> : IRepositoryPattern<T, TKey>
+        where TEntityModel : class
         where TKey : notnull
         where TContext : DbContext
     {
         private readonly TContext _context;
-        private readonly EntityFrameworkOptions<T, TKey, TContext> _settings;
-        private readonly DbSet<T> _dbSet;
-        private readonly IQueryable<T> _includingDbSet;
+        private readonly IRepositoryMap<T, TKey, TEntityModel> _map;
+        private readonly DbSet<TEntityModel> _dbSet;
+        private readonly IQueryable<TEntityModel> _includingDbSet;
         public EntityFrameworkRepository(
             IServiceProvider serviceProvider,
-            EntityFrameworkOptions<T, TKey, TContext> settings)
+            EntityFrameworkOptions<T, TKey, TEntityModel, TContext> settings,
+            IRepositoryMap<T, TKey, TEntityModel> map)
         {
-            _settings = settings;
+            _map = map;
             _context = serviceProvider.GetService<TContext>()!;
-            _dbSet = _settings.DbSet(_context);
-            _includingDbSet = _settings.IncludingDbSet(_dbSet);
+            _dbSet = settings.DbSet(_context);
+            _includingDbSet = settings.IncludingDbSet(_dbSet);
         }
         public async Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
@@ -46,25 +47,30 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
         {
             var entity = await _dbSet.FindAsync(new object[] { key },
                  cancellationToken: cancellationToken);
-            return entity;
+            return _map.Map(entity);
         }
         public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var entity = await _dbSet.AddAsync(value, cancellationToken);
-            return new State<T, TKey>(await _context.SaveChangesAsync(cancellationToken) > 0, entity.Entity, key);
+            var entity = await _dbSet.AddAsync(_map.Map(value, key)!, cancellationToken);
+            var enteredEntity = _map.Map(entity.Entity);
+            var enteredKey = _map.RetrieveKey(entity.Entity);
+            return new State<T, TKey>(await _context.SaveChangesAsync(cancellationToken) > 0, enteredEntity, enteredKey);
         }
         public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            //var entity = await _read.FindAsync(new object[] { key }, cancellationToken: cancellationToken);
-            //_settings.KeyWriter(key);
-            _dbSet!.Update(value);
+            _dbSet!.Update(_map.Map(value, key)!);
             return new State<T, TKey>(await _context.SaveChangesAsync(cancellationToken) > 0, value, key);
         }
         public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var entity in filter.ApplyAsAsyncEnumerable(_includingDbSet))
-                yield return new Entity<T, TKey>(entity, _settings.KeyReader(entity));
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var entityFromDatabase = _map.Map(entity);
+                var keyFromDatabase = _map.RetrieveKey(entity);
+                yield return new Entity<T, TKey>(entityFromDatabase, keyFromDatabase);
+            }
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             IFilterExpression filter,
@@ -86,13 +92,13 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
             }
             else if (operation.Name == DefaultOperations.Sum)
             {
-                var select = filter.GetFirstSelect<T>();
-                result = await context.SumAsync(select!.AsExpression<T, decimal>(), cancellationToken).NoContext();
+                var select = filter.GetFirstSelect<TEntityModel>();
+                result = await context.SumAsync(select!.AsExpression<TEntityModel, decimal>(), cancellationToken).NoContext();
             }
             else if (operation.Name == DefaultOperations.Average)
             {
-                var select = filter.GetFirstSelect<T>();
-                result = await context.AverageAsync(select!.AsExpression<T, decimal>(), cancellationToken).NoContext();
+                var select = filter.GetFirstSelect<TEntityModel>();
+                result = await context.AverageAsync(select!.AsExpression<TEntityModel, decimal>(), cancellationToken).NoContext();
             }
             return result.Cast<TProperty>() ?? default!;
         }

@@ -16,17 +16,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="options">Settings for your Entity Framework connection.</param>
         /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryEntityFrameworkBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryEntityFrameworkBuilder<T, TKey> AddRepositoryInEntityFramework<T, TKey, TContext>(
+        public static IRepositoryEntityFrameworkBuilder<T, TKey, TEntityModel> AddRepositoryInEntityFramework<T, TKey, TEntityModel, TContext>(
            this IServiceCollection services,
-                Action<EntityFrameworkOptions<T, TKey, TContext>> options,
+                Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options,
                 Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
-            where T : class
+            where TEntityModel : class
             where TContext : DbContext
         {
-            options.Invoke(EntityFrameworkOptions<T, TKey, TContext>.Instance);
-            services.AddSingleton(EntityFrameworkOptions<T, TKey, TContext>.Instance);
-            return new RepositoryEntityFrameworkBuilder<T, TKey>(services.AddRepository<T, TKey, EntityFrameworkRepository<T, TKey, TContext>>(ServiceLifetime.Scoped, settings));
+            options.Invoke(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
+            services.AddSingleton(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
+            return new RepositoryEntityFrameworkBuilder<T, TKey, TEntityModel>(services.AddRepository<T, TKey, EntityFrameworkRepository<T, TKey, TEntityModel, TContext>>(ServiceLifetime.Scoped, settings));
         }
         /// <summary>
         /// Add a default Entity Framework service for your command pattern.
@@ -38,17 +38,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="options">Settings for your Entity Framework connection.</param>
         /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryEntityFrameworkBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryEntityFrameworkBuilder<T, TKey> AddCommandInEntityFramework<T, TKey, TContext>(
+        public static IRepositoryEntityFrameworkBuilder<T, TKey, TEntityModel> AddCommandInEntityFramework<T, TKey, TEntityModel, TContext>(
            this IServiceCollection services,
-                  Action<EntityFrameworkOptions<T, TKey, TContext>> options,
+                  Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options,
                 Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
-            where T : class
+            where TEntityModel : class
             where TContext : DbContext
         {
-            options.Invoke(EntityFrameworkOptions<T, TKey, TContext>.Instance);
-            services.AddSingleton(EntityFrameworkOptions<T, TKey, TContext>.Instance);
-            return new RepositoryEntityFrameworkBuilder<T, TKey>(services.AddCommand<T, TKey, EntityFrameworkRepository<T, TKey, TContext>>(ServiceLifetime.Scoped, settings));
+            options.Invoke(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
+            services.AddSingleton(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
+            return new RepositoryEntityFrameworkBuilder<T, TKey, TEntityModel>(services.AddCommand<T, TKey, EntityFrameworkRepository<T, TKey, TEntityModel, TContext>>(ServiceLifetime.Scoped, settings));
         }
         /// <summary>
         /// Add a default Entity Framework service for your query pattern.
@@ -60,17 +60,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="options">Settings for your Entity Framework connection.</param>
         /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryEntityFrameworkBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryEntityFrameworkBuilder<T, TKey> AddQueryInEntityFramework<T, TKey, TContext>(
+        public static IRepositoryEntityFrameworkBuilder<T, TKey, TEntityModel> AddQueryInEntityFramework<T, TKey, TEntityModel, TContext>(
            this IServiceCollection services,
-                 Action<EntityFrameworkOptions<T, TKey, TContext>> options,
+                 Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options,
                 Action<RepositoryFrameworkOptions<T, TKey>>? settings = null)
             where TKey : notnull
-            where T : class
+            where TEntityModel : class
             where TContext : DbContext
         {
-            options.Invoke(EntityFrameworkOptions<T, TKey, TContext>.Instance);
-            services.AddSingleton(EntityFrameworkOptions<T, TKey, TContext>.Instance);
-            return new RepositoryEntityFrameworkBuilder<T, TKey>(services.AddQuery<T, TKey, EntityFrameworkRepository<T, TKey, TContext>>(ServiceLifetime.Scoped, settings));
+            options.Invoke(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
+            services.AddSingleton(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
+            return new RepositoryEntityFrameworkBuilder<T, TKey, TEntityModel>(services.AddQuery<T, TKey, EntityFrameworkRepository<T, TKey, TEntityModel, TContext>>(ServiceLifetime.Scoped, settings));
         }
     }
 }

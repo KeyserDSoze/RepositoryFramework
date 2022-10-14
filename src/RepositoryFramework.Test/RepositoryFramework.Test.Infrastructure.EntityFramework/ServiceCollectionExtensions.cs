@@ -23,13 +23,16 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness>()
                     .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness2>();
             services
-                .AddRepositoryInEntityFramework<User, int, SampleContext>(
+                .AddRepositoryInEntityFramework<MappingUser, int, User, SampleContext>(
                     x =>
                     {
                         x.DbSet = x => x.Users;
                         x.IncludingDbSet = x => x.Include(x => x.IdGruppos);
-                        x.KeyReader = x => x.Identificativo;
-                    });
+                    })
+                .AddMap<MappingUserMapper>()
+                    .Builder
+                .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
+                .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();
             return services;
         }
     }
