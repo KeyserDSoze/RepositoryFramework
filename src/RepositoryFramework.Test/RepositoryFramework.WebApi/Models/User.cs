@@ -1,18 +1,18 @@
 ﻿namespace RepositoryFramework.WebApi.Models
 {
-    public class SuperiorUser : User
+    public class SuperiorUser : CreativeUser
     {
         public SuperiorUser(string email) : base(email)
         {
         }
     }
-    public class SuperUser : User
+    public class SuperUser : CreativeUser
     {
         public SuperUser(string email) : base(email)
         {
         }
     }
-    public class User
+    public class CreativeUser
     {
         public string? Id { get; set; }
         public string? Name { get; set; }
@@ -20,7 +20,7 @@
         public int Port { get; set; }
         public bool IsAdmin { get; set; }
         public Guid GroupId { get; set; }
-        public User(string email)
+        public CreativeUser(string email)
         {
             Email = email;
         }

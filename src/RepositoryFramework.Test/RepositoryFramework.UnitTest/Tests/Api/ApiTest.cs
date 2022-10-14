@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RepositoryFramework.Test.Domain;
+using RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal;
 using RepositoryFramework.Test.Models;
 using RepositoryFramework.Test.Repository;
 using Xunit;
@@ -191,7 +192,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                     .AddRepositoryApiClient<CalamityUniverseUser, string>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
                 services
                     .AddRepositoryApiClient<Cat, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
-
+                services
+                    .AddRepositoryApiClient<User, int>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
                 services.Finalize(out var serviceProvider);
                 HttpClientFactory.Instance.ServiceProvider = serviceProvider;
             }
@@ -430,6 +432,34 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                 entities.Sum(x => x.Value!.Paws));
         }
         [Fact, Priority(9)]
+        public async Task EntityFrameworkAsync()
+        {
+            var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
+            var repository = serviceProvider.GetService<IRepository<User, int>>()!;
+            var id = 1;
+            var entity = new User() { Nome = "name", Identificativo = id, Cognome = "x", IndirizzoElettronico = "alekud@adm.com" };
+            var idNoInsert = 120;
+            var entityNoInsert = new User() { Nome = "name", Identificativo = idNoInsert, Cognome = "x", IndirizzoElettronico = "alekud@adm.com" };
+            List<Entity<User, int>> entities = new();
+            for (var i = 0; i < 10; i++)
+            {
+                entities.Add(new Entity<User, int>(new User() { Nome = "name", Identificativo = i, Cognome = "x", IndirizzoElettronico = "alekud@adm.com" }, i));
+            }
+            await TestRepositoryAsync(repository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
+                x => x.Identificativo,
+                x => x.Nome == "name",
+                x => x.Nome != "name",
+                x => x.Identificativo,
+                (x, y) => x.Identificativo > y.Identificativo,
+                entities.Max(x => x.Value!.Identificativo),
+                entities.Min(x => x.Value!.Identificativo),
+                (int)entities.Average(x => x.Value!.Identificativo),
+                entities.Sum(x => x.Value!.Identificativo));
+        }
+        [Fact, Priority(10)]
         public async Task InMemoryWithCacheAsync()
         {
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;

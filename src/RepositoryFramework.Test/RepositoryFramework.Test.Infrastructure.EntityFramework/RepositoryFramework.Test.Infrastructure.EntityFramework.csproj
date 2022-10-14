@@ -14,5 +14,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\RepositoryFramework.Abstractions\RepositoryFramework.Abstractions.csproj" />
+	  <ProjectReference Include="..\..\RepositoryFramework.Infrastructures\RepositoryFramework.Infrastructure.EntityFramework\RepositoryFramework.Infrastructure.EntityFramework.csproj" />
 	</ItemGroup>
 </Project>

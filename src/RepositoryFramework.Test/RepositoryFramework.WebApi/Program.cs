@@ -31,6 +31,8 @@ builder.Services.AddRepositoryInMemoryStorage<SuperiorUser, string>()
 builder.Services.AddRepositoryInMemoryStorage<Animal, AnimalKey>();
 builder.Services.AddRepositoryInMemoryStorage<Car, Guid>();
 builder.Services.AddRepositoryInMemoryStorage<Car2, Range>();
+builder.Services
+    .AddUserRepositoryWithDatabaseSqlAndEntityFramework(builder.Configuration);
 builder.Services.AddApiFromRepositoryFramework()
     .WithName("Repository Api")
     .WithSwagger()
@@ -67,7 +69,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //    x.Methods = RepositoryMethod.All;
 //});
 builder.Services
-    .AddRepositoryInCosmosSql<User, string>(
+    .AddRepositoryInCosmosSql<CreativeUser, string>(
     x =>
     {
         x.ConnectionString = builder.Configuration["ConnectionString:CosmosSql"];

@@ -1,31 +1,31 @@
 ﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework.Infrastructure.EntityFramework
 {
-    internal sealed class EntityFrameworkRepository<T, TKey> : IRepositoryPattern<T, TKey>
+    internal sealed class EntityFrameworkRepository<T, TKey, TContext> : IRepositoryPattern<T, TKey>
         where T : class
         where TKey : notnull
+        where TContext : DbContext
     {
-        private readonly DbContext _context;
-        private readonly EntityFrameworkOptions<T, TKey> _settings;
-        private readonly DbSet<T> _read;
-        private readonly DbSet<T> _readWithInclude;
-        private readonly DbSet<T> _write;
+        private readonly TContext _context;
+        private readonly EntityFrameworkOptions<T, TKey, TContext> _settings;
+        private readonly DbSet<T> _dbSet;
+        private readonly IQueryable<T> _includingDbSet;
         public EntityFrameworkRepository(
             IServiceProvider serviceProvider,
-            EntityFrameworkOptions<T, TKey> settings)
+            EntityFrameworkOptions<T, TKey, TContext> settings)
         {
             _settings = settings;
-            _context = _settings.GetDbContext(serviceProvider);
-            _read = settings.Read(_context);
-            _readWithInclude = settings.ReadWithInclude(_context);
-            _write = settings.Write(_context);
+            _context = serviceProvider.GetService<TContext>()!;
+            _dbSet = _settings.DbSet(_context);
+            _includingDbSet = _settings.IncludingDbSet(_dbSet);
         }
         public async Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var entity = await _read.FindAsync(new object[] { key },
+            var entity = await _dbSet.FindAsync(new object[] { key },
                 cancellationToken: cancellationToken);
             if (entity != null)
             {
@@ -37,40 +37,40 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
 
         public async Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var entity = await _read.FindAsync(new object[] { key },
+            var entity = await _dbSet.FindAsync(new object[] { key },
                 cancellationToken: cancellationToken);
             return entity != null;
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var entity = await _readWithInclude.FindAsync(new object[] { key },
+            var entity = await _dbSet.FindAsync(new object[] { key },
                  cancellationToken: cancellationToken);
             return entity;
         }
         public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var entity = await _write.AddAsync(value, cancellationToken);
+            var entity = await _dbSet.AddAsync(value, cancellationToken);
             return new State<T, TKey>(await _context.SaveChangesAsync(cancellationToken) > 0, entity.Entity, key);
         }
         public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             //var entity = await _read.FindAsync(new object[] { key }, cancellationToken: cancellationToken);
             //_settings.KeyWriter(key);
-            _write!.Update(value);
+            _dbSet!.Update(value);
             return new State<T, TKey>(await _context.SaveChangesAsync(cancellationToken) > 0, value, key);
         }
         public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            await foreach (var entity in filter.ApplyAsAsyncEnumerable(_readWithInclude))
+            await foreach (var entity in filter.ApplyAsAsyncEnumerable(_includingDbSet))
                 yield return new Entity<T, TKey>(entity, _settings.KeyReader(entity));
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             IFilterExpression filter,
             CancellationToken cancellationToken = default)
         {
-            var context = filter.Apply(_read);
+            var context = filter.Apply(_dbSet);
             object? result = null;
             if (operation.Name == DefaultOperations.Count)
             {
