@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="options">Settings for your MsSql connection.</param>
         /// <param name="settings">Settings for your repository.</param>
-        /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        /// <returns>IRepositoryMsSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryMsSqlBuilder<T, TKey> AddRepositoryInMsSql<T, TKey>(
            this IServiceCollection services,
                 Action<MsSqlOptions<T, TKey>> options,
@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="options">Settings for your MsSql connection.</param>
         /// <param name="settings">Settings for your repository.</param>
-        /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        /// <returns>IRepositoryMsSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryMsSqlBuilder<T, TKey> AddCommandInMsSql<T, TKey>(
            this IServiceCollection services,
                   Action<MsSqlOptions<T, TKey>> options,
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="options">Settings for your MsSql connection.</param>
         /// <param name="settings">Settings for your repository.</param>
-        /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        /// <returns>IRepositoryMsSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryMsSqlBuilder<T, TKey> AddQueryInMsSql<T, TKey>(
            this IServiceCollection services,
                  Action<MsSqlOptions<T, TKey>> options,

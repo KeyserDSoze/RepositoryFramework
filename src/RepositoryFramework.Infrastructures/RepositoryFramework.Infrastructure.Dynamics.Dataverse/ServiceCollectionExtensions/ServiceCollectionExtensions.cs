@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="options">Settings for your dataverse connection.</param>
         /// <param name="settings">Settings for your repository.</param>
-        /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        /// <returns>IRepositoryDataverseBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryDataverseBuilder<T, TKey> AddRepositoryInDataverse<T, TKey>(
            this IServiceCollection services,
                 Action<DataverseOptions<T, TKey>> options,
@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="options">Settings for your dataverse connection.</param>
         /// <param name="settings">Settings for your repository.</param>
-        /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        /// <returns>IRepositoryDataverseBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryDataverseBuilder<T, TKey> AddCommandInDataverse<T, TKey>(
            this IServiceCollection services,
                 Action<DataverseOptions<T, TKey>> options,
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="options">Settings for your dataverse connection.</param>
         /// <param name="settings">Settings for your repository.</param>
-        /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        /// <returns>IRepositoryDataverseBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryDataverseBuilder<T, TKey> AddQueryInDataverse<T, TKey>(
            this IServiceCollection services,
                 Action<DataverseOptions<T, TKey>> options,
