@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RepositoryFramework.Test.Domain;
-using RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal;
+using RepositoryFramework.Test.Infrastructure.EntityFramework;
 using RepositoryFramework.Test.Models;
 using RepositoryFramework.Test.Repository;
 using Xunit;
@@ -193,7 +193,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                 services
                     .AddRepositoryApiClient<Cat, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
                 services
-                    .AddRepositoryApiClient<User, int>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<MappingUser, int>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
                 services.Finalize(out var serviceProvider);
                 HttpClientFactory.Instance.ServiceProvider = serviceProvider;
             }
@@ -435,29 +435,30 @@ namespace RepositoryFramework.UnitTest.Tests.Api
         public async Task EntityFrameworkAsync()
         {
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
-            var repository = serviceProvider.GetService<IRepository<User, int>>()!;
-            var id = 1;
-            var entity = new User() { Nome = "name", Identificativo = id, Cognome = "x", IndirizzoElettronico = "alekud@adm.com" };
+            var repository = serviceProvider.GetService<IRepository<MappingUser, int>>()!;
+            var id = 23;
+            var entity = new MappingUser(23, "alekud", "alekud@drasda.it", new(), DateTime.UtcNow);
             var idNoInsert = 120;
-            var entityNoInsert = new User() { Nome = "name", Identificativo = idNoInsert, Cognome = "x", IndirizzoElettronico = "alekud@adm.com" };
-            List<Entity<User, int>> entities = new();
-            for (var i = 0; i < 10; i++)
+            var entityNoInsert = new MappingUser(120, "alekud", "alekud@drasda.it", new(), DateTime.UtcNow);
+            List<Entity<MappingUser, int>> entities = new();
+            for (var i = 2; i <= 11; i++)
             {
-                entities.Add(new Entity<User, int>(new User() { Nome = "name", Identificativo = i, Cognome = "x", IndirizzoElettronico = "alekud@adm.com" }, i));
+                var batchId = i;
+                entities.Add(new Entity<MappingUser, int>(new MappingUser(i, "alekud", "alekud@drasda.it", new(), DateTime.UtcNow), batchId));
             }
             await TestRepositoryAsync(repository!, id, entity,
                 idNoInsert,
                 entityNoInsert,
                 entities,
-                x => x.Identificativo,
-                x => x.Nome == "name",
-                x => x.Nome != "name",
-                x => x.Identificativo,
-                (x, y) => x.Identificativo > y.Identificativo,
-                entities.Max(x => x.Value!.Identificativo),
-                entities.Min(x => x.Value!.Identificativo),
-                (int)entities.Average(x => x.Value!.Identificativo),
-                entities.Sum(x => x.Value!.Identificativo));
+                x => x.Id,
+                x => x.Username.Contains("eku"),
+                x => !x.Username.Contains("eku"),
+                x => x.Id,
+                (x, y) => x.Id > y.Id,
+                entities.Max(x => x.Value!.Id),
+                entities.Min(x => x.Value!.Id),
+                (int)entities.Average(x => x.Value!.Id),
+                entities.Sum(x => x.Value!.Id));
         }
         [Fact, Priority(10)]
         public async Task InMemoryWithCacheAsync()
