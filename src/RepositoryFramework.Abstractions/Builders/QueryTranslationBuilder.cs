@@ -6,8 +6,6 @@ namespace RepositoryFramework
 {
     internal class QueryTranslationBuilder<T, TKey, TTranslated> : IQueryTranslationBuilder<T, TKey, TTranslated>
         where TKey : notnull
-        where TTranslated : new()
-        where T : new()
     {
         private readonly IRepositoryBuilder<T, TKey> _repositoryBuilder;
 

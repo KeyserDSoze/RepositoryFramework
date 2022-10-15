@@ -1,9 +1,9 @@
-﻿namespace RepositoryFramework
+﻿using System.Reflection;
+
+namespace RepositoryFramework
 {
     internal sealed class RepositoryMapper<T, TKey, TEntityModel> : IRepositoryMapper<T, TKey, TEntityModel>
         where TKey : notnull
-        where T : new()
-        where TEntityModel : new()
     {
         internal sealed record RepositoryMapperProperty
             (Func<T, dynamic> GetFromT, Action<T, dynamic> SetToT,
@@ -15,7 +15,7 @@
         {
             if (entity == null)
                 return default;
-            var t = new T();
+            var t = (T)typeof(T).CreateInstance();
             foreach (var property in Properties)
                 property.SetToT(t, property.GetFromTEntityModel(entity));
             return t;
@@ -25,7 +25,7 @@
         {
             if (entity == null)
                 return default;
-            var entityModel = new TEntityModel();
+            var entityModel = (TEntityModel)typeof(TEntityModel).CreateInstance();
             foreach (var property in Properties)
                 property.SetToTEntityModel(entityModel, property.GetFromT(entity));
             return entityModel;
