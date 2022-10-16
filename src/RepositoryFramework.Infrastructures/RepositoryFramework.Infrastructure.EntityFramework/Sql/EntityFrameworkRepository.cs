@@ -14,6 +14,7 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
         private readonly IRepositoryMapper<T, TKey, TEntityModel> _mapper;
         private readonly DbSet<TEntityModel> _dbSet;
         private readonly IQueryable<TEntityModel> _includingDbSet;
+        private readonly Func<TEntityModel, TKey, bool> _findByKey;
         public EntityFrameworkRepository(
             IServiceProvider serviceProvider,
             EntityFrameworkOptions<T, TKey, TEntityModel, TContext> settings,
@@ -22,7 +23,8 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
             _mapper = mapper;
             _context = serviceProvider.GetService<TContext>()!;
             _dbSet = settings.DbSet(_context);
-            _includingDbSet = settings.IncludingDbSet(_dbSet);
+            _includingDbSet = settings.References(_dbSet);
+            _findByKey = settings.SearchById;
         }
         public async Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {

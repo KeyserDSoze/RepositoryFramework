@@ -27,13 +27,16 @@ namespace Microsoft.Extensions.DependencyInjection
                     x =>
                     {
                         x.DbSet = x => x.Users;
-                        x.IncludingDbSet = x => x.Include(x => x.IdGruppos);
+                        x.References = x => x.Include(x => x.IdGruppos);
+                        x.SearchById = (x, y) => x.Identificativo == y;
                     })
                 .Translate<User>()
                 .With(x => x.Username, x => x.Nome)
+                .With(x => x.Username, x => x.Cognome)
                 .With(x => x.Email, x => x.IndirizzoElettronico)
                 .With(x => x.Groups, x => x.IdGruppos)
                 .With(x => x.Id, x => x.Identificativo)
+                .WithKey(x => x, x => x.Identificativo)
                     .Builder
                 .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
                 .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();

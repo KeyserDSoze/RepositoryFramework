@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace RepositoryFramework.Infrastructure.EntityFramework
 {
@@ -9,6 +10,7 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
     {
         internal static EntityFrameworkOptions<T, TKey, TEntityModel, TContext> Instance { get; } = new();
         public Func<TContext, DbSet<TEntityModel>> DbSet { get; set; }
-        public Func<DbSet<TEntityModel>, IQueryable<TEntityModel>> IncludingDbSet { get; set; }
+        public Func<DbSet<TEntityModel>, IQueryable<TEntityModel>> References { get; set; }
+        public Func<TEntityModel, TKey, bool> SearchById { get; set; }
     }
 }

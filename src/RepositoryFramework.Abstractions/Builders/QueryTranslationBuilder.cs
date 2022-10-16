@@ -13,10 +13,22 @@ namespace RepositoryFramework
         {
             _repositoryBuilder = repositoryBuilder;
         }
-        public IQueryTranslationBuilder<T, TKey, TTranslated> WithKey(Expression<Func<TTranslated, TKey>> keyRetriever)
+        public IQueryTranslationBuilder<T, TKey, TTranslated> WithKey<TProperty, TTranslatedProperty>(
+            Expression<Func<TKey, TProperty>> property,
+            Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
-            var compiled = keyRetriever.Compile();
-            RepositoryMapper<T, TKey, TTranslated>.Instance.KeyRetriever = compiled;
+            var propertyValue = GetPropertyFromExpression(property)!;
+            var translatedPropertyValue = GetPropertyFromExpression(translatedProperty)!;
+            var compiledProperty = property.Compile();
+            var compiledTranslatedProperty = translatedProperty.Compile();
+            RepositoryMapper<T, TKey, TTranslated>.Instance.KeyProperties.Add(
+               new RepositoryMapper<T, TKey, TTranslated>.RepositoryKeyMapperProperty(
+                   x => compiledProperty.Invoke(x)!,
+                   propertyValue != null ? (x, value) => propertyValue.SetValue(x, value) : null,
+                   x => compiledTranslatedProperty.Invoke(x)!,
+                   (x, value) => translatedPropertyValue.SetValue(x, value)
+                   ));
+            Services.AddSingleton<IRepositoryMapper<T, TKey, TTranslated>>(RepositoryMapper<T, TKey, TTranslated>.Instance);
             return this;
         }
         public IQueryTranslationBuilder<T, TKey, TTranslated> With<TProperty, TTranslatedProperty>(
@@ -34,6 +46,7 @@ namespace RepositoryFramework
                     x => compiledTranslatedProperty.Invoke(x)!,
                     (x, value) => translatedPropertyValue.SetValue(x, value)
                     ));
+            Services.AddSingleton<IRepositoryMapper<T, TKey, TTranslated>>(RepositoryMapper<T, TKey, TTranslated>.Instance);
             FilterTranslation.Instance.With(property, translatedProperty);
             return this;
         }

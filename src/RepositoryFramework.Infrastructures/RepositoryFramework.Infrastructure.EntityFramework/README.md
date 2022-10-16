@@ -2,14 +2,20 @@
 
 ## Integration with Entity Framework and Repository Framework
 
-     builder.Services
+     builder.Sservices
         .AddRepositoryInEntityFramework<MappingUser, int, User, SampleContext>(
             x =>
             {
                 x.DbSet = x => x.Users;
-                x.IncludingDbSet = x => x.Include(x => x.IdGruppos);
+                x.References = x => x.Include(x => x.IdGruppos);
+                x.SearchById = (x, y) => x.Identificativo == y;
             })
-        .AddMap<MappingUserMapper>()
+        .Translate<User>()
+        .With(x => x.Username, x => x.Nome)
+        .With(x => x.Email, x => x.IndirizzoElettronico)
+        .With(x => x.Groups, x => x.IdGruppos)
+        .With(x => x.Id, x => x.Identificativo)
+        .WithKey(x => x.Identificativo)
             .Builder
         .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
         .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();

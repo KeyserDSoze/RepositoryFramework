@@ -45,8 +45,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                 {
                                     app.UseRouting();
                                     app.ApplicationServices.Populate();
-                                    app.ApplicationServices.DataverseCreateTableOrMergeNewColumnsInExistingTableAsync().ToResult();
-                                    app.ApplicationServices.MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync().ToResult();
+                                    //app.ApplicationServices.DataverseCreateTableOrMergeNewColumnsInExistingTableAsync().ToResult();
+                                    //app.ApplicationServices.MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync().ToResult();
                                     app.UseEndpoints(endpoints =>
                                     {
                                         endpoints.MapHealthChecks("/healthz");
