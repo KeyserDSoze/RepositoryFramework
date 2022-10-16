@@ -11,15 +11,15 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
         where TContext : DbContext
     {
         private readonly TContext _context;
-        private readonly IRepositoryMap<T, TKey, TEntityModel> _map;
+        private readonly IRepositoryMapper<T, TKey, TEntityModel> _mapper;
         private readonly DbSet<TEntityModel> _dbSet;
         private readonly IQueryable<TEntityModel> _includingDbSet;
         public EntityFrameworkRepository(
             IServiceProvider serviceProvider,
             EntityFrameworkOptions<T, TKey, TEntityModel, TContext> settings,
-            IRepositoryMap<T, TKey, TEntityModel> map)
+            IRepositoryMapper<T, TKey, TEntityModel> mapper)
         {
-            _map = map;
+            _mapper = mapper;
             _context = serviceProvider.GetService<TContext>()!;
             _dbSet = settings.DbSet(_context);
             _includingDbSet = settings.IncludingDbSet(_dbSet);
@@ -47,18 +47,18 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
         {
             var entity = await _dbSet.FindAsync(new object[] { key },
                  cancellationToken: cancellationToken);
-            return _map.Map(entity);
+            return _mapper.Map(entity);
         }
         public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            var entity = await _dbSet.AddAsync(_map.Map(value, key)!, cancellationToken);
-            var enteredEntity = _map.Map(entity.Entity);
-            var enteredKey = _map.RetrieveKey(entity.Entity);
+            var entity = await _dbSet.AddAsync(_mapper.Map(value, key)!, cancellationToken);
+            var enteredEntity = _mapper.Map(entity.Entity);
+            var enteredKey = _mapper.RetrieveKey(entity.Entity);
             return new State<T, TKey>(await _context.SaveChangesAsync(cancellationToken) > 0, enteredEntity, enteredKey);
         }
         public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
-            _dbSet!.Update(_map.Map(value, key)!);
+            _dbSet!.Update(_mapper.Map(value, key)!);
             return new State<T, TKey>(await _context.SaveChangesAsync(cancellationToken) > 0, value, key);
         }
         public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
@@ -67,8 +67,8 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
             await foreach (var entity in filter.ApplyAsAsyncEnumerable(_includingDbSet))
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var entityFromDatabase = _map.Map(entity);
-                var keyFromDatabase = _map.RetrieveKey(entity);
+                var entityFromDatabase = _mapper.Map(entity);
+                var keyFromDatabase = _mapper.RetrieveKey(entity);
                 yield return new Entity<T, TKey>(entityFromDatabase, keyFromDatabase);
             }
         }

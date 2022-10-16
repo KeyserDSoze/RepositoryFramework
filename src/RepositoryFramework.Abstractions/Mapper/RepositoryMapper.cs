@@ -10,12 +10,13 @@ namespace RepositoryFramework
             Func<TEntityModel, dynamic> GetFromTEntityModel, Action<TEntityModel, dynamic> SetToTEntityModel);
         public static RepositoryMapper<T, TKey, TEntityModel> Instance { get; } = new();
         internal List<RepositoryMapperProperty> Properties { get; } = new();
+        internal Func<TEntityModel, TKey>? KeyRetriever { get; set; }
         private RepositoryMapper() { }
         public T? Map(TEntityModel? entity)
         {
             if (entity == null)
                 return default;
-            var t = (T)typeof(T).CreateInstance();
+            var t = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
             foreach (var property in Properties)
                 property.SetToT(t, property.GetFromTEntityModel(entity));
             return t;
@@ -25,15 +26,13 @@ namespace RepositoryFramework
         {
             if (entity == null)
                 return default;
-            var entityModel = (TEntityModel)typeof(TEntityModel).CreateInstance();
+            var entityModel = typeof(TEntityModel).CreateWithDefaultConstructorPropertiesAndField<TEntityModel>();
             foreach (var property in Properties)
                 property.SetToTEntityModel(entityModel, property.GetFromT(entity));
             return entityModel;
         }
 
         public TKey? RetrieveKey(TEntityModel? entity)
-        {
-            throw new NotImplementedException();
-        }
+            => entity != null && KeyRetriever != null ? KeyRetriever.Invoke(entity) : default;
     }
 }

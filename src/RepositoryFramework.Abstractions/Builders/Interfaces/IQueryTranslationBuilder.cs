@@ -9,6 +9,7 @@ namespace RepositoryFramework
         IRepositoryBuilder<T, TKey> Builder { get; }
         IServiceCollection Services { get; }
         IQueryTranslationBuilder<T, TKey, TTranslated> With<TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty);
+        IQueryTranslationBuilder<T, TKey, TTranslated> WithKey(Expression<Func<TTranslated, TKey>> keyRetriever);
         IQueryTranslationBuilder<T, TKey, TFurtherTranslated> AndTranslate<TFurtherTranslated>();
     }
 }

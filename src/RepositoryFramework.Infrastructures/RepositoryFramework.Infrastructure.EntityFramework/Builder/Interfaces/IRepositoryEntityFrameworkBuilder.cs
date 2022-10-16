@@ -7,7 +7,5 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
         where TEntityModel : class
     {
         IRepositoryBuilder<T, TKey> Builder { get; }
-        IQueryTranslationBuilder<T, TKey, TEntityModel> AddMap<TMap>()
-            where TMap : class, IRepositoryMap<T, TKey, TEntityModel>;
     }
 }

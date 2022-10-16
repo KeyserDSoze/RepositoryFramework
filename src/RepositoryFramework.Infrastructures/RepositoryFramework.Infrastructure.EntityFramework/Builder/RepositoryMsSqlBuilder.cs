@@ -14,11 +14,5 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
         public ServiceLifetime ServiceLifetime => Builder.ServiceLifetime;
         public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
             => Builder.Translate<TTranslated>();
-        public IQueryTranslationBuilder<T, TKey, TEntityModel> AddMap<TMap>()
-            where TMap : class, IRepositoryMap<T, TKey, TEntityModel>
-        {
-            Builder.Services.AddSingleton<IRepositoryMap<T, TKey, TEntityModel>, TMap>();
-            return Builder.Translate<TEntityModel>();
-        }
     }
 }

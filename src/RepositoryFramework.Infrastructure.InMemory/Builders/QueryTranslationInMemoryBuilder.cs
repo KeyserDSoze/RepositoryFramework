@@ -6,9 +6,7 @@ namespace RepositoryFramework.InMemory
     internal class QueryTranslationInMemoryBuilder<T, TKey, TTranslated> : IQueryTranslationInMemoryBuilder<T, TKey, TTranslated>
         where TKey : notnull
     {
-
         private readonly IRepositoryInMemoryBuilder<T, TKey> _repositoryBuilder;
-
         public QueryTranslationInMemoryBuilder(IRepositoryInMemoryBuilder<T, TKey> repositoryBuilder)
         {
             _repositoryBuilder = repositoryBuilder;
@@ -26,5 +24,8 @@ namespace RepositoryFramework.InMemory
             => With(property, translatedProperty);
         public IQueryTranslationBuilder<T, TKey, TFurtherTranslated> AndTranslate<TFurtherTranslated>()
             => _repositoryBuilder.Translate<TFurtherTranslated>();
+
+        public IQueryTranslationBuilder<T, TKey, TTranslated> WithKey(Expression<Func<TTranslated, TKey>> keyRetriever) 
+            => this;
     }
 }

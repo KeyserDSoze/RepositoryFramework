@@ -29,7 +29,11 @@ namespace Microsoft.Extensions.DependencyInjection
                         x.DbSet = x => x.Users;
                         x.IncludingDbSet = x => x.Include(x => x.IdGruppos);
                     })
-                .AddMap<MappingUserMapper>()
+                .Translate<User>()
+                .With(x => x.Username, x => x.Nome)
+                .With(x => x.Email, x => x.IndirizzoElettronico)
+                .With(x => x.Groups, x => x.IdGruppos)
+                .With(x => x.Id, x => x.Identificativo)
                     .Builder
                 .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
                 .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();

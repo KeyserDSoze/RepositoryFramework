@@ -13,19 +13,25 @@ namespace RepositoryFramework
         {
             _repositoryBuilder = repositoryBuilder;
         }
+        public IQueryTranslationBuilder<T, TKey, TTranslated> WithKey(Expression<Func<TTranslated, TKey>> keyRetriever)
+        {
+            var compiled = keyRetriever.Compile();
+            RepositoryMapper<T, TKey, TTranslated>.Instance.KeyRetriever = compiled;
+            return this;
+        }
         public IQueryTranslationBuilder<T, TKey, TTranslated> With<TProperty, TTranslatedProperty>(
             Expression<Func<T, TProperty>> property,
             Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
-            var propertyValue = GetPropertyFromExpression(property);
-            var translatedPropertyValue = GetPropertyFromExpression(translatedProperty);
+            var propertyValue = GetPropertyFromExpression(property)!;
+            var translatedPropertyValue = GetPropertyFromExpression(translatedProperty)!;
             var compiledProperty = property.Compile();
             var compiledTranslatedProperty = translatedProperty.Compile();
             RepositoryMapper<T, TKey, TTranslated>.Instance.Properties.Add(
                 new RepositoryMapper<T, TKey, TTranslated>.RepositoryMapperProperty(
-                    x => compiledProperty.Invoke(x),
+                    x => compiledProperty.Invoke(x)!,
                     (x, value) => propertyValue.SetValue(x, value),
-                    x => compiledTranslatedProperty.Invoke(x),
+                    x => compiledTranslatedProperty.Invoke(x)!,
                     (x, value) => translatedPropertyValue.SetValue(x, value)
                     ));
             FilterTranslation.Instance.With(property, translatedProperty);
