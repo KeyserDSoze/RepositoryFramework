@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace RepositoryFramework
 {
@@ -11,6 +13,16 @@ namespace RepositoryFramework
         {
             Builder = apiBuilder;
             ClientBuilder = clientBuilder;
+        }
+        public IHttpClientBuilder<T, TKey> AddDefaultRetryPolicy()
+        {
+            var defaultPolicy = Policy<HttpResponseMessage>
+                .Handle<HttpRequestException>()
+                .OrTransientHttpError()
+                .AdvancedCircuitBreakerAsync(0.5, TimeSpan.FromSeconds(5), 10, TimeSpan.FromSeconds(10));
+            ClientBuilder
+                .AddPolicyHandler(defaultPolicy);
+            return this;
         }
     }
 }

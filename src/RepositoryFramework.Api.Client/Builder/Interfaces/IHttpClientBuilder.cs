@@ -7,5 +7,6 @@ namespace RepositoryFramework
     {
         IApiBuilder<T, TKey> Builder { get; }
         IHttpClientBuilder ClientBuilder { get; }
+        IHttpClientBuilder<T, TKey> AddDefaultRetryPolicy();
     }
 }

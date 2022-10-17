@@ -4,21 +4,21 @@
         where TKey : notnull
     {
         public static ApiClientSettings<T, TKey> Instance { get; } = new();
-        public string StartingPath { get; private set; }
+        public string StartingPath { get; private set; } = "api";
         public string? Version { get; private set; }
         public string? Name { get; private set; }
         public bool IsJsonableKey { get; } = IKey.IsJsonable(typeof(TKey));
-        public string GetPath { get; private set; }
-        public string ExistPath { get; private set; }
-        public string QueryPath { get; private set; }
-        public string OperationPath { get; private set; }
-        public string InsertPath { get; private set; }
-        public string UpdatePath { get; private set; }
-        public string DeletePath { get; private set; }
-        public string BatchPath { get; private set; }
+        public string GetPath { get; private set; } = null!;
+        public string ExistPath { get; private set; } = null!;
+        public string QueryPath { get; private set; } = null!;
+        public string OperationPath { get; private set; } = null!;
+        public string InsertPath { get; private set; } = null!;
+        public string UpdatePath { get; private set; } = null!;
+        public string DeletePath { get; private set; } = null!;
+        public string BatchPath { get; private set; } = null!;
         private ApiClientSettings()
             => RefreshPath();
-        internal void RefreshPath(string startingPath = "api", string? version = null, string? name = null)
+        internal void RefreshPath(string? startingPath = null, string? version = null, string? name = null)
         {
             if (startingPath != null)
                 StartingPath = startingPath;
