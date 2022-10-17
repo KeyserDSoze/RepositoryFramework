@@ -3,13 +3,13 @@
 ## Api auto-generated
 In your web application you have only to add one row after service build.
 
-    builder.Services.AddApiFromRepositoryFramework(x =>
-    {
-        x.Name = "Repository Api";
-        x.HasSwagger = true;
-        x.HasDocumentation = true;
-        x.Identity.ConfigureAzureActiveDirectory(builder.Configuration);
-    });
+     services.AddApiFromRepositoryFramework()
+        .WithDescriptiveName("Repository Api")
+        .WithPath(Path)
+        .WithSwagger()
+        .WithVersion(Version)
+        .WithDocumentation()
+        .WithDefaultCors("http://example.com");
 
     var app = builder.Build();
     app.UseApiFromRepositoryFramework()
@@ -33,16 +33,16 @@ Futhermore, we are adding a configuration for AAD to implement authentication on
     builder.Services
         .AddRepositoryInMemoryStorage<User>()
         .PopulateWithRandomData(x => x.Email!, 120, 5);
-    builder.Services.AddApiFromRepositoryFramework(x =>
-    {
-        x.Name = "Repository Api";
-        x.HasSwagger = true;
-        x.HasDocumentation = true;
-        x.Identity.ConfigureAzureActiveDirectory(builder.Configuration);
-    });    
+    builder.Services.AddApiFromRepositoryFramework()
+        .WithDescriptiveName("Repository Api")
+        .WithPath(Path)
+        .WithSwagger()
+        .WithVersion(Version)
+        .WithDocumentation()
+        .WithDefaultCors("http://example.com");  
     
     var app = builder.Build();
-    app.Services.Populate();
+    await app.Services.AfterBuildAsync();
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -59,15 +59,16 @@ Futhermore, we are adding a configuration for AAD to implement authentication on
     builder.Services
         .AddRepositoryInMemoryStorage<User>()
         .PopulateWithRandomData(x => x.Email!, 120, 5);
-    builder.Services.AddApiFromRepositoryFramework(x =>
-    {
-        x.Name = "Repository Api";
-        x.HasSwagger = true;
-        x.HasDocumentation = true;
-    });    
+    builder.Services.AddApiFromRepositoryFramework()
+        .WithDescriptiveName("Repository Api")
+        .WithPath(Path)
+        .WithSwagger()
+        .WithVersion(Version)
+        .WithDocumentation()
+        .WithDefaultCors("http://example.com");    
     
     var app = builder.Build();
-    app.Services.Populate();
+    await app.Services.AfterBuildAsync();
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -85,16 +86,16 @@ You may configure the scoper for each method of your repository and for each rep
     builder.Services
         .AddRepositoryInMemoryStorage<User>()
         .PopulateWithRandomData(x => x.Email!, 120, 5);
-    builder.Services.AddApiFromRepositoryFramework(x =>
-    {
-        x.Name = "Repository Api";
-        x.HasSwagger = true;
-        x.HasDocumentation = true;
-        x.Identity.ConfigureAzureActiveDirectory(builder.Configuration);
-    });    
+    builder.Services.AddApiFromRepositoryFramework()
+        .WithDescriptiveName("Repository Api")
+        .WithPath(Path)
+        .WithSwagger()
+        .WithVersion(Version)
+        .WithDocumentation()
+        .WithDefaultCors("http://example.com");     
     
     var app = builder.Build();
-    app.Services.Populate();
+    await app.Services.AfterBuildAsync();
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();

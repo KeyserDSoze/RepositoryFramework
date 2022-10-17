@@ -4,34 +4,41 @@
 You may add a repository client for your model. You may choose the domain (domain where the api is), and the custom path by default is "api", you may add custom configuration to the HttpClient and the service lifetime with singleton as default. The api url will be https://{domain}/{startingPath}/{ModelName}/{Type of Api (from Insert, Update, Delete, Batch, Get, Query, Exist, Operation)}
 
     public static IRepositoryBuilder<T, TKey> AddRepositoryApiClient<T, TKey>(this IServiceCollection services,
-        string domain,
-        string startingPath = "api",
-        Action<HttpClient>? configureClient = null,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TKey : notnull
 
 You have the same client for CQRS, with command
     
      public static IRepositoryBuilder<T, TKey> AddCommandApiClient<T, TKey>(this IServiceCollection services,
-        string domain,
-        string startingPath = "api",
-        Action<HttpClient>? configureClient = null,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TKey : notnull
 
 and query
     
       public static IRepositoryBuilder<T, TKey> AddQueryApiClient<T, TKey>(this IServiceCollection services,
-        string domain,
-        string startingPath = "api",
-        Action<HttpClient>? configureClient = null,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TKey : notnull
 
 ### HttpClient to use your API (example)
 You can add a client for a specific url
 
-    services.AddRepositoryApiClient<User, string>("localhost:7058");
+     .AddRepositoryApiClient<User, string>(serviceLifetime: ServiceLifetime.Scoped)
+        .WithHttpClient("localhost:7058")
+        .WithVersion("v2")
+        .WithStartingPath("api");
+
+You may add a Polly policy to your api client for example:
+
+    var retryPolicy = HttpPolicyExtensions
+      .HandleTransientHttpError()
+      .Or<TimeoutRejectedException>()
+      .RetryAsync(3);
+
+    builder.Services
+        .AddRepositoryApiClient<User, string>(serviceLifetime: ServiceLifetime.Scoped)
+        .WithHttpClient("localhost:7058")
+        .ClientBuilder
+            .AddPolicyHandler(retryPolicy);
     
 and use it in DI with
     

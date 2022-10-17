@@ -10,6 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TKey : notnull
         {
+            services.AddSingleton(ApiClientSettings<T, TKey>.Instance);
             return new ApiBuilder<T, TKey>(clientType switch
             {
                 PatternType.Query => services.AddQuery<T, TKey, RepositoryClient<T, TKey>>(serviceLifetime, SetOptionsForClient),

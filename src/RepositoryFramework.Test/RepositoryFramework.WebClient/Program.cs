@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Polly;
+using Polly.Extensions.Http;
+using Polly.Timeout;
 using RepositoryFramework.WebClient.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,12 +16,26 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddRepositoryApiClient<User, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryApiClient<SuperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryApiClient<IperUser, string>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryApiClient<Animal, AnimalKey>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryApiClient<Car, Guid>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
-builder.Services.AddRepositoryApiClient<Car2, Range>("localhost:7058", serviceLifetime: ServiceLifetime.Scoped);
+var retryPolicy = HttpPolicyExtensions
+  .HandleTransientHttpError()
+  .Or<TimeoutRejectedException>()
+  .RetryAsync(3);
+
+builder.Services
+    .AddRepositoryApiClient<User, string>(serviceLifetime: ServiceLifetime.Scoped)
+    .WithHttpClient("localhost:7058")
+    .ClientBuilder
+        .AddPolicyHandler(retryPolicy);
+builder.Services.AddRepositoryApiClient<SuperUser, string>(serviceLifetime: ServiceLifetime.Scoped)
+    .WithHttpClient("localhost:7058");
+builder.Services.AddRepositoryApiClient<IperUser, string>(serviceLifetime: ServiceLifetime.Scoped)
+    .WithHttpClient("localhost:7058");
+builder.Services.AddRepositoryApiClient<Animal, AnimalKey>(serviceLifetime: ServiceLifetime.Scoped)
+    .WithHttpClient("localhost:7058");
+builder.Services.AddRepositoryApiClient<Car, Guid>(serviceLifetime: ServiceLifetime.Scoped)
+    .WithHttpClient("localhost:7058");
+builder.Services.AddRepositoryApiClient<Car2, Range>(serviceLifetime: ServiceLifetime.Scoped)
+    .WithHttpClient("localhost:7058");
 builder.Services.AddDefaultAuthorizationInterceptorForApiHttpClient(settings =>
 {
     settings.Scopes = builder.Configuration["AzureAd:Scopes"].Split(' ');

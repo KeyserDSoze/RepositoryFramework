@@ -173,25 +173,45 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
                 services.AddSingleton<IHttpClientFactory>(HttpClientFactory.Instance);
                 services
-                    .AddRepositoryApiClient<SuperUser, string>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<SuperUser, string>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services
-                    .AddRepositoryApiClient<AppUser, AppUserKey>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<AppUser, AppUserKey>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services
-                    .AddRepositoryApiClient<Plant, int>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<Plant, int>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services
-                    .AddRepositoryApiClient<IperUser, string>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<IperUser, string>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services
-                    .AddRepositoryApiClient<Animal, AnimalKey>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<Animal, AnimalKey>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services
-                    .AddRepositoryApiClient<Car, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<Car, Guid>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services
-                    .AddRepositoryApiClient<SuperCar, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<SuperCar, Guid>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services
-                    .AddRepositoryApiClient<CalamityUniverseUser, string>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<CalamityUniverseUser, string>(serviceLifetime: ServiceLifetime.Scoped)
+                         .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services
-                    .AddRepositoryApiClient<Cat, Guid>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<Cat, Guid>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services
-                    .AddRepositoryApiClient<MappingUser, int>(default!, Path, Version, serviceLifetime: ServiceLifetime.Scoped);
+                    .AddRepositoryApiClient<MappingUser, int>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
                 services.Finalize(out var serviceProvider);
                 HttpClientFactory.Instance.ServiceProvider = serviceProvider;
             }

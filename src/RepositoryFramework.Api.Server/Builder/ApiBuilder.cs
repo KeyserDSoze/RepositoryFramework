@@ -29,9 +29,16 @@ namespace RepositoryFramework
             ApiSettings.Instance.DescriptiveName = descriptiveName;
             return this;
         }
-        public IApiBuilder WithName(string name)
+        /// <summary>
+        /// Override base name from typeof(T).Name.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public IApiBuilder WithName<T>(string name)
         {
-            ApiSettings.Instance.Name = name;
+            if (!ApiSettings.Instance.Names.ContainsKey(typeof(T).FullName!))
+                ApiSettings.Instance.Names.Add(typeof(T).FullName!, name);
             return this;
         }
         public IApiBuilder WithPath(string path)

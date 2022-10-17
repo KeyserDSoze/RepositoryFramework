@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model of your repository or CQRS that you want to add as api</typeparam>
         /// <param name="app">IEndpointRouteBuilder</param>
         /// <returns>ApiAuthorizationBuilder</returns>
-        public static IApiAuthorizationBuilder UseApiFromRepository<T>(this IEndpointRouteBuilder app) 
+        public static IApiAuthorizationBuilder UseApiFromRepository<T>(this IEndpointRouteBuilder app)
             => new ApiAuthorizationBuilder(authorization => app.UseApiFromRepository(typeof(T), ApiSettings.Instance, authorization));
 
         /// <summary>
@@ -62,6 +62,9 @@ namespace Microsoft.Extensions.DependencyInjection
             var serviceValue = registry!.Services.FirstOrDefault(x => x.ModelType == modelType);
             if (serviceValue == null)
                 throw new ArgumentException($"Please check if your {modelType.Name} model has a service injected for IRepository, IQuery, ICommand.");
+            var currentName = modelType.Name;
+            if (settings.Names.ContainsKey(modelType.FullName!))
+                currentName = settings.Names[modelType.FullName!];
             if (app is IApplicationBuilder applicationBuilder)
             {
                 if (ApiSettings.Instance.HasSwagger && !ApiSettings.Instance.SwaggerInstalled)
@@ -95,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                             _ = typeof(EndpointRouteBuilderExtensions).GetMethod(currentMethodName, BindingFlags.NonPublic | BindingFlags.Static)!
                                .MakeGenericMethod(modelType, serviceValue.KeyType, interfaceType)
-                               .Invoke(null, new object[] { app, modelType.Name, settings.StartingPath, authorization! });
+                               .Invoke(null, new object[] { app, currentName, settings.StartingPath, authorization! });
                             configuredMethods.Add(currentMethodName, true);
                         }
                     }

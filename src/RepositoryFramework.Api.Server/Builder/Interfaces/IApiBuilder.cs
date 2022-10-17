@@ -7,7 +7,7 @@ namespace RepositoryFramework
     {
         IServiceCollection Services { get; }
         IApiBuilder WithDescriptiveName(string descriptiveName);
-        IApiBuilder WithName(string name);
+        IApiBuilder WithName<T>(string name);
         IApiBuilder WithPath(string path);
         IApiBuilder WithVersion(string version);
         IApiBuilder WithDocumentation();
