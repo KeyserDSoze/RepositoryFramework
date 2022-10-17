@@ -16,5 +16,5 @@ jobs:
         uses: KeyserDSoze/DefaultAction/pushing_nuget_with_symbols@v1.0.1
         with:
           dotnet-version: ${{ secrets.NET_VERSION }}
-          path: src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.Dynamics.Dataverse/RepositoryFramework.Infrastructure.Dynamics.Dataverse.csproj
+          path: src/RepositoryFramework.Infrastructures/RepositoryFramework.Infrastructure.EntityFramework/RepositoryFramework.Infrastructure.EntityFramework.csproj
           api-key: ${{ secrets.NUGET_API_KEY }}
