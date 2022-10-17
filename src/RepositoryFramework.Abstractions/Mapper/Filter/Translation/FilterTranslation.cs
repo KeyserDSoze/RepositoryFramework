@@ -6,8 +6,9 @@ namespace RepositoryFramework
 {
     public sealed class FilterTranslation
     {
-        private sealed record TranslationWrapper(Type From, Type To, List<Translation> Translations)
+        private sealed record TranslationWrapper(Type From, Type To)
         {
+            public List<Translation> Translations { get; internal set; } = new();
             public LambdaExpression? Transform(string? serialized)
             {
                 if (string.IsNullOrWhiteSpace(serialized))
@@ -46,11 +47,12 @@ namespace RepositoryFramework
             if (!_translations.ContainsKey(name))
                 _translations.Add(name, new Dictionary<string, TranslationWrapper>());
             if (!_translations[name].ContainsKey(translatedName))
-                _translations[name].Add(translatedName, new(typeof(T), typeof(TTranslated), new()));
+                _translations[name].Add(translatedName, new(typeof(T), typeof(TTranslated)));
 
             var propertyName = string.Join(".", property.ToString().Split('.').Skip(1));
             var translatedPropertyName = $".{string.Join(".", translatedProperty.ToString().Split('.').Skip(1))}";
             _translations[name][translatedName].Translations.Add(new Translation(VariableName(propertyName), $".{propertyName}", translatedPropertyName));
+            _translations[name][translatedName].Translations = _translations[name][translatedName].Translations.OrderByDescending(x => x.Value.Length).ToList();
         }
         public IFilterExpression Transform<T>(SerializableFilter serializableFilter)
         {

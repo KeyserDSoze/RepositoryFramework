@@ -16,12 +16,12 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
             DiUtility.CreateDependencyInjectionWithConfiguration(out _)
                 .AddRepository<Car, int, CarRepository>()
                 .Translate<Auto>()
-                .With(x => x.Id, x => x.Identificativo)
-                .With(x => x.Id2, x => x.Identificativo2)
-                .With(x => x.NumberOfWheels, x => x.NumeroRuote)
-                .With(x => x.Plate, x => x.Targa)
-                .With(x => x.Driver, x => x.Guidatore)
-                .With(x => x.Driver!.Name, x => x.Guidatore!.Nome)
+                    .With(x => x.Id, x => x.Identificativo)
+                    .With(x => x.Id2, x => x.Identificativo2)
+                    .With(x => x.NumberOfWheels, x => x.NumeroRuote)
+                    .With(x => x.Plate, x => x.Targa)
+                    .With(x => x.Driver, x => x.Guidatore)
+                    .With(x => x.Driver!.Name, x => x.Guidatore!.Nome)
                 .Services
                 .Finalize(out s_serviceProvider);
         }
