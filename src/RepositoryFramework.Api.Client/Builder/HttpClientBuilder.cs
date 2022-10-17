@@ -14,12 +14,12 @@ namespace RepositoryFramework
             Builder = apiBuilder;
             ClientBuilder = clientBuilder;
         }
-        public IHttpClientBuilder<T, TKey> AddDefaultRetryPolicy()
+        public IHttpClientBuilder<T, TKey> WithDefaultRetryPolicy()
         {
             var defaultPolicy = Policy<HttpResponseMessage>
                 .Handle<HttpRequestException>()
                 .OrTransientHttpError()
-                .AdvancedCircuitBreakerAsync(0.5, TimeSpan.FromSeconds(5), 10, TimeSpan.FromSeconds(10));
+                .AdvancedCircuitBreakerAsync(0.5, TimeSpan.FromSeconds(10), 10, TimeSpan.FromSeconds(15));
             ClientBuilder
                 .AddPolicyHandler(defaultPolicy);
             return this;
