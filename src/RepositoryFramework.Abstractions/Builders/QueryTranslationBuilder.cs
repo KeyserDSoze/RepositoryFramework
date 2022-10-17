@@ -23,6 +23,7 @@ namespace RepositoryFramework
             var compiledTranslatedProperty = translatedProperty.Compile();
             RepositoryMapper<T, TKey, TTranslated>.Instance.KeyProperties.Add(
                new RepositoryMapper<T, TKey, TTranslated>.RepositoryKeyMapperProperty(
+                   translatedPropertyValue,
                    x => compiledProperty.Invoke(x)!,
                    propertyValue != null ? (x, value) => propertyValue.SetValue(x, value) : null,
                    x => compiledTranslatedProperty.Invoke(x)!,

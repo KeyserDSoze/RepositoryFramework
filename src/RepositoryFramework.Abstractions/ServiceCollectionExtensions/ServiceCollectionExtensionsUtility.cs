@@ -60,5 +60,17 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             return services;
         }
+        /// <summary>
+        /// Add an action after the build of yout Service Collection, you have to call AfterBuildAsync method for your built IServiceProvider.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="actionAfterBuild"></param>
+        /// <returns>IServiceCollection</returns>
+        public static IServiceCollection AddEventAfterServiceCollectionBuild(this IServiceCollection services,
+            Func<IServiceProvider, Task> actionAfterBuild)
+        {
+            RepositoryFrameworkAfterServiceBuildEvents.Instance.AddEvent(actionAfterBuild);
+            return services;
+        }
     }
 }

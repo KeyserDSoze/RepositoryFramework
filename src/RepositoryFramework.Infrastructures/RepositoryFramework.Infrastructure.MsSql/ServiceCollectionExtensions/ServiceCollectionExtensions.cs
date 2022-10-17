@@ -1,4 +1,5 @@
-﻿using RepositoryFramework;
+﻿using Microsoft.Data.SqlClient;
+using RepositoryFramework;
 using RepositoryFramework.Infrastructure.MsSql;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -22,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(MsSqlOptions<T, TKey>.Instance);
             services.AddSingleton(MsSqlOptions<T, TKey>.Instance);
-            MsSqlIntegrations.Instance.Options.Add(MsSqlOptions<T, TKey>.Instance);
+            services.AddEventAfterServiceCollectionBuild(serviceProvider => MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync(MsSqlOptions<T, TKey>.Instance));
             return new RepositoryMsSqlBuilder<T, TKey>(services.AddRepository<T, TKey, SqlRepository<T, TKey>>(ServiceLifetime.Scoped, settings));
         }
         /// <summary>
@@ -42,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(MsSqlOptions<T, TKey>.Instance);
             services.AddSingleton(MsSqlOptions<T, TKey>.Instance);
-            MsSqlIntegrations.Instance.Options.Add(MsSqlOptions<T, TKey>.Instance);
+            services.AddEventAfterServiceCollectionBuild(serviceProvider => MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync(MsSqlOptions<T, TKey>.Instance));
             return new RepositoryMsSqlBuilder<T, TKey>(services.AddCommand<T, TKey, SqlRepository<T, TKey>>(ServiceLifetime.Scoped, settings));
         }
         /// <summary>
@@ -62,7 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(MsSqlOptions<T, TKey>.Instance);
             services.AddSingleton(MsSqlOptions<T, TKey>.Instance);
-            MsSqlIntegrations.Instance.Options.Add(MsSqlOptions<T, TKey>.Instance);
+            services.AddEventAfterServiceCollectionBuild(serviceProvider => MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync(MsSqlOptions<T, TKey>.Instance));
             return new RepositoryMsSqlBuilder<T, TKey>(services.AddQuery<T, TKey, SqlRepository<T, TKey>>(ServiceLifetime.Scoped, settings));
         }
     }

@@ -53,7 +53,8 @@ namespace RepositoryFramework.UnitTest.InMemory.Population
                 .And()
                 .Services
                 .Finalize(out s_serviceProvider)
-                .Populate();
+                .AfterBuildAsync()
+                .ToResult();
         }
         private readonly IRepository<User, string> _user1;
         private readonly IRepository<SuperUser, string> _user2;

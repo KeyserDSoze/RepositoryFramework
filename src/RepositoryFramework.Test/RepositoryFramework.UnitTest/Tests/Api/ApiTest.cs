@@ -39,14 +39,12 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                         {
                             webHostBuilder
                             .UseTestServer()
-                            .Configure(app =>
+                            .Configure(async app =>
                             {
                                 try
                                 {
                                     app.UseRouting();
-                                    app.ApplicationServices.Populate();
-                                    //app.ApplicationServices.DataverseCreateTableOrMergeNewColumnsInExistingTableAsync().ToResult();
-                                    //app.ApplicationServices.MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync().ToResult();
+                                    app.ApplicationServices.AfterBuildAsync().ToResult();
                                     app.UseEndpoints(endpoints =>
                                     {
                                         endpoints.MapHealthChecks("/healthz");

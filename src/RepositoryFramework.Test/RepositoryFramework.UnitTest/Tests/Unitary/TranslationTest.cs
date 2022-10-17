@@ -207,7 +207,8 @@ namespace RepositoryFramework.UnitTest.Unitary
                         .With(x => x.Active, x => x.Attivo)
                 .Services
                 .Finalize(out s_serviceProvider)
-                .Populate();
+                .AfterBuildAsync()
+                .ToResult();
         }
         private readonly IRepository<Translatable, string> _repository;
 

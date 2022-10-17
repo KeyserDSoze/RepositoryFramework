@@ -20,7 +20,7 @@ Populate your in memory storage with 120 users
 and in app after build during startup of your application
     
     var app = builder.Build();
-    app.Services.Populate();
+    await app.Services.AfterBuildAsync();
     
 #### Simple random with regex (example)
 Populate your in memory storage with 100 users and property Email with a random regex @"[a-z]{4,10}@gmail\.com"
@@ -32,7 +32,7 @@ Populate your in memory storage with 100 users and property Email with a random 
 and in app after build during startup of your application
     
     var app = builder.Build();
-    app.Services.Populate();
+    await app.Services.AfterBuildAsync();
 
 #### Where can I use the regex pattern?
 You can use regex pattern on all primitives type and most used structs.
@@ -58,7 +58,8 @@ You may take care of use First() linq method to set correctly the Id property.
     
 and in app after build during startup of your application
     
-    app.Services.Populate()
+    var app = builder.Build();
+    await app.Services.AfterBuildAsync();
 
 #### IDictionary (example)
 Similar to IEnumerable population you may populate your Claims property (a dictionary) with random key but with values based on regular expression "[a-z]{4,5}". As well as IEnumerable implementation you will have 6 elements (because I choose to create 6 elements in Populate method)
@@ -69,7 +70,8 @@ Similar to IEnumerable population you may populate your Claims property (a dicti
 
 and in app after build during startup of your application
     
-    app.Services.Populate()
+    var app = builder.Build();
+    await app.Services.AfterBuildAsync();
     
 or if you have in Value an object
     
@@ -79,7 +81,8 @@ or if you have in Value an object
     
 and in app after build during startup of your application
     
-    app.Services.Populate()
+    var app = builder.Build();
+    await app.Services.AfterBuildAsync();
 
 ### Populate with delegation
 Similar to regex pattern, you can use a delegation to populate something.
@@ -93,7 +96,8 @@ Here you can see that all 6 elements in each 100 users are populated in Value wi
     
 and in app after build during startup of your application
     
-    app.Services.Populate()
+    var app = builder.Build();
+    await app.Services.AfterBuildAsync();
 
 ### Populate with Implementation
 If you have an interface or abstraction in your model, you can specify an implementation type for population.

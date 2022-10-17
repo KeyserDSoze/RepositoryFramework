@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace RepositoryFramework
@@ -10,7 +11,7 @@ namespace RepositoryFramework
             (Func<T, dynamic> GetFromT, Action<T, dynamic> SetToT,
             Func<TEntityModel, dynamic> GetFromTEntityModel, Action<TEntityModel, dynamic> SetToTEntityModel);
         internal sealed record RepositoryKeyMapperProperty
-            (Func<TKey, dynamic> GetFromKey, Action<TKey, dynamic>? SetToKey,
+            (PropertyInfo PropertyFromEntityModel, Func<TKey, dynamic> GetFromKey, Action<TKey, dynamic>? SetToKey,
             Func<TEntityModel, dynamic> GetFromTEntityModel, Action<TEntityModel, dynamic> SetToTEntityModel);
         public static RepositoryMapper<T, TKey, TEntityModel> Instance { get; } = new();
         internal List<RepositoryMapperProperty> Properties { get; } = new();
@@ -94,6 +95,18 @@ namespace RepositoryFramework
                     property.SetToKey(key, valueFromEntityModel);
             }
             return key;
+        }
+        public Expression<Func<TEntityModel, bool>> FindById(TKey key)
+        {
+            var parameter = Expression.Parameter(typeof(TEntityModel), "e");
+            var body = KeyProperties
+                .Select((p, i) => Expression.Equal(
+                    Expression.Property(parameter, p.PropertyFromEntityModel.Name),
+                    Expression.Convert(
+                        Expression.PropertyOrField(Expression.Constant(new { id = p.GetFromKey != null ? p.GetFromKey(key) : key }), "id"),
+                        p.PropertyFromEntityModel.PropertyType)))
+                .Aggregate(Expression.AndAlso);
+            return Expression.Lambda<Func<TEntityModel, bool>>(body, parameter);
         }
     }
 }

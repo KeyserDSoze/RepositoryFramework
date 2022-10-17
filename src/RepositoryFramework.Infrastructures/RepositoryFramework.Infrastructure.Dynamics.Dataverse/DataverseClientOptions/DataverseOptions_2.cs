@@ -9,7 +9,7 @@ using Microsoft.Xrm.Sdk.Query;
 
 namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
 {
-    public sealed class DataverseOptions<T, TKey> : IDataverseOptions
+    public sealed class DataverseOptions<T, TKey>
     {
         public string Environment { get; set; } = null!;
         private string _prefix = "new_";
@@ -49,7 +49,7 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
                 Properties.Add(new PropertyHelper<T>
                 {
                     Name = property.Name,
-                    DataverseOptions = this,
+                    PrefixName = () => Prefix,
                     Property = property,
                 });
             }

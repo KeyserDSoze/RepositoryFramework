@@ -14,7 +14,6 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
         private readonly IRepositoryMapper<T, TKey, TEntityModel> _mapper;
         private readonly DbSet<TEntityModel> _dbSet;
         private readonly IQueryable<TEntityModel> _includingDbSet;
-        private readonly Func<TEntityModel, TKey, bool> _findByKey;
         public EntityFrameworkRepository(
             IServiceProvider serviceProvider,
             EntityFrameworkOptions<T, TKey, TEntityModel, TContext> settings,
@@ -23,8 +22,7 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
             _mapper = mapper;
             _context = serviceProvider.GetService<TContext>()!;
             _dbSet = settings.DbSet(_context);
-            _includingDbSet = settings.References(_dbSet);
-            _findByKey = settings.SearchById;
+            _includingDbSet = settings.References != null ? settings.References(_dbSet) : _dbSet;
         }
         public async Task<State<T, TKey>> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
         {
@@ -40,15 +38,13 @@ namespace RepositoryFramework.Infrastructure.EntityFramework
 
         public async Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var entity = await _dbSet.FindAsync(new object[] { key },
-                cancellationToken: cancellationToken);
-            return entity != null;
+            var result = await _dbSet.AnyAsync(_mapper.FindById(key), cancellationToken);
+            return result;
         }
 
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
-            var entity = await _dbSet.FindAsync(new object[] { key },
-                 cancellationToken: cancellationToken);
+            var entity = await _includingDbSet.FirstOrDefaultAsync(_mapper.FindById(key), cancellationToken);
             return _mapper.Map(entity);
         }
         public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)

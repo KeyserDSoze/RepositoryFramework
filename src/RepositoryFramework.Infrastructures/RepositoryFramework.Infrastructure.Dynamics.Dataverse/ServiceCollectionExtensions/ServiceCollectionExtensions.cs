@@ -1,4 +1,7 @@
-﻿using RepositoryFramework;
+﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
+using RepositoryFramework;
 using RepositoryFramework.Infrastructure.Dynamics.Dataverse;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -22,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(DataverseOptions<T, TKey>.Instance);
             services.AddSingleton(DataverseOptions<T, TKey>.Instance);
-            DataverseIntegrations.Instance.Options.Add(DataverseOptions<T, TKey>.Instance);
+            services.AddEventAfterServiceCollectionBuild(serviceProvider => DataverseCreateTableOrMergeNewColumnsInExistingTableAsync(DataverseOptions<T, TKey>.Instance));
             return new RepositoryDataverseBuilder<T, TKey>(services.AddRepository<T, TKey, DataverseRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
         /// <summary>
@@ -42,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(DataverseOptions<T, TKey>.Instance);
             services.AddSingleton(DataverseOptions<T, TKey>.Instance);
-            DataverseIntegrations.Instance.Options.Add(DataverseOptions<T, TKey>.Instance);
+            services.AddEventAfterServiceCollectionBuild(serviceProvider => DataverseCreateTableOrMergeNewColumnsInExistingTableAsync(DataverseOptions<T, TKey>.Instance));
             return new RepositoryDataverseBuilder<T, TKey>(services.AddCommand<T, TKey, DataverseRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
         /// <summary>
@@ -62,7 +65,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(DataverseOptions<T, TKey>.Instance);
             services.AddSingleton(DataverseOptions<T, TKey>.Instance);
-            DataverseIntegrations.Instance.Options.Add(DataverseOptions<T, TKey>.Instance);
+            services.AddEventAfterServiceCollectionBuild(serviceProvider => DataverseCreateTableOrMergeNewColumnsInExistingTableAsync(DataverseOptions<T, TKey>.Instance));
             return new RepositoryDataverseBuilder<T, TKey>(services.AddQuery<T, TKey, DataverseRepository<T, TKey>>(ServiceLifetime.Singleton, settings));
         }
     }

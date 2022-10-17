@@ -134,7 +134,8 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
                 .WithAutoIncrement(x => x.Id, 1)
                 .Services
                 .Finalize(out s_serviceProvider)
-                .Populate();
+                .AfterBuildAsync()
+                .ToResult();
         }
         private readonly IRepository<PopulationTest, string> _test;
         private readonly IRepository<RegexPopulationTest, string> _population;

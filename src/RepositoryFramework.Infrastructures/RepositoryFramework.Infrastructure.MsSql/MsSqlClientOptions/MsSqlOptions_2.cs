@@ -6,7 +6,7 @@ using Microsoft.Data.SqlClient;
 
 namespace RepositoryFramework.Infrastructure.MsSql
 {
-    public sealed class MsSqlOptions<T, TKey> : IMsSqlOptions
+    public sealed class MsSqlOptions<T, TKey>
     {
         public string Schema { get; set; } = "dbo";
         public string TableName { get; set; } = typeof(T).Name;

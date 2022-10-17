@@ -33,7 +33,8 @@ namespace RepositoryFramework.UnitTest
                 })
                 .Services
                 .Finalize(out s_serviceProvider)
-                .Populate();
+                .AfterBuildAsync()
+                .ToResult();
         }
 
         private readonly IRepository<Country, CountryKey> _repo;

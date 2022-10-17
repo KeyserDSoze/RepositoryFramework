@@ -21,6 +21,12 @@
 
 You found the IRepository<Cat, Guid> in DI to play with it.
 
+## Configure database after build
+You have to run a method after the service collection build during startup. This method creates your tables.
+
+    var app = builder.Build();
+    await app.Services.AfterBuildAsync();
+
 ### Automated api with Rystem.RepositoryFramework.Api.Server package
 With automated api, you may have the api implemented with your dataverse integration.
 You need only to add the AddApiFromRepositoryFramework and UseApiForRepositoryFramework

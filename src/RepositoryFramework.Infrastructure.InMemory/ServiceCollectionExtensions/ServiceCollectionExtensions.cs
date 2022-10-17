@@ -22,7 +22,6 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<RepositoryBehaviorSettings<T, TKey>>? settings = default)
             where TKey : notnull
         {
-            InMemoryRepositoryInstalled.PopulationStrategyRetriever.Add((serviceProvider) => serviceProvider.GetService<IPopulationStrategy<T, TKey>>());
             var options = new RepositoryBehaviorSettings<T, TKey>();
             settings?.Invoke(options);
             CheckSettings(options);
@@ -30,7 +29,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddRepository<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             services.AddCommand<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             services.AddQuery<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
-
+            services.AddEventAfterServiceCollectionBuild(serviceProvider =>
+            {
+                var populationStrategy = serviceProvider.GetService<IPopulationStrategy<T, TKey>>();
+                if (populationStrategy != null)
+                    populationStrategy.Populate();
+                return Task.CompletedTask;
+            });
             return new RepositoryInMemoryBuilder<T, TKey>(services);
         }
     }

@@ -5,9 +5,9 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
 {
     internal sealed class PropertyHelper<T>
     {
-        public IDataverseOptions DataverseOptions { get; set; } = null!;
         public string Name { get; set; } = null!;
         private PropertyInfo _propertyInfo = null!;
+        public Func<string> PrefixName { get; set; } = null!;
         public PropertyInfo Property
         {
             get => _propertyInfo;
@@ -20,7 +20,7 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
         }
         public bool IsPrimitive { get; private set; }
         public Type Type { get; private set; } = null!;
-        public string LogicalName => $"{Prefix ?? DataverseOptions.Prefix}{Name.ToLower()}";
+        public string LogicalName => $"{Prefix ?? PrefixName.Invoke()}{Name.ToLower()}";
         public string? Prefix { get; set; }
         public void SetDataverseEntity(Microsoft.Xrm.Sdk.Entity dataverseEntity, T entity)
         {

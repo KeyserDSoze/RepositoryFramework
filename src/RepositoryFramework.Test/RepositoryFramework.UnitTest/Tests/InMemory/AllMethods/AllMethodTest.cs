@@ -22,7 +22,8 @@ namespace RepositoryFramework.UnitTest.AllMethods
                 .And()
                 .Services
                 .Finalize(out s_serviceProvider)
-                .Populate();
+                .AfterBuildAsync()
+                .ToResult();
         }
         private readonly IRepository<Animal, long> _animal;
         private readonly IRepository<Animal, AnimalKey> _strangeKeyRepository;

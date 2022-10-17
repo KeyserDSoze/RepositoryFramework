@@ -26,6 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
             services.AddSingleton(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
+            Check<T, TKey, TEntityModel, TContext>();
             return new RepositoryEntityFrameworkBuilder<T, TKey, TEntityModel>(services.AddRepository<T, TKey, EntityFrameworkRepository<T, TKey, TEntityModel, TContext>>(ServiceLifetime.Scoped, settings));
         }
         /// <summary>
@@ -48,6 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
             services.AddSingleton(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
+            Check<T, TKey, TEntityModel, TContext>();
             return new RepositoryEntityFrameworkBuilder<T, TKey, TEntityModel>(services.AddCommand<T, TKey, EntityFrameworkRepository<T, TKey, TEntityModel, TContext>>(ServiceLifetime.Scoped, settings));
         }
         /// <summary>
@@ -70,7 +72,16 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
             services.AddSingleton(EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance);
+            Check<T, TKey, TEntityModel, TContext>();
             return new RepositoryEntityFrameworkBuilder<T, TKey, TEntityModel>(services.AddQuery<T, TKey, EntityFrameworkRepository<T, TKey, TEntityModel, TContext>>(ServiceLifetime.Scoped, settings));
+        }
+        private static void Check<T, TKey, TEntityModel, TContext>()
+            where TKey : notnull
+            where TEntityModel : class
+            where TContext : DbContext
+        {
+            if (EntityFrameworkOptions<T, TKey, TEntityModel, TContext>.Instance.DbSet == null)
+                throw new ArgumentException($"DbSet not configured in option during {nameof(AddRepositoryInEntityFramework)} method for {typeof(TEntityModel).Name} for model {typeof(T).Name} and key {typeof(TKey).Name}");
         }
     }
 }
