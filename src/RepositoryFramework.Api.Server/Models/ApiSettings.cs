@@ -6,7 +6,8 @@ namespace RepositoryFramework
     {
         public static ApiSettings Instance { get; } = new ApiSettings();
         private ApiSettings() { }
-        public string Name { get; set; } = Assembly.GetExecutingAssembly().GetName().Name!;
+        public string DescriptiveName { get; set; } = Assembly.GetExecutingAssembly().GetName().Name!;
+        public string Name { get; set; }
         public string Path { get; set; } = "api";
         public string? Version { get; set; }
         public bool HasDefaultCors { get; set; }

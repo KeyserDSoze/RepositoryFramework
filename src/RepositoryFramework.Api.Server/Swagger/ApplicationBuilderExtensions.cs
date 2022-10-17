@@ -15,11 +15,11 @@ namespace Microsoft.Extensions.DependencyInjection
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint($"/swagger/{settings.Version ?? DefaultVersion}/swagger.json", $"{settings.Name} {settings.Version ?? DefaultVersion}");
+                options.SwaggerEndpoint($"/swagger/{settings.Version ?? DefaultVersion}/swagger.json", $"{settings.DescriptiveName} {settings.Version ?? DefaultVersion}");
                 if (settings.HasOpenIdAuthentication)
                 {
                     options.OAuthClientId(settings.OpenIdIdentity.ClientId);
-                    options.OAuthAppName(settings.Name);
+                    options.OAuthAppName(settings.DescriptiveName);
                     options.OAuthScopeSeparator(" ");
                     options.OAuthUsePkce();
                 }

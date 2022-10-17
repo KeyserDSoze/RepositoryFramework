@@ -1,25 +1,33 @@
 ﻿namespace RepositoryFramework.Api.Client
 {
-    internal sealed class RepositorySingleClientSettings
+    public sealed class ApiClientSettings<T, TKey>
+        where TKey : notnull
     {
-        public string StartingPath { get; }
-        public string? Version { get; }
-        public bool IsJsonableKey { get; }
-        public string GetPath { get; }
-        public string ExistPath { get; }
-        public string QueryPath { get; }
-        public string OperationPath { get; }
-        public string InsertPath { get; }
-        public string UpdatePath { get; }
-        public string DeletePath { get; }
-        public string BatchPath { get; }
-        public RepositorySingleClientSettings(string startingPath, string? version, Type modelType, Type keyType)
+        public static ApiClientSettings<T, TKey> Instance { get; } = new();
+        public string StartingPath { get; private set; }
+        public string? Version { get; private set; }
+        public string? Name { get; private set; }
+        public bool IsJsonableKey { get; } = IKey.IsJsonable(typeof(TKey));
+        public string GetPath { get; private set; }
+        public string ExistPath { get; private set; }
+        public string QueryPath { get; private set; }
+        public string OperationPath { get; private set; }
+        public string InsertPath { get; private set; }
+        public string UpdatePath { get; private set; }
+        public string DeletePath { get; private set; }
+        public string BatchPath { get; private set; }
+        private ApiClientSettings()
+            => RefreshPath();
+        internal void RefreshPath(string startingPath = "api", string? version = null, string? name = null)
         {
-            StartingPath = startingPath;
-            Version = version;
-            IsJsonableKey = IKey.IsJsonable(keyType);
+            if (startingPath != null)
+                StartingPath = startingPath;
+            if (version != null)
+                Version = version;
+            if (name != null)
+                Name = name;
 
-            var basePath = $"{StartingPath}/{(string.IsNullOrWhiteSpace(Version) ? string.Empty : $"{Version}/")}{modelType.Name}/";
+            var basePath = $"{StartingPath}/{(string.IsNullOrWhiteSpace(Version) ? string.Empty : $"{Version}/")}{Name ?? typeof(T).Name}/";
             if (IsJsonableKey)
                 GetPath = $"{basePath}{nameof(RepositoryMethods.Get)}";
             else

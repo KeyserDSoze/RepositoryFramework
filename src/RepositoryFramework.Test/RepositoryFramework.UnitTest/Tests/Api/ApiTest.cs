@@ -135,7 +135,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                    .AddBusinessBeforeInsert<CatBeforeInsertBusiness>()
                                    .AddBusinessBeforeInsert<CatBeforeInsertBusiness2>();
                                 services.AddApiFromRepositoryFramework()
-                                            .WithName("Repository Api")
+                                            .WithDescriptiveName("Repository Api")
                                             .WithPath(Path)
                                             .WithSwagger()
                                             .WithVersion(Version)

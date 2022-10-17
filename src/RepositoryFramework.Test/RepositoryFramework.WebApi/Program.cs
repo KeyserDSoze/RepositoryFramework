@@ -34,7 +34,7 @@ builder.Services.AddRepositoryInMemoryStorage<Car2, Range>();
 builder.Services
     .AddUserRepositoryWithDatabaseSqlAndEntityFramework(builder.Configuration);
 builder.Services.AddApiFromRepositoryFramework()
-    .WithName("Repository Api")
+    .WithDescriptiveName("Repository Api")
     .WithSwagger()
     .WithDocumentation()
     .WithDefaultCorsWithAllOrigins();

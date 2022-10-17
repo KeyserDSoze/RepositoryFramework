@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc(settings.Version ?? "v1", new OpenApiInfo { Title = settings.Name, Version = settings.Version ?? "v1" });
+                c.SwaggerDoc(settings.Version ?? "v1", new OpenApiInfo { Title = settings.DescriptiveName, Version = settings.Version ?? "v1" });
                 if (settings.HasOpenIdAuthentication)
                 {
                     var openApiOAuthFlow = new OpenApiOAuthFlow()

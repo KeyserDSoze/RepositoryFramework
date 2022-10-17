@@ -24,12 +24,16 @@ namespace RepositoryFramework
             return this;
         }
 
+        public IApiBuilder WithDescriptiveName(string descriptiveName)
+        {
+            ApiSettings.Instance.DescriptiveName = descriptiveName;
+            return this;
+        }
         public IApiBuilder WithName(string name)
         {
             ApiSettings.Instance.Name = name;
             return this;
         }
-
         public IApiBuilder WithPath(string path)
         {
             ApiSettings.Instance.Path = path;
