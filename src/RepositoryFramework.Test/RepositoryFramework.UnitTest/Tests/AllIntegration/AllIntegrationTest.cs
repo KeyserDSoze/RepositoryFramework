@@ -97,11 +97,11 @@ namespace RepositoryFramework.UnitTest.Repository
             Assert.Empty(items);
 
             var batchOperation = repository.CreateBatchOperation();
-            for (var i = 0; i < 10; i++)
+            for (var i = 1; i <= 10; i++)
                 batchOperation.AddInsert(new AppUserKey(i), new AppUser(i, $"User {i}", $"Email {i}", new(), DateTime.UtcNow));
             await batchOperation.ExecuteAsync();
 
-            items = await repository.Where(x => x.Id >= 0).ToListAsync();
+            items = await repository.Where(x => x.Id > 0).ToListAsync();
             Assert.Equal(10, items.Count);
 
             Expression<Func<AppUser, object>> orderPredicate = x => x.Id;
@@ -113,7 +113,7 @@ namespace RepositoryFramework.UnitTest.Repository
                 batchOperation.AddUpdate(new AppUserKey(appUser.Value!.Id), new AppUser(appUser.Value.Id, $"User Updated {appUser.Value.Id}", $"Email Updated {appUser.Value.Id}", new(), DateTime.UtcNow));
             await batchOperation.ExecuteAsync();
 
-            items = await repository.Where(x => x.Id >= 0).ToListAsync();
+            items = await repository.Where(x => x.Id > 0).ToListAsync();
             Assert.Equal(10, items.Count);
             Assert.Equal($"Email Updated {items.First().Value!.Id}", items.First().Value!.Email);
 
