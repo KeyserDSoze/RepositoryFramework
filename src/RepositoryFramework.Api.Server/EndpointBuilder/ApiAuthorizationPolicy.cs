@@ -1,4 +1,6 @@
-﻿namespace RepositoryFramework
+﻿using Microsoft.AspNetCore.Routing;
+
+namespace RepositoryFramework
 {
     internal sealed class ApiAuthorizationPolicy : IApiAuthorizationPolicy
     {
@@ -27,5 +29,7 @@
             _authorizationBuilder.Authorization.Policies[_method] = _policies.ToArray();
             return _authorizationBuilder;
         }
+        public IEndpointRouteBuilder Build()
+            => _authorizationBuilder.Build();
     }
 }

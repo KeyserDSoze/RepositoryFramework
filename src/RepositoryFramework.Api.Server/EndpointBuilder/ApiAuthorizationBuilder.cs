@@ -20,7 +20,7 @@ namespace RepositoryFramework
         public IEndpointRouteBuilder WithDefaultAuthorization()
         {
             _ = SetPolicyForAll();
-            return Finalize();
+            return Build();
         }
         /// <summary>
         /// Set policies for a specific repository method.
@@ -44,7 +44,7 @@ namespace RepositoryFramework
         /// Confirm the authorization policies created till now.
         /// </summary>
         /// <returns>IEndpointRouteBuilder</returns>
-        public IEndpointRouteBuilder Finalize()
+        public IEndpointRouteBuilder Build()
             => _finalizator.Invoke(Authorization);
         /// <summary>
         /// Remove authentication/authorization from api.

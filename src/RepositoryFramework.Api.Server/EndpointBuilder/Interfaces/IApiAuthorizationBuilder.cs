@@ -23,7 +23,7 @@ namespace RepositoryFramework
         /// Confirm the authorization policies created till now.
         /// </summary>
         /// <returns>IEndpointRouteBuilder</returns>
-        IEndpointRouteBuilder Finalize();
+        IEndpointRouteBuilder Build();
         /// <summary>
         /// Remove authentication/authorization from api.
         /// </summary>
