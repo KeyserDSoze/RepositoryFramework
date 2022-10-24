@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RepositoryFramework.Test.Domain;
 using RepositoryFramework.Test.Infrastructure.EntityFramework;
+using RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal;
 using RepositoryFramework.Test.Models;
 using RepositoryFramework.Test.Repository;
 using Xunit;
@@ -210,6 +211,10 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                         .WithStartingPath(Path);
                 services
                     .AddRepositoryApiClient<MappingUser, int>(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
+                services
+                    .AddRepositoryApiClient<User, int>(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
                 services.Finalize(out var serviceProvider);
@@ -479,6 +484,54 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                 entities.Sum(x => x.Value!.Id));
         }
         [Fact, Priority(10)]
+        public async Task EntityFrameworkSameModelAsync()
+        {
+            var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;
+            var repository = serviceProvider.GetService<IRepository<User, int>>()!;
+            var id = 23;
+            var entity = new User
+            {
+                Identificativo = 23,
+                Nome = "alekud",
+                Cognome = "",
+                IndirizzoElettronico = "alekud@drasda.it",
+            };
+            var idNoInsert = 120;
+            var entityNoInsert = new User
+            {
+                Identificativo = idNoInsert,
+                Nome = "alekud",
+                Cognome = "",
+                IndirizzoElettronico = "alekud@drasda.it",
+            };
+            List<Entity<User, int>> entities = new();
+            for (var i = 2; i <= 11; i++)
+            {
+                var batchId = i;
+                entities.Add(new Entity<User, int>(
+                     new User
+                     {
+                         Identificativo = batchId,
+                         Nome = "alekud",
+                         Cognome = "",
+                         IndirizzoElettronico = "alekud@drasda.it",
+                     }, batchId));
+            }
+            await TestRepositoryAsync(repository!, id, entity,
+                idNoInsert,
+                entityNoInsert,
+                entities,
+                x => x.Identificativo,
+                x => x.Nome.Contains("eku"),
+                x => !x.Nome.Contains("eku"),
+                x => x.Identificativo,
+                (x, y) => x.Identificativo > y.Identificativo,
+                entities.Max(x => x.Value!.Identificativo),
+                entities.Min(x => x.Value!.Identificativo),
+                (int)entities.Average(x => x.Value!.Identificativo),
+                entities.Sum(x => x.Value!.Identificativo));
+        }
+        [Fact, Priority(11)]
         public async Task InMemoryWithCacheAsync()
         {
             var serviceProvider = (await CreateHostServerAsync()).CreateScope().ServiceProvider;

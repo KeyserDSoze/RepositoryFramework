@@ -46,6 +46,11 @@ builder.Services
     .AddMicrosoftIdentityConsentHandler();
 //builder.Services
 //    .AddRepositoryInTableStorage<User, string>(builder.Configuration["ConnectionString:Storage"]);
+builder.Services.AddRepositoryInBlobStorage<BigAnimal, int>(x =>
+{
+    x.ConnectionString = builder.Configuration["ConnectionString:Storage"];
+});
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration["ConnectionString:Redis"];

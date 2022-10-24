@@ -67,9 +67,28 @@ namespace RepositoryFramework
             }
             return expression?.Member as PropertyInfo;
         }
+        public IQueryTranslationBuilder<T, TKey, TTranslated> WithSameName()
+        {
+            var translatedProperties = typeof(TTranslated).GetProperties();
+            foreach (var property in typeof(T).GetProperties())
+            {
+                var translatedProperty = translatedProperties.FirstOrDefault(x => x.Name == property.Name);
+                if (translatedProperty != null)
+                {
+                    RepositoryMapper<T, TKey, TTranslated>.Instance.Properties.Add(
+                        new RepositoryMapper<T, TKey, TTranslated>.RepositoryMapperProperty(
+                        x => property.GetValue(x)!,
+                        (x, value) => property.SetValue(x, value),
+                        x => translatedProperty.GetValue(x)!,
+                        (x, value) => translatedProperty.SetValue(x, value)
+                        ));
+                    Services.AddSingleton<IRepositoryMapper<T, TKey, TTranslated>>(RepositoryMapper<T, TKey, TTranslated>.Instance);
+                }
+            }
+            return this;
+        }
         public IQueryTranslationBuilder<T, TKey, TFurtherTranslated> AndTranslate<TFurtherTranslated>()
             => Builder.Translate<TFurtherTranslated>();
-
         public IRepositoryBuilder<T, TKey> Builder => _repositoryBuilder;
         public IServiceCollection Services => _repositoryBuilder.Services;
     }

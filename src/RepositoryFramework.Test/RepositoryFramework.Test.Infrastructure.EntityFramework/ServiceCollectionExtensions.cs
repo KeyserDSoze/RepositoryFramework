@@ -39,6 +39,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 .Builder
                 .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
                 .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();
+            services
+                .AddRepositoryInEntityFramework<User, int, SampleContext>(
+                    x =>
+                    {
+                        x.DbSet = x => x.Users;
+                        x.References = x => x.Include(x => x.IdGruppos);
+                    })
+                    .WithKey(x => x, x => x.Identificativo)
+                .Builder
+                .AddBusinessBeforeInsert<UserBeforeInsertBusiness>()
+                .AddBusinessBeforeInsert<UserBeforeInsertBusiness2>();
             return services;
         }
     }
