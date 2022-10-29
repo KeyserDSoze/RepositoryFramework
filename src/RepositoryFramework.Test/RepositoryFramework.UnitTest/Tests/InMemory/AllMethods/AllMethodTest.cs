@@ -22,7 +22,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
                 .And()
                 .Services
                 .Finalize(out s_serviceProvider)
-                .AfterBuildAsync()
+                .WarmUpAsync()
                 .ToResult();
         }
         private readonly IRepository<Animal, long> _animal;

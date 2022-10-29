@@ -85,7 +85,7 @@ builder.Services
 #pragma warning restore S125 // Sections of code should not be commented out
 
 var app = builder.Build();
-await app.Services.AfterBuildAsync();
+await app.Services.WarmUpAsync();
 
 app.UseHttpsRedirection();
 app.UseApiFromRepositoryFramework()

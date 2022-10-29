@@ -19,7 +19,7 @@ namespace RepositoryFramework.UnitTest.Migration
                     .AddMigrationSource<SuperMigrationUser, string, SuperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
                 .Services
                 .Finalize(out s_serviceProvider)
-                .AfterBuildAsync()
+                .WarmUpAsync()
                 .ToResult();
         }
         private readonly IMigrationManager<SuperMigrationUser, string> _migrationService;

@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class EndpointRouteBuilderExtensions
     {
-        private static readonly Dictionary<string, bool> SetupRepositories = new();
+        private static readonly Dictionary<string, bool> s_setupRepositories = new();
         /// <summary>
         /// Add repository or CQRS service injected as api for your <typeparamref name="T"/> model.
         /// </summary>
@@ -59,9 +59,9 @@ namespace Microsoft.Extensions.DependencyInjection
             ApiAuthorization? authorization)
             where TEndpointRouteBuilder : IEndpointRouteBuilder
         {
-            if (SetupRepositories.ContainsKey(modelType.FullName!))
+            if (s_setupRepositories.ContainsKey(modelType.FullName!))
                 return app;
-            SetupRepositories.Add(modelType.FullName!, true);
+            s_setupRepositories.Add(modelType.FullName!, true);
             var registry = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
             var serviceValue = registry!.Services.FirstOrDefault(x => x.ModelType == modelType);
             if (serviceValue == null)

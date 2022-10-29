@@ -42,10 +42,11 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                             .UseTestServer()
                             .Configure(async app =>
                             {
+                                await Task.CompletedTask;
                                 try
                                 {
                                     app.UseRouting();
-                                    app.ApplicationServices.AfterBuildAsync().ToResult();
+                                    app.ApplicationServices.WarmUpAsync().ToResult();
                                     app.UseEndpoints(endpoints =>
                                     {
                                         endpoints.MapHealthChecks("/healthz");
@@ -543,7 +544,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                 x => x.Name.Contains("eku"),
                 x => !x.Name.Contains("eku"));
         }
-        private async Task TestRepositoryAsync<T, TKey>(
+        private static async Task TestRepositoryAsync<T, TKey>(
             IRepository<T, TKey> repository,
             TKey testKey,
             T testEntity,
@@ -624,7 +625,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
             users = await repository.ToListAsync();
             Assert.Empty(users);
         }
-        private async Task TestRepositoryWithCacheAsync<T, TKey>(
+        private static async Task TestRepositoryWithCacheAsync<T, TKey>(
             IRepository<T, TKey> repository,
             TKey testKey,
             T testEntity,

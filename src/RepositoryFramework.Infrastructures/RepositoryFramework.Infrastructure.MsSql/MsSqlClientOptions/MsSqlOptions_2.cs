@@ -23,12 +23,12 @@ namespace RepositoryFramework.Infrastructure.MsSql
                 Properties.Add(new PropertyHelper<T>(property));
             RefreshColumnNames();
         }
-        internal string Top1 { get; private set; }
-        internal string Exist { get; private set; }
-        internal string Delete { get; private set; }
-        internal string Insert { get; private set; }
-        internal string Update { get; private set; }
-        internal string BaseQuery { get; private set; }
+        internal string Top1 { get; private set; } = null!;
+        internal string Exist { get; private set; } = null!;
+        internal string Delete { get; private set; } = null!;
+        internal string Insert { get; private set; } = null!;
+        internal string Update { get; private set; } = null!;
+        internal string BaseQuery { get; private set; } = null!;
         internal void RefreshColumnNames()
         {
             var columns = string.Join(',', Properties.Select(x => $"[{x.ColumnName}]"));

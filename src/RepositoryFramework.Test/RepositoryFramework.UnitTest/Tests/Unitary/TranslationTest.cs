@@ -30,7 +30,7 @@ namespace RepositoryFramework.UnitTest.Unitary
     public sealed class ToTranslateSomething
     {
         public int Idccnl { get; set; }
-        public string Folle { get; set; }
+        public string Folle { get; set; } = null!;
         public int IdccnlValidita { get; set; }
         public DateTime DataInizio { get; set; }
         public DateTime? DataFine { get; set; }
@@ -51,7 +51,7 @@ namespace RepositoryFramework.UnitTest.Unitary
     {
         public int Idccnl { get; set; }
         public int IdccnlValidita { get; set; }
-        public string Folle { get; set; }
+        public string Folle { get; set; } = null!;
         public DateTime DataInizio { get; set; }
         public DateTime? DataFine { get; set; }
         public int NumeroMensilita { get; set; }
@@ -207,7 +207,7 @@ namespace RepositoryFramework.UnitTest.Unitary
                         .With(x => x.Active, x => x.Attivo)
                 .Services
                 .Finalize(out s_serviceProvider)
-                .AfterBuildAsync()
+                .WarmUpAsync()
                 .ToResult();
         }
         private readonly IRepository<Translatable, string> _repository;

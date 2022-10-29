@@ -5,7 +5,7 @@ namespace RepositoryFramework.Test.Models
 {
     public class Room
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public bool IsSpecial { get; set; }
     }
     public class Cat

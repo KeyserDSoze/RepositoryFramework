@@ -72,7 +72,7 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
         {
             var dataverseEntity = new Microsoft.Xrm.Sdk.Entity(_settings.LogicalTableName);
             _settings.SetDataverseEntity(dataverseEntity, value, key);
-            await _client.CreateAsync(dataverseEntity);
+            await _client.CreateAsync(dataverseEntity, cancellationToken);
             return new State<T, TKey>(true, value, key);
         }
         public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
@@ -84,7 +84,7 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
                 ColumnSet = _settings.ColumnSet,
                 Criteria = new Microsoft.Xrm.Sdk.Query.FilterExpression(LogicalOperator.And)
             };
-            var queryResult = await _client.RetrieveMultipleAsync(query);
+            var queryResult = await _client.RetrieveMultipleAsync(query, cancellationToken);
             var entities = queryResult.Entities.Select(x =>
             {
                 var entity = Activator.CreateInstance<T>();
@@ -122,10 +122,12 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
             var entityRetrieved = queryResult.Entities.FirstOrDefault();
             if (entityRetrieved != null)
             {
-                var dataverseEntity = new Microsoft.Xrm.Sdk.Entity(_settings.LogicalTableName);
-                dataverseEntity.Id = entityRetrieved.Id;
+                var dataverseEntity = new Microsoft.Xrm.Sdk.Entity(_settings.LogicalTableName)
+                {
+                    Id = entityRetrieved.Id
+                };
                 _settings.SetDataverseEntity(dataverseEntity, value, key);
-                await _client.UpdateAsync(dataverseEntity);
+                await _client.UpdateAsync(dataverseEntity, cancellationToken);
                 return new State<T, TKey>(true, value, key);
             }
             return false;

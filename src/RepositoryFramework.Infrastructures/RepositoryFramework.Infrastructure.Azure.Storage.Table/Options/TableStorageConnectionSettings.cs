@@ -8,6 +8,6 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public string? ManagedIdentityClientId { get; set; }
         public string? ConnectionString { get; set; }
         public string? TableName { get; set; }
-        public TableClientOptions ClientOptions { get; set; }
+        public TableClientOptions ClientOptions { get; set; } = null!;
     }
 }

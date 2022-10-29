@@ -42,7 +42,7 @@ Futhermore, we are adding a configuration for AAD to implement authentication on
         .WithDefaultCors("http://example.com");  
     
     var app = builder.Build();
-    await app.Services.AfterBuildAsync();
+    await app.Services.WarmUpAsync();
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -68,7 +68,7 @@ Futhermore, we are adding a configuration for AAD to implement authentication on
         .WithDefaultCors("http://example.com");    
     
     var app = builder.Build();
-    await app.Services.AfterBuildAsync();
+    await app.Services.WarmUpAsync();
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -95,7 +95,7 @@ You may configure the scoper for each method of your repository and for each rep
         .WithDefaultCors("http://example.com");     
     
     var app = builder.Build();
-    await app.Services.AfterBuildAsync();
+    await app.Services.WarmUpAsync();
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
