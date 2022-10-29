@@ -53,8 +53,6 @@ namespace RepositoryFramework.UnitTest.InMemory.Exceptions
         {
             try
             {
-#warning Why does not it see the empty queryasync method?
-#warning think about prefiltering, in installation I can prefilter and send the right context, DI + filter
                 var cars = await _car.ToListAsync().NoContext();
                 Assert.True(false);
                 Assert.Empty(cars);

@@ -24,7 +24,10 @@ builder.Services.AddRepositoryInMemoryStorage<IperUser, string>()
 builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
-builder.Services.AddRepositoryInMemoryStorage<SuperiorUser, string>()
+builder.Services.AddRepositoryInMemoryStorage<SuperiorUser, string>(null, x =>
+{
+    x.IsNotExposableAsApi = true;
+})
 .PopulateWithRandomData(x => x.Email!, 120, 5)
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com")
 .WithPattern(x => x.Port, @"[1-9]{3,4}");

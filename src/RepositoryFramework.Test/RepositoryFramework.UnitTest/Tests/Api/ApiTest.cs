@@ -137,13 +137,14 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                    .AddBusinessBeforeInsert<CatBeforeInsertBusiness>()
                                    .AddBusinessBeforeInsert<CatBeforeInsertBusiness2>();
                                 services.AddApiFromRepositoryFramework()
+                                            .WithName<ExtremelyRareUser>("extremelyrareuserrefresh")
+                                            .WithName<CalamityUniverseUser>("calamityuser")
                                             .WithDescriptiveName("Repository Api")
                                             .WithPath(Path)
                                             .WithSwagger()
                                             .WithVersion(Version)
                                             .WithDocumentation()
                                             .WithDefaultCors("http://example.com");
-                                //.ConfigureAzureActiveDirectory(configuration);
                             });
                         }).Build();
                 await HttpClientFactory.Instance.Host!.StartAsync();
@@ -169,9 +170,9 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                 {
                     Assert.Equal("dasdsada", ex.Message);
                 }
-                response = await client.GetAsync($"{Path}/{Version}/{nameof(ExtremelyRareUser)}/Get?key=21");
+                response = await client.GetAsync($"{Path}/{Version}/extremelyrareuserrefresh/Get?key=21");
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                response = await client.GetAsync($"{Path}/{Version}/{nameof(ExtremelyRareUser)}/Exist?key=21");
+                response = await client.GetAsync($"{Path}/{Version}/extremelyrareuserrefresh/Exist?key=21");
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
                 services.AddSingleton<IHttpClientFactory>(HttpClientFactory.Instance);
                 services
@@ -204,8 +205,9 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                         .WithStartingPath(Path);
                 services
                     .AddRepositoryApiClient<CalamityUniverseUser, string>(serviceLifetime: ServiceLifetime.Scoped)
-                         .WithVersion(Version)
-                        .WithStartingPath(Path);
+                        .WithVersion(Version)
+                        .WithStartingPath(Path)
+                        .WithName("calamityuser");
                 services
                     .AddRepositoryApiClient<Cat, Guid>(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)

@@ -10,7 +10,7 @@ namespace RepositoryFramework.Infrastructure.MsSql
     {
         public string Schema { get; set; } = "dbo";
         public string TableName { get; set; } = typeof(T).Name;
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; set; } = null!;
         public Type ModelType { get; } = typeof(T);
         public Type KeyType { get; } = typeof(TKey);
         public bool KeyIsPrimitive { get; } = typeof(TKey).IsPrimitive();

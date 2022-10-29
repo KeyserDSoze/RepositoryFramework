@@ -128,7 +128,6 @@ namespace Microsoft.Extensions.DependencyInjection
                    return queryService!.ExistAsync(key);
                }
            );
-#warning think about to have more than one api with the same name and a dictionary? Problem with change of mind? the key name can be used?
         private static void AddQuery<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
         {

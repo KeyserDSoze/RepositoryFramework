@@ -31,7 +31,7 @@ namespace RepositoryFramework.Infrastructure.MsSql
             var keyAsString = _settings.KeyIsPrimitive ? key.ToString() : key.ToJson();
             var command = await GetCommandAsync(_settings.Delete);
             command.Parameters.Add(new SqlParameter("Key", keyAsString));
-            var response = (await command.ExecuteScalarAsync()).Cast<int>();
+            var response = (await command.ExecuteScalarAsync(cancellationToken)).Cast<int>();
             return response >= 0;
         }
 
@@ -40,7 +40,7 @@ namespace RepositoryFramework.Infrastructure.MsSql
             var keyAsString = _settings.KeyIsPrimitive ? key.ToString() : key.ToJson();
             var command = await GetCommandAsync(_settings.Exist);
             command.Parameters.Add(new SqlParameter("Key", keyAsString));
-            var response = (await command.ExecuteScalarAsync()).Cast<int>();
+            var response = (await command.ExecuteScalarAsync(cancellationToken)).Cast<int>();
             return response > 0;
         }
 
@@ -49,12 +49,13 @@ namespace RepositoryFramework.Infrastructure.MsSql
             var keyAsString = _settings.KeyIsPrimitive ? key.ToString() : key.ToJson();
             var command = await GetCommandAsync(_settings.Top1);
             command.Parameters.Add(new SqlParameter("Key", keyAsString));
-            var response = await command.ExecuteReaderAsync();
-            while (response != null && await response.ReadAsync())
+            var response = await command.ExecuteReaderAsync(cancellationToken);
+            while (response != null && await response.ReadAsync(cancellationToken))
             {
                 var entity = Activator.CreateInstance<T>();
                 _settings.SetEntity(response, entity);
-                return entity;
+                if (entity != null)
+                    return entity;
             }
             return default;
         }
@@ -65,7 +66,7 @@ namespace RepositoryFramework.Infrastructure.MsSql
                 string.Join(',', parameters.Select(x => $"[{x.ParameterName}]")),
                 string.Join(',', parameters.Select(x => $"@{x.ParameterName}"))),
                 parameters);
-            var response = (await command.ExecuteScalarAsync()).Cast<int>();
+            var response = (await command.ExecuteScalarAsync(cancellationToken)).Cast<int>();
             return new State<T, TKey>(response >= 0, value, key);
         }
         public async Task<State<T, TKey>> UpdateAsync(TKey key, T value, CancellationToken cancellationToken = default)
@@ -74,16 +75,16 @@ namespace RepositoryFramework.Infrastructure.MsSql
             var command = await GetCommandAsync(string.Format(_settings.Update,
                 string.Join(',', parameters.Select(x => $"[{x.ParameterName}]=@{x.ParameterName}"))),
                 parameters);
-            var response = (await command.ExecuteScalarAsync()).Cast<int>();
+            var response = (await command.ExecuteScalarAsync(cancellationToken)).Cast<int>();
             return new State<T, TKey>(response >= 0, value, key);
         }
         public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var command = await GetCommandAsync(_settings.BaseQuery);
-            var response = await command.ExecuteReaderAsync();
+            var response = await command.ExecuteReaderAsync(cancellationToken);
             Dictionary<T, Entity<T, TKey>> entities = new();
-            while (response != null && await response.ReadAsync())
+            while (response != null && await response.ReadAsync(cancellationToken))
             {
                 var entity = Activator.CreateInstance<T>();
                 var key = _settings.SetEntity(response, entity);

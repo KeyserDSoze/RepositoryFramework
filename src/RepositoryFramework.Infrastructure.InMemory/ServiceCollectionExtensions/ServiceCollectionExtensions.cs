@@ -19,16 +19,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>RepositoryInMemoryBuilder</returns>
         public static IRepositoryInMemoryBuilder<T, TKey> AddRepositoryInMemoryStorage<T, TKey>(
             this IServiceCollection services,
-            Action<RepositoryBehaviorSettings<T, TKey>>? settings = default)
+            Action<RepositoryBehaviorSettings<T, TKey>>? settings = default,
+            Action<RepositoryFrameworkOptions<T, TKey>>? repositorySettings = default)
             where TKey : notnull
         {
             var options = new RepositoryBehaviorSettings<T, TKey>();
             settings?.Invoke(options);
             CheckSettings(options);
             services.AddSingleton(options);
-            services.AddRepository<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
-            services.AddCommand<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
-            services.AddQuery<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+            services.AddRepository<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton, repositorySettings);
+            services.AddCommand<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton, repositorySettings);
+            services.AddQuery<T, TKey, InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton, repositorySettings);
             services.AddEventAfterServiceCollectionBuild(serviceProvider =>
             {
                 var populationStrategy = serviceProvider.GetService<IPopulationStrategy<T, TKey>>();
