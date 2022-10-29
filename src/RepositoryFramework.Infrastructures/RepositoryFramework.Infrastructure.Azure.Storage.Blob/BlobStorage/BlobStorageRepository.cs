@@ -66,6 +66,8 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
                 var blobClient = _client.GetBlobClient(blob.Name);
                 var blobData = await blobClient.DownloadContentAsync(cancellationToken).NoContext();
                 var item = JsonSerializer.Deserialize<Entity<T, TKey>>(blobData.Value.Content);
+                if (item != null && !item.HasValue)
+                    continue;
                 if (!predicate.Invoke(item!.Value!))
                     continue;
                 entities.Add(item.Value!, item);
