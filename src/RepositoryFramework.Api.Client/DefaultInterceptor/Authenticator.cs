@@ -21,7 +21,7 @@ namespace RepositoryFramework.Api.Client.DefaultInterceptor
         {
             try
             {
-                var token = await _tokenProvider.GetAccessTokenForUserAsync(_settings.Scopes!).NoContext();
+                var token = await _tokenProvider.GetAccessTokenForUserAsync(_settings.Scopes ?? Array.Empty<string>()).NoContext();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
             catch (Exception exception)
