@@ -24,12 +24,14 @@ namespace RepositoryFramework
                 settings.AuthorizationUrl = new Uri($"{configuration["AzureAd:Instance"]}{configuration["AzureAd:TenantId"]}/oauth2/v2.0/authorize");
                 settings.TokenUrl = new Uri($"{configuration["AzureAd:Instance"]}{configuration["AzureAd:TenantId"]}/oauth2/v2.0/token");
                 settings.ClientId = configuration["AzureAd:ClientId"];
-                settings.Scopes.AddRange(configuration["AzureAd:Scopes"].Split(' ')
-                    .Select(x => new ApiIdentityScopeSettings()
-                    {
-                        Value = x,
-                        Description = x
-                    }));
+                var scopes = configuration["AzureAd:Scopes"];
+                if (!string.IsNullOrEmpty(scopes))
+                    settings.Scopes.AddRange(scopes.Split(' ')
+                        .Select(x => new ApiIdentityScopeSettings()
+                        {
+                            Value = x,
+                            Description = x
+                        }));
             });
     }
 }
