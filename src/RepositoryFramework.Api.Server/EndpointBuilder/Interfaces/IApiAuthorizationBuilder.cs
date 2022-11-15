@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using System.Net;
+using Microsoft.AspNetCore.Routing;
 
 namespace RepositoryFramework
 {
@@ -13,7 +14,17 @@ namespace RepositoryFramework
         /// Set policies for a specific repository method.
         /// </summary>
         /// <returns>IEndpointRouteBuilder</returns>
-        IApiAuthorizationPolicy SetPolicy(RepositoryMethods method);
+        IApiAuthorizationPolicy SetPolicy(params RepositoryMethods[] methods);
+        /// <summary>
+        /// Set policies for command repository methods.
+        /// </summary>
+        /// <returns>IEndpointRouteBuilder</returns>
+        IApiAuthorizationPolicy SetPolicyForCommand();
+        /// <summary>
+        /// Set policies for query repository methods.
+        /// </summary>
+        /// <returns>IEndpointRouteBuilder</returns>
+        IApiAuthorizationPolicy SetPolicyForQuery();
         /// <summary>
         /// Set policies one time for every repository method.
         /// </summary>

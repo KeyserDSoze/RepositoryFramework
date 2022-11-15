@@ -26,10 +26,37 @@ namespace RepositoryFramework
         /// Set policies for a specific repository method.
         /// </summary>
         /// <returns>IEndpointRouteBuilder</returns>
-        public IApiAuthorizationPolicy SetPolicy(RepositoryMethods method)
+        public IApiAuthorizationPolicy SetPolicy(params RepositoryMethods[] methods)
         {
-            Authorization.Policies.Add(method, new());
-            return new ApiAuthorizationPolicy(method, this);
+            foreach (var method in methods)
+                Authorization.Policies.Add(method, new());
+            return new ApiAuthorizationPolicy(this, methods);
+        }
+        /// <summary>
+        /// Set policies for command repository methods.
+        /// </summary>
+        /// <returns>IEndpointRouteBuilder</returns>
+        public IApiAuthorizationPolicy SetPolicyForCommand()
+        {
+            Authorization.Policies.Add(RepositoryMethods.Insert, new());
+            Authorization.Policies.Add(RepositoryMethods.Update, new());
+            Authorization.Policies.Add(RepositoryMethods.Delete, new());
+            Authorization.Policies.Add(RepositoryMethods.Batch, new());
+            return new ApiAuthorizationPolicy(this, RepositoryMethods.Insert, RepositoryMethods.Update,
+                RepositoryMethods.Delete, RepositoryMethods.Batch);
+        }
+        /// <summary>
+        /// Set policies for query repository methods.
+        /// </summary>
+        /// <returns>IEndpointRouteBuilder</returns>
+        public IApiAuthorizationPolicy SetPolicyForQuery()
+        {
+            Authorization.Policies.Add(RepositoryMethods.Exist, new());
+            Authorization.Policies.Add(RepositoryMethods.Get, new());
+            Authorization.Policies.Add(RepositoryMethods.Query, new());
+            Authorization.Policies.Add(RepositoryMethods.Operation, new());
+            return new ApiAuthorizationPolicy(this, RepositoryMethods.Exist, RepositoryMethods.Get,
+                RepositoryMethods.Query, RepositoryMethods.Operation);
         }
         /// <summary>
         /// Set policies one time for every repository method.
@@ -38,7 +65,7 @@ namespace RepositoryFramework
         public IApiAuthorizationPolicy SetPolicyForAll()
         {
             Authorization.Policies.Add(RepositoryMethods.All, new());
-            return new ApiAuthorizationPolicy(RepositoryMethods.All, this);
+            return new ApiAuthorizationPolicy(this, RepositoryMethods.All);
         }
         /// <summary>
         /// Confirm the authorization policies created till now.

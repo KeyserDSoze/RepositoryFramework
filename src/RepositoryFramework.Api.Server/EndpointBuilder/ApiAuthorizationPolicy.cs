@@ -4,26 +4,28 @@ namespace RepositoryFramework
 {
     internal sealed class ApiAuthorizationPolicy : IApiAuthorizationPolicy
     {
-        private readonly RepositoryMethods _method;
+        private readonly RepositoryMethods[] _methods;
         private readonly ApiAuthorizationBuilder _authorizationBuilder;
-        public ApiAuthorizationPolicy(RepositoryMethods method, ApiAuthorizationBuilder authorization)
+        public ApiAuthorizationPolicy(ApiAuthorizationBuilder authorization, params RepositoryMethods[] methods)
         {
-            _method = method;
+            _methods = methods;
             _authorizationBuilder = authorization;
         }
         public IApiAuthorizationPolicy With(params string[] policies)
         {
             foreach (var policy in policies)
-                if (!_authorizationBuilder.Authorization.Policies[_method].Contains(policy))
-                    _authorizationBuilder.Authorization.Policies[_method].Add(policy);
+                foreach (var method in _methods)
+                    if (!_authorizationBuilder.Authorization.Policies[method].Contains(policy))
+                        _authorizationBuilder.Authorization.Policies[method].Add(policy);
             return this;
         }
         public IApiAuthorizationBuilder Empty()
         {
-            _authorizationBuilder.Authorization.Policies[_method] = new();
+            foreach (var method in _methods)
+                _authorizationBuilder.Authorization.Policies[method] = new();
             return _authorizationBuilder;
         }
-        public IApiAuthorizationBuilder And() 
+        public IApiAuthorizationBuilder And()
             => _authorizationBuilder;
         public IEndpointRouteBuilder Build()
             => _authorizationBuilder.Build();
