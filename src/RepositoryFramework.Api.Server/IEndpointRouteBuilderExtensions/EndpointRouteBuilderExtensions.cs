@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using RepositoryFramework;
@@ -132,11 +133,19 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Query)}",
-                async ([FromBody] SerializableFilter? serializableFilter, [FromServices] TService service) =>
+                async (HttpRequest request,
+                    [FromBody] SerializableFilter? serializableFilter, [FromServices] TService service) =>
                 {
-                    var filter = (serializableFilter ?? SerializableFilter.Empty).Deserialize<T>();
+                    var filter = Try.WithDefaultOnCatch(() => (serializableFilter ?? SerializableFilter.Empty).Deserialize<T>());
+                    if (filter.Exception != null || filter.Entity == null)
+                    {
+                        request.HttpContext.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                        if (filter.Exception != null)
+                            await request.HttpContext.Response.WriteAsync(filter.Exception.Message).NoContext();
+                        return null;
+                    }
                     var queryService = service as IQueryPattern<T, TKey>;
-                    return await queryService!.QueryAsync(filter).ToListAsync().NoContext();
+                    return await queryService!.QueryAsync(filter.Entity).ToListAsync().NoContext();
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Query);
         }
