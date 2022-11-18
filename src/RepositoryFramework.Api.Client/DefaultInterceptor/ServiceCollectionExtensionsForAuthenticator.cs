@@ -1,5 +1,6 @@
 ﻿using RepositoryFramework;
 using RepositoryFramework.Api.Client;
+using RepositoryFramework.Api.Client.Authorization;
 using RepositoryFramework.Api.Client.DefaultInterceptor;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -19,7 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new AuthenticatorSettings();
             settings?.Invoke(options);
             services.AddSingleton(options);
-            return services.AddService<IRepositoryClientInterceptor, Authenticator>(serviceLifetime);
+            services.AddScoped<ITokenManager, TokenManager>();
+            return services.AddService<IRepositoryClientInterceptor, BearerAuthenticator>(serviceLifetime);
         }
         /// <summary>
         /// Add JWT specific interceptor for your <typeparamref name="T"/> client. Interceptor runs before every request.
@@ -40,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             settings?.Invoke(options);
             builder
                 .Services
-                .AddService<IRepositoryClientInterceptor<T>, Authenticator<T>>(serviceLifetime);
+                .AddService<IRepositoryClientInterceptor<T>, BearerAuthenticator<T>>(serviceLifetime);
             return builder;
         }
     }

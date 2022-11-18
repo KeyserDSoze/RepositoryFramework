@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using System.Net;
 
 namespace RepositoryFramework.Api.Client
 {
@@ -82,7 +83,7 @@ namespace RepositoryFramework.Api.Client
             var client = await EnrichedClientAsync(RepositoryMethods.Query).NoContext();
             var value = filter.Serialize();
             var response = await client.PostAsJsonAsync(_settings.QueryPath, value, cancellationToken).NoContext();
-            response.EnsureSuccessStatusCode();
+            await EnsureSuccessStatusCodeAsync(response).NoContext();
             var result = await response.Content.ReadFromJsonAsync<List<Entity<T, TKey>>>(cancellationToken: cancellationToken).NoContext();
             if (result != null)
                 foreach (var item in result)
@@ -90,6 +91,11 @@ namespace RepositoryFramework.Api.Client
                     cancellationToken.ThrowIfCancellationRequested();
                     yield return item;
                 }
+        }
+        private async Task EnsureSuccessStatusCodeAsync(HttpResponseMessage message)
+        {
+            if (message.StatusCode != HttpStatusCode.OK)
+                throw new HttpRequestException(await message.Content.ReadAsStringAsync().NoContext());
         }
         public async ValueTask<TProperty> OperationAsync<TProperty>(OperationType<TProperty> operation,
             IFilterExpression filter, CancellationToken cancellationToken = default)

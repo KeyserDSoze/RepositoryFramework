@@ -4,6 +4,7 @@ using Microsoft.Identity.Web.UI;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Timeout;
+using RepositoryFramework.Test.Domain;
 using RepositoryFramework.WebClient.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,8 @@ builder.Services.AddRepositoryApiClient<SuperUser, string>(serviceLifetime: Serv
 builder.Services.AddRepositoryApiClient<IperUser, string>(serviceLifetime: ServiceLifetime.Scoped)
     .WithHttpClient("localhost:7058");
 builder.Services.AddRepositoryApiClient<Animal, AnimalKey>(serviceLifetime: ServiceLifetime.Scoped)
+    .WithHttpClient("localhost:7058");
+builder.Services.AddRepositoryApiClient<AppUser, AppUserKey>(serviceLifetime: ServiceLifetime.Scoped)
     .WithHttpClient("localhost:7058");
 builder.Services.AddRepositoryApiClient<Car, Guid>(serviceLifetime: ServiceLifetime.Scoped)
     .WithHttpClient("localhost:7058");

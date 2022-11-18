@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RepositoryFramework.Test.Domain;
-using RepositoryFramework.Test.Infrastructure.EntityFramework.Models;
-using RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
+using RepositoryFramework.Test.Domain;
+using RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal;
 
 namespace RepositoryFramework.Test.Infrastructure.EntityFramework
 {

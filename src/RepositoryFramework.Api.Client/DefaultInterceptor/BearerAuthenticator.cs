@@ -1,19 +1,20 @@
 ﻿using Microsoft.Identity.Web;
+using RepositoryFramework.Api.Client.Authorization;
 using System.Net.Http.Headers;
 
 namespace RepositoryFramework.Api.Client.DefaultInterceptor
 {
-    internal class Authenticator : IRepositoryClientInterceptor
+    internal class BearerAuthenticator : IRepositoryClientInterceptor
     {
-        private readonly ITokenAcquisition _tokenProvider;
+        private readonly ITokenManager _tokenManager;
         private readonly AuthenticatorSettings _settings;
         private readonly IServiceProvider _provider;
 
-        public Authenticator(ITokenAcquisition tokenProvider,
+        public BearerAuthenticator(ITokenManager tokenManager,
             AuthenticatorSettings settings,
             IServiceProvider provider)
         {
-            _tokenProvider = tokenProvider;
+            _tokenManager = tokenManager;
             _settings = settings;
             _provider = provider;
         }
@@ -21,8 +22,8 @@ namespace RepositoryFramework.Api.Client.DefaultInterceptor
         {
             try
             {
-                var token = await _tokenProvider.GetAccessTokenForUserAsync(_settings.Scopes ?? Array.Empty<string>()).NoContext();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+                    await _tokenManager.GetTokenAsync());
             }
             catch (Exception exception)
             {

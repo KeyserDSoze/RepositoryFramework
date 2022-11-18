@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
-using RepositoryFramework;
+using RepositoryFramework.Test.Domain;
+using RepositoryFramework.Test.Infrastructure.EntityFramework;
+using RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal;
 using RepositoryFramework.WebApi;
 using RepositoryFramework.WebApi.Models;
 

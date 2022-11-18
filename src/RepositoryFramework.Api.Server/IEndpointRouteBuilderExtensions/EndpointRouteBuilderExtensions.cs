@@ -112,21 +112,33 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         private static void AddGet<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
            where TKey : notnull
-            => app.AddApi<T, TKey, TService, T?>(name, startingPath, authorization,
+            => app.AddApi<T, TKey, TService>(name, startingPath, authorization,
                 RepositoryMethods.Get, null,
-                (TKey key, TService service) =>
+                async (TKey key, TService service) =>
                 {
-                    var queryService = service as IQueryPattern<T, TKey>;
-                    return queryService!.GetAsync(key);
+                    var response = await Try.WithDefaultOnCatchAsync(() =>
+                    {
+                        var queryService = service as IQueryPattern<T, TKey>;
+                        return queryService!.GetAsync(key);
+                    });
+                    if (response.Exception != null)
+                        return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
+                    return Results.Json(response.Entity);
                 });
         private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
            where TKey : notnull
-           => app.AddApi<T, TKey, TService, State<T, TKey>>(name, startingPath, authorization,
+           => app.AddApi<T, TKey, TService>(name, startingPath, authorization,
                RepositoryMethods.Exist, null,
-               (TKey key, TService service) =>
+               async (TKey key, TService service) =>
                {
-                   var queryService = service as IQueryPattern<T, TKey>;
-                   return queryService!.ExistAsync(key);
+                   var response = await Try.WithDefaultOnCatchAsync(() =>
+                   {
+                       var queryService = service as IQueryPattern<T, TKey>;
+                       return queryService!.ExistAsync(key);
+                   });
+                   if (response.Exception != null)
+                       return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
+                   return Results.Json(response.Entity);
                }
            );
         private static void AddQuery<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
@@ -136,16 +148,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 async (HttpRequest request,
                     [FromBody] SerializableFilter? serializableFilter, [FromServices] TService service) =>
                 {
-                    var filter = Try.WithDefaultOnCatch(() => (serializableFilter ?? SerializableFilter.Empty).Deserialize<T>());
-                    if (filter.Exception != null || filter.Entity == null)
+                    var response = await Try.WithDefaultOnCatchAsync(async () =>
                     {
-                        request.HttpContext.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
-                        if (filter.Exception != null)
-                            await request.HttpContext.Response.WriteAsync(filter.Exception.Message).NoContext();
-                        return null;
-                    }
-                    var queryService = service as IQueryPattern<T, TKey>;
-                    return await queryService!.QueryAsync(filter.Entity).ToListAsync().NoContext();
+                        var filter = (serializableFilter ?? SerializableFilter.Empty).Deserialize<T>();
+                        var queryService = service as IQueryPattern<T, TKey>;
+                        return await queryService!.QueryAsync(filter).ToListAsync().NoContext();
+                    });
+                    if (response.Exception != null)
+                        return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
+                    return Results.Json(response.Entity);
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Query);
         }
@@ -156,16 +167,21 @@ namespace Microsoft.Extensions.DependencyInjection
                 async ([FromQuery] string op, [FromQuery] string? returnType,
                     [FromBody] SerializableFilter? serializableFilter, [FromServices] TService service) =>
                 {
-                    var filter = (serializableFilter ?? SerializableFilter.Empty).Deserialize<T>();
-                    var type = CalculateTypeFromQuery();
-                    var queryService = service as IQueryPattern<T, TKey>;
-                    var result = await Generics.WithStatic(
-                                  typeof(EndpointRouteBuilderExtensions),
-                                  nameof(GetResultFromOperation),
-                                  typeof(T), typeof(TKey), type)
-                                .InvokeAsync(queryService!, op, filter)!;
-                    return result;
-
+                    var response = await Try.WithDefaultOnCatchAsync(async () =>
+                    {
+                        var filter = (serializableFilter ?? SerializableFilter.Empty).Deserialize<T>();
+                        var type = CalculateTypeFromQuery();
+                        var queryService = service as IQueryPattern<T, TKey>;
+                        var result = await Generics.WithStatic(
+                                      typeof(EndpointRouteBuilderExtensions),
+                                      nameof(GetResultFromOperation),
+                                      typeof(T), typeof(TKey), type)
+                                    .InvokeAsync(queryService!, op, filter)!;
+                        return result;
+                    });
+                    if (response.Exception != null)
+                        return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
+                    return Results.Json(response.Entity);
                     Type CalculateTypeFromQuery()
                     {
                         var calculatedType = typeof(object);
@@ -192,10 +208,16 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
             => app.AddApi(name, startingPath, authorization,
                 RepositoryMethods.Insert,
-                (T entity, TKey key, TService service) =>
+                async (T entity, TKey key, TService service) =>
                 {
-                    var commandService = service as ICommandPattern<T, TKey>;
-                    return commandService!.InsertAsync(key, entity);
+                    var response = await Try.WithDefaultOnCatchAsync(() =>
+                    {
+                        var commandService = service as ICommandPattern<T, TKey>;
+                        return commandService!.InsertAsync(key, entity);
+                    });
+                    if (response.Exception != null)
+                        return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
+                    return Results.Json(response.Entity);
                 },
                 null
             );
@@ -203,21 +225,33 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
             => app.AddApi(name, startingPath, authorization,
                 RepositoryMethods.Update,
-                (T entity, TKey key, TService service) =>
+                async (T entity, TKey key, TService service) =>
                 {
-                    var commandService = service as ICommandPattern<T, TKey>;
-                    return commandService!.UpdateAsync(key, entity);
+                    var response = await Try.WithDefaultOnCatchAsync(() =>
+                    {
+                        var commandService = service as ICommandPattern<T, TKey>;
+                        return commandService!.UpdateAsync(key, entity);
+                    });
+                    if (response.Exception != null)
+                        return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
+                    return Results.Json(response.Entity);
                 },
                 null
             );
         private static void AddDelete<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
             where TKey : notnull
-            => app.AddApi<T, TKey, TService, State<T, TKey>>(name, startingPath, authorization,
+            => app.AddApi<T, TKey, TService>(name, startingPath, authorization,
                 RepositoryMethods.Delete, null,
-                (TKey key, TService service) =>
+                async (TKey key, TService service) =>
                 {
-                    var commandService = service as ICommandPattern<T, TKey>;
-                    return commandService!.DeleteAsync(key);
+                    var response = await Try.WithDefaultOnCatchAsync(() =>
+                    {
+                        var commandService = service as ICommandPattern<T, TKey>;
+                        return commandService!.DeleteAsync(key);
+                    });
+                    if (response.Exception != null)
+                        return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
+                    return Results.Json(response.Entity);
                 }
             );
         private static void AddBatch<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
@@ -226,18 +260,24 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = app.MapPost($"{startingPath}/{name}/{nameof(RepositoryMethods.Batch)}",
                 async ([FromBody] BatchOperations<T, TKey> operations, [FromServices] TService service) =>
             {
-                var commandService = service as ICommandPattern<T, TKey>;
-                return await commandService!.BatchAsync(operations).NoContext();
+                var response = await Try.WithDefaultOnCatchAsync(() =>
+                {
+                    var commandService = service as ICommandPattern<T, TKey>;
+                    return commandService!.BatchAsync(operations);
+                });
+                if (response.Exception != null)
+                    return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
+                return Results.Json(response.Entity);
             }).WithName($"{nameof(RepositoryMethods.Batch)}{name}")
             .AddAuthorization(authorization, RepositoryMethods.Batch);
         }
-        private static void AddApi<T, TKey, TService, TResult>(this IEndpointRouteBuilder app,
+        private static void AddApi<T, TKey, TService>(this IEndpointRouteBuilder app,
             string name,
             string startingPath,
             ApiAuthorization? authorization,
             RepositoryMethods method,
-            Func<T, TKey, TService, Task<TResult>>? action,
-            Func<TKey, TService, Task<TResult>>? actionWithNoEntity)
+            Func<T, TKey, TService, Task<IResult>>? action,
+            Func<TKey, TService, Task<IResult>>? actionWithNoEntity)
             where TKey : notnull
         {
             var parser = GetKeyParser<TKey>();
