@@ -2,7 +2,7 @@
 {
     public interface ITokenManager
     {
-        Task<string> GetTokenAsync();
+        Task<string?> GetTokenAsync();
         Task EnrichWithAuthorizationAsync(HttpClient client);
     }
 }

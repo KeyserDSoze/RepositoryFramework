@@ -10,13 +10,13 @@ namespace RepositoryFramework.Api.Client.Authorization
     {
         private readonly ITokenAcquisition _tokenProvider;
         private readonly AuthenticatorSettings _settings;
-        private readonly AuthenticationStateProvider _authenticationStateProvider;
+        private readonly AuthenticationStateProvider? _authenticationStateProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public TokenManager(
         ITokenAcquisition tokenProvider,
         AuthenticatorSettings settings,
-        AuthenticationStateProvider authenticationStateProvider,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        AuthenticationStateProvider? authenticationStateProvider = null)
         {
             _tokenProvider = tokenProvider;
             _settings = settings;
@@ -26,21 +26,26 @@ namespace RepositoryFramework.Api.Client.Authorization
         public async Task EnrichWithAuthorizationAsync(HttpClient client)
         {
             var token = await GetTokenAsync().NoContext();
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            if (token != null)
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 
-        public async Task<string> GetTokenAsync()
+        public async Task<string?> GetTokenAsync()
         {
-            ClaimsPrincipal? authUser;
+            ClaimsPrincipal? authUser = null;
             if (_httpContextAccessor?.HttpContext?.User?.Identity?.IsAuthenticated == true)
                 authUser = _httpContextAccessor.HttpContext.User;
-            else
+            else if (_authenticationStateProvider != null)
             {
                 var authState = await _authenticationStateProvider.GetAuthenticationStateAsync().NoContext();
                 authUser = authState.User;
             }
-            var token = await _tokenProvider.GetAccessTokenForUserAsync(_settings.Scopes!, user: authUser).NoContext();
-            return token;
+            if (authUser != null)
+            {
+                var token = await _tokenProvider.GetAccessTokenForUserAsync(_settings.Scopes!, user: authUser).NoContext();
+                return token;
+            }
+            return null;
         }
     }
 }
