@@ -16,5 +16,5 @@ jobs:
         uses: KeyserDSoze/DefaultAction/pushing_nuget_with_symbols@v1.0.1
         with:
           dotnet-version: ${{ secrets.NET_VERSION }}
-          path: src/RepositoryFramework.Cache/RepositoryFramework.Cache.Azure.Storage.Blob/RepositoryFramework.Cache.Azure.Storage.Blob.csproj
+          path: src/RepositoryFramework.Web/RepositoryFramework.Web.Components/RepositoryFramework.Web.Components.csproj
           api-key: ${{ secrets.NUGET_API_KEY }}
