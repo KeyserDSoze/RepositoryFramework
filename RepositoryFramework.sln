@@ -38,6 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Cache.Azure.Storage.Blob.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Cache.Azure.Storage.Blob.yml
 		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Cache.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Cache.yml
 		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.MigrationTools.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.MigrationTools.yml
+		.github\workflows\PackageDeploy.Rystem.RepositoryFramework.Web.Components.yml = .github\workflows\PackageDeploy.Rystem.RepositoryFramework.Web.Components.yml
 		README.md = README.md
 		RepositoryFramework.Abstractions.png = RepositoryFramework.Abstractions.png
 		RepositoryFramework.CacheFlow.png = RepositoryFramework.CacheFlow.png

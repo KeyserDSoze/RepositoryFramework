@@ -12,16 +12,22 @@ namespace RepositoryFramework.Web.Components
     {
         public List<PropertyInfo> NavigationProperties { get; init; } = new();
         public PropertyInfo PropertyInfo { get; init; } = null!;
-        public object? Value(object context)
+        public object? Value(object? context)
         {
+            if (context == null)
+                return null;
             foreach (var item in NavigationProperties)
+            {
                 context = item.GetValue(context);
+                if (context == null)
+                    return null;
+            }
             context = PropertyInfo.GetValue(context);
             return context;
         }
-        public IEnumerable AsEnumerable(object context)
+        public IEnumerable AsEnumerable(object? context)
             => (Value(context) as IEnumerable)!;
-        public string Count(object context)
+        public string Count(object? context)
         {
             var enumerable = AsEnumerable(context);
             if (enumerable is IList listable)
