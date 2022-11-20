@@ -13,7 +13,6 @@
             _query = new Lazy<Query<T, TKey>>(() => new Query<T, TKey>(repository, settings, businessManager));
             _command = new Lazy<Command<T, TKey>>(() => new Command<T, TKey>(repository, settings, businessManager));
         }
-
         public Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.Value.ExistAsync(key, cancellationToken);
         public Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)

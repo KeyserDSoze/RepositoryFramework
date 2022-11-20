@@ -1,0 +1,153 @@
+﻿@namespace RepositoryFramework.Web.Components
+@using System.Reflection;
+@using Blazorise
+@using System.Collections;
+@using System.Text.Json;
+@using Blazorise.DataGrid
+@typeparam T
+@typeparam TKey where TKey: notnull
+
+<DataGrid TItem="Entity<T, TKey>"
+          Data="@_entities"
+          @bind-SelectedRow="@_selectedEntity"
+          Editable="@_canEdit"
+          EditMode="DataGridEditMode.Popup"
+          UseInternalEditing="true"
+          PageSize="PageSize"
+          NewItemCreator="Query<T, TKey>.NewEntity"
+          ShowPager="true"
+          ShowPageSizes="true"
+          Filterable="true"
+          Responsive="true"
+          PopupSize="ModalSize.Large"
+          CommandMode="DataGridCommandMode.Default"
+          Striped="true"
+          Sortable="true">
+
+    <DataGridCommandColumn NewCommandAllowed="_canEdit" EditCommandAllowed="_canEdit" DeleteCommandAllowed="_canEdit">
+        <NewCommandTemplate>
+            <Button ElementId="btnNew" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked"><Icon Name="IconName.Add" /></Button>
+        </NewCommandTemplate>
+        <EditCommandTemplate>
+            <Button ElementId="btnEdit" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked"><Icon Name="IconName.Edit" /></Button>
+        </EditCommandTemplate>
+        <SaveCommandTemplate>
+            <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@(x => { context.Clicked.InvokeAsync(x); _= SaveAsync(context.Item!);  })"><Icon Name="IconName.Save" /></Button>
+        </SaveCommandTemplate>
+        <DeleteCommandTemplate>
+            <Button ElementId="btnDelete" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@(x => { context.Clicked.InvokeAsync(x); _=DeleteAsync(context.Item!.Key!);  })"><Icon Name="IconName.Delete" /></Button>
+        </DeleteCommandTemplate>
+        <CancelCommandTemplate>
+            <Button ElementId="btnCancel" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@(x => { context.Clicked.InvokeAsync(x); _=DeleteAsync(context.Item!.Key!);  })"><Icon Name="IconName.Delete" /></Button>
+        </CancelCommandTemplate>
+    </DataGridCommandColumn>
+    @{
+        List<PropertyInfoKeeper<T, TKey>> properties = new();
+        properties.AddRange(typeof(T).FetchProperties().Select(x => new PropertyInfoKeeper<T, TKey>
+                {
+                    PropertyInfo = x,
+                    Name = $"{nameof(Entity<T, TKey>.Value)}.{x.Name}",
+                    Label = x.Name
+                }));
+    }
+    <DataGridColumn Field="@nameof(_selectedEntity.Key)" Caption="#" Editable="EditableKey" Sortable="true">
+        <DisplayTemplate>
+            @if (context!.Key!.GetType().IsPrimitive())
+            {
+                @context.Key.ToString()
+            }
+            else
+            {
+                @context.Key.ToJson()
+            }
+        </DisplayTemplate>
+    </DataGridColumn>
+
+    @for (int i = 0; i < properties.Count; i++)
+    {
+        var value = properties[i];
+        var isEditable = value.PropertyInfo.SetMethod != null;
+        if (value.PropertyInfo.PropertyType.IsPrimitive())
+        {
+            <DataGridColumn Field="@value.Name" Caption="@value.Label" Editable="isEditable" Sortable="true" />
+        }
+        else if (value.PropertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) != null)
+        {
+            if (!_check.ContainsKey(value.Name))
+                _check.Add(value.Name, false);
+            <DataGridColumn Field="@value.Name" Caption="@value.Label" Editable="isEditable" Sortable="true">
+                <DisplayTemplate>
+                    <div>
+                        <Accordion>
+                            <Collapse Visible="_check[value.Name]">
+                                <CollapseHeader>
+                                    <Heading Size="HeadingSize.Is5">
+                                        <Button Clicked="@(()=>_check[value.Name] = !_check[value.Name])">
+                                            @value.Count(context!.Value!)
+                                        </Button>
+                                    </Heading>
+                                </CollapseHeader>
+                                <CollapseBody>
+                                    <Table Striped="true">
+                                        <TableBody>
+                                            @foreach (var item in value.AsEnumerable(context!.Value!))
+                                            {
+                                                var type = item.GetType();
+                                                <TableRow>
+                                                    @if (type.IsPrimitive())
+                                                    {
+                                                        <TableRowCell>
+                                                            @item.ToString()
+                                                        </TableRowCell>
+                                                    }
+                                                    else
+                                                    {
+                                                        foreach (var innerItem in type.FetchProperties())
+                                                        {
+                                                            if (innerItem.PropertyType.IsPrimitive())
+                                                            {
+                                                                <TableRowCell>
+                                                                    @innerItem.GetValue(item)
+                                                                </TableRowCell>
+                                                            }
+                                                            else
+                                                            {
+                                                                <TableRowCell>
+                                                                    @innerItem.GetValue(item).ToJson()
+                                                                </TableRowCell>
+                                                            }
+                                                        }
+                                                    }
+                                                </TableRow>
+                                            }
+                                        </TableBody>
+                                    </Table>
+                                </CollapseBody>
+                            </Collapse>
+                        </Accordion>
+
+                    </div>
+                </DisplayTemplate>
+                <EditTemplate>
+                    <MemoEdit TextChanged="x => value.SetJson(context!, x)" Text="@context.CellValue?.ToJson()" AutoSize="true">
+                    </MemoEdit>
+                </EditTemplate>
+            </DataGridColumn>
+        }
+        else
+        {
+            foreach (var nestedValue in value.PropertyInfo.PropertyType.FetchProperties())
+            {
+                var navigationProperties = new List<PropertyInfo> { value.PropertyInfo };
+                navigationProperties.AddRange(value.NavigationProperties);
+                properties.Add(new PropertyInfoKeeper<T, TKey>
+                {
+                    NavigationProperties = navigationProperties,
+                    PropertyInfo = nestedValue,
+                    Name = $"{value.Name}.{nestedValue.Name}",
+                    Label = nestedValue.Name
+                });
+            }
+        }
+    }
+</DataGrid>

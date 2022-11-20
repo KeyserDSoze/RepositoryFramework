@@ -1,0 +1,20 @@
+name: Web.Components
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - src/RepositoryFramework.Web/RepositoryFramework.Web.Components/**
+jobs:
+  publish:
+    name: build, pack & publish
+    runs-on: ubuntu-latest
+    environment: RepositoryFramework
+    
+    steps:
+      - name: Publish package
+        uses: KeyserDSoze/DefaultAction/pushing_nuget_with_symbols@v1.0.1
+        with:
+          dotnet-version: ${{ secrets.NET_VERSION }}
+          path: src/RepositoryFramework.Web/RepositoryFramework.Web.Components/RepositoryFramework.Web.Components.csproj
+          api-key: ${{ secrets.NUGET_API_KEY }}
