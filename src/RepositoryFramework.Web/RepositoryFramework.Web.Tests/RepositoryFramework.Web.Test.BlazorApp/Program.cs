@@ -1,7 +1,4 @@
-﻿using Blazorise;
-using Blazorise.Bootstrap5;
-using Blazorise.Icons.FontAwesome;
-using RepositoryFramework.Web.Test.BlazorApp.Data;
+﻿using RepositoryFramework.Web.Test.BlazorApp.Data;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +10,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services
     .AddRepositoryUI();
 builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()
-    .PopulateWithRandomData(x => x.Id, 123);
+    .PopulateWithRandomData(x => x.Id, 1, 2);
 var app = builder.Build();
 await app.Services.WarmUpAsync();
 

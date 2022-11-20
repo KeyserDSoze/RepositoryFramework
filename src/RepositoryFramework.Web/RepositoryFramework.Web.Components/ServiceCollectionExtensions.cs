@@ -8,7 +8,10 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddRepositoryUI(this IServiceCollection services)
         {
-            return services.AddBlazorise()
+            return services.AddBlazorise(options =>
+                    {
+                        options.Immediate = true;
+                    })
                     .AddBootstrap5Providers()
                     .AddBootstrap5Components()
                     .AddFontAwesomeIcons();
