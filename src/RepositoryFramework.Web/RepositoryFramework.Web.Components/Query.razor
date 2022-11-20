@@ -1,0 +1,58 @@
+﻿@using System.Reflection;
+@using Blazorise
+@typeparam T
+@typeparam TKey where TKey: notnull
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+<DataGrid TItem="Entity<T, TKey>"
+          Data="@_entities"
+          @bind-SelectedRow="@_selectedEntity"
+          Editable="@_canEdit"
+          EditMode="DataGridEditMode.Popup"
+          UseInternalEditing="true"
+          PageSize="10"
+          NewItemCreator="NewEntity"
+          ShowPager="true"
+          ShowPageSizes="true"
+          Filterable="true"
+          Responsive="true"
+          PopupSize="ModalSize.Large"
+          CommandMode="DataGridCommandMode.Default"
+          Striped="true"
+          Sortable="true">
+
+    <DataGridCommandColumn NewCommandAllowed="_canEdit" EditCommandAllowed="_canEdit" DeleteCommandAllowed="_canEdit">
+        <NewCommandTemplate>
+            <Button ElementId="btnNew" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked"><Icon Name="IconName.Add" /></Button>
+        </NewCommandTemplate>
+        <EditCommandTemplate>
+            <Button ElementId="btnEdit" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked"><Icon Name="IconName.Edit" /></Button>
+        </EditCommandTemplate>
+        <SaveCommandTemplate>
+            <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@(x => { context.Clicked.InvokeAsync(x); _= SaveAsync(context.Item, x);  })"><Icon Name="IconName.Save" /></Button>
+        </SaveCommandTemplate>
+        <DeleteCommandTemplate>
+            <Button ElementId="btnDelete" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@(x => { context.Clicked.InvokeAsync(x); _=DeleteAsync(context.Item.Key);  })"><Icon Name="IconName.Delete" /></Button>
+        </DeleteCommandTemplate>
+        <CancelCommandTemplate>
+            <Button ElementId="btnCancel" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@(x => { context.Clicked.InvokeAsync(x); _=DeleteAsync(context.Item.Key);  })"><Icon Name="IconName.Delete" /></Button>
+        </CancelCommandTemplate>
+    </DataGridCommandColumn>
+
+    <DataGridColumn Field="@nameof(_selectedEntity.Key)" Caption="#" Editable="EditableKey" Sortable="true" />
+    @foreach (var value in typeof(T).FetchProperties())
+    {
+        var name = $"Value.{value.Name}";
+        if (value.PropertyType.IsPrimitive())
+        {
+            <DataGridColumn Field="@name" Caption="@value.Name" Editable="true" Sortable="true" />
+        }
+        else
+        {
+            foreach (var nestedValue in value.PropertyType.FetchProperties())
+            {
+                var nestedName = $"Value.{value.Name}.{nestedValue.Name}";
+                <DataGridColumn Field="@nestedName" Caption="@nestedValue.Name" Editable="true" Sortable="true" />
+            }
+        }
+    }
+</DataGrid>
