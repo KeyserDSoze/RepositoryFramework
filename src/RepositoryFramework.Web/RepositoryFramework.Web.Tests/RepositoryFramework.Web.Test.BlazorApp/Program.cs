@@ -8,9 +8,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services
-    .AddRepositoryUI();
+    .AddRepositoryUI(x => x.Name = "SuperSite");
 builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()
-    .PopulateWithRandomData(x => x.Id, 1, 2);
+    .PopulateWithRandomData(x => x.Id, 67, 2);
 var app = builder.Build();
 await app.Services.WarmUpAsync();
 
@@ -29,6 +29,11 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.MapBlazorHub();
+app.UseEndpoints(x =>
+{
+    x.AddDefaultRepositoryEndpoint();
+});
+
 app.MapFallbackToPage("/_Host");
 
 app.Run();

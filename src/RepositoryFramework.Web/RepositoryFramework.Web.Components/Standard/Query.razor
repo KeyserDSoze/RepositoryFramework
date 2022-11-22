@@ -1,4 +1,4 @@
-﻿@namespace RepositoryFramework.Web.Components
+﻿@namespace RepositoryFramework.Web.Components.Standard
 @using System.Reflection;
 @using Blazorise
 @using System.Collections;
@@ -6,15 +6,17 @@
 @using Blazorise.DataGrid
 @typeparam T
 @typeparam TKey where TKey: notnull
+@inherits RepositoryBase<T, TKey>
 
 <DataGrid TItem="Entity<T, TKey>"
           Data="@_entities"
           @bind-SelectedRow="@_selectedEntity"
-          Editable="@_canEdit"
+          ReadData="@OnReadData"
+          TotalItems="@_totalItems"
+          Editable="@CanEdit"
           EditMode="DataGridEditMode.Popup"
           UseInternalEditing="true"
           PageSize="PageSize"
-          NewItemCreator="Query<T, TKey>.NewEntity"
           ShowPager="true"
           ShowPageSizes="true"
           Filterable="true"
@@ -24,22 +26,22 @@
           Striped="true"
           Sortable="true">
 
-    <DataGridCommandColumn NewCommandAllowed="_canEdit" EditCommandAllowed="_canEdit" DeleteCommandAllowed="_canEdit">
+    <DataGridCommandColumn NewCommandAllowed="CanEdit" EditCommandAllowed="CanEdit" DeleteCommandAllowed="CanEdit">
         <NewCommandTemplate>
-            <Button ElementId="btnNew" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked"><Icon Name="IconName.Add" /></Button>
+            <Link To="@GetCreateUri()">
+            <Icon Name="IconName.Add" />
+            </Link>
         </NewCommandTemplate>
         <EditCommandTemplate>
-            <Button ElementId="btnEdit" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked"><Icon Name="IconName.Edit" /></Button>
+            <Link To="@GetEditUri(context.Item.Key)">
+            <Icon Name="IconName.Edit" />
+            </Link>
         </EditCommandTemplate>
-        <SaveCommandTemplate>
-            <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@(x => { context.Clicked.InvokeAsync(x); _= SaveAsync(context.Item!);  })"><Icon Name="IconName.Save" /></Button>
-        </SaveCommandTemplate>
         <DeleteCommandTemplate>
-            <Button ElementId="btnDelete" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@(x => { context.Clicked.InvokeAsync(x); _=DeleteAsync(context.Item!.Key!);  })"><Icon Name="IconName.Delete" /></Button>
+            <Link To="@GetDeleteUri(context.Item.Key)">
+            <Icon Name="IconName.Delete" />
+            </Link>
         </DeleteCommandTemplate>
-        <CancelCommandTemplate>
-            <Button ElementId="btnCancel" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@(x => { context.Clicked.InvokeAsync(x); _=DeleteAsync(context.Item!.Key!);  })"><Icon Name="IconName.Delete" /></Button>
-        </CancelCommandTemplate>
     </DataGridCommandColumn>
     @{
         List<PropertyInfoKeeper<T, TKey>> properties = new();
@@ -75,7 +77,7 @@
         {
             if (!_check.ContainsKey(value.Name))
                 _check.Add(value.Name, false);
-            <DataGridColumn Field="@value.Name" Caption="@value.Label" Editable="isEditable" Sortable="true">
+            <DataGridColumn Field="@value.Name" Caption="@value.Label" Editable="isEditable" Sortable="true" Filterable="false">
                 <DisplayTemplate>
                     <div>
                         <Accordion>
@@ -136,17 +138,19 @@
         }
         else
         {
+            int counter = 1;
             foreach (var nestedValue in value.PropertyInfo.PropertyType.FetchProperties())
             {
                 var navigationProperties = new List<PropertyInfo> { value.PropertyInfo };
                 navigationProperties.AddRange(value.NavigationProperties);
-                properties.Add(new PropertyInfoKeeper<T, TKey>
+                properties.Insert(i + counter, new PropertyInfoKeeper<T, TKey>
                 {
                     NavigationProperties = navigationProperties,
                     PropertyInfo = nestedValue,
                     Name = $"{value.Name}.{nestedValue.Name}",
                     Label = nestedValue.Name
                 });
+                counter++;
             }
         }
     }

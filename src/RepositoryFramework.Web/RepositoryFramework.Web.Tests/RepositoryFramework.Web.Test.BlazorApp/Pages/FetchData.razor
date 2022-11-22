@@ -1,4 +1,4 @@
-﻿@page "/fetchdata"
+﻿@page "/fetchdata/{name}"
 @using RepositoryFramework.Web.Test.BlazorApp.Data
 @inject WeatherForecastService ForecastService
 
@@ -39,6 +39,8 @@ else
 
 @code {
     private WeatherForecast[]? forecasts;
+    [Parameter]
+    public string Name { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

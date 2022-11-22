@@ -79,7 +79,6 @@ Welcome to your new app.
 
     protected override async Task OnParametersSetAsync()
     {
-        var q = await AppClient.Where(x => x.Id == 2 && x.Username == "aaaaa").ToListAsync();
         var user = new User("@gmail.com");
         var users4 = await UserClient1.GetAsync("dddd");
         Users1 = (await UserClient1.Where(x => x.Email != "").OrderByDescending(x => x.Name!).ToListAsync().NoContext()).Select(x => x.Value);

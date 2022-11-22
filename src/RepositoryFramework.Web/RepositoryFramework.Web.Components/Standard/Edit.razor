@@ -1,0 +1,38 @@
+﻿@namespace RepositoryFramework.Web.Components.Standard
+@using System.Reflection;
+@using Blazorise
+@using System.Collections;
+@using System.Text.Json;
+@using Blazorise.DataGrid
+@typeparam T
+@typeparam TKey where TKey: notnull
+@inherits RepositoryBase<T, TKey>
+
+@if (_entity != null)
+{
+    <Row>
+        <Column>
+            <InternalEdit Entity="_entity"></InternalEdit>
+            <Button Color="Color.Primary" Clicked="@(() => SaveAsync(false))">
+                @if (_isNew)
+                {
+                    @:Save
+                }
+                else
+                {
+                    @:Update
+                }
+            </Button>
+            <Button Color="Color.Primary" Clicked="@(() => SaveAsync(true))">
+                @if (_isNew)
+                {
+                    @:Save and go
+                }
+                else
+                {
+                    @:Update and go
+                }
+            </Button>
+        </Column>
+    </Row>
+}

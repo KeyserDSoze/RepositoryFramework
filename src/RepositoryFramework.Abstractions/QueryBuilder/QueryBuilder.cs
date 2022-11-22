@@ -205,8 +205,8 @@ namespace RepositoryFramework
             FilterExpression operations = new();
             foreach (var where in _operations.Operations.Where(x => x.Operation == FilterOperations.Where))
                 operations.Where((where as LambdaFilterOperation)!.Expression!);
-            Take(pageSize);
             Skip((page - 1) * pageSize);
+            Take(pageSize);
             var query = await ToListAsync(cancellationToken).NoContext();
             var count = await _query.OperationAsync(OperationType<long>.Count, operations, cancellationToken).NoContext();
             var pages = count / pageSize + (count % pageSize > 0 ? 1 : 0);

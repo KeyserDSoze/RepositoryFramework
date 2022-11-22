@@ -4,8 +4,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+builder.Services
+    .AddRepositoryUI(x => x.Name = "SuperSite");
 builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()
-    .PopulateWithRandomData(x => x.Id, 123);
+    .PopulateWithRandomData(x => x.Id, 2, 2);
 var app = builder.Build();
 await app.Services.WarmUpAsync();
 // Configure the HTTP request pipeline.
@@ -23,8 +26,11 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapRazorPages();
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+});
 app.Run();

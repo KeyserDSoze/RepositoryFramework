@@ -1,0 +1,46 @@
+﻿@using Blazorise
+@namespace RepositoryFramework.Web.Components
+
+<Bar Breakpoint="Breakpoint.Desktop"
+     Background="Background.Light"
+     ThemeContrast="ThemeContrast.Light">
+    <BarBrand>
+        @Settings.Name
+    </BarBrand>
+    <BarToggler />
+    <BarMenu>
+        <BarStart>
+            @if (StartFragment != null)
+            {
+                @StartFragment
+            }
+            @foreach (var app in AppMenu.Models)
+            {
+                <BarItem>
+                    <BarDropdown>
+                        <BarDropdownToggle>@app.Value.ModelType.Name</BarDropdownToggle>
+                        <BarDropdownMenu>
+                            <BarDropdownItem>
+                                <BarLink To="@($"../../../../Repository/{app.Value.ModelType.Name}/Query")">
+                                    Query
+                                </BarLink>
+                            </BarDropdownItem>
+                            <BarDropdownDivider />
+                            <BarDropdownItem>
+                                <BarLink To="@($"../../../../Repository/{app.Value.ModelType.Name}/Create")">
+                                    Create
+                                </BarLink>
+                            </BarDropdownItem>
+                        </BarDropdownMenu>
+                    </BarDropdown>
+                </BarItem>
+            }
+        </BarStart>
+        <BarEnd>
+            @if (EndFragment != null)
+            {
+                @EndFragment
+            }
+        </BarEnd>
+    </BarMenu>
+</Bar>

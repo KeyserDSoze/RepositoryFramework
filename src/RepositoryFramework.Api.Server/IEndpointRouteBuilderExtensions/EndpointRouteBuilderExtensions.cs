@@ -280,22 +280,23 @@ namespace Microsoft.Extensions.DependencyInjection
             Func<TKey, TService, Task<IResult>>? actionWithNoEntity)
             where TKey : notnull
         {
-            var parser = GetKeyParser<TKey>();
+            var parser = IKey.Parser<TKey>();
             var keyType = typeof(TKey);
             RouteHandlerBuilder? apiMapped = null;
-            if (IKey.IsJsonable(keyType) && actionWithNoEntity != null)
+            var keyIsJsonable = IKey.IsJsonable(keyType);
+            if (keyIsJsonable && actionWithNoEntity != null)
             {
                 apiMapped = app.MapPost($"{startingPath}/{name}/{method}",
                 ([FromBody] TKey key, [FromServices] TService service)
                     => actionWithNoEntity.Invoke(key, service));
             }
-            else if (IKey.IsJsonable(keyType) && action != null)
+            else if (keyIsJsonable && action != null)
             {
                 apiMapped = app.MapPost($"{startingPath}/{name}/{method}",
                 ([FromBody] Entity<T, TKey> entity, [FromServices] TService service)
                     => action.Invoke(entity.Value!, entity.Key!, service));
             }
-            else if (!IKey.IsJsonable(keyType) && action != null)
+            else if (!keyIsJsonable && action != null)
             {
                 apiMapped = app.MapPost($"{startingPath}/{name}/{method}",
                 ([FromQuery] string key, [FromBody] T entity, [FromServices] TService service)
@@ -311,30 +312,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .WithName($"{method}{name}")
                     .AddAuthorization(authorization, method);
         }
-        private static Func<string, TKey> GetKeyParser<TKey>()
-        {
-            var type = typeof(TKey);
-            if (type == typeof(string))
-                return key => (dynamic)key;
-            else if (type == typeof(Guid))
-                return key => (dynamic)Guid.Parse(key);
-            else if (type == typeof(DateTimeOffset))
-                return key => (dynamic)DateTimeOffset.Parse(key);
-            else if (type == typeof(TimeSpan))
-                return key => (dynamic)TimeSpan.Parse(key);
-            else if (type == typeof(nint))
-                return key => (dynamic)nint.Parse(key);
-            else if (type == typeof(nuint))
-                return key => (dynamic)nuint.Parse(key);
-            else
-            {
-                var hasProperties = type.FetchProperties().Length > 0;
-                if (hasProperties)
-                    return key => key.FromJson<TKey>();
-                else
-                    return key => (TKey)Convert.ChangeType(key, type);
-            }
-        }
+        
         private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, ApiAuthorization? authorization, RepositoryMethods path)
         {
             var policies = authorization?.GetPolicy(path);
