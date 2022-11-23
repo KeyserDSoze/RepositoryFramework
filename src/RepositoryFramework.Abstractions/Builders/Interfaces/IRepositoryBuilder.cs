@@ -13,7 +13,6 @@ namespace RepositoryFramework
         IServiceCollection Services { get; }
         PatternType Type { get; }
         ServiceLifetime ServiceLifetime { get; }
-        IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>();
         public IRepositoryBuilder<T, TKey> AddBusinessBeforeInsert<TBusiness>()
             where TBusiness : class, IRepositoryBusinessBeforeInsert<T, TKey>
             => AddBusiness<TBusiness>(RepositoryMethods.Insert, false);
@@ -72,6 +71,13 @@ namespace RepositoryFramework
                 .AddSingleton(BusinessManagerOptions<T, TKey>.Instance)
                 .AddService<TBusiness>(ServiceLifetime);
             return this;
+        }
+        public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
+        {
+            Services.AddSingleton<IRepositoryFilterTranslator<T, TKey>>(FilterTranslation<T, TKey>.Instance);
+            FilterTranslation<T, TKey>.Instance.Setup<TTranslated>();
+            Services.AddSingleton<IRepositoryMapper<T, TKey, TTranslated>>(RepositoryMapper<T, TKey, TTranslated>.Instance);
+            return new QueryTranslationBuilder<T, TKey, TTranslated>(this);
         }
     }
 }

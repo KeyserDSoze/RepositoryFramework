@@ -69,7 +69,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                     .PopulateWithRandomData(x => x.Email!, 120, 5)
                                     .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com")
                                     .And()
-                                    .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
+                                    .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>()
+                                    .Translate<IperUser>();
                                 services
                                     .AddRepositoryInMemoryStorage<Animal, AnimalKey>()
                                     .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert>()

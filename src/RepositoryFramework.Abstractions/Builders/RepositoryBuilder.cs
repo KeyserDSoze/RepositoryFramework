@@ -19,11 +19,6 @@ namespace RepositoryFramework
             Type = type;
             ServiceLifetime = serviceLifetime;
         }
-        public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
-        {
-            Services.AddSingleton<IRepositoryFilterTranslator<T, TKey>>(FilterTranslation<T, TKey>.Instance);
-            Services.AddSingleton<IRepositoryMapper<T, TKey, TTranslated>>(RepositoryMapper<T, TKey, TTranslated>.Instance);
-            return new QueryTranslationBuilder<T, TKey, TTranslated>(this);
-        }
+       
     }
 }

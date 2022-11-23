@@ -42,7 +42,6 @@ namespace RepositoryFramework
             }
             return t;
         }
-
         public TEntityModel? Map(T? entity, TKey key)
         {
             if (entity == null)
@@ -68,7 +67,6 @@ namespace RepositoryFramework
             }
             return entityModel;
         }
-
         public TKey? RetrieveKey(TEntityModel? entity)
         {
             if (entity == null)

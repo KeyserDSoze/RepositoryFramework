@@ -73,10 +73,5 @@ namespace RepositoryFramework.InMemory
                 });
             return new RepositoryInMemoryCreatorBuilder<T, TKey>(this, _behaviorSettings);
         }
-        public IQueryTranslationInMemoryBuilder<T, TKey, TTranslated> Translate<TTranslated>()
-          => new QueryTranslationInMemoryBuilder<T, TKey, TTranslated>(this);
-
-        IQueryTranslationBuilder<T, TKey, TTranslated> IRepositoryBuilder<T, TKey>.Translate<TTranslated>()
-            => Translate<TTranslated>();
     }
 }

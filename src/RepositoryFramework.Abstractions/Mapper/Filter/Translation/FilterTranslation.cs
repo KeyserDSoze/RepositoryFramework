@@ -40,14 +40,18 @@ namespace RepositoryFramework
         private static Regex VariableName(string prefix) => new($@"\.{prefix}[^a-zA-Z0-9@_]{{1}}");
         public void With<TTranslated, TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
+            Setup<TTranslated>();
             var translatedName = typeof(TTranslated).FullName!;
-            if (!_translations.ContainsKey(translatedName))
-                _translations.Add(translatedName, new(typeof(T), typeof(TTranslated)));
-
             var propertyName = string.Join(".", property.ToString().Split('.').Skip(1));
             var translatedPropertyName = $".{string.Join(".", translatedProperty.ToString().Split('.').Skip(1))}";
             _translations[translatedName].Translations.Add(new Translation(VariableName(propertyName), $".{propertyName}", translatedPropertyName));
             _translations[translatedName].Translations = _translations[translatedName].Translations.OrderByDescending(x => x.Value.Length).ToList();
+        }
+        public void Setup<TTranslated>()
+        {
+            var translatedName = typeof(TTranslated).FullName!;
+            if (!_translations.ContainsKey(translatedName))
+                _translations.Add(translatedName, new(typeof(T), typeof(TTranslated)));
         }
         public IFilterExpression Transform(SerializableFilter serializableFilter)
         {

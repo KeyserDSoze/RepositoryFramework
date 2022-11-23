@@ -123,7 +123,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     });
                     if (response.Exception != null)
                         return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
-                    return Results.Json(response.Entity);
+                    return Results.Json(response.Entity, RepositoryOptions.JsonSerializerOptions);
                 });
         private static void AddExist<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
            where TKey : notnull
@@ -138,7 +138,7 @@ namespace Microsoft.Extensions.DependencyInjection
                    });
                    if (response.Exception != null)
                        return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
-                   return Results.Json(response.Entity);
+                   return Results.Json(response.Entity, RepositoryOptions.JsonSerializerOptions);
                }
            );
         private static void AddQuery<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
@@ -156,7 +156,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     });
                     if (response.Exception != null)
                         return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
-                    return Results.Json(response.Entity);
+                    return Results.Json(response.Entity, RepositoryOptions.JsonSerializerOptions);
                 }).WithName($"{nameof(RepositoryMethods.Query)}{name}")
               .AddAuthorization(authorization, RepositoryMethods.Query);
         }
@@ -181,7 +181,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     });
                     if (response.Exception != null)
                         return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
-                    return Results.Json(response.Entity);
+                    return Results.Json(response.Entity, RepositoryOptions.JsonSerializerOptions);
                     Type CalculateTypeFromQuery()
                     {
                         var calculatedType = typeof(object);
@@ -217,7 +217,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     });
                     if (response.Exception != null)
                         return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
-                    return Results.Json(response.Entity);
+                    return Results.Json(response.Entity, RepositoryOptions.JsonSerializerOptions);
                 },
                 null
             );
@@ -234,7 +234,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     });
                     if (response.Exception != null)
                         return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
-                    return Results.Json(response.Entity);
+                    return Results.Json(response.Entity, RepositoryOptions.JsonSerializerOptions);
                 },
                 null
             );
@@ -251,7 +251,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     });
                     if (response.Exception != null)
                         return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
-                    return Results.Json(response.Entity);
+                    return Results.Json(response.Entity, RepositoryOptions.JsonSerializerOptions);
                 }
             );
         private static void AddBatch<T, TKey, TService>(IEndpointRouteBuilder app, string name, string startingPath, ApiAuthorization? authorization)
@@ -267,7 +267,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 });
                 if (response.Exception != null)
                     return Results.Problem(response.Exception.Message, string.Empty, StatusCodes.Status500InternalServerError);
-                return Results.Json(response.Entity);
+                return Results.Json(response.Entity, RepositoryOptions.JsonSerializerOptions);
             }).WithName($"{nameof(RepositoryMethods.Batch)}{name}")
             .AddAuthorization(authorization, RepositoryMethods.Batch);
         }

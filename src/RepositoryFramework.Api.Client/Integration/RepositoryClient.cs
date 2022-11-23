@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Net;
+using System.Text.Json;
 
 namespace RepositoryFramework.Api.Client
 {
@@ -31,11 +32,23 @@ namespace RepositoryFramework.Api.Client
             else
                 return Task.FromResult(_httpClient);
         }
-        private static async Task<TResult> PostAsJson<TMessage, TResult>(HttpClient client, string path, TMessage message, CancellationToken cancellationToken)
+        private static async Task<TResult?> PostAsJson<TMessage, TResult>(HttpClient client, string path, TMessage message, CancellationToken cancellationToken)
         {
             var response = await client.PostAsJsonAsync(path, message, cancellationToken).NoContext();
             response.EnsureSuccessStatusCode();
-            return (await response!.Content.ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken).NoContext())!;
+            var result = await response.Content.ReadAsStringAsync(cancellationToken).NoContext();
+            if (!string.IsNullOrWhiteSpace(result))
+                return result.FromJson<TResult>(RepositoryOptions.JsonSerializerOptions);
+            return default;
+        }
+        private static async Task<TResult?> GetAsJson<TResult>(HttpClient client, string path, CancellationToken cancellationToken)
+        {
+            var response = await client.GetAsync(path, cancellationToken).NoContext();
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadAsStringAsync(cancellationToken).NoContext();
+            if (!string.IsNullOrWhiteSpace(result))
+                return result.FromJson<TResult>(RepositoryOptions.JsonSerializerOptions);
+            return default;
         }
         private static string GetCorrectUriWithKey(string path, TKey key)
         {
@@ -49,9 +62,9 @@ namespace RepositoryFramework.Api.Client
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Delete).NoContext();
             if (_settings.IsJsonableKey)
-                return await PostAsJson<TKey, State<T, TKey>>(client, _settings.DeletePath, key, cancellationToken).NoContext();
+                return (await PostAsJson<TKey, State<T, TKey>>(client, _settings.DeletePath, key, cancellationToken).NoContext())!;
             else
-                return (await client.GetFromJsonAsync<State<T, TKey>>(GetCorrectUriWithKey(_settings.DeletePath, key), cancellationToken).NoContext())!;
+                return (await GetAsJson<State<T, TKey>>(client, GetCorrectUriWithKey(_settings.DeletePath, key), cancellationToken).NoContext())!;
         }
         public async Task<T?> GetAsync(TKey key, CancellationToken cancellationToken = default)
         {
@@ -59,23 +72,23 @@ namespace RepositoryFramework.Api.Client
             if (_settings.IsJsonableKey)
                 return await PostAsJson<TKey, T>(client, _settings.GetPath, key, cancellationToken).NoContext();
             else
-                return await client.GetFromJsonAsync<T>(GetCorrectUriWithKey(_settings.GetPath, key), cancellationToken).NoContext();
+                return await GetAsJson<T>(client, GetCorrectUriWithKey(_settings.GetPath, key), cancellationToken).NoContext();
         }
         public async Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Exist).NoContext();
             if (_settings.IsJsonableKey)
-                return await PostAsJson<TKey, State<T, TKey>>(client, _settings.ExistPath, key, cancellationToken).NoContext();
+                return (await PostAsJson<TKey, State<T, TKey>>(client, _settings.ExistPath, key, cancellationToken).NoContext())!;
             else
-                return (await client.GetFromJsonAsync<State<T, TKey>>(GetCorrectUriWithKey(_settings.ExistPath, key), cancellationToken).NoContext())!;
+                return (await GetAsJson<State<T, TKey>>(client, GetCorrectUriWithKey(_settings.ExistPath, key), cancellationToken).NoContext())!;
         }
         public async Task<State<T, TKey>> InsertAsync(TKey key, T value, CancellationToken cancellationToken = default)
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Insert).NoContext();
             if (_settings.IsJsonableKey)
-                return await PostAsJson<Entity<T, TKey>, State<T, TKey>>(client, _settings.InsertPath, new(value, key), cancellationToken).NoContext();
+                return (await PostAsJson<Entity<T, TKey>, State<T, TKey>>(client, _settings.InsertPath, new(value, key), cancellationToken).NoContext())!;
             else
-                return await PostAsJson<T, State<T, TKey>>(client, GetCorrectUriWithKey(_settings.InsertPath, key), value, cancellationToken).NoContext();
+                return (await PostAsJson<T, State<T, TKey>>(client, GetCorrectUriWithKey(_settings.InsertPath, key), value, cancellationToken).NoContext())!;
         }
         public async IAsyncEnumerable<Entity<T, TKey>> QueryAsync(IFilterExpression filter,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -123,9 +136,9 @@ namespace RepositoryFramework.Api.Client
         {
             var client = await EnrichedClientAsync(RepositoryMethods.Update).NoContext();
             if (_settings.IsJsonableKey)
-                return await PostAsJson<Entity<T, TKey>, State<T, TKey>>(client, _settings.UpdatePath, new(value, key), cancellationToken).NoContext();
+                return (await PostAsJson<Entity<T, TKey>, State<T, TKey>>(client, _settings.UpdatePath, new(value, key), cancellationToken).NoContext())!;
             else
-                return await PostAsJson<T, State<T, TKey>>(client, GetCorrectUriWithKey(_settings.UpdatePath, key), value, cancellationToken).NoContext();
+                return (await PostAsJson<T, State<T, TKey>>(client, GetCorrectUriWithKey(_settings.UpdatePath, key), value, cancellationToken).NoContext())!;
         }
         public async Task<BatchResults<T, TKey>> BatchAsync(BatchOperations<T, TKey> operations, CancellationToken cancellationToken = default)
         {
