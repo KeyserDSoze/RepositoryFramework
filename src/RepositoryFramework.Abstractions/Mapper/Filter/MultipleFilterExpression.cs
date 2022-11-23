@@ -7,8 +7,8 @@ namespace RepositoryFramework
         public IFilterExpression FilterByType<T>()
         {
             var name = typeof(T).FullName!;
-            if (Filters.ContainsKey(name))
-                return Filters[name];
+            if (Filters.TryGetValue(name, out var value))
+                return value;
             return FilterByDefault();
         }
         public IFilterExpression FilterByDefault()
@@ -23,8 +23,8 @@ namespace RepositoryFramework
             => FilterByDefault().Serialize();
         public string ToKey()
             => FilterByDefault().ToKey();
-        public IFilterExpression Translate<T>()
-            => FilterByDefault().Translate<T>();
+        public IFilterExpression Translate(IRepositoryFilterTranslator translator)
+            => FilterByDefault().Translate(translator);
         public Dictionary<string, FilterExpression> Filters { get; } = new();
         public IQueryable<T> Apply<T>(IEnumerable<T> enumerable, FilterOperations operations = IFilterExpression.DefaultOperations)
             => Apply(enumerable.AsQueryable(), operations);

@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using System.Linq;
 
 namespace RepositoryFramework
 {
@@ -26,10 +25,10 @@ namespace RepositoryFramework
             => ToSerializableQuery();
         public string ToKey()
             => ToSerializableQuery().AsString();
-        public IFilterExpression Translate<T>()
+        public IFilterExpression Translate(IRepositoryFilterTranslator translator)
         {
-            if (FilterTranslation.Instance.HasTranslation<T>())
-                return ToSerializableQuery().DeserializeAndTranslate<T>();
+            if (translator != null)
+                return ToSerializableQuery().DeserializeAndTranslate(translator);
             return this;
         }
         internal IFilterExpression Where(LambdaExpression expression)

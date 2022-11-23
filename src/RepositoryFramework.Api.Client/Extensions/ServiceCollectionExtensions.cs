@@ -20,7 +20,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             static void SetOptionsForClient(RepositoryFrameworkOptions<T, TKey> options)
             {
-                options.HasToTranslate = false;
                 options.IsNotExposableAsApi = true;
             }
         }

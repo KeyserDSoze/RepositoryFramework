@@ -13,7 +13,7 @@ namespace RepositoryFramework.InMemory
         }
         public IQueryTranslationInMemoryBuilder<T, TKey, TTranslated> With<TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
-            FilterTranslation.Instance.With(property, translatedProperty);
+            FilterTranslation<T, TKey>.Instance.With(property, translatedProperty);
             return this;
         }
         public IRepositoryInMemoryBuilder<T, TKey> Builder => _repositoryBuilder;

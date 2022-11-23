@@ -11,7 +11,7 @@ namespace RepositoryFramework
         List<FilteringOperation> Operations { get; }
         SerializableFilter Serialize();
         string ToKey();
-        IFilterExpression Translate<T>();
+        IFilterExpression Translate(IRepositoryFilterTranslator translator);
         IQueryable<T> Apply<T>(IEnumerable<T> enumerable, FilterOperations operations = DefaultOperations);
         IQueryable<TValue> Apply<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> dictionary, FilterOperations operations = DefaultOperations);
         IQueryable<T> Apply<T>(IQueryable<T> queryable, FilterOperations operations = DefaultOperations);

@@ -21,8 +21,8 @@ namespace RepositoryFramework
                 }
             return query;
         }
-        public IFilterExpression DeserializeAndTranslate<T>()
-            => FilterTranslation.Instance.Transform<T>(this);
+        public IFilterExpression DeserializeAndTranslate(IRepositoryFilterTranslator translator)
+            => translator.Transform(this);
         public string AsString()
             => string.Join('_', Operations.Select(x => $"{x.Operation}{x.Value}"));
     }

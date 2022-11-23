@@ -1,10 +1,10 @@
-﻿using System.Collections.Concurrent;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
 namespace RepositoryFramework
 {
-    public sealed class FilterTranslation
+    internal sealed class FilterTranslation<T, TKey> : IRepositoryFilterTranslator<T, TKey>
+        where TKey : notnull
     {
         private sealed record TranslationWrapper(Type From, Type To)
         {
@@ -33,35 +33,26 @@ namespace RepositoryFramework
                 return deserialized;
             }
         }
-        public static FilterTranslation Instance { get; } = new();
+        public static FilterTranslation<T, TKey> Instance { get; } = new();
         private FilterTranslation() { }
         private sealed record Translation(Regex Key, string EndWith, string Value);
-        private readonly Dictionary<string, Dictionary<string, TranslationWrapper>> _translations = new();
-        public bool HasTranslation<T>()
-            => _translations.ContainsKey(typeof(T).FullName!);
+        private readonly Dictionary<string, TranslationWrapper> _translations = new();
         private static Regex VariableName(string prefix) => new($@"\.{prefix}[^a-zA-Z0-9@_]{{1}}");
-        public void With<T, TTranslated, TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
+        public void With<TTranslated, TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
-            var name = typeof(T).FullName!;
             var translatedName = typeof(TTranslated).FullName!;
-            if (!_translations.ContainsKey(name))
-                _translations.Add(name, new Dictionary<string, TranslationWrapper>());
-            if (!_translations[name].ContainsKey(translatedName))
-                _translations[name].Add(translatedName, new(typeof(T), typeof(TTranslated)));
+            if (!_translations.ContainsKey(translatedName))
+                _translations.Add(translatedName, new(typeof(T), typeof(TTranslated)));
 
             var propertyName = string.Join(".", property.ToString().Split('.').Skip(1));
             var translatedPropertyName = $".{string.Join(".", translatedProperty.ToString().Split('.').Skip(1))}";
-            _translations[name][translatedName].Translations.Add(new Translation(VariableName(propertyName), $".{propertyName}", translatedPropertyName));
-            _translations[name][translatedName].Translations = _translations[name][translatedName].Translations.OrderByDescending(x => x.Value.Length).ToList();
+            _translations[translatedName].Translations.Add(new Translation(VariableName(propertyName), $".{propertyName}", translatedPropertyName));
+            _translations[translatedName].Translations = _translations[translatedName].Translations.OrderByDescending(x => x.Value.Length).ToList();
         }
-        public IFilterExpression Transform<T>(SerializableFilter serializableFilter)
+        public IFilterExpression Transform(SerializableFilter serializableFilter)
         {
-            var fromType = typeof(T);
-            if (!_translations.ContainsKey(fromType.FullName!))
-                return serializableFilter.Deserialize<T>();
-            var translations = _translations[fromType.FullName!];
             MultipleFilterExpression multipleFilterExpression = new();
-            foreach (var translationKeyValue in translations)
+            foreach (var translationKeyValue in _translations)
             {
                 var translation = translationKeyValue.Value;
                 FilterExpression filter = new();

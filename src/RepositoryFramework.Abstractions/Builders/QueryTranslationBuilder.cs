@@ -46,7 +46,7 @@ namespace RepositoryFramework
                     x => compiledTranslatedProperty.Invoke(x)!,
                     (x, value) => translatedPropertyValue.SetValue(x, value)
                     ));
-            FilterTranslation.Instance.With(property, translatedProperty);
+            FilterTranslation<T, TKey>.Instance.With(property, translatedProperty);
             return this;
         }
         private static PropertyInfo? GetPropertyFromExpression<Tx, Ty>(Expression<Func<Tx, Ty>> lambda)
