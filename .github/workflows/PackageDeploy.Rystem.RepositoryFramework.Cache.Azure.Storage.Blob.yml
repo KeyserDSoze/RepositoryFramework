@@ -15,6 +15,6 @@ jobs:
       - name: Publish package
         uses: KeyserDSoze/DefaultAction/pushing_nuget_with_symbols@v1.0.1
         with:
-          dotnet-version: ${{ secrets.NET_VERSION }}
+          dotnet-version: "7.x"
           path: src/RepositoryFramework.Cache/RepositoryFramework.Cache.Azure.Storage.Blob/RepositoryFramework.Cache.Azure.Storage.Blob.csproj
           api-key: ${{ secrets.NUGET_API_KEY }}
