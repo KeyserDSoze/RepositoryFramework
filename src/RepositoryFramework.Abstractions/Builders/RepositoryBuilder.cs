@@ -20,6 +20,9 @@ namespace RepositoryFramework
             ServiceLifetime = serviceLifetime;
         }
         public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
-            => new QueryTranslationBuilder<T, TKey, TTranslated>(this);
+        {
+            Services.AddSingleton<IRepositoryMapper<T, TKey, TTranslated>>(RepositoryMapper<T, TKey, TTranslated>.Instance);
+            return new QueryTranslationBuilder<T, TKey, TTranslated>(this);
+        }
     }
 }

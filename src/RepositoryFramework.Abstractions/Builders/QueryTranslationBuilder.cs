@@ -29,7 +29,6 @@ namespace RepositoryFramework
                    x => compiledTranslatedProperty.Invoke(x)!,
                    (x, value) => translatedPropertyValue.SetValue(x, value)
                    ));
-            Services.AddSingleton<IRepositoryMapper<T, TKey, TTranslated>>(RepositoryMapper<T, TKey, TTranslated>.Instance);
             return this;
         }
         public IQueryTranslationBuilder<T, TKey, TTranslated> With<TProperty, TTranslatedProperty>(
@@ -47,7 +46,6 @@ namespace RepositoryFramework
                     x => compiledTranslatedProperty.Invoke(x)!,
                     (x, value) => translatedPropertyValue.SetValue(x, value)
                     ));
-            Services.AddSingleton<IRepositoryMapper<T, TKey, TTranslated>>(RepositoryMapper<T, TKey, TTranslated>.Instance);
             FilterTranslation.Instance.With(property, translatedProperty);
             return this;
         }
@@ -67,7 +65,7 @@ namespace RepositoryFramework
             }
             return expression?.Member as PropertyInfo;
         }
-        public IQueryTranslationBuilder<T, TKey, TTranslated> WithSameName()
+        public IQueryTranslationBuilder<T, TKey, TTranslated> WithSamePorpertiesName()
         {
             var translatedProperties = typeof(TTranslated).GetProperties();
             foreach (var property in typeof(T).GetProperties())
@@ -82,7 +80,6 @@ namespace RepositoryFramework
                         x => translatedProperty.GetValue(x)!,
                         (x, value) => translatedProperty.SetValue(x, value)
                         ));
-                    Services.AddSingleton<IRepositoryMapper<T, TKey, TTranslated>>(RepositoryMapper<T, TKey, TTranslated>.Instance);
                 }
             }
             return this;

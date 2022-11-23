@@ -7,22 +7,8 @@ namespace RepositoryFramework.Web.Components.Standard
 {
     public partial class InternalEdit<T>
     {
-        private static readonly List<PropertyInfoKeeper> s_primitives = (typeof(T).FetchProperties()
-                        .Where(x => x.PropertyType.IsPrimitive())
-                        .Select(x => new PropertyInfoKeeper
-                        {
-                            PropertyInfo = x,
-                            Name = x.Name,
-                            Label = x.Name
-                        })).ToList();
-        private static readonly List<PropertyInfoKeeper> s_complexes = (typeof(T).FetchProperties()
-                        .Where(x => !x.PropertyType.IsPrimitive())
-                        .Select(x => new PropertyInfoKeeper
-                        {
-                            PropertyInfo = x,
-                            Name = x.Name,
-                            Label = x.Name
-                        })).ToList();
+        private List<PropertyInfoKeeper> _primitives;
+        private List<PropertyInfoKeeper> _complexes;
 
         [Parameter]
         public T? Entity { get; set; }
@@ -30,15 +16,29 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             if (Entity == null)
                 Entity = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
+            _primitives = (typeof(T).FetchProperties()
+                        .Where(x => x.PropertyType.IsPrimitive())
+                        .Select(x => new PropertyInfoKeeper
+                        {
+                            PropertyInfo = x,
+                            Name = x.Name,
+                            Label = x.Name,
+                            Context = Entity
+                        })).ToList();
+            _complexes = (typeof(T).FetchProperties()
+                        .Where(x => !x.PropertyType.IsPrimitive())
+                        .Select(x => new PropertyInfoKeeper
+                        {
+                            PropertyInfo = x,
+                            Name = x.Name,
+                            Label = x.Name,
+                            Context = Entity
+                        })).ToList();
             return base.OnParametersSetAsync();
-        }
-        private void OnChange(string value, PropertyInfoKeeper propertyInfoKeeper)
-        {
-            propertyInfoKeeper.Set(Entity, value);
         }
         private protected RenderFragment LoadNext(PropertyInfoKeeper propertyInfoKeeper)
         {
-            var value = propertyInfoKeeper.Value(Entity);
+            var value = propertyInfoKeeper.Value();
             var genericType = typeof(InternalEdit<>).MakeGenericType(new[] { propertyInfoKeeper.PropertyInfo.PropertyType });
             var frag = new RenderFragment(b =>
             {

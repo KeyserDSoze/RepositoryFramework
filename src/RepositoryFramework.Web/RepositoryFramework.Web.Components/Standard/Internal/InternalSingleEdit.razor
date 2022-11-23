@@ -1,0 +1,58 @@
+﻿@namespace RepositoryFramework.Web.Components.Standard
+@using System.Reflection;
+@using Blazorise
+@using System.Collections;
+@using System.Text.Json;
+@using Blazorise.DataGrid
+
+@if (PropertyInfoKeeper != null)
+{
+    var value = PropertyInfoKeeper.Value();
+    <Field ColumnSize="ColumnSize.IsHalf">
+        <FieldLabel>@PropertyInfoKeeper.Label</FieldLabel>
+        <FieldBody>
+            @if (value is bool booleanValue)
+            {
+                <Check TValue="bool" Checked="booleanValue" CheckedChanged="x => Update(x)">
+                    @PropertyInfoKeeper.Label
+                </Check>
+            }
+            else if (value is DateTime dateTime)
+            {
+                <DatePicker TValue="DateTime?" Date="dateTime" DateChanged="x => Update(x)" />
+            }
+            else if (value.IsNumeric())
+            {
+                @LoadNumeric(value)
+            }
+            else 
+            {
+                <TextEdit Text="@value?.ToString()" TextChanged="x => Update(x)">
+                </TextEdit>
+            }
+        </FieldBody>
+    </Field>
+}
+
+@code {
+    [Parameter]
+    public PropertyInfoKeeper PropertyInfoKeeper { get; set; }
+    private void Update(object? value)
+    {
+        PropertyInfoKeeper.Set(value);
+    }
+    private protected RenderFragment LoadNumeric(object? value)
+    {
+        var genericType = typeof(NumericPicker<>).MakeGenericType(new[] { PropertyInfoKeeper.PropertyInfo.PropertyType });
+        var frag = new RenderFragment(b =>
+        {
+            b.OpenComponent(1, genericType);
+            b.AddAttribute(2, "Value", value);
+            b.AddAttribute(3, "ValueChanged", (dynamic x) => Update(x));
+            b.AddAttribute(4, "ModifyValueOnWheel", true);
+            b.AddAttribute(5, "WheelOn", NumericWheelOn.Hover);
+            b.CloseComponent();
+        });
+        return frag;
+    }
+}

@@ -16,6 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new AppSettings();
             settings.Invoke(options);
             services.AddSingleton(options);
+            services.AddSingleton<EntitiesTypeManager>();
             services
                .AddMvc()
                .ConfigureApplicationPartManager(x =>

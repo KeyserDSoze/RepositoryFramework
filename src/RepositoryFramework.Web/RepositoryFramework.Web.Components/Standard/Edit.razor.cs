@@ -31,10 +31,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 }
             }
         }
-        private void OnPrimitiveChange(string value, PropertyInfoKeeper propertyInfoKeeper)
-        {
-            propertyInfoKeeper.Set(_entity, value);
-        }
+     
         private async Task SaveAsync(bool withRedirect)
         {
             var result = _isNew ?

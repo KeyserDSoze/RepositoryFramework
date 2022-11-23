@@ -26,7 +26,7 @@ namespace RepositoryFramework.InMemory
             => _repositoryBuilder.Translate<TFurtherTranslated>();
         public IQueryTranslationBuilder<T, TKey, TTranslated> WithKey<TProperty, TTranslatedProperty>(Expression<Func<TKey, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
             => this;
-        public IQueryTranslationBuilder<T, TKey, TTranslated> WithSameName()
+        public IQueryTranslationBuilder<T, TKey, TTranslated> WithSamePorpertiesName()
             => this;
     }
 }

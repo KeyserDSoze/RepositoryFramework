@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TContext : DbContext
         {
             var builder = services.AddRepositoryInEntityFramework<T, TKey, T, TContext>(options, settings);
-            return builder.Translate<T>().WithSameName();
+            return builder.Translate<T>().WithSamePorpertiesName();
         }
         /// <summary>
         /// Add a default Entity Framework service for your command pattern.
@@ -46,7 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TContext : DbContext
         {
             var builder = services.AddCommandInEntityFramework<T, TKey, T, TContext>(options, settings);
-            return builder.Translate<T>().WithSameName();
+            return builder.Translate<T>().WithSamePorpertiesName();
         }
         /// <summary>
         /// Add a default Entity Framework service for your query pattern.
@@ -67,7 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TContext : DbContext
         {
             var builder = services.AddQueryInEntityFramework<T, TKey, T, TContext>(options, settings);
-            return builder.Translate<T>().WithSameName();
+            return builder.Translate<T>().WithSamePorpertiesName();
         }
     }
 }

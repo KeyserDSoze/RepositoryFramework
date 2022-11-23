@@ -43,15 +43,7 @@
             </Link>
         </DeleteCommandTemplate>
     </DataGridCommandColumn>
-    @{
-        List<PropertyInfoKeeper<T, TKey>> properties = new();
-        properties.AddRange(typeof(T).FetchProperties().Select(x => new PropertyInfoKeeper<T, TKey>
-                {
-                    PropertyInfo = x,
-                    Name = $"{nameof(Entity<T, TKey>.Value)}.{x.Name}",
-                    Label = x.Name
-                }));
-    }
+   
     <DataGridColumn Field="@nameof(_selectedEntity.Key)" Caption="#" Editable="EditableKey" Sortable="true">
         <DisplayTemplate>
             @if (context!.Key!.GetType().IsPrimitive())
@@ -65,76 +57,71 @@
         </DisplayTemplate>
     </DataGridColumn>
 
-    @for (int i = 0; i < properties.Count; i++)
+    @foreach(var value in PropertyTree.Primitives)
     {
-        var value = properties[i];
-        var isEditable = value.PropertyInfo.SetMethod != null;
-        if (value.PropertyInfo.PropertyType.IsPrimitive())
-        {
-            <DataGridColumn Field="@value.Name" Caption="@value.Label" Editable="isEditable" Sortable="true" />
-        }
-        else if (value.PropertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) != null)
+        <DataGridColumn Field="@value.Name" Caption="@value.Label" Sortable="true" />
+    }
+    @foreach (var value in PropertyTree.Enumerables)
+    {
+        <DataGridColumn Field="@value.Name" Caption="@value.Label" Editable="isEditable" Sortable="true" Filterable="false">
+            <DisplayTemplate>
+                <div>
+                    <Accordion>
+                        <Collapse Visible="_check[value.Name]">
+                            <CollapseHeader>
+                                <Heading Size="HeadingSize.Is5">
+                                    <Button Clicked="@(()=>_check[value.Name] = !_check[value.Name])">
+                                        @value.Count(context!.Value!)
+                                    </Button>
+                                </Heading>
+                            </CollapseHeader>
+                            <CollapseBody>
+                                <Table Striped="true">
+                                    <TableBody>
+                                        @foreach (var item in value.AsEnumerable(context!.Value!))
+                                        {
+                                            var type = item.GetType();
+                                            <TableRow>
+                                                @if (type.IsPrimitive())
+                                                {
+                                                    <TableRowCell>
+                                                        @item.ToString()
+                                                    </TableRowCell>
+                                                }
+                                                else
+                                                {
+                                                    foreach (var innerItem in type.FetchProperties())
+                                                    {
+                                                        if (innerItem.PropertyType.IsPrimitive())
+                                                        {
+                                                            <TableRowCell>
+                                                                @innerItem.GetValue(item)
+                                                            </TableRowCell>
+                                                        }
+                                                        else
+                                                        {
+                                                            <TableRowCell>
+                                                                @innerItem.GetValue(item).ToJson()
+                                                            </TableRowCell>
+                                                        }
+                                                    }
+                                                }
+                                            </TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </CollapseBody>
+                        </Collapse>
+                    </Accordion>
+                </div>
+            </DisplayTemplate>
+        </DataGridColumn>
+    }
+    else if (value.PropertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) != null)
         {
             if (!_check.ContainsKey(value.Name))
                 _check.Add(value.Name, false);
-            <DataGridColumn Field="@value.Name" Caption="@value.Label" Editable="isEditable" Sortable="true" Filterable="false">
-                <DisplayTemplate>
-                    <div>
-                        <Accordion>
-                            <Collapse Visible="_check[value.Name]">
-                                <CollapseHeader>
-                                    <Heading Size="HeadingSize.Is5">
-                                        <Button Clicked="@(()=>_check[value.Name] = !_check[value.Name])">
-                                            @value.Count(context!.Value!)
-                                        </Button>
-                                    </Heading>
-                                </CollapseHeader>
-                                <CollapseBody>
-                                    <Table Striped="true">
-                                        <TableBody>
-                                            @foreach (var item in value.AsEnumerable(context!.Value!))
-                                            {
-                                                var type = item.GetType();
-                                                <TableRow>
-                                                    @if (type.IsPrimitive())
-                                                    {
-                                                        <TableRowCell>
-                                                            @item.ToString()
-                                                        </TableRowCell>
-                                                    }
-                                                    else
-                                                    {
-                                                        foreach (var innerItem in type.FetchProperties())
-                                                        {
-                                                            if (innerItem.PropertyType.IsPrimitive())
-                                                            {
-                                                                <TableRowCell>
-                                                                    @innerItem.GetValue(item)
-                                                                </TableRowCell>
-                                                            }
-                                                            else
-                                                            {
-                                                                <TableRowCell>
-                                                                    @innerItem.GetValue(item).ToJson()
-                                                                </TableRowCell>
-                                                            }
-                                                        }
-                                                    }
-                                                </TableRow>
-                                            }
-                                        </TableBody>
-                                    </Table>
-                                </CollapseBody>
-                            </Collapse>
-                        </Accordion>
-
-                    </div>
-                </DisplayTemplate>
-                <EditTemplate>
-                    <MemoEdit TextChanged="x => value.SetJson(context!, x)" Text="@context.CellValue?.ToJson()" AutoSize="true">
-                    </MemoEdit>
-                </EditTemplate>
-            </DataGridColumn>
+            
         }
         else
         {
@@ -143,12 +130,13 @@
             {
                 var navigationProperties = new List<PropertyInfo> { value.PropertyInfo };
                 navigationProperties.AddRange(value.NavigationProperties);
-                properties.Insert(i + counter, new PropertyInfoKeeper<T, TKey>
+                properties.Insert(i + counter, new PropertyInfoKeeper
                 {
                     NavigationProperties = navigationProperties,
                     PropertyInfo = nestedValue,
                     Name = $"{value.Name}.{nestedValue.Name}",
-                    Label = nestedValue.Name
+                    Label = nestedValue.Name,
+                    Context = value.Context
                 });
                 counter++;
             }
