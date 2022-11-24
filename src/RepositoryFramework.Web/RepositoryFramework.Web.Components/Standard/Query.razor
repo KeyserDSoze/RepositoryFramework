@@ -61,11 +61,11 @@
     {
         if (!value.IsEnumerable)
         {
-            <DataGridColumn Field="@value.NavigationPath" Caption="@value.Name" Sortable="true" />
+            <DataGridColumn Field="@GetRealNavigationPath(value.NavigationPath)" Caption="@value.Name" Sortable="true" />
         }
         else
         {
-            <DataGridColumn Field="@value.NavigationPath" Caption="@value.Name" Sortable="true" Filterable="false">
+            <DataGridColumn Field="@GetRealNavigationPath(value.NavigationPath)" Caption="@value.Name" Sortable="true" Filterable="false">
                 <DisplayTemplate>
                     @OpenEnumerableVisualizer(context!.Value, value)
                 </DisplayTemplate>

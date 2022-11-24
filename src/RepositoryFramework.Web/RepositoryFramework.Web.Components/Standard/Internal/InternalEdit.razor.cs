@@ -7,31 +7,16 @@ namespace RepositoryFramework.Web.Components.Standard
 {
     public partial class InternalEdit<T>
     {
-        private List<PropertyInfoKeeper> _primitives;
-        private List<PropertyInfoKeeper> _complexes;
-
         [Parameter]
         public T? Entity { get; set; }
+        [Inject]
+        public EntitiesTypeManager EntityManager { get; set; }
+        private protected EntityType PropertyTree { get; set; }
         protected override Task OnParametersSetAsync()
         {
             if (Entity == null)
                 Entity = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
-            _primitives = (typeof(T).FetchProperties()
-                        .Where(x => x.PropertyType.IsPrimitive())
-                        .Select(x => new PropertyInfoKeeper
-                        {
-                            PropertyInfo = x,
-                            NavigationPath = x.Name,
-                            Name = x.Name,
-                        })).ToList();
-            _complexes = (typeof(T).FetchProperties()
-                        .Where(x => !x.PropertyType.IsPrimitive())
-                        .Select(x => new PropertyInfoKeeper
-                        {
-                            PropertyInfo = x,
-                            NavigationPath = x.Name,
-                            Name = x.Name,
-                        })).ToList();
+            PropertyTree = EntityManager.GetEntity(typeof(T));
             return base.OnParametersSetAsync();
         }
         private protected RenderFragment LoadNext(PropertyInfoKeeper propertyInfoKeeper)

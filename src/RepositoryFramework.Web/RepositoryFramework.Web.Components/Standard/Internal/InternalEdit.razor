@@ -10,10 +10,10 @@
 {
     <Row>
         <Column>
-            @for (int i = 0; i < _primitives.Count; i += 2)
+            @for (int i = 0; i < PropertyTree.Primitives.Count; i += 2)
             {
-                var value = _primitives[i];
-                var nextValue = i + 1 < _primitives.Count ? _primitives[i + 1] : null;
+                var value = PropertyTree.Primitives[i];
+                var nextValue = i + 1 < PropertyTree.Primitives.Count ? PropertyTree.Primitives[i + 1] : null;
 
                 <Fields>
                     <InternalSingleEdit PropertyInfoKeeper="value" Context="Entity"></InternalSingleEdit>
@@ -23,12 +23,12 @@
                     }
                 </Fields>
             }
-            @foreach (var complex in _complexes)
+            @foreach (var complex in PropertyTree.Complexes)
             {
-                <Divider DividerType="DividerType.TextContent" Text="@complex.Name" />
-                @if (complex.PropertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) == null)
+                <Divider DividerType="DividerType.TextContent" Text="@complex.PropertyInfo.Name" />
+                @if (complex.PropertyInfo.PropertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) == null)
                 {
-                    @LoadNext(complex)
+                    @LoadNext(complex.PropertyInfo)
                 }
             }
         </Column>

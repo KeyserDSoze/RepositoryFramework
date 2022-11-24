@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Components;
@@ -103,6 +104,8 @@ namespace RepositoryFramework.Web.Components.Standard
                 }
             }
         }
+        private string GetRealNavigationPath(string navigationPath) 
+            => $"{nameof(Entity<T, TKey>.Value)}.{navigationPath}";
         private protected RenderFragment OpenEnumerableVisualizer(T? entity, PropertyInfoKeeper propertyInfoKeeper)
         {
             if (entity != null)

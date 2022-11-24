@@ -26,48 +26,42 @@ namespace RepositoryFramework.Web.Components
         {
         }
     }
-    public class PropertyTree : PropertyInfoKeeper
+    public class PropertyTree
     {
         public List<PropertyInfoKeeper> Primitives { get; } = new();
         public List<PropertyTree> Enumerables { get; } = new();
         public List<PropertyTree> Complexes { get; } = new();
         public List<PropertyInfoKeeper> AllProperties { get; } = new();
-        public PropertyTree(Type type, string? navigationPath)
+        public PropertyInfoKeeper PropertyInfo { get; }
+        public PropertyTree(Type type, PropertyInfoKeeper? from)
         {
-            CheckType(type, navigationPath);
+            PropertyInfo = from;
+            CheckType(type, from);
         }
-        public void CheckType(Type type, string? navigationPath)
+        public void CheckType(Type type, PropertyInfoKeeper? from)
         {
             foreach (var property in type.FetchProperties())
             {
-                if (property.PropertyType.IsPrimitive())
+                var actualProperty = from.Next(property);
+                if (actualProperty.IsPrimitive)
                 {
-                    Primitives.Add(new PropertyInfoKeeper
-                    {
-                        PropertyInfo = property,
-                        NavigationPath = !string.IsNullOrWhiteSpace(navigationPath) ? $"{navigationPath}.{property.Name}" : property.Name,
-                        Name = property.Name,
-                        IsEnumerable = false,
-                    });
-                    AllProperties.Add(Primitives.Last());
+                    Primitives.Add(actualProperty);
+                    AllProperties.Add(actualProperty);
                 }
-                else if (property.PropertyType.GetInterface(nameof(IEnumerable)) == null)
+                else if (actualProperty.IsEnumerable)
                 {
-                    Enumerables.Add(new PropertyTree(property.PropertyType,
-                        !string.IsNullOrWhiteSpace(navigationPath) ? $"{navigationPath}.{property.Name}" : property.Name));
-                    AllProperties.Add(new PropertyInfoKeeper
+                    var enumerable = property.PropertyType.GetInterfaces().FirstOrDefault(x => x.Name.StartsWith("IEnumerable`1"));
+                    var generics = enumerable?.GetGenericArguments();
+                    if (generics != null)
                     {
-                        PropertyInfo = property,
-                        NavigationPath = !string.IsNullOrWhiteSpace(navigationPath) ? $"{navigationPath}.{property.Name}" : property.Name,
-                        Name = property.Name,
-                        IsEnumerable = true,
-                    });
+                        AllProperties.Add(actualProperty);
+                        Enumerables.Add(new PropertyTree(generics.First(), actualProperty));
+                    }
                 }
                 else
                 {
-                    Complexes.Add(new PropertyTree(property.PropertyType,
-                        !string.IsNullOrWhiteSpace(navigationPath) ? $"{navigationPath}.{property.Name}" : property.Name));
-                    CheckType(property.PropertyType, Complexes.Last().NavigationPath);
+                    Complexes.Add(new PropertyTree(property.PropertyType, actualProperty));
+                    CheckType(property.PropertyType, actualProperty);
                 }
             }
         }
@@ -76,9 +70,10 @@ namespace RepositoryFramework.Web.Components
     {
         public List<PropertyInfo> NavigationProperties { get; init; } = new();
         public PropertyInfo PropertyInfo { get; init; } = null!;
-        public string NavigationPath { get; init; } = null!;
-        public string Name { get; init; } = null!;
+        public string NavigationPath => NavigationProperties.Count > 0 ? $"{string.Join('.', NavigationProperties.Select(x => x.Name))}.{PropertyInfo.Name}" : PropertyInfo.Name;
+        public string Name => PropertyInfo.Name;
         public bool IsEnumerable { get; init; }
+        public bool IsPrimitive { get; init; }
         public object? Value(object? context)
         {
             if (context == null)
@@ -104,7 +99,25 @@ namespace RepositoryFramework.Web.Components
             }
             PropertyInfo.SetValue(context, value.Cast(PropertyInfo.PropertyType));
         }
+
     }
+    public static class PropertyInfoKeeperExtensions
+    {
+        public static PropertyInfoKeeper Next(this PropertyInfoKeeper? keeper, PropertyInfo propertyInfo)
+        {
+            var newInfo = new PropertyInfoKeeper
+            {
+                PropertyInfo = propertyInfo,
+                IsEnumerable = propertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) != null,
+                IsPrimitive = propertyInfo.PropertyType.IsPrimitive()
+            };
+            if (keeper != null)
+                foreach (var navigationProperty in keeper.NavigationProperties)
+                    newInfo.NavigationProperties.Add(navigationProperty);
+            return newInfo;
+        }
+    }
+
     internal sealed class PropertyInfoKeeper<T, TKey>
         where TKey : notnull
     {
