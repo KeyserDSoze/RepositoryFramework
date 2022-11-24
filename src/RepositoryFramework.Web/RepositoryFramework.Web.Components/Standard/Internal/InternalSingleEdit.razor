@@ -4,6 +4,7 @@
 @using System.Collections;
 @using System.Text.Json;
 @using Blazorise.DataGrid
+@using System.Linq.Expressions;
 
 @if (PropertyInfoKeeper != null)
 {
@@ -21,10 +22,10 @@
             {
                 <DatePicker TValue="DateTime?" Date="dateTime" DateChanged="x => Update(x)" />
             }
-            else if (value.IsNumeric())
+           @* else if (value.IsNumeric())
             {
                 @LoadNumeric(value)
-            }
+            }*@
             else
             {
                 <TextEdit Text="@value?.ToString()" TextChanged="x => Update(x)">
@@ -39,22 +40,25 @@
     public PropertyInfoKeeper PropertyInfoKeeper { get; set; }
     [Parameter]
     public object Context { get; set; }
-    private void Update(object? value)
+    public void Update(object? value)
     {
         PropertyInfoKeeper.Set(Context, value);
     }
-    private protected RenderFragment LoadNumeric(object? value)
-    {
-        var genericType = typeof(NumericPicker<>).MakeGenericType(new[] { PropertyInfoKeeper.PropertyInfo.PropertyType });
-        var frag = new RenderFragment(b =>
-        {
-            b.OpenComponent(1, genericType);
-            b.AddAttribute(2, "Value", value);
-            b.AddAttribute(3, "ValueChanged", (dynamic x) => Update(x));
-            b.AddAttribute(4, "ModifyValueOnWheel", true);
-            b.AddAttribute(5, "WheelOn", NumericWheelOn.Hover);
-            b.CloseComponent();
-        });
-        return frag;
-    }
+  
+    //private protected RenderFragment LoadNumeric(object? value)
+    //{
+    //    Expression<Action<int>> A = x => Update((object)x);
+    //    var qq = A.Serialize();
+    //    var genericLambda = (qq).DeserializeAsDynamic(PropertyInfoKeeper.PropertyInfo.PropertyType);
+    //    var frag = new RenderFragment(b =>
+    //    {
+    //        b.OpenComponent(1, genericType);
+    //        b.AddAttribute(2, "Value", value);
+    //        b.AddAttribute(3, "ValueChanged", genericLambda);
+    //        b.AddAttribute(4, "ModifyValueOnWheel", true);
+    //        b.AddAttribute(5, "WheelOn", NumericWheelOn.Hover);
+    //        b.CloseComponent();
+    //    });
+    //    return frag;
+    //}
 }

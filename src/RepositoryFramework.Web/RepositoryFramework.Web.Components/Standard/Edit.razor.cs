@@ -31,7 +31,6 @@ namespace RepositoryFramework.Web.Components.Standard
                 }
             }
         }
-     
         private async Task SaveAsync(bool withRedirect)
         {
             var result = _isNew ?

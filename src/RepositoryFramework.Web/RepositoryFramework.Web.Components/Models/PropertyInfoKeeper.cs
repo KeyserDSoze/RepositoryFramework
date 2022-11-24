@@ -105,15 +105,19 @@ namespace RepositoryFramework.Web.Components
     {
         public static PropertyInfoKeeper Next(this PropertyInfoKeeper? keeper, PropertyInfo propertyInfo)
         {
+            var isPrimitive = propertyInfo.PropertyType.IsPrimitive();
             var newInfo = new PropertyInfoKeeper
             {
                 PropertyInfo = propertyInfo,
-                IsEnumerable = propertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) != null,
-                IsPrimitive = propertyInfo.PropertyType.IsPrimitive()
+                IsEnumerable = !isPrimitive && propertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) != null,
+                IsPrimitive = isPrimitive
             };
             if (keeper != null)
+            {
                 foreach (var navigationProperty in keeper.NavigationProperties)
                     newInfo.NavigationProperties.Add(navigationProperty);
+                newInfo.NavigationProperties.Add(keeper.PropertyInfo);
+            }
             return newInfo;
         }
     }
