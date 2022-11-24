@@ -54,9 +54,15 @@ namespace RepositoryFramework.Web.Components.Standard
                 }
             }
         }
+        private void CheckComplexProperties(List<PropertyInfoKeeper> infos, PropertyTree tree)
+        {
+            infos.AddRange(tree.Primitives);
+            foreach (var property in tree.Complexes)
+                CheckComplexProperties(infos, property);
+        }
         private string GetCreateUri()
             => _createUri;
-        private string GetEditUri(TKey key) 
+        private string GetEditUri(TKey key)
             => string.Format(_editUri, IKey.AsString(key));
         private string GetDeleteUri(TKey key)
             => string.Format(_deleteUri, IKey.AsString(key));

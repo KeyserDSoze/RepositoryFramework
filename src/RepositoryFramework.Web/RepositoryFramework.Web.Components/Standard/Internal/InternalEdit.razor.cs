@@ -23,7 +23,6 @@ namespace RepositoryFramework.Web.Components.Standard
                             PropertyInfo = x,
                             Name = x.Name,
                             Label = x.Name,
-                            Context = Entity
                         })).ToList();
             _complexes = (typeof(T).FetchProperties()
                         .Where(x => !x.PropertyType.IsPrimitive())
@@ -32,13 +31,12 @@ namespace RepositoryFramework.Web.Components.Standard
                             PropertyInfo = x,
                             Name = x.Name,
                             Label = x.Name,
-                            Context = Entity
                         })).ToList();
             return base.OnParametersSetAsync();
         }
         private protected RenderFragment LoadNext(PropertyInfoKeeper propertyInfoKeeper)
         {
-            var value = propertyInfoKeeper.Value();
+            var value = propertyInfoKeeper.Value(Entity);
             var genericType = typeof(InternalEdit<>).MakeGenericType(new[] { propertyInfoKeeper.PropertyInfo.PropertyType });
             var frag = new RenderFragment(b =>
             {

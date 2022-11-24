@@ -7,7 +7,7 @@
 
 @if (PropertyInfoKeeper != null)
 {
-    var value = PropertyInfoKeeper.Value();
+    var value = PropertyInfoKeeper.Value(Context);
     <Field ColumnSize="ColumnSize.IsHalf">
         <FieldLabel>@PropertyInfoKeeper.Label</FieldLabel>
         <FieldBody>
@@ -25,7 +25,7 @@
             {
                 @LoadNumeric(value)
             }
-            else 
+            else
             {
                 <TextEdit Text="@value?.ToString()" TextChanged="x => Update(x)">
                 </TextEdit>
@@ -37,9 +37,11 @@
 @code {
     [Parameter]
     public PropertyInfoKeeper PropertyInfoKeeper { get; set; }
+    [Parameter]
+    public object Context { get; set; }
     private void Update(object? value)
     {
-        PropertyInfoKeeper.Set(value);
+        PropertyInfoKeeper.Set(Context, value);
     }
     private protected RenderFragment LoadNumeric(object? value)
     {

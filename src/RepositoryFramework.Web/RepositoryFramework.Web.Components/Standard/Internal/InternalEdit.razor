@@ -16,10 +16,10 @@
                 var nextValue = i + 1 < _primitives.Count ? _primitives[i + 1] : null;
 
                 <Fields>
-                    <InternalSingleEdit PropertyInfoKeeper="value"></InternalSingleEdit>
+                    <InternalSingleEdit PropertyInfoKeeper="value" Context="Entity"></InternalSingleEdit>
                     @if (nextValue != null)
                     {
-                        <InternalSingleEdit PropertyInfoKeeper="nextValue"></InternalSingleEdit>
+                        <InternalSingleEdit PropertyInfoKeeper="nextValue" Context="Entity"></InternalSingleEdit>
                     }
                 </Fields>
             }

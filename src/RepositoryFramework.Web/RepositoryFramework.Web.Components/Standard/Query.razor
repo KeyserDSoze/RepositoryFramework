@@ -43,7 +43,7 @@
             </Link>
         </DeleteCommandTemplate>
     </DataGridCommandColumn>
-   
+
     <DataGridColumn Field="@nameof(_selectedEntity.Key)" Caption="#" Editable="EditableKey" Sortable="true">
         <DisplayTemplate>
             @if (context!.Key!.GetType().IsPrimitive())
@@ -57,20 +57,20 @@
         </DisplayTemplate>
     </DataGridColumn>
 
-    @foreach(var value in PropertyTree.Primitives)
+    @foreach (var value in PropertyTree.Primitives)
     {
-        <DataGridColumn Field="@value.Name" Caption="@value.Label" Sortable="true" />
+        <DataGridColumn Field="@value.Label" Caption="@value.Label" Sortable="true" />
     }
     @foreach (var value in PropertyTree.Enumerables)
     {
-        <DataGridColumn Field="@value.Name" Caption="@value.Label" Editable="isEditable" Sortable="true" Filterable="false">
+        <DataGridColumn Field="@value.Label" Caption="@value.Label" Sortable="true" Filterable="false">
             <DisplayTemplate>
                 <div>
                     <Accordion>
-                        <Collapse Visible="_check[value.Name]">
+                        <Collapse Visible="_check[value.Label]">
                             <CollapseHeader>
                                 <Heading Size="HeadingSize.Is5">
-                                    <Button Clicked="@(()=>_check[value.Name] = !_check[value.Name])">
+                                    <Button Clicked="@(()=>_check[value.Label] = !_check[value.Label])">
                                         @value.Count(context!.Value!)
                                     </Button>
                                 </Heading>
@@ -117,29 +117,8 @@
             </DisplayTemplate>
         </DataGridColumn>
     }
-    else if (value.PropertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) != null)
-        {
-            if (!_check.ContainsKey(value.Name))
-                _check.Add(value.Name, false);
-            
-        }
-        else
-        {
-            int counter = 1;
-            foreach (var nestedValue in value.PropertyInfo.PropertyType.FetchProperties())
-            {
-                var navigationProperties = new List<PropertyInfo> { value.PropertyInfo };
-                navigationProperties.AddRange(value.NavigationProperties);
-                properties.Insert(i + counter, new PropertyInfoKeeper
-                {
-                    NavigationProperties = navigationProperties,
-                    PropertyInfo = nestedValue,
-                    Name = $"{value.Name}.{nestedValue.Name}",
-                    Label = nestedValue.Name,
-                    Context = value.Context
-                });
-                counter++;
-            }
-        }
+    @foreach (var property in PropertyTree.Complexes)
+    {
+
     }
 </DataGrid>

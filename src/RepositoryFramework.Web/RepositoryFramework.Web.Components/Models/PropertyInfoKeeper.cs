@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
-using System.IO;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text.Json;
@@ -26,9 +25,8 @@ namespace RepositoryFramework.Web.Components
         {
         }
     }
-    public class PropertyTree
+    public class PropertyTree : PropertyInfoKeeper
     {
-        public PropertyInfo? PropertyInfo { get; }
         public List<PropertyInfoKeeper> Primitives { get; }
         public List<PropertyTree> Enumerables { get; }
         public List<PropertyTree> Complexes { get; }
@@ -52,7 +50,7 @@ namespace RepositoryFramework.Web.Components
                 .ToList();
         }
     }
-    public sealed class PropertyInfoKeeper
+    public class PropertyInfoKeeper
     {
         public List<PropertyInfo> NavigationProperties { get; init; } = new();
         public PropertyInfo PropertyInfo { get; init; } = null!;
