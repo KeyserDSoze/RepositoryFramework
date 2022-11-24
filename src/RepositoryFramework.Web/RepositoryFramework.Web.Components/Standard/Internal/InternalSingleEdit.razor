@@ -9,12 +9,12 @@
 {
     var value = PropertyInfoKeeper.Value(Context);
     <Field ColumnSize="ColumnSize.IsHalf">
-        <FieldLabel>@PropertyInfoKeeper.Label</FieldLabel>
+        <FieldLabel>@PropertyInfoKeeper.Name</FieldLabel>
         <FieldBody>
             @if (value is bool booleanValue)
             {
                 <Check TValue="bool" Checked="booleanValue" CheckedChanged="x => Update(x)">
-                    @PropertyInfoKeeper.Label
+                    @PropertyInfoKeeper.Name
                 </Check>
             }
             else if (value is DateTime dateTime)

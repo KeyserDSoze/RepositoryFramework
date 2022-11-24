@@ -21,16 +21,16 @@ namespace RepositoryFramework.Web.Components.Standard
                         .Select(x => new PropertyInfoKeeper
                         {
                             PropertyInfo = x,
+                            NavigationPath = x.Name,
                             Name = x.Name,
-                            Label = x.Name,
                         })).ToList();
             _complexes = (typeof(T).FetchProperties()
                         .Where(x => !x.PropertyType.IsPrimitive())
                         .Select(x => new PropertyInfoKeeper
                         {
                             PropertyInfo = x,
+                            NavigationPath = x.Name,
                             Name = x.Name,
-                            Label = x.Name,
                         })).ToList();
             return base.OnParametersSetAsync();
         }

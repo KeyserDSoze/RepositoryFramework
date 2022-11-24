@@ -33,12 +33,12 @@
             </Link>
         </NewCommandTemplate>
         <EditCommandTemplate>
-            <Link To="@GetEditUri(context.Item.Key)">
+            <Link To="@GetEditUri(context.Item!.Key!)">
             <Icon Name="IconName.Edit" />
             </Link>
         </EditCommandTemplate>
         <DeleteCommandTemplate>
-            <Link To="@GetDeleteUri(context.Item.Key)">
+            <Link To="@GetDeleteUri(context.Item!.Key!)">
             <Icon Name="IconName.Delete" />
             </Link>
         </DeleteCommandTemplate>
@@ -57,68 +57,19 @@
         </DisplayTemplate>
     </DataGridColumn>
 
-    @foreach (var value in PropertyTree.Primitives)
+    @foreach (var value in PropertyTree.AllProperties)
     {
-        <DataGridColumn Field="@value.Label" Caption="@value.Label" Sortable="true" />
-    }
-    @foreach (var value in PropertyTree.Enumerables)
-    {
-        <DataGridColumn Field="@value.Label" Caption="@value.Label" Sortable="true" Filterable="false">
-            <DisplayTemplate>
-                <div>
-                    <Accordion>
-                        <Collapse Visible="_check[value.Label]">
-                            <CollapseHeader>
-                                <Heading Size="HeadingSize.Is5">
-                                    <Button Clicked="@(()=>_check[value.Label] = !_check[value.Label])">
-                                        @value.Count(context!.Value!)
-                                    </Button>
-                                </Heading>
-                            </CollapseHeader>
-                            <CollapseBody>
-                                <Table Striped="true">
-                                    <TableBody>
-                                        @foreach (var item in value.AsEnumerable(context!.Value!))
-                                        {
-                                            var type = item.GetType();
-                                            <TableRow>
-                                                @if (type.IsPrimitive())
-                                                {
-                                                    <TableRowCell>
-                                                        @item.ToString()
-                                                    </TableRowCell>
-                                                }
-                                                else
-                                                {
-                                                    foreach (var innerItem in type.FetchProperties())
-                                                    {
-                                                        if (innerItem.PropertyType.IsPrimitive())
-                                                        {
-                                                            <TableRowCell>
-                                                                @innerItem.GetValue(item)
-                                                            </TableRowCell>
-                                                        }
-                                                        else
-                                                        {
-                                                            <TableRowCell>
-                                                                @innerItem.GetValue(item).ToJson()
-                                                            </TableRowCell>
-                                                        }
-                                                    }
-                                                }
-                                            </TableRow>
-                                        }
-                                    </TableBody>
-                                </Table>
-                            </CollapseBody>
-                        </Collapse>
-                    </Accordion>
-                </div>
-            </DisplayTemplate>
-        </DataGridColumn>
-    }
-    @foreach (var property in PropertyTree.Complexes)
-    {
-
+        if (!value.IsEnumerable)
+        {
+            <DataGridColumn Field="@value.NavigationPath" Caption="@value.Name" Sortable="true" />
+        }
+        else
+        {
+            <DataGridColumn Field="@value.NavigationPath" Caption="@value.Name" Sortable="true" Filterable="false">
+                <DisplayTemplate>
+                    @OpenEnumerableVisualizer(context!.Value, value)
+                </DisplayTemplate>
+            </DataGridColumn>
+        }
     }
 </DataGrid>

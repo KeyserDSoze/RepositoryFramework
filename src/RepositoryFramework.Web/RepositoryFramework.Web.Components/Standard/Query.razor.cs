@@ -103,5 +103,24 @@ namespace RepositoryFramework.Web.Components.Standard
                 }
             }
         }
+        private protected RenderFragment OpenEnumerableVisualizer(T? entity, PropertyInfoKeeper propertyInfoKeeper)
+        {
+            if (entity != null)
+            {
+                var value = propertyInfoKeeper.Value(entity);
+                if (value != null)
+                {
+                    var genericType = typeof(Visualizer<>).MakeGenericType(new[] { propertyInfoKeeper.PropertyInfo.PropertyType });
+                    var frag = new RenderFragment(b =>
+                    {
+                        b.OpenComponent(1, genericType);
+                        b.AddAttribute(2, nameof(Entity), value);
+                        b.CloseComponent();
+                    });
+                    return frag;
+                }
+            }
+            return null;
+        }
     }
 }

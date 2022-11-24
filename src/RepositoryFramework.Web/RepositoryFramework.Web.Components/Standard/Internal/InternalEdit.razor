@@ -25,7 +25,7 @@
             }
             @foreach (var complex in _complexes)
             {
-                <Divider DividerType="DividerType.TextContent" Text="@complex.Label" />
+                <Divider DividerType="DividerType.TextContent" Text="@complex.Name" />
                 @if (complex.PropertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) == null)
                 {
                     @LoadNext(complex)
