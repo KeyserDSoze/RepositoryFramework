@@ -1,0 +1,36 @@
+﻿@namespace RepositoryFramework.Web.Components.Standard
+@using System.Reflection;
+@using Blazorise
+@using System.Collections;
+@using System.Text.Json;
+@using Blazorise.DataGrid
+@typeparam T
+
+@if (Entities != null)
+{
+    var counter = 0;
+    <Row>
+        <Column>
+            @foreach(var entity in Entities)
+            {
+                if (TypeShowcase != null)
+                {
+                    <InternalEdit Entity="entity"></InternalEdit>
+                    <Button Clicked="x => Delete(entity)">
+                        <Icon Name="IconName.Delete"></Icon>
+                    </Button>
+                }
+                else
+                {
+                    <Fields>
+                        <InternalNoContextEdit Value="entity" Updatable="x => Update(counter, (T)x)"></InternalNoContextEdit>
+                        <Button Clicked="x => Delete(entity)">
+                            <Icon Name="IconName.Delete"></Icon>
+                        </Button>
+                    </Fields>
+                }
+                counter++;
+            }
+        </Column>
+    </Row>
+}

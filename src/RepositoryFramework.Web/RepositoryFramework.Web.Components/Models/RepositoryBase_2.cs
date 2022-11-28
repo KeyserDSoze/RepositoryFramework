@@ -14,8 +14,8 @@ namespace RepositoryFramework.Web.Components
         [Inject]
         public NavigationManager NavigationManager { get; set; }
         [Inject]
-        public EntitiesTypeManager EntityManager { get; set; }
-        private protected EntityType PropertyTree { get; set; }
+        public PropertyBringer PropertyBringer { get; set; }
+        private protected TypeShowcase TypeShowcase { get; set; }
         private protected bool CanEdit { get; set; }
         private bool _alreadySet;
         protected override Task OnInitializedAsync()
@@ -23,7 +23,7 @@ namespace RepositoryFramework.Web.Components
             if (!_alreadySet)
             {
                 _alreadySet = true;
-                PropertyTree = EntityManager.GetEntity(typeof(T));
+                TypeShowcase = PropertyBringer.GetEntity(typeof(T));
                 if (Repository != null)
                 {
                     Queryx = Repository;

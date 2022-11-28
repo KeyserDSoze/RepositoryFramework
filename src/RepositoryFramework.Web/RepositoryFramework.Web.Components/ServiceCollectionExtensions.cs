@@ -1,10 +1,10 @@
 ﻿using Blazorise;
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
-using RepositoryFramework.Web.Components;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Routing;
+using RepositoryFramework.Web.Components;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new AppSettings();
             settings.Invoke(options);
             services.AddSingleton(options);
-            services.AddSingleton<EntitiesTypeManager>();
+            services.AddSingleton<PropertyBringer>();
             services
                .AddMvc()
                .ConfigureApplicationPartManager(x =>

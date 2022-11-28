@@ -6,16 +6,16 @@
 @using Blazorise.DataGrid
 @using System.Linq.Expressions;
 
-@if (PropertyInfoKeeper != null)
+@if (Property != null)
 {
-    var value = PropertyInfoKeeper.Value(Context);
+    var value = Property.Value(Context);
     <Field ColumnSize="ColumnSize.IsHalf">
-        <FieldLabel>@PropertyInfoKeeper.Name</FieldLabel>
+        <FieldLabel>@Property.Self.Name</FieldLabel>
         <FieldBody>
             @if (value is bool booleanValue)
             {
                 <Check TValue="bool" Checked="booleanValue" CheckedChanged="x => Update(x)">
-                    @PropertyInfoKeeper.Name
+                    @Property.Self.Name
                 </Check>
             }
             else if (value is DateTime dateTime)
@@ -37,28 +37,11 @@
 
 @code {
     [Parameter]
-    public PropertyInfoKeeper PropertyInfoKeeper { get; set; }
+    public BaseProperty Property { get; set; }
     [Parameter]
     public object Context { get; set; }
     public void Update(object? value)
     {
-        PropertyInfoKeeper.Set(Context, value);
+        Property.Set(Context, value);
     }
-  
-    //private protected RenderFragment LoadNumeric(object? value)
-    //{
-    //    Expression<Action<int>> A = x => Update((object)x);
-    //    var qq = A.Serialize();
-    //    var genericLambda = (qq).DeserializeAsDynamic(PropertyInfoKeeper.PropertyInfo.PropertyType);
-    //    var frag = new RenderFragment(b =>
-    //    {
-    //        b.OpenComponent(1, genericType);
-    //        b.AddAttribute(2, "Value", value);
-    //        b.AddAttribute(3, "ValueChanged", genericLambda);
-    //        b.AddAttribute(4, "ModifyValueOnWheel", true);
-    //        b.AddAttribute(5, "WheelOn", NumericWheelOn.Hover);
-    //        b.CloseComponent();
-    //    });
-    //    return frag;
-    //}
 }

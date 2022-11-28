@@ -1,31 +1,28 @@
-﻿using System.Collections;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
-    public partial class InternalEdit<T>
+    public partial class EnumerableInternalEdit<T>
     {
         [Parameter]
-        public T? Entity { get; set; }
+        public IEnumerable<T> Entities { get; set; }
         [Inject]
         public PropertyBringer PropertyBringer { get; set; }
         private TypeShowcase TypeShowcase { get; set; }
-        private IEnumerator<BaseProperty> Enumerator { get; set; }
         protected override Task OnParametersSetAsync()
         {
-            if (Entity == null)
-                Entity = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
-            TypeShowcase = PropertyBringer.GetEntity(typeof(T));
-            Enumerator = TypeShowcase.Properties.GetEnumerator();
+            if (Entities == null)
+                Entities = new List<T>();
+            if (!typeof(T).IsPrimitive())
+                TypeShowcase = PropertyBringer.GetEntity(typeof(T));
             return base.OnParametersSetAsync();
         }
         private protected RenderFragment LoadNext(BaseProperty property)
         {
             if (property.Type == PropertyType.Complex)
             {
-                var value = property.Value(Entity);
+                var value = property.Value(Entities);
                 var genericType = typeof(InternalEdit<>).MakeGenericType(new[] { property.Self.PropertyType });
                 var frag = new RenderFragment(b =>
                 {
@@ -37,15 +34,19 @@ namespace RepositoryFramework.Web.Components.Standard
             }
             else
             {
-                var value = property.Value(Entity);
-                var genericType = typeof(EnumerableInternalEdit<>).MakeGenericType(property.Generics);
-                var frag = new RenderFragment(b =>
-                {
-                    b.OpenComponent(1, genericType);
-                    b.AddAttribute(2, "Entities", value);
-                    b.CloseComponent();
-                });
-                return frag;
+                return default;
+            }
+        }
+        public void Update(int index, T value)
+        {
+            if (Entities is IList<T> list)
+                list[index] = value;
+        }
+        public void Delete(T entity)
+        {
+            if (Entities is ICollection<T> collection)
+            {
+                collection.Remove(entity);
             }
         }
     }

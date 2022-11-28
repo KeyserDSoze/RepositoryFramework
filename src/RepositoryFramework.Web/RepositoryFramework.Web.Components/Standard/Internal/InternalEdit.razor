@@ -10,25 +10,42 @@
 {
     <Row>
         <Column>
-            @for (int i = 0; i < PropertyTree.Primitives.Count; i += 2)
+            @while (Enumerator.MoveNext())
             {
-                var value = PropertyTree.Primitives[i];
-                var nextValue = i + 1 < PropertyTree.Primitives.Count ? PropertyTree.Primitives[i + 1] : null;
-
-                <Fields>
-                    <InternalSingleEdit PropertyInfoKeeper="value" Context="Entity"></InternalSingleEdit>
-                    @if (nextValue != null)
-                    {
-                        <InternalSingleEdit PropertyInfoKeeper="nextValue" Context="Entity"></InternalSingleEdit>
-                    }
-                </Fields>
-            }
-            @foreach (var complex in PropertyTree.Complexes)
-            {
-                <Divider DividerType="DividerType.TextContent" Text="@complex.PropertyInfo.Name" />
-                @if (complex.PropertyInfo.PropertyInfo.PropertyType.GetInterface(nameof(IEnumerable)) == null)
+                var value = Enumerator.Current;
+                if (value.Type == PropertyType.Primitive)
                 {
-                    @LoadNext(complex.PropertyInfo)
+                    if (Enumerator.MoveNext())
+                    {
+                        var nextValue = Enumerator.Current;
+                        if (nextValue.Type == PropertyType.Primitive)
+                        {
+                            <Fields>
+                                <InternalSingleEdit Property="value" Context="Entity"></InternalSingleEdit>
+                                <InternalSingleEdit Property="nextValue" Context="Entity"></InternalSingleEdit>
+                            </Fields>
+                        }
+                        else
+                        {
+                            <Fields>
+                                <InternalSingleEdit Property="value" Context="Entity"></InternalSingleEdit>
+                            </Fields>
+                            <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
+                            @LoadNext(value)
+                        }
+                    }
+                    else
+                    {
+                        <Fields>
+                            <InternalSingleEdit Property="value" Context="Entity"></InternalSingleEdit>
+                        </Fields>
+                        break;
+                    }
+                }
+                else
+                {
+                    <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
+                    @LoadNext(value)
                 }
             }
         </Column>

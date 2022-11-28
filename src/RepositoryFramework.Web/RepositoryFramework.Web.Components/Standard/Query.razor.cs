@@ -55,12 +55,6 @@ namespace RepositoryFramework.Web.Components.Standard
                 }
             }
         }
-        private void CheckComplexProperties(List<PropertyInfoKeeper> infos, PropertyTree tree)
-        {
-            infos.AddRange(tree.Primitives);
-            foreach (var property in tree.Complexes)
-                CheckComplexProperties(infos, property);
-        }
         private string GetCreateUri()
             => _createUri;
         private string GetEditUri(TKey key)
@@ -106,14 +100,14 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         private string GetRealNavigationPath(string navigationPath) 
             => $"{nameof(Entity<T, TKey>.Value)}.{navigationPath}";
-        private protected RenderFragment OpenEnumerableVisualizer(T? entity, PropertyInfoKeeper propertyInfoKeeper)
+        private protected RenderFragment OpenEnumerableVisualizer(T? entity, BaseProperty property)
         {
             if (entity != null)
             {
-                var value = propertyInfoKeeper.Value(entity);
+                var value = property.Value(entity);
                 if (value != null)
                 {
-                    var genericType = typeof(Visualizer<>).MakeGenericType(new[] { propertyInfoKeeper.PropertyInfo.PropertyType });
+                    var genericType = typeof(Visualizer<>).MakeGenericType(new[] { property.Self.PropertyType });
                     var frag = new RenderFragment(b =>
                     {
                         b.OpenComponent(1, genericType);

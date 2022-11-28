@@ -57,15 +57,15 @@
         </DisplayTemplate>
     </DataGridColumn>
 
-    @foreach (var value in PropertyTree.AllProperties)
+    @foreach (var value in TypeShowcase.GetAllPrimiviteProperties())
     {
-        if (!value.IsEnumerable)
+        if (value.Type != PropertyType.Enumerable)
         {
-            <DataGridColumn Field="@GetRealNavigationPath(value.NavigationPath)" Caption="@value.Name" Sortable="true" />
+            <DataGridColumn Field="@GetRealNavigationPath(value.NavigationPath)" Caption="@value.Self.Name" Sortable="true" />
         }
         else
         {
-            <DataGridColumn Field="@GetRealNavigationPath(value.NavigationPath)" Caption="@value.Name" Sortable="true" Filterable="false">
+            <DataGridColumn Field="@GetRealNavigationPath(value.NavigationPath)" Caption="@value.Self.Name" Sortable="true" Filterable="false">
                 <DisplayTemplate>
                     @OpenEnumerableVisualizer(context!.Value, value)
                 </DisplayTemplate>
