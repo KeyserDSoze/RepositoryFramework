@@ -44,7 +44,7 @@
         </DeleteCommandTemplate>
     </DataGridCommandColumn>
 
-    <DataGridColumn Field="@nameof(_selectedEntity.Key)" Caption="#" Editable="EditableKey" Sortable="true">
+    <DataGridColumn Field="@nameof(_selectedEntity.Key)" Caption="#" Editable="EditableKey" Sortable="true" Filterable="false">
         <DisplayTemplate>
             @if (context!.Key!.GetType().IsPrimitive())
             {

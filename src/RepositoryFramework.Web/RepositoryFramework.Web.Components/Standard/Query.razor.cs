@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
+using System.Reflection;
 using System.Text;
 using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Components;
@@ -20,10 +20,9 @@ namespace RepositoryFramework.Web.Components.Standard
         private List<Entity<T, TKey>>? _entities;
         private Entity<T, TKey>? _selectedEntity;
         private int _totalItems;
-        private readonly Dictionary<string, bool> _check = new();
-        private string _createUri;
-        private string _editUri;
-        private string _deleteUri;
+        private string? _createUri;
+        private string? _editUri;
+        private string? _deleteUri;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
@@ -66,16 +65,24 @@ namespace RepositoryFramework.Web.Components.Standard
             if (!e.CancellationToken.IsCancellationRequested)
             {
                 StringBuilder query = new();
+                var properties = typeof(T).FetchProperties();
                 foreach (var column in e.Columns.Where(x => x.SearchValue != null))
                 {
-                    var name = column.Field.Replace("Value.", string.Empty, 1);
-                    if (query.Length <= 0)
+                    var searchValue = column.SearchValue.ToString();
+                    if (!string.IsNullOrEmpty(searchValue))
                     {
-                        query.Append("x => ");
-                        query.Append($"x.{name}.Contains(\"{column.SearchValue}\")");
+                        query.Append(query.Length <= 0 ? "x => " : " AndAlso ");
+                        var name = column.Field.Replace("Value.", string.Empty, 1);
+                        var property = properties.First(x => x.Name == name);
+                        if (property.PropertyType.IsNumeric())
+                        {
+                            query.Append($"x.{name} == {searchValue}");
+                        }
+                        else if (property.PropertyType == typeof(string))
+                        {
+                            query.Append($"x.{name}.Contains(\"{searchValue}\")");
+                        }
                     }
-                    else
-                        query.Append($" AndAlso x.{name}.Contains(\"{column.SearchValue}\")");
                 }
                 var nextQuery = query.ToString();
                 if (!string.IsNullOrWhiteSpace(nextQuery))
@@ -98,7 +105,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 }
             }
         }
-        private string GetRealNavigationPath(string navigationPath) 
+        private string GetRealNavigationPath(string navigationPath)
             => $"{nameof(Entity<T, TKey>.Value)}.{navigationPath}";
         private protected RenderFragment OpenEnumerableVisualizer(T? entity, BaseProperty property)
         {
