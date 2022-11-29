@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Blazorise;
 using Blazorise.Extensions;
 using Microsoft.AspNetCore.Components;
 
@@ -53,6 +54,20 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 return default!;
             }
+        }
+        private RenderFragment LoadPrimitiveEdit(T? entity, int index)
+        {
+            var genericType = typeof(InternalPrimitiveEdit<T>);
+            var frag = new RenderFragment(b =>
+            {
+                b.OpenComponent(1, genericType);
+                b.AddAttribute(2, Constant.Name, $"{index + 1}.");
+                b.AddAttribute(3, Constant.Value, entity);
+                b.AddAttribute(4, Constant.Update, (object x) => Update(index, (T)x));
+                b.AddAttribute(5, Constant.DisableEdit, DisableEdit);
+                b.CloseComponent();
+            });
+            return frag;
         }
         public void Update(int index, T value)
         {

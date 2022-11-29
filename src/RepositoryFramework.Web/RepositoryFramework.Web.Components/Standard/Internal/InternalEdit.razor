@@ -8,15 +8,6 @@
 
 @if (Entity != null)
 {
-    @if (AppSettings.Palette != AppPalette.Normal)
-    {
-        <style>
-            hr.divider.divider-text::before {
-                color: @_backgroundColor;
-                font-size: 1.6em;
-            }
-        </style>
-    }
     <div style="padding-top:15px;">
         <Row>
             <Column>
@@ -31,14 +22,14 @@
                             if (nextValue.Type == PropertyType.Primitive)
                             {
                                 <Fields>
-                                    <InternalPrimitiveEdit Name="@value.Self.Name" Value="@value.Value(Entity)" Updatable="@(x => value.Set(Entity, x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
-                                    <InternalPrimitiveEdit Name="@nextValue.Self.Name" Value="@nextValue.Value(Entity)" Updatable="@(x => nextValue.Set(Entity, x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
+                                    @LoadPrimitiveEdit(value)
+                                    @LoadPrimitiveEdit(nextValue)
                                 </Fields>
                             }
                             else
                             {
                                 <Fields>
-                                    <InternalPrimitiveEdit Name="@value.Self.Name" Value="@value.Value(Entity)" Updatable="@(x => value.Set(Entity, x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
+                                    @LoadPrimitiveEdit(value)
                                 </Fields>
                                 <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
                                 @LoadNext(value)
@@ -47,7 +38,7 @@
                         else
                         {
                             <Fields>
-                                <InternalPrimitiveEdit Name="@value.Self.Name" Value="@value.Value(Entity)" Updatable="@(x => value.Set(Entity, x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
+                                @LoadPrimitiveEdit(value)
                             </Fields>
                             break;
                         }

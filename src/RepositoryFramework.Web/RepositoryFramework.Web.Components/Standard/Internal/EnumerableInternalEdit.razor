@@ -23,7 +23,7 @@
                         {
                             var index = counter;
                             <Fields>
-                                <InternalPrimitiveEdit Name="" Value="@entity" Updatable="@(x => Update(index, (T)x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
+                                @LoadPrimitiveEdit(entity, index)
                             </Fields>
                         }
                     </div>

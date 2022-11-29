@@ -8,6 +8,9 @@
         public const string ColorEnumerator = "ColorEnumerator";
         public const string Property = "Property";
         public const string Context = "Context";
+        public const string Name = "Name";
+        public const string Value = "Value";
+        public const string Update = "Update";
         public const string EditableKey = "EditableKey";
         public const string DisableEdit = "DisableEdit";
         public const string AllowDelete = "AllowDelete";

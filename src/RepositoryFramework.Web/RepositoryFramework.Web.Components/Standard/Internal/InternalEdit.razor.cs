@@ -13,25 +13,16 @@ namespace RepositoryFramework.Web.Components.Standard
         public IEnumerator<string> ColorEnumerator { get; set; }
         [Inject]
         public required PropertyHandler PropertyHandler { get; set; }
-        [Inject]
-        public AppSettings AppSettings { get; set; }
         private TypeShowcase TypeShowcase { get; set; } = null!;
         private IEnumerator<BaseProperty> Enumerator { get; set; } = null!;
-        private string _backgroundColor = string.Empty;
         protected override Task OnParametersSetAsync()
         {
             Entity ??= typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
-            if (AppSettings.Palette == AppPalette.Pastels)
-            {
-                ColorEnumerator ??= Constant.Color.GetPastels().GetEnumerator();
-                if (ColorEnumerator.MoveNext())
-                    _backgroundColor = ColorEnumerator.Current;
-            }
             TypeShowcase = PropertyHandler.GetEntity(typeof(T));
             Enumerator = TypeShowcase.Properties.GetEnumerator();
             return base.OnParametersSetAsync();
         }
-        private protected RenderFragment LoadNext(BaseProperty property)
+        private RenderFragment LoadNext(BaseProperty property)
         {
             if (property.Type == PropertyType.Complex)
             {
@@ -63,6 +54,21 @@ namespace RepositoryFramework.Web.Components.Standard
                 });
                 return frag;
             }
+        }
+        private RenderFragment LoadPrimitiveEdit(BaseProperty property)
+        {
+            var value = property.Value(Entity);
+            var genericType = typeof(InternalPrimitiveEdit<>).MakeGenericType(new[] { property.Self.PropertyType });
+            var frag = new RenderFragment(b =>
+            {
+                b.OpenComponent(1, genericType);
+                b.AddAttribute(2, Constant.Name, property.Self.Name);
+                b.AddAttribute(3, Constant.Value, value);
+                b.AddAttribute(4, Constant.Update, (object x) => property.Set(Entity, x));
+                b.AddAttribute(5, Constant.DisableEdit, DisableEdit);
+                b.CloseComponent();
+            });
+            return frag;
         }
     }
 }

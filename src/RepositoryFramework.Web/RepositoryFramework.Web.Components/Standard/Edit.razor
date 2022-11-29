@@ -8,10 +8,36 @@
 @typeparam TKey where TKey: notnull
 @inherits RepositoryBase<T, TKey>
 
+@if (AppSettings.Palette != AppPalette.Normal)
+{
+    <style>
+        hr.divider.divider-text::before {
+            color: @_backgroundColor;
+            font-size: 1.6em;
+        }
+    </style>
+}
+
 @if (_entity != null)
 {
     <Row>
         <Column>
+            <Divider DividerType="DividerType.TextContent" Text="@Constant.Key" />
+            @if (!typeof(TKey).IsPrimitive())
+            {
+                <InternalEdit Entity="_key" DisableEdit="!_isNew"></InternalEdit>
+            }
+            else
+            {
+                <InternalPrimitiveEdit Name="@Constant.Key" Value="@_key" T="TKey" Update="x => _key = (TKey)x" DisableEdit="!_isNew"></InternalPrimitiveEdit>
+            }
+            @if (!_isNew)
+            {
+                <Button Color="Color.Primary" Clicked="() => _isNew = true">
+                    <Icon Name="IconName.Unlock" />
+                </Button>
+            }
+            <Divider DividerType="DividerType.TextContent" Text="@typeof(T).Name" />
             <InternalEdit Entity="_entity" DisableEdit="DisableEdit"></InternalEdit>
             @if (!DisableEdit)
             {

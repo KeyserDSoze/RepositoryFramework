@@ -15,13 +15,22 @@ namespace RepositoryFramework.Web.Components.Standard
         public bool DisableEdit { get; set; }
         [Parameter]
         public bool AllowDelete { get; set; }
+        [Inject]
+        public AppSettings AppSettings { get; set; }
         private T? _entity;
         private bool _isNew;
         private TKey _key = default!;
         private RepositoryFeedback? _feedback;
+        private string _backgroundColor = string.Empty;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
+            if (AppSettings.Palette == AppPalette.Pastels)
+            {
+                var colorEnumerator = Constant.Color.GetPastels().GetEnumerator();
+                if (colorEnumerator.MoveNext())
+                    _backgroundColor = colorEnumerator.Current;
+            }
             if (Queryx != null)
             {
                 if (!string.IsNullOrWhiteSpace(Key))
