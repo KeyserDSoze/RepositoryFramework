@@ -13,8 +13,12 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IRepositoryUiBuilder AddRepositoryUi(this IServiceCollection services,
             Action<AppSettings> settings)
         {
-            settings.Invoke(AppSettings.Instance);
-            services.AddSingleton(AppSettings.Instance);
+            var options = new AppSettings()
+            {
+                Name = "Repository App"
+            };
+            settings.Invoke(options);
+            services.AddSingleton(options);
             services.AddSingleton<PropertyHandler>();
             services.AddSingleton<AppMenu>();
             services.AddBlazorise(options =>
@@ -31,6 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             endpointRouteBuilder
                 .MapRazorPages();
+           
             return endpointRouteBuilder;
         }
     }
