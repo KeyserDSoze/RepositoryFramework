@@ -1,0 +1,43 @@
+﻿@namespace RepositoryFramework.Web.Components.Standard
+@using Blazorise
+
+@if (Feedback != null)
+{
+    <Alert Color="Feedback.IsOk ? Color.Info : Color.Danger" @bind-Visible="@Feedback.IsVisible" Margin="Margin.Is1.FromTop">
+        <Heading Size="HeadingSize.Is4" TextColor="TextColor.Success">
+            @Feedback.Title
+            @if (!Feedback.HasCancelButton)
+            {
+                <CloseButton Clicked="x => { Feedback.IsVisible = false; return Task.CompletedTask; }" />
+            }
+        </Heading>
+        @if (Feedback.Message != null)
+        {
+            <Paragraph>
+                @Feedback.Message
+            </Paragraph>
+        }
+        @if (Feedback.Ok != null || Feedback.NotOk != null)
+        {
+            <Paragraph>
+                @if (Feedback.Ok != null)
+                {
+                    <Button Color="Color.Success" Clicked="() => Feedback.Ok()">Ok</Button>
+                }
+                @if (Feedback.NotOk != null)
+                {
+                    <Button Color="Color.Warning" Clicked="() => Feedback.NotOk()">Not Ok</Button>
+                }
+                @if (Feedback.HasCancelButton)
+                {
+                    <Button Color="Color.Danger" Clicked="x => { Feedback.IsVisible = false; return Task.CompletedTask; }">Cancel</Button>
+                }
+            </Paragraph>
+        }
+    </Alert>
+}
+
+@code {
+    [Parameter]
+    public RepositoryFeedback? Feedback { get; set; }
+}

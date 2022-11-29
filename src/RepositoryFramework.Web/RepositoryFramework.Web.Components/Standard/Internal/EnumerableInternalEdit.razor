@@ -11,25 +11,38 @@
     var counter = 0;
     <Row>
         <Column>
-            @foreach(var entity in Entities)
+            @foreach (var entity in Entities)
             {
-                if (TypeShowcase != null)
-                {
-                    <InternalEdit Entity="entity"></InternalEdit>
-                    <Button Clicked="x => Delete(entity)">
-                        <Icon Name="IconName.Delete"></Icon>
-                    </Button>
-                }
-                else
-                {
-                    <Fields>
-                        <InternalNoContextEdit Value="entity" Updatable="x => Update(counter, (T)x)"></InternalNoContextEdit>
-                        <Button Clicked="x => Delete(entity)">
-                            <Icon Name="IconName.Delete"></Icon>
-                        </Button>
-                    </Fields>
-                }
+                <div style="position:relative;float:left;width:100%;border-left:solid 1px #ddd;margin-bottom:10px;padding-top:15px;">
+                    <div style="position:relative;float:left;width:94%;margin-left:2%;">
+                        @if (TypeShowcase != null)
+                        {
+                            <InternalEdit Entity="entity" DisableEdit="DisableEdit"></InternalEdit>
+                        }
+                        else
+                        {
+                            var index = counter;
+                            <Fields>
+                                <InternalPrimitiveEdit Name="" Value="@entity" Updatable="@(x => Update(index, (T)x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
+                            </Fields>
+                        }
+                    </div>
+                    @if (!DisableEdit)
+                    {
+                        <div style="position:relative;float:left;width:3%;height:100%;margin-left:1%;padding-top:15px;">
+                            <Button Clicked="x => Delete(entity)">
+                                <Icon Name="IconName.Delete"></Icon>
+                            </Button>
+                        </div>
+                    }
+                </div>
                 counter++;
+            }
+            @if (!DisableEdit)
+            {
+                <Button Clicked="x => New()">
+                    <Icon Name="IconName.Add"></Icon>
+                </Button>
             }
         </Column>
     </Row>

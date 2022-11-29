@@ -1,10 +1,11 @@
-﻿using RepositoryFramework.Web.Components.Standard;
+﻿using Microsoft.AspNetCore.Components.Rendering;
+using RepositoryFramework.Web.Components.Standard;
 
 namespace RepositoryFramework.Web.Components
 {
     public partial class Query
     {
-        private protected override Type StandardType => typeof(Query<,>);
-        private protected override bool HasKeyInParameters => false;
+        private protected override Type StandardType { get; } = typeof(Query<,>);
+        private protected override Action<RenderTreeBuilder>? RenderTreeBuilderConfigurator { get; }
     }
 }

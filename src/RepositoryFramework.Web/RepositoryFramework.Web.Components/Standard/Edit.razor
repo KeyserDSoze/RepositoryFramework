@@ -12,27 +12,37 @@
 {
     <Row>
         <Column>
-            <InternalEdit Entity="_entity"></InternalEdit>
-            <Button Color="Color.Primary" Clicked="@(() => SaveAsync(false))">
-                @if (_isNew)
-                {
-                    @:Save
-                }
-                else
-                {
-                    @:Update
-                }
-            </Button>
-            <Button Color="Color.Primary" Clicked="@(() => SaveAsync(true))">
-                @if (_isNew)
-                {
-                    @:Save and go
-                }
-                else
-                {
-                    @:Update and go
-                }
-            </Button>
+            <InternalEdit Entity="_entity" DisableEdit="DisableEdit"></InternalEdit>
+            @if (!DisableEdit)
+            {
+                <Button Color="Color.Primary" Clicked="@(() => SaveAsync(false))">
+                    @if (_isNew)
+                    {
+                        @:Save
+                    }
+                    else
+                    {
+                        @:Update
+                    }
+                </Button>
+                <Button Color="Color.Primary" Clicked="@(() => SaveAsync(true))">
+                    @if (_isNew)
+                    {
+                        @:Save and go
+                    }
+                    else
+                    {
+                        @:Update and go
+                    }
+                </Button>
+            }
+            @if (AllowDelete)
+            {
+                <Button Color="Color.Primary" Clicked="@(() => CheckIfYouWantToDelete())">
+                    Delete and go
+                </Button>
+            }
         </Column>
     </Row>
+    <Message Feedback="_feedback"></Message>
 }

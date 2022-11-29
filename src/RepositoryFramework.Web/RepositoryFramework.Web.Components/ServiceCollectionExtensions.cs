@@ -10,30 +10,24 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddRepositoryUI(this IServiceCollection services,
+        public static IRepositoryUiBuilder AddRepositoryUi(this IServiceCollection services,
             Action<AppSettings> settings)
         {
-            var options = new AppSettings();
-            settings.Invoke(options);
-            services.AddSingleton(options);
-            services.AddSingleton<PropertyBringer>();
-            services
-               .AddMvc()
-               .ConfigureApplicationPartManager(x =>
-               {
-                   x.ApplicationParts.Add(new AssemblyPart(typeof(PropertyInfoKeeper<,>).Assembly));
-               });
-            services.AddRazorPages();
+            settings.Invoke(AppSettings.Instance);
+            services.AddSingleton(AppSettings.Instance);
+            services.AddSingleton<PropertyHandler>();
             services.AddSingleton<AppMenu>();
-            return services.AddBlazorise(options =>
-                    {
-                        options.Immediate = true;
-                    })
-                    .AddBootstrap5Providers()
-                    .AddBootstrap5Components()
-                    .AddFontAwesomeIcons();
+            services.AddBlazorise(options =>
+            {
+                options.Immediate = true;
+            })
+            .AddBootstrap5Providers()
+            .AddBootstrap5Components()
+            .AddFontAwesomeIcons();
+            services.AddRazorPages();
+            return new RepositoryUiBuilder(services);
         }
-        public static IEndpointRouteBuilder AddDefaultRepositoryEndpoint(this IEndpointRouteBuilder endpointRouteBuilder)
+        public static IEndpointRouteBuilder AddDefaultRepositoryEndpoints(this IEndpointRouteBuilder endpointRouteBuilder)
         {
             endpointRouteBuilder
                 .MapRazorPages();

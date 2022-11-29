@@ -8,46 +8,57 @@
 
 @if (Entity != null)
 {
-    <Row>
-        <Column>
-            @while (Enumerator.MoveNext())
-            {
-                var value = Enumerator.Current;
-                if (value.Type == PropertyType.Primitive)
+    @if (AppSettings.Palette != AppPalette.Normal)
+    {
+        <style>
+            hr.divider.divider-text::before {
+                color: @_backgroundColor;
+                font-size: 1.6em;
+            }
+        </style>
+    }
+    <div style="padding-top:15px;">
+        <Row>
+            <Column>
+                @while (Enumerator.MoveNext())
                 {
-                    if (Enumerator.MoveNext())
+                    var value = Enumerator.Current;
+                    if (value.Type == PropertyType.Primitive)
                     {
-                        var nextValue = Enumerator.Current;
-                        if (nextValue.Type == PropertyType.Primitive)
+                        if (Enumerator.MoveNext())
                         {
-                            <Fields>
-                                <InternalSingleEdit Property="value" Context="Entity"></InternalSingleEdit>
-                                <InternalSingleEdit Property="nextValue" Context="Entity"></InternalSingleEdit>
-                            </Fields>
+                            var nextValue = Enumerator.Current;
+                            if (nextValue.Type == PropertyType.Primitive)
+                            {
+                                <Fields>
+                                    <InternalPrimitiveEdit Name="@value.Self.Name" Value="@value.Value(Entity)" Updatable="@(x => value.Set(Entity, x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
+                                    <InternalPrimitiveEdit Name="@nextValue.Self.Name" Value="@nextValue.Value(Entity)" Updatable="@(x => nextValue.Set(Entity, x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
+                                </Fields>
+                            }
+                            else
+                            {
+                                <Fields>
+                                    <InternalPrimitiveEdit Name="@value.Self.Name" Value="@value.Value(Entity)" Updatable="@(x => value.Set(Entity, x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
+                                </Fields>
+                                <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
+                                @LoadNext(value)
+                            }
                         }
                         else
                         {
                             <Fields>
-                                <InternalSingleEdit Property="value" Context="Entity"></InternalSingleEdit>
+                                <InternalPrimitiveEdit Name="@value.Self.Name" Value="@value.Value(Entity)" Updatable="@(x => value.Set(Entity, x))" DisableEdit="DisableEdit"></InternalPrimitiveEdit>
                             </Fields>
-                            <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
-                            @LoadNext(value)
+                            break;
                         }
                     }
                     else
                     {
-                        <Fields>
-                            <InternalSingleEdit Property="value" Context="Entity"></InternalSingleEdit>
-                        </Fields>
-                        break;
+                        <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
+                        @LoadNext(value)
                     }
                 }
-                else
-                {
-                    <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
-                    @LoadNext(value)
-                }
-            }
-        </Column>
-    </Row>
+            </Column>
+        </Row>
+    </div>
 }

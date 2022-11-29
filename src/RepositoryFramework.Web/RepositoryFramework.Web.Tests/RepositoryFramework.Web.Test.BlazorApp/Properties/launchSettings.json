@@ -12,7 +12,7 @@
     "https": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "https://localhost:7193/Repository/AppUser/Query",
+      "launchUrl": "https://localhost:7193",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

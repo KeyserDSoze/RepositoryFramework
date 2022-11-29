@@ -12,10 +12,10 @@ namespace RepositoryFramework.Web.Components
         [Inject]
         public ICommand<T, TKey>? Command { get; set; }
         [Inject]
-        public NavigationManager NavigationManager { get; set; }
+        public NavigationManager NavigationManager { get; set; } = null!;
         [Inject]
-        public PropertyBringer PropertyBringer { get; set; }
-        private protected TypeShowcase TypeShowcase { get; set; }
+        public PropertyHandler PropertyHandler { get; set; } = null!;
+        private protected TypeShowcase TypeShowcase { get; set; } = null!;
         private protected bool CanEdit { get; set; }
         private bool _alreadySet;
         protected override Task OnInitializedAsync()
@@ -23,7 +23,7 @@ namespace RepositoryFramework.Web.Components
             if (!_alreadySet)
             {
                 _alreadySet = true;
-                TypeShowcase = PropertyBringer.GetEntity(typeof(T));
+                TypeShowcase = PropertyHandler.GetEntity(typeof(T));
                 if (Repository != null)
                 {
                     Queryx = Repository;

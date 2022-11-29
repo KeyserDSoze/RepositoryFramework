@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services
-    .AddRepositoryUI(x => x.Name = "SuperSite");
+    .AddRepositoryUi(x => x.Name = "SuperSite");
 builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()
     .PopulateWithRandomData(x => x.Id, 2, 2);
 var app = builder.Build();

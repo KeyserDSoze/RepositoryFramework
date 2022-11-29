@@ -5,10 +5,10 @@ namespace RepositoryFramework.Web.Components
     public partial class RepositoryMenu
     {
         [Inject]
-        public AppMenu AppMenu { get; set; }
+        public AppMenu AppMenu { get; set; } = null!;
 
         [Inject]
-        public AppSettings Settings { get; set; }
+        public AppSettings Settings { get; set; } = null!;
 
         [Parameter]
         public RenderFragment? EndFragment { get; set; }

@@ -4,11 +4,16 @@ using RepositoryFramework.Web.Test.BlazorApp.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services
-    .AddRepositoryUI(x => x.Name = "SuperSite");
+    .AddRepositoryUi(x =>
+    {
+        x.Name = "SuperSite";
+        x.Palette = RepositoryFramework.Web.Components.AppPalette.Pastels;
+    })
+    .WithDefault<AppUser>();
+
 builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()
     .PopulateWithRandomData(x => x.Id, 67, 2);
 var app = builder.Build();
@@ -31,7 +36,7 @@ app.UseRouting();
 app.MapBlazorHub();
 app.UseEndpoints(x =>
 {
-    x.AddDefaultRepositoryEndpoint();
+    x.AddDefaultRepositoryEndpoints();
 });
 
 app.MapFallbackToPage("/_Host");

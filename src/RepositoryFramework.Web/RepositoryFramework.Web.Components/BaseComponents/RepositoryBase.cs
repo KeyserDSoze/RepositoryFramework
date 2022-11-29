@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
 
 namespace RepositoryFramework.Web.Components
 {
@@ -15,7 +16,7 @@ namespace RepositoryFramework.Web.Components
         private Type? _keyType;
         private Type? _modelType;
         private protected abstract Type StandardType { get; }
-        private protected abstract bool HasKeyInParameters { get; }
+        private protected abstract Action<RenderTreeBuilder>? RenderTreeBuilderConfigurator { get; }
         private protected bool IsLoadable => _keyType != null && _modelType != null;
         protected override Task OnInitializedAsync()
         {
@@ -34,8 +35,7 @@ namespace RepositoryFramework.Web.Components
             var frag = new RenderFragment(b =>
             {
                 b.OpenComponent(1, genericType);
-                if (HasKeyInParameters)
-                    b.AddAttribute(2, nameof(Key), Key);
+                RenderTreeBuilderConfigurator?.Invoke(b);
                 b.CloseComponent();
             });
             return frag;

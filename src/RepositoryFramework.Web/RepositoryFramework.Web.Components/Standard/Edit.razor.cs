@@ -8,12 +8,17 @@ namespace RepositoryFramework.Web.Components.Standard
     {
         private static readonly Func<string, TKey> s_keyParser = IKey.Parser<TKey>();
         [Parameter]
-        public string Key { get; set; }
+        public string Key { get; set; } = null!;
         [Parameter]
         public bool EditableKey { get; set; } = true;
+        [Parameter]
+        public bool DisableEdit { get; set; }
+        [Parameter]
+        public bool AllowDelete { get; set; }
         private T? _entity;
         private bool _isNew;
-        private TKey _key;
+        private TKey _key = default!;
+        private RepositoryFeedback? _feedback;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
@@ -33,11 +38,73 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         private async Task SaveAsync(bool withRedirect)
         {
-            var result = _isNew ?
-                await Command.InsertAsync(_key, _entity) :
-                await Command.UpdateAsync(_key, _entity);
-            if (result.IsOk && withRedirect)
-                NavigationManager.NavigateTo($"../../../../Repository/{typeof(T).Name}/Query");
+            if (Command != null)
+            {
+                var result = _isNew ?
+                    await Command.InsertAsync(_key, _entity).NoContext() :
+                    await Command.UpdateAsync(_key, _entity).NoContext();
+                if (result.IsOk && withRedirect)
+                    NavigationManager.NavigateTo($"../../../../Repository/{typeof(T).Name}/Query");
+                if (!result.IsOk)
+                {
+                    _feedback = new RepositoryFeedback
+                    {
+                        IsOk = false,
+                        Message = result.Message,
+                        Title = "Saving error",
+                        IsVisible = true,
+                    };
+                }
+            }
+            else
+            {
+                _feedback = new RepositoryFeedback
+                {
+                    IsOk = false,
+                    Message = "Command pattern or repository pattern not installed to perform the task. It's not possible to save the current item.",
+                    Title = "Saving error",
+                    IsVisible = true,
+                };
+            }
+        }
+        private void CheckIfYouWantToDelete()
+        {
+            _feedback = new RepositoryFeedback
+            {
+                IsOk = true,
+                Message = $"Are you sure to delete the current item with key {Key}",
+                Title = "Delete",
+                IsVisible = true,
+                Ok = () => DeleteAsync(),
+                HasCancelButton = true
+            };
+        }
+        private async ValueTask DeleteAsync()
+        {
+            if (Command != null)
+            {
+                var result = await Command.DeleteAsync(_key).NoContext();
+                if (result.IsOk)
+                    NavigationManager.NavigateTo($"../../../../Repository/{typeof(T).Name}/Query");
+                else
+                    _feedback = new RepositoryFeedback
+                    {
+                        IsOk = false,
+                        Message = result.Message,
+                        Title = "Delete error",
+                        IsVisible = true,
+                    };
+            }
+            else
+            {
+                _feedback = new RepositoryFeedback
+                {
+                    IsOk = false,
+                    Message = "Command pattern or repository pattern not installed to perform the task. It's not possible to delete the current item.",
+                    Title = "Delete error",
+                    IsVisible = true,
+                };
+            }
         }
     }
 }
