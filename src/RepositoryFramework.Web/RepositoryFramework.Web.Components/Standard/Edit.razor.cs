@@ -22,17 +22,10 @@ namespace RepositoryFramework.Web.Components.Standard
         private bool _isNew;
         private TKey _key = default!;
         private RepositoryFeedback? _feedback;
-        private string _backgroundColor = string.Empty;
         private Dictionary<string, RepositoryUiPropertyValueRetrieved> _propertiesRetrieved = new();
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
-            if (AppSettings.Palette == AppPalette.Pastels)
-            {
-                var colorEnumerator = Constant.Color.GetPastels().GetEnumerator();
-                if (colorEnumerator.MoveNext())
-                    _backgroundColor = colorEnumerator.Current;
-            }
             foreach (var retrieve in RepositoryUiPropertyValueRetriever<T, TKey>.Instance.Retrieves)
             {
                 _propertiesRetrieved.Add(retrieve.Key, new RepositoryUiPropertyValueRetrieved

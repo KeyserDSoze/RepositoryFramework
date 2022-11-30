@@ -19,8 +19,6 @@ namespace RepositoryFramework.Web.Components.Standard
         public RepositoryUiPropertyValueRetrieved PropertyRetrieved { get; set; }
         [Parameter]
         public string? NavigationPath { get; set; }
-        [Parameter]
-        public IEnumerator<string> ColorEnumerator { get; set; }
         [Inject]
         public PropertyHandler PropertyHandler { get; set; } = null!;
         [Inject]
@@ -37,10 +35,6 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             if (Entities == null)
                 Entities = new List<T>();
-            if (AppSettings.Palette == AppPalette.Pastels)
-            {
-                ColorEnumerator ??= Constant.Color.GetPastels().GetEnumerator();
-            }
             if (!typeof(T).IsPrimitive())
                 TypeShowcase = PropertyHandler.GetEntity(typeof(T));
             return base.OnParametersSetAsync();
