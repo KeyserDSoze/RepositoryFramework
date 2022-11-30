@@ -2,21 +2,22 @@
 {
     internal static class Constant
     {
-        public const string Key = "Key";
-        public const string Entity = "Entity";
-        public const string Entities = "Entities";
-        public const string ColorEnumerator = "ColorEnumerator";
-        public const string Property = "Property";
-        public const string Context = "Context";
-        public const string Name = "Name";
-        public const string Value = "Value";
-        public const string Update = "Update";
-        public const string EditableKey = "EditableKey";
-        public const string DisableEdit = "DisableEdit";
-        public const string NavigationPath = "NavigationPath";
-        public const string PropertyRetrieved = "PropertyRetrieved";
-        public const string PropertiesRetrieved = "PropertiesRetrieved";
-        public const string AllowDelete = "AllowDelete";
+        public const string Key = nameof(Key);
+        public const string Entity = nameof(Entity);
+        public const string Entities = nameof(Entities);
+        public const string ColorEnumerator = nameof(ColorEnumerator);
+        public const string Property = nameof(Property);
+        public const string Context = nameof(Context);
+        public const string Name = nameof(Name);
+        public const string Value = nameof(Value);
+        public const string Update = nameof(Update);
+        public const string EditableKey = nameof(EditableKey);
+        public const string DisableEdit = nameof(DisableEdit);
+        public const string NavigationPath = nameof(NavigationPath);
+        public const string PropertyRetrieved = nameof(PropertyRetrieved);
+        public const string PropertiesRetrieved = nameof(PropertiesRetrieved);
+        public const string AllowDelete = nameof(AllowDelete);
+        public const string None = nameof(None);
         public static class Color
         {
             private static readonly List<string> s_pastels = new()

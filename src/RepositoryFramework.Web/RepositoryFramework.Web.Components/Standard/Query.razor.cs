@@ -20,7 +20,7 @@ namespace RepositoryFramework.Web.Components.Standard
         private int _totalItems;
         private string? _createUri;
         private string? _editUri;
-        private string? _deleteUri;
+        private string? _showUri;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
@@ -28,7 +28,7 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 _createUri = $"Repository/{typeof(T).Name}/Create";
                 _editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
-                _deleteUri = $"Repository/{typeof(T).Name}/Delete/{{0}}";
+                _showUri = $"Repository/{typeof(T).Name}/Show/{{0}}";
             }
             if (Query != null)
             {
@@ -57,7 +57,7 @@ namespace RepositoryFramework.Web.Components.Standard
         private string GetEditUri(TKey key)
             => _editUri != null ? string.Format(_editUri, IKey.AsString(key)) : string.Empty;
         private string GetDeleteUri(TKey key)
-            => _deleteUri != null ? string.Format(_deleteUri, IKey.AsString(key)) : string.Empty;
+            => _showUri != null ? string.Format(_showUri, IKey.AsString(key)) : string.Empty;
         private async Task OnReadData(DataGridReadDataEventArgs<Entity<T, TKey>> e)
         {
             if (!e.CancellationToken.IsCancellationRequested)

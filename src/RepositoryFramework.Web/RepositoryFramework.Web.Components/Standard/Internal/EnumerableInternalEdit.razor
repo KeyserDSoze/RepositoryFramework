@@ -11,11 +11,11 @@
     var counter = 0;
     <Row>
         <Column>
-            @if (!PropertyRetrieved.HasValues())
-            {
-                foreach (var entity in Entities)
+            <div style="position:relative;float:left;width:100%;border-left:solid 1px #ddd;margin-bottom:10px;padding-top:15px;">
+                @if (!PropertyRetrieved.HasValues())
                 {
-                    <div style="position:relative;float:left;width:100%;border-left:solid 1px #ddd;margin-bottom:10px;padding-top:15px;">
+                    foreach (var entity in Entities)
+                    {
                         <div style="position:relative;float:left;width:94%;margin-left:2%;">
                             @if (TypeShowcase != null)
                             {
@@ -41,18 +41,20 @@
                                 </Button>
                             </div>
                         }
-                    </div>
-                    counter++;
+                        counter++;
+                    }
                 }
-            }
-            else
-            {
-                <Fields>
-                    <InternalMultiSelectEdit Name="@Property.Self.Name" Values="Entities" T="T" DisableEdit="DisableEdit"
-                                     Update="@((object x) => Update((IEnumerable<T>)x))" PropertyRetrieved="@PropertyRetrieved">
-                    </InternalMultiSelectEdit>
-                </Fields>
-            }
+                else
+                {
+                    <div style="position:relative;float:left;width:94%;margin-left:2%;">
+                        <Fields>
+                            <InternalMultiSelectEdit Name="@Property.Self.Name" Values="Entities" T="T" DisableEdit="DisableEdit"
+                                             Update="@((object x) => Update((IEnumerable<T>)x))" PropertyRetrieved="@PropertyRetrieved">
+                            </InternalMultiSelectEdit>
+                        </Fields>
+                    </div>
+                }
+            </div>
             @if (!DisableEdit && !PropertyRetrieved.HasValues())
             {
                 <Button Clicked="x => New()">

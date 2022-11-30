@@ -32,13 +32,22 @@ builder.Services
                 }
             });
         return values;
-    }, x => x.Name);
+    }, x => x.Name)
+    .AndConfigure<AppGroup, int>()
+    .MapChoice(x => x.Name, serviceProvider =>
+    {
+        return Task.FromResult(new List<PropertyValue> {
+            "Admin",
+            "SuperAdmin",
+            "AppManager",
+            "SuperAppManager" }.AsEnumerable());
+    }, x => x);
 
 builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()
     .PopulateWithRandomData(x => x.Id, 67, 2);
 builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>
 {
-    x.IsNotExposable = true;
+    x.IsNotExposable = false;
 })
     .PopulateWithRandomData(x => x.Id, 24, 2);
 var app = builder.Build();

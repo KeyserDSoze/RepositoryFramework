@@ -39,21 +39,18 @@
                 }
                 else
                 {
-                    <Select TValue="string"
-                        Multiple="false"
-                        SelectedValue="@PropertyRetrieved.LabelComparer(Value)"
-                        SelectedValueChanged="@InternalProxyUpdate"
-                        Class="form-control select-checkbox"
-                        MaxVisibleItems="0"
-                        Disabled="@DisableEdit">
-                        <ChildContent>
-                            <SelectItem Disabled="@DisableEdit" Hidden="@DisableEdit">Select one...</SelectItem>
-                            @foreach (var element in PropertyRetrieved.Values)
-                            {
-                                <SelectItem Value="@element.Label" Disabled="false">@element.Label</SelectItem>
-                            }
-                        </ChildContent>
-                    </Select>
+                    <SelectList TValue="string"
+                            TItem="string"
+                            DefaultItemText="@Constant.None"
+                            DefaultItemValue="@Constant.None"
+                            Data="@PropertyRetrieved.Values.Select(x => x.Label)"
+                            TextField="@(x => x)"
+                            ValueField="@(x => x)"
+                            SelectedValue="@PropertyRetrieved.LabelComparer(Value)"
+                            Multiple=false
+                            Disabled="DisableEdit"
+                            SelectedValueChanged="@InternalProxyUpdate">
+                    </SelectList>
                 }
             </Addon>
             @if (PropertyRetrieved?.Default != null && !DisableEdit)
@@ -91,6 +88,6 @@
     }
     public void InternalProxyUpdate(string label)
     {
-        InternalUpdate(PropertyRetrieved.Values.FirstOrDefault(x => x.Label == label).Value);
+        InternalUpdate(PropertyRetrieved.Values.FirstOrDefault(x => x.Label == label)?.Value);
     }
 }

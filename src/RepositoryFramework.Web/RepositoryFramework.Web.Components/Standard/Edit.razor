@@ -18,10 +18,6 @@
     </style>
 }
 <style>
-    select {
-        width: 150px;
-    }
-
     .select-checkbox option::before {
         content: "\2610";
         width: 1.3em;
@@ -57,7 +53,9 @@
             }
             else
             {
-                <InternalPrimitiveEdit Name="@Constant.Key" Value="@_key" T="TKey" Update="x => _key = (TKey)x" DisableEdit="!_isNew"></InternalPrimitiveEdit>
+                <div style="padding-top:15px;">
+                    <InternalPrimitiveEdit Name="@Constant.Key" Value="@_key" T="TKey" Update="x => _key = (TKey)x" DisableEdit="!_isNew"></InternalPrimitiveEdit>
+                </div>
             }
             @if (!_isNew)
             {

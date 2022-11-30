@@ -17,21 +17,19 @@
             <Addon AddonType="AddonType.Body">
                 @if (PropertyRetrieved.HasValues())
                 {
-                    <Select TValue="string"
-                        Multiple="true"
-                        SelectedValues="@GetLabels()"
-                        SelectedValuesChanged="@InternalUpdate"
-                        Class="form-control select-checkbox"
-                        MaxVisibleItems="10"
-                        Disabled="@DisableEdit">
-                        <ChildContent>
-                            <SelectItem Disabled="@DisableEdit" Hidden="@DisableEdit">None</SelectItem>
-                            @foreach (var element in PropertyRetrieved.Values)
-                            {
-                                <SelectItem Value="@element.Label" Disabled="false">@element.Label</SelectItem>
-                            }
-                        </ChildContent>
-                    </Select>
+                    <SelectList TValue="string"
+                            TItem="string"
+                            DefaultItemText="@Constant.None"
+                            DefaultItemValue="@Constant.None"
+                            Data="@PropertyRetrieved.Values.Select(x => x.Label)"
+                            Class="select-checkbox"
+                            TextField="@(x => x)"
+                            ValueField="@(x => x)"
+                            SelectedValues="@Values?.Select(x => PropertyRetrieved.LabelComparer(x)).ToList()"
+                            Multiple=true
+                            Disabled="DisableEdit"
+                            SelectedValuesChanged="@InternalUpdate">
+                        </SelectList>
                 }
             </Addon>
             @if (PropertyRetrieved?.Default != null && !DisableEdit)
@@ -80,6 +78,4 @@
         Update(values);
         Values = values;
     }
-    public IReadOnlyList<string> GetLabels()
-        => Values?.Select(x => PropertyRetrieved.LabelComparer(x)).ToList() ?? new List<string>();
 }
