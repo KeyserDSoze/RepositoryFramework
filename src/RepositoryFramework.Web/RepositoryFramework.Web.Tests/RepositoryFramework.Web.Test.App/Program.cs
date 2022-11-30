@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.WebHost.UseWebRoot("wwwroot");
+builder.WebHost.UseStaticWebAssets();
 builder.Services
     .AddRepositoryUi(x => x.Name = "SuperSite");
 builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()

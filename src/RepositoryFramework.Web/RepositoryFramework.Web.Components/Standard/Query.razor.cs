@@ -12,24 +12,18 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public int PageSize { get; set; } = 10;
         [Parameter]
-        public bool Progressive { get; set; }
+        public bool Progressive { get; set; } = true;
         [Parameter]
         public Expression<Func<T, bool>>? Prefilter { get; set; }
         private List<Entity<T, TKey>>? _entities;
         private Entity<T, TKey>? _selectedEntity;
         private int _totalItems;
-        private string? _createUri;
-        private string? _editUri;
-        private string? _showUri;
+        private static readonly string? s_createUri = $"Repository/{typeof(T).Name}/Create";
+        private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
+        private static readonly string? s_showUri = $"Repository/{typeof(T).Name}/Show/{{0}}";
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
-            if (CanEdit)
-            {
-                _createUri = $"Repository/{typeof(T).Name}/Create";
-                _editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
-                _showUri = $"Repository/{typeof(T).Name}/Show/{{0}}";
-            }
             if (Query != null)
             {
                 if (Progressive)
@@ -53,11 +47,11 @@ namespace RepositoryFramework.Web.Components.Standard
             }
         }
         private string GetCreateUri()
-            => _createUri ?? string.Empty;
+            => s_createUri ?? string.Empty;
         private string GetEditUri(TKey key)
-            => _editUri != null ? string.Format(_editUri, IKey.AsString(key)) : string.Empty;
+            => s_editUri != null ? string.Format(s_editUri, IKey.AsString(key)) : string.Empty;
         private string GetDeleteUri(TKey key)
-            => _showUri != null ? string.Format(_showUri, IKey.AsString(key)) : string.Empty;
+            => s_showUri != null ? string.Format(s_showUri, IKey.AsString(key)) : string.Empty;
         private async Task OnReadData(DataGridReadDataEventArgs<Entity<T, TKey>> e)
         {
             if (!e.CancellationToken.IsCancellationRequested)

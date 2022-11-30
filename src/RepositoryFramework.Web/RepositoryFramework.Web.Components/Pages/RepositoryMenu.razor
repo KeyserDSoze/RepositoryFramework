@@ -21,15 +21,17 @@
                         <BarDropdownToggle>@app.Value.ModelType.Name</BarDropdownToggle>
                         <BarDropdownMenu>
                             <BarDropdownItem>
-                                <BarLink To="@($"../../../../Repository/{app.Value.ModelType.Name}/Query")">
+                                <Blazorise.Bootstrap.Button Margin="Margin.Is0"
+                                Clicked="@((x) => Redirect($"../../../../Repository/{app.Value.ModelType.Name}/Query"))">
                                     Query
-                                </BarLink>
+                                </Blazorise.Bootstrap.Button>
                             </BarDropdownItem>
                             <BarDropdownDivider />
                             <BarDropdownItem>
-                                <BarLink To="@($"../../../../Repository/{app.Value.ModelType.Name}/Create")">
-                                    Create
-                                </BarLink>
+                                <Blazorise.Bootstrap.Button Margin="Margin.Is0"
+                                Clicked="@((x) => Redirect($"../../../../Repository/{app.Value.ModelType.Name}/Create"))">
+                                    New
+                                </Blazorise.Bootstrap.Button>
                             </BarDropdownItem>
                         </BarDropdownMenu>
                     </BarDropdown>

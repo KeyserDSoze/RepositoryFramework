@@ -8,40 +8,6 @@
 @typeparam TKey where TKey: notnull
 @inherits RepositoryBase<T, TKey>
 
-@if (AppSettings.Palette != AppPalette.Normal)
-{
-    <style>
-        hr.divider.divider-text::before {
-            color: @_backgroundColor;
-            font-size: 1.6em;
-        }
-    </style>
-}
-<style>
-    .select-checkbox option::before {
-        content: "\2610";
-        width: 1.3em;
-        text-align: center;
-        display: inline-block;
-    }
-
-    .select-checkbox option:checked::before {
-        content: "\2611";
-    }
-
-    .select-checkbox-fa option::before {
-        font-family: FontAwesome;
-        content: "\f096";
-        width: 1.3em;
-        display: inline-block;
-        margin-left: 2px;
-    }
-
-    .select-checkbox-fa option:checked::before {
-        content: "\f046";
-    }
-</style>
-
 @if (_entity != null)
 {
     <Row>
