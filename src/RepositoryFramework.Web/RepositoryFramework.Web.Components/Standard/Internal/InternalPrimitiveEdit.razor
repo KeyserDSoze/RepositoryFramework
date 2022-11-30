@@ -8,7 +8,7 @@
 @using Blazorise.Components;
 @typeparam T
 
-<Field ColumnSize="ColumnSize.IsHalf">
+<Field ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnMobile">
     <FieldBody>
         <Addons ColumnSize="ColumnSize.IsQuarter">
             <Addon AddonType="AddonType.Start">
@@ -43,10 +43,10 @@
                             TItem="string"
                             DefaultItemText="@Constant.None"
                             DefaultItemValue="@Constant.None"
-                            Data="@PropertyRetrieved.Values.Select(x => x.Label)"
+                            Data="@PropertyRetrieved!.Values!.Select(x => x.Label)"
                             TextField="@(x => x)"
                             ValueField="@(x => x)"
-                            SelectedValue="@PropertyRetrieved.LabelComparer(Value)"
+                            SelectedValue="@PropertyRetrieved!.LabelComparer(Value)"
                             Multiple=false
                             Disabled="DisableEdit"
                             SelectedValueChanged="@InternalProxyUpdate">
@@ -57,7 +57,7 @@
             {
                 <Addon AddonType="AddonType.End">
                     <AddonLabel>
-                        <Blazorise.Bootstrap.Button Clicked="() => InternalUpdate(PropertyRetrieved.Default)">
+                        <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => InternalUpdate(PropertyRetrieved.Default)">
                             Set default
                         </Blazorise.Bootstrap.Button>
                     </AddonLabel>
@@ -70,7 +70,7 @@
 
 @code {
     [Parameter]
-    public string Name { get; set; }
+    public string? Name { get; set; }
     [Parameter]
     public T? Value { get; set; }
     [Parameter]
@@ -88,6 +88,6 @@
     }
     public void InternalProxyUpdate(string label)
     {
-        InternalUpdate(PropertyRetrieved.Values.FirstOrDefault(x => x.Label == label)?.Value);
+        InternalUpdate(PropertyRetrieved!.Values!.FirstOrDefault(x => x.Label == label)?.Value);
     }
 }

@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework;
+﻿using RepositoryFramework;
 using RepositoryFramework.Web.Components;
-using RepositoryFramework.Web.Test.BlazorApp.Data;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,7 +31,15 @@ builder.Services
             });
         return values;
     }, x => x.Name)
-    .AndConfigure<AppGroup, int>()
+    .MapChoices(x => x.Settings.Maps, serviceProvider =>
+    {
+        return Task.FromResult(new List<PropertyValue> {
+            "X",
+            "Y",
+            "Z",
+            "A" }.AsEnumerable());
+    }, x => x)
+    .AndConfigure<AppGroup, string>()
     .MapChoice(x => x.Name, serviceProvider =>
     {
         return Task.FromResult(new List<PropertyValue> {
