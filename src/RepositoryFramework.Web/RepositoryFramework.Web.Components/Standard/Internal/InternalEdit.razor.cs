@@ -10,8 +10,6 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public bool DisableEdit { get; set; }
         [Parameter]
-        public IEnumerator<string> ColorEnumerator { get; set; }
-        [Parameter]
         public Dictionary<string, RepositoryUiPropertyValueRetrieved>? PropertiesRetrieved { get; set; }
         [Parameter]
         public string? NavigationPath { get; set; }
@@ -38,10 +36,9 @@ namespace RepositoryFramework.Web.Components.Standard
                 {
                     b.OpenComponent(1, genericType);
                     b.AddAttribute(2, Constant.Entity, value);
-                    b.AddAttribute(3, Constant.ColorEnumerator, ColorEnumerator);
-                    b.AddAttribute(4, Constant.DisableEdit, DisableEdit);
-                    b.AddAttribute(5, Constant.NavigationPath, nextNavigationPath);
-                    b.AddAttribute(6, Constant.PropertiesRetrieved, PropertiesRetrieved);
+                    b.AddAttribute(3, Constant.DisableEdit, DisableEdit);
+                    b.AddAttribute(4, Constant.NavigationPath, nextNavigationPath);
+                    b.AddAttribute(5, Constant.PropertiesRetrieved, PropertiesRetrieved);
                     b.CloseComponent();
                 });
                 return frag;
@@ -59,7 +56,6 @@ namespace RepositoryFramework.Web.Components.Standard
                     b.AddAttribute(6, Constant.NavigationPath, nextNavigationPath);
                     b.AddAttribute(7, Constant.PropertyRetrieved, propertyRetrieved);
                     b.AddAttribute(8, Constant.PropertiesRetrieved, PropertiesRetrieved);
-                    b.AddAttribute(9, Constant.ColorEnumerator, ColorEnumerator);
                     b.CloseComponent();
                 });
                 return frag;

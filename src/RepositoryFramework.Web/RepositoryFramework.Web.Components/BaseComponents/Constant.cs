@@ -5,7 +5,6 @@
         public const string Key = nameof(Key);
         public const string Entity = nameof(Entity);
         public const string Entities = nameof(Entities);
-        public const string ColorEnumerator = nameof(ColorEnumerator);
         public const string Property = nameof(Property);
         public const string Context = nameof(Context);
         public const string Name = nameof(Name);
