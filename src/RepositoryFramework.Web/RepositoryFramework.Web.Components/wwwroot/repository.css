@@ -21,7 +21,7 @@
     content: "\f046";
 }
 
-hr.divider.divider-text::before {
+hr.divider .divider-text::before {
     color: #be6666;
     font-size: 1.6em;
 }
