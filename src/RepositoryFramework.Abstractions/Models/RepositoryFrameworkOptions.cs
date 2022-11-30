@@ -10,6 +10,6 @@
         /// It's a parameter used by framework to understand the level of privacy,
         /// used for instance in library Api.Server to avoid auto creation of an api with this repository implementation.
         /// </summary>
-        public bool IsNotExposableAsApi { get; set; }
+        public bool IsNotExposable { get; set; }
     }
 }

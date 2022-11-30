@@ -29,7 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Rystem" Version="4.0.91" />
+		<PackageReference Include="Rystem" Version="4.0.92" />
 	</ItemGroup>
 
 	<ItemGroup>

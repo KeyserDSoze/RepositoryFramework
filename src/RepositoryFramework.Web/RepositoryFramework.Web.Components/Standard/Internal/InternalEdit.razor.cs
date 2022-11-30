@@ -11,6 +11,10 @@ namespace RepositoryFramework.Web.Components.Standard
         public bool DisableEdit { get; set; }
         [Parameter]
         public IEnumerator<string> ColorEnumerator { get; set; }
+        [Parameter]
+        public Dictionary<string, RepositoryUiPropertyValueRetrieved>? PropertiesRetrieved { get; set; }
+        [Parameter]
+        public string? NavigationPath { get; set; }
         [Inject]
         public required PropertyHandler PropertyHandler { get; set; }
         private TypeShowcase TypeShowcase { get; set; } = null!;
@@ -24,9 +28,11 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         private RenderFragment LoadNext(BaseProperty property)
         {
+            var value = property.Value(Entity);
+            var propertyRetrieved = GetPropertyValueRetrieved(property);
+            var nextNavigationPath = GetNextNavigationPath(property);
             if (property.Type == PropertyType.Complex)
             {
-                var value = property.Value(Entity);
                 var genericType = typeof(InternalEdit<>).MakeGenericType(new[] { property.Self.PropertyType });
                 var frag = new RenderFragment(b =>
                 {
@@ -34,13 +40,14 @@ namespace RepositoryFramework.Web.Components.Standard
                     b.AddAttribute(2, Constant.Entity, value);
                     b.AddAttribute(3, Constant.ColorEnumerator, ColorEnumerator);
                     b.AddAttribute(4, Constant.DisableEdit, DisableEdit);
+                    b.AddAttribute(5, Constant.NavigationPath, nextNavigationPath);
+                    b.AddAttribute(6, Constant.PropertiesRetrieved, PropertiesRetrieved);
                     b.CloseComponent();
                 });
                 return frag;
             }
             else
             {
-                var value = property.Value(Entity);
                 var genericType = typeof(EnumerableInternalEdit<>).MakeGenericType(property.Generics);
                 var frag = new RenderFragment(b =>
                 {
@@ -49,7 +56,10 @@ namespace RepositoryFramework.Web.Components.Standard
                     b.AddAttribute(3, Constant.Property, property);
                     b.AddAttribute(4, Constant.Context, Entity);
                     b.AddAttribute(5, Constant.DisableEdit, DisableEdit);
-                    b.AddAttribute(6, Constant.ColorEnumerator, ColorEnumerator);
+                    b.AddAttribute(6, Constant.NavigationPath, nextNavigationPath);
+                    b.AddAttribute(7, Constant.PropertyRetrieved, propertyRetrieved);
+                    b.AddAttribute(8, Constant.PropertiesRetrieved, PropertiesRetrieved);
+                    b.AddAttribute(9, Constant.ColorEnumerator, ColorEnumerator);
                     b.CloseComponent();
                 });
                 return frag;
@@ -59,16 +69,33 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             var value = property.Value(Entity);
             var genericType = typeof(InternalPrimitiveEdit<>).MakeGenericType(new[] { property.Self.PropertyType });
+            var propertyRetrieved = GetPropertyValueRetrieved(property);
             var frag = new RenderFragment(b =>
-            {
-                b.OpenComponent(1, genericType);
-                b.AddAttribute(2, Constant.Name, property.Self.Name);
-                b.AddAttribute(3, Constant.Value, value);
-                b.AddAttribute(4, Constant.Update, (object x) => property.Set(Entity, x));
-                b.AddAttribute(5, Constant.DisableEdit, DisableEdit);
-                b.CloseComponent();
-            });
+           {
+               b.OpenComponent(1, genericType);
+               b.AddAttribute(2, Constant.Name, property.Self.Name);
+               b.AddAttribute(3, Constant.Value, value);
+               b.AddAttribute(4, Constant.Update, (object x) => property.Set(Entity, x));
+               b.AddAttribute(5, Constant.DisableEdit, DisableEdit);
+               b.AddAttribute(6, Constant.PropertyRetrieved, propertyRetrieved);
+               b.CloseComponent();
+           });
             return frag;
+        }
+        private string? GetNextNavigationPath(BaseProperty property)
+        {
+            var navigationPath = NavigationPath;
+            if (navigationPath != null)
+                navigationPath = $"{NavigationPath}.{property.Self.Name}";
+            else
+                navigationPath = property.Self.Name;
+            return navigationPath;
+        }
+        private RepositoryUiPropertyValueRetrieved? GetPropertyValueRetrieved(BaseProperty property)
+        {
+            var nextNavigationPath = GetNextNavigationPath(property);
+            var propertyRetrieved = PropertiesRetrieved != null && PropertiesRetrieved.ContainsKey(nextNavigationPath) ? PropertiesRetrieved[nextNavigationPath] : null;
+            return propertyRetrieved;
         }
     }
 }

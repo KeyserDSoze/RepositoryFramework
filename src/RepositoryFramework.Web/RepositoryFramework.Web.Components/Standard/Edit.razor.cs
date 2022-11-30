@@ -17,11 +17,13 @@ namespace RepositoryFramework.Web.Components.Standard
         public bool AllowDelete { get; set; }
         [Inject]
         public AppSettings AppSettings { get; set; }
+
         private T? _entity;
         private bool _isNew;
         private TKey _key = default!;
         private RepositoryFeedback? _feedback;
         private string _backgroundColor = string.Empty;
+        private Dictionary<string, RepositoryUiPropertyValueRetrieved> _propertiesRetrieved = new();
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
@@ -31,12 +33,23 @@ namespace RepositoryFramework.Web.Components.Standard
                 if (colorEnumerator.MoveNext())
                     _backgroundColor = colorEnumerator.Current;
             }
-            if (Queryx != null)
+            foreach (var retrieve in RepositoryUiPropertyValueRetriever<T, TKey>.Instance.Retrieves)
+            {
+                _propertiesRetrieved.Add(retrieve.Key, new RepositoryUiPropertyValueRetrieved
+                {
+                    Default = retrieve.Value.Default,
+                    IsMultiple = retrieve.Value.IsMultiple,
+                    Values = retrieve.Value.Retriever != null ? await retrieve.Value.Retriever.Invoke(ServiceProvider).NoContext() : default,
+                    LabelComparer = retrieve.Value.LabelComparer,
+                });
+            }
+
+            if (Query != null)
             {
                 if (!string.IsNullOrWhiteSpace(Key))
                 {
                     _key = s_keyParser(Key);
-                    _entity = await Queryx.GetAsync(_key).NoContext();
+                    _entity = await Query.GetAsync(_key).NoContext();
                 }
                 if (_entity == null)
                 {

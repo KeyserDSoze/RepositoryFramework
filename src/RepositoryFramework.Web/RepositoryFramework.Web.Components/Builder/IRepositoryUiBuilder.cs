@@ -6,5 +6,6 @@ namespace RepositoryFramework.Web.Components
     {
         IServiceCollection Services { get; }
         IRepositoryUiBuilder WithDefault<T>();
+        IRepositoryUiConfigurationBuilder<T, TKey> Configure<T, TKey>() where TKey : notnull;
     }
 }

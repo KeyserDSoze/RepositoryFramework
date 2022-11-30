@@ -1,12 +1,12 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
 @using System.Reflection;
-@using Blazorise
+@using Blazorise;
 @using System.Collections;
 @using System.Text.Json;
 @using Blazorise.DataGrid
 @using System.Linq.Expressions;
+@using Blazorise.Components;
 @typeparam T
-
 
 <Field ColumnSize="ColumnSize.IsHalf">
     <FieldBody>
@@ -15,26 +15,57 @@
                 <AddonLabel>@Name</AddonLabel>
             </Addon>
             <Addon AddonType="AddonType.Body">
-                @if (Value is bool booleanValue)
+                @if (!PropertyRetrieved.HasValues())
                 {
-                    <Check TValue="bool" Checked="booleanValue" CheckedChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
-                        @Name
-                    </Check>
-                }
-                else if (Value is DateTime dateTime)
-                {
-                    <DatePicker TValue="DateTime?" Date="dateTime" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
-                }
-                else if (typeof(T).IsNumeric())
-                {
-                    <NumericEdit TValue="T" Value="Value" ValueChanged="x => InternalUpdate(x)" Disabled="DisableEdit"></NumericEdit>
+                    @if (Value is bool booleanValue)
+                    {
+                        <Check TValue="bool" Checked="booleanValue" CheckedChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
+                            @Name
+                        </Check>
+                    }
+                    else if (Value is DateTime dateTime)
+                    {
+                        <DatePicker TValue="DateTime?" Date="dateTime" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
+                    }
+                    else if (typeof(T).IsNumeric())
+                    {
+                        <NumericEdit TValue="T" Value="Value" ValueChanged="x => InternalUpdate(x)" Disabled="DisableEdit"></NumericEdit>
+                    }
+                    else
+                    {
+                        <TextEdit Text="@Value?.ToString()" TextChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
+                        </TextEdit>
+                    }
                 }
                 else
                 {
-                    <TextEdit Text="@Value?.ToString()" TextChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
-                    </TextEdit>
+                    <Select TValue="string"
+                        Multiple="false"
+                        SelectedValue="@PropertyRetrieved.LabelComparer(Value)"
+                        SelectedValueChanged="@InternalProxyUpdate"
+                        Class="form-control select-checkbox"
+                        MaxVisibleItems="0"
+                        Disabled="@DisableEdit">
+                        <ChildContent>
+                            <SelectItem Disabled="@DisableEdit" Hidden="@DisableEdit">Select one...</SelectItem>
+                            @foreach (var element in PropertyRetrieved.Values)
+                            {
+                                <SelectItem Value="@element.Label" Disabled="false">@element.Label</SelectItem>
+                            }
+                        </ChildContent>
+                    </Select>
                 }
             </Addon>
+            @if (PropertyRetrieved?.Default != null && !DisableEdit)
+            {
+                <Addon AddonType="AddonType.End">
+                    <AddonLabel>
+                        <Blazorise.Bootstrap.Button Clicked="() => InternalUpdate(PropertyRetrieved.Default)">
+                            Set default
+                        </Blazorise.Bootstrap.Button>
+                    </AddonLabel>
+                </Addon>
+            }
         </Addons>
     </FieldBody>
 </Field>
@@ -49,11 +80,17 @@
     public Action<object> Update { get; set; }
     [Parameter]
     public bool DisableEdit { get; set; }
-    
+    [Parameter]
+    public RepositoryUiPropertyValueRetrieved? PropertyRetrieved { get; set; }
+
     public void InternalUpdate(object? value)
     {
         var currentValue = value.Cast<T>();
         Update(currentValue);
         Value = currentValue;
+    }
+    public void InternalProxyUpdate(string label)
+    {
+        InternalUpdate(PropertyRetrieved.Values.FirstOrDefault(x => x.Label == label).Value);
     }
 }

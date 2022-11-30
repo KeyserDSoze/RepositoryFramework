@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using Blazorise;
-using Blazorise.Extensions;
 using Microsoft.AspNetCore.Components;
 
 namespace RepositoryFramework.Web.Components.Standard
@@ -16,12 +14,25 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public bool DisableEdit { get; set; }
         [Parameter]
+        public Dictionary<string, RepositoryUiPropertyValueRetrieved>? PropertiesRetrieved { get; set; }
+        [Parameter]
+        public RepositoryUiPropertyValueRetrieved PropertyRetrieved { get; set; }
+        [Parameter]
+        public string? NavigationPath { get; set; }
+        [Parameter]
         public IEnumerator<string> ColorEnumerator { get; set; }
         [Inject]
         public PropertyHandler PropertyHandler { get; set; } = null!;
         [Inject]
         public AppSettings AppSettings { get; set; } = null!;
         private TypeShowcase TypeShowcase { get; set; } = null!;
+        private string? GetNextNavigationPath()
+        {
+            var navigationPath = NavigationPath;
+            if (NavigationPath != null)
+                navigationPath = $"{NavigationPath}.{Property.Self.Name}";
+            return navigationPath;
+        }
         protected override Task OnParametersSetAsync()
         {
             if (Entities == null)
@@ -34,41 +45,6 @@ namespace RepositoryFramework.Web.Components.Standard
                 TypeShowcase = PropertyHandler.GetEntity(typeof(T));
             return base.OnParametersSetAsync();
         }
-        private protected RenderFragment LoadNext(BaseProperty property)
-        {
-            if (property.Type == PropertyType.Complex)
-            {
-                var value = property.Value(Entities);
-                var genericType = typeof(InternalEdit<>).MakeGenericType(new[] { property.Self.PropertyType });
-                var frag = new RenderFragment(b =>
-                {
-                    b.OpenComponent(1, genericType);
-                    b.AddAttribute(2, Constant.Entity, value);
-                    b.AddAttribute(3, Constant.ColorEnumerator, ColorEnumerator);
-                    b.AddAttribute(4, Constant.DisableEdit, DisableEdit);
-                    b.CloseComponent();
-                });
-                return frag;
-            }
-            else
-            {
-                return default!;
-            }
-        }
-        private RenderFragment LoadPrimitiveEdit(T? entity, int index)
-        {
-            var genericType = typeof(InternalPrimitiveEdit<T>);
-            var frag = new RenderFragment(b =>
-            {
-                b.OpenComponent(1, genericType);
-                b.AddAttribute(2, Constant.Name, $"{index + 1}.");
-                b.AddAttribute(3, Constant.Value, entity);
-                b.AddAttribute(4, Constant.Update, (object x) => Update(index, (T)x));
-                b.AddAttribute(5, Constant.DisableEdit, DisableEdit);
-                b.CloseComponent();
-            });
-            return frag;
-        }
         public void Update(int index, T value)
         {
             if (Entities is IList<T> list)
@@ -80,6 +56,25 @@ namespace RepositoryFramework.Web.Components.Standard
                 var element = collection.ElementAt(index);
                 collection.Remove(element);
                 collection.Add(value);
+            }
+        }
+        public void Update(IEnumerable<T> values)
+        {
+            if (Entities is IList<T> list)
+            {
+                list.Clear();
+                foreach (var value in values)
+                    list.Add(value);
+            }
+            else if (Entities is T[])
+            {
+                Property.Set(Context, values.ToArray());
+            }
+            else if (Entities is ICollection<T> collection)
+            {
+                collection.Clear();
+                foreach (var value in values)
+                    collection.Add(value);
             }
         }
         public void Delete(T entity)

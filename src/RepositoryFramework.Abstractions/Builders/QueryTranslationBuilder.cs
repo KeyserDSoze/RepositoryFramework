@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Linq.Expressions;
-using System.Reflection;
+﻿using System.Linq.Expressions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework
 {
@@ -17,8 +16,8 @@ namespace RepositoryFramework
             Expression<Func<TKey, TProperty>> property,
             Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
-            var propertyValue = GetPropertyFromExpression(property)!;
-            var translatedPropertyValue = GetPropertyFromExpression(translatedProperty)!;
+            var propertyValue = property.GetPropertyFromExpression()!;
+            var translatedPropertyValue = translatedProperty.GetPropertyFromExpression()!;
             var compiledProperty = property.Compile();
             var compiledTranslatedProperty = translatedProperty.Compile();
             RepositoryMapper<T, TKey, TTranslated>.Instance.KeyProperties.Add(
@@ -35,8 +34,8 @@ namespace RepositoryFramework
             Expression<Func<T, TProperty>> property,
             Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty)
         {
-            var propertyValue = GetPropertyFromExpression(property)!;
-            var translatedPropertyValue = GetPropertyFromExpression(translatedProperty)!;
+            var propertyValue = property.GetPropertyFromExpression()!;
+            var translatedPropertyValue = translatedProperty.GetPropertyFromExpression()!;
             var compiledProperty = property.Compile();
             var compiledTranslatedProperty = translatedProperty.Compile();
             RepositoryMapper<T, TKey, TTranslated>.Instance.Properties.Add(
@@ -48,22 +47,6 @@ namespace RepositoryFramework
                     ));
             FilterTranslation<T, TKey>.Instance.With(property, translatedProperty);
             return this;
-        }
-        private static PropertyInfo? GetPropertyFromExpression<Tx, Ty>(Expression<Func<Tx, Ty>> lambda)
-        {
-            MemberExpression? expression = null;
-            if (lambda.Body is UnaryExpression unary)
-            {
-                if (unary.Operand is MemberExpression member)
-                {
-                    expression = member;
-                }
-            }
-            else if (lambda.Body is MemberExpression member)
-            {
-                expression = member;
-            }
-            return expression?.Member as PropertyInfo;
         }
         public IQueryTranslationBuilder<T, TKey, TTranslated> WithSamePorpertiesName()
         {

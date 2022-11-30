@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.Web.Components.Standard;
 
 namespace RepositoryFramework.Web.Components
 {
@@ -6,15 +9,14 @@ namespace RepositoryFramework.Web.Components
         where TKey : notnull
     {
         [Inject]
-        public IRepository<T, TKey>? Repository { get; set; }
-        [Inject]
-        public IQuery<T, TKey>? Queryx { get; set; }
-        [Inject]
-        public ICommand<T, TKey>? Command { get; set; }
+        public IServiceProvider? ServiceProvider { get; set; }
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
         [Inject]
         public PropertyHandler PropertyHandler { get; set; } = null!;
+        protected IRepository<T, TKey>? Repository { get; private set; }
+        protected IQuery<T, TKey>? Query { get; private set; }
+        protected ICommand<T, TKey>? Command { get; private set; }
         private protected TypeShowcase TypeShowcase { get; set; } = null!;
         private protected bool CanEdit { get; set; }
         private bool _alreadySet;
@@ -24,10 +26,16 @@ namespace RepositoryFramework.Web.Components
             {
                 _alreadySet = true;
                 TypeShowcase = PropertyHandler.GetEntity(typeof(T));
+                Repository = ServiceProvider?.GetService<IRepository<T, TKey>>();
                 if (Repository != null)
                 {
-                    Queryx = Repository;
+                    Query = Repository;
                     Command = Repository;
+                }
+                else
+                {
+                    Query = ServiceProvider?.GetService<IQuery<T, TKey>>();
+                    Command = ServiceProvider?.GetService<ICommand<T, TKey>>();
                 }
                 CanEdit = Command != null;
             }

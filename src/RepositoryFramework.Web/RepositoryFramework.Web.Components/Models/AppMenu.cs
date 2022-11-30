@@ -2,12 +2,13 @@
 {
     public sealed class AppMenu
     {
-        public AppMenu(RepositoryFrameworkRegistry repositoryFrameworkRegistry)
+        public AppMenu(RepositoryFrameworkRegistry repositoryFrameworkRegistry, IServiceProvider serviceProvider)
         {
             Models = new();
             foreach (var service in repositoryFrameworkRegistry.Services)
             {
-                if (!Models.ContainsKey(service.ModelType.Name.ToLower()))
+                if (serviceProvider.GetService(typeof(RepositoryFrameworkOptions<,>).MakeGenericType(service.ModelType, service.KeyType)) is IRepositoryFrameworkOptions options &&
+                    !options.IsNotExposable && !Models.ContainsKey(service.ModelType.Name.ToLower()))
                     Models.Add(service.ModelType.Name.ToLower(), service);
             }
         }

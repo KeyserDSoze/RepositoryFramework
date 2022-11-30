@@ -35,7 +35,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             endpointRouteBuilder
                 .MapRazorPages();
-           
             return endpointRouteBuilder;
         }
     }

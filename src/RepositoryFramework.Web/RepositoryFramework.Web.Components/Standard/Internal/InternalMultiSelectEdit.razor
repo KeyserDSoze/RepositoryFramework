@@ -1,0 +1,85 @@
+﻿@namespace RepositoryFramework.Web.Components.Standard
+@using System.Reflection;
+@using Blazorise;
+@using System.Collections;
+@using System.Text.Json;
+@using Blazorise.DataGrid
+@using System.Linq.Expressions;
+@using Blazorise.Components;
+@typeparam T
+
+<Field ColumnSize="ColumnSize.IsHalf">
+    <FieldBody>
+        <Addons ColumnSize="ColumnSize.IsQuarter">
+            <Addon AddonType="AddonType.Start">
+                <AddonLabel>@Name</AddonLabel>
+            </Addon>
+            <Addon AddonType="AddonType.Body">
+                @if (PropertyRetrieved.HasValues())
+                {
+                    <Select TValue="string"
+                        Multiple="true"
+                        SelectedValues="@GetLabels()"
+                        SelectedValuesChanged="@InternalUpdate"
+                        Class="form-control select-checkbox"
+                        MaxVisibleItems="10"
+                        Disabled="@DisableEdit">
+                        <ChildContent>
+                            <SelectItem Disabled="@DisableEdit" Hidden="@DisableEdit">None</SelectItem>
+                            @foreach (var element in PropertyRetrieved.Values)
+                            {
+                                <SelectItem Value="@element.Label" Disabled="false">@element.Label</SelectItem>
+                            }
+                        </ChildContent>
+                    </Select>
+                }
+            </Addon>
+            @if (PropertyRetrieved?.Default != null && !DisableEdit)
+            {
+                <Addon AddonType="AddonType.End">
+                    <AddonLabel>
+                        <Blazorise.Bootstrap.Button Clicked="() => InternalDefault(PropertyRetrieved.Default)">
+                            Set default
+                        </Blazorise.Bootstrap.Button>
+                    </AddonLabel>
+                </Addon>
+            }
+        </Addons>
+    </FieldBody>
+</Field>
+
+
+@code {
+    [Parameter]
+    public string Name { get; set; }
+    [Parameter]
+    public IEnumerable<T>? Values { get; set; }
+    [Parameter]
+    public Action<object> Update { get; set; }
+    [Parameter]
+    public bool DisableEdit { get; set; }
+    [Parameter]
+    public RepositoryUiPropertyValueRetrieved? PropertyRetrieved { get; set; }
+
+    public void InternalUpdate(IEnumerable<string> labels)
+    {
+        List<T> values = new();
+        foreach (var label in labels)
+        {
+            var item = PropertyRetrieved.Values.FirstOrDefault(x => x.Label == label)?.Value;
+            if (item != null)
+                values.Add((T)item);
+        }
+        Update(values);
+        Values = values;
+    }
+    public void InternalDefault(object? item)
+    {
+        var t = item.Cast<T>();
+        List<T> values = new() { t };
+        Update(values);
+        Values = values;
+    }
+    public IReadOnlyList<string> GetLabels()
+        => Values?.Select(x => PropertyRetrieved.LabelComparer(x)).ToList() ?? new List<string>();
+}

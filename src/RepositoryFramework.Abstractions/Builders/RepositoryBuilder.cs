@@ -19,6 +19,5 @@ namespace RepositoryFramework
             Type = type;
             ServiceLifetime = serviceLifetime;
         }
-       
     }
 }

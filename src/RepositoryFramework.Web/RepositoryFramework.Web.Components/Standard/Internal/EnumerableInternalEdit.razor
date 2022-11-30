@@ -11,34 +11,49 @@
     var counter = 0;
     <Row>
         <Column>
-            @foreach (var entity in Entities)
+            @if (!PropertyRetrieved.HasValues())
             {
-                <div style="position:relative;float:left;width:100%;border-left:solid 1px #ddd;margin-bottom:10px;padding-top:15px;">
-                    <div style="position:relative;float:left;width:94%;margin-left:2%;">
-                        @if (TypeShowcase != null)
+                foreach (var entity in Entities)
+                {
+                    <div style="position:relative;float:left;width:100%;border-left:solid 1px #ddd;margin-bottom:10px;padding-top:15px;">
+                        <div style="position:relative;float:left;width:94%;margin-left:2%;">
+                            @if (TypeShowcase != null)
+                            {
+                                <InternalEdit Entity="entity" DisableEdit="DisableEdit" NavigationPath="@GetNextNavigationPath()"
+                              ColorEnumerator="ColorEnumerator" T="T" PropertiesRetrieved="PropertiesRetrieved">
+                                </InternalEdit>
+                            }
+                            else
+                            {
+                                var index = counter;
+                                <Fields>
+                                    <InternalPrimitiveEdit Name="@($"{index + 1}.")" Value="entity" T="T" DisableEdit="DisableEdit"
+                                           Update="@((object x) => Update(index, (T)x))" PropertyRetrieved="@PropertyRetrieved">
+                                    </InternalPrimitiveEdit>
+                                </Fields>
+                            }
+                        </div>
+                        @if (!DisableEdit)
                         {
-                            <InternalEdit Entity="entity" DisableEdit="DisableEdit"></InternalEdit>
-                        }
-                        else
-                        {
-                            var index = counter;
-                            <Fields>
-                                @LoadPrimitiveEdit(entity, index)
-                            </Fields>
+                            <div style="position:relative;float:left;width:3%;height:100%;margin-left:1%;padding-top:15px;">
+                                <Button Clicked="x => Delete(entity)">
+                                    <Icon Name="IconName.Delete"></Icon>
+                                </Button>
+                            </div>
                         }
                     </div>
-                    @if (!DisableEdit)
-                    {
-                        <div style="position:relative;float:left;width:3%;height:100%;margin-left:1%;padding-top:15px;">
-                            <Button Clicked="x => Delete(entity)">
-                                <Icon Name="IconName.Delete"></Icon>
-                            </Button>
-                        </div>
-                    }
-                </div>
-                counter++;
+                    counter++;
+                }
             }
-            @if (!DisableEdit)
+            else
+            {
+                <Fields>
+                    <InternalMultiSelectEdit Name="@Property.Self.Name" Values="Entities" T="T" DisableEdit="DisableEdit"
+                                     Update="@((object x) => Update((IEnumerable<T>)x))" PropertyRetrieved="@PropertyRetrieved">
+                    </InternalMultiSelectEdit>
+                </Fields>
+            }
+            @if (!DisableEdit && !PropertyRetrieved.HasValues())
             {
                 <Button Clicked="x => New()">
                     <Icon Name="IconName.Add"></Icon>

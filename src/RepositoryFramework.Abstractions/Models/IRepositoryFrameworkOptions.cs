@@ -2,6 +2,6 @@
 {
     public interface IRepositoryFrameworkOptions
     {
-        bool IsNotExposableAsApi { get; set; }
+        bool IsNotExposable { get; set; }
     }
 }

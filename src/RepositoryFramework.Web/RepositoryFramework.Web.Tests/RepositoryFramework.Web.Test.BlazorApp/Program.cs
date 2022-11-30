@@ -1,21 +1,46 @@
-﻿using RepositoryFramework.Web.Test.BlazorApp.Data;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework;
+using RepositoryFramework.Web.Components;
+using RepositoryFramework.Web.Test.BlazorApp.Data;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services
     .AddRepositoryUi(x =>
     {
         x.Name = "SuperSite";
-        x.Palette = RepositoryFramework.Web.Components.AppPalette.Pastels;
+        x.Palette = AppPalette.Pastels;
     })
-    .WithDefault<AppUser>();
+    .WithDefault<AppUser>()
+    .Configure<AppUser, int>()
+    .MapDefault(x => x.Email, "Default email")
+    .MapChoices(x => x.Groups, async (serviceProvider) =>
+    {
+        var repository = serviceProvider.GetService<IRepository<AppGroup, string>>();
+        List<PropertyValue> values = new();
+        await foreach (var entity in repository.QueryAsync())
+            values.Add(new PropertyValue
+            {
+                Label = entity.Value.Name,
+                Value = new Group
+                {
+                    Id = entity.Value.Id,
+                    Name = entity.Value.Name,
+                }
+            });
+        return values;
+    }, x => x.Name);
 
 builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()
     .PopulateWithRandomData(x => x.Id, 67, 2);
+builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>
+{
+    x.IsNotExposable = true;
+})
+    .PopulateWithRandomData(x => x.Id, 24, 2);
 var app = builder.Build();
 await app.Services.WarmUpAsync();
 

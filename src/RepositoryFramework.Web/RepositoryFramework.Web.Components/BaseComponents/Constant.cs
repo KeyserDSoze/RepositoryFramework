@@ -13,6 +13,9 @@
         public const string Update = "Update";
         public const string EditableKey = "EditableKey";
         public const string DisableEdit = "DisableEdit";
+        public const string NavigationPath = "NavigationPath";
+        public const string PropertyRetrieved = "PropertyRetrieved";
+        public const string PropertiesRetrieved = "PropertiesRetrieved";
         public const string AllowDelete = "AllowDelete";
         public static class Color
         {

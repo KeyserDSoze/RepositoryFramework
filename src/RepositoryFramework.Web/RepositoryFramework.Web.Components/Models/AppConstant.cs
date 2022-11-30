@@ -4,6 +4,6 @@
     {
         public static AppConstant Instance { get; } = new();
         private AppConstant() { }
-        public string RootName { get; set; }
+        public string? RootName { get; set; }
     }
 }

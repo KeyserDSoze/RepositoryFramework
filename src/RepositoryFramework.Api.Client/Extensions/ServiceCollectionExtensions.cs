@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             static void SetOptionsForClient(RepositoryFrameworkOptions<T, TKey> options)
             {
-                options.IsNotExposableAsApi = true;
+                options.IsNotExposable = true;
             }
         }
         /// <summary>

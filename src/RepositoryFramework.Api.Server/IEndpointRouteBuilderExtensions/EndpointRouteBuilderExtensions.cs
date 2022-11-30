@@ -1,6 +1,5 @@
 ﻿using System.Linq.Dynamic.Core;
 using System.Reflection;
-using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -84,7 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
             }
             Dictionary<string, bool> configuredMethods = new();
-            if (app.ServiceProvider.GetService(typeof(RepositoryFrameworkOptions<,>).MakeGenericType(serviceValue.ModelType, serviceValue.KeyType)) is IRepositoryFrameworkOptions options && !options.IsNotExposableAsApi)
+            if (app.ServiceProvider.GetService(typeof(RepositoryFrameworkOptions<,>).MakeGenericType(serviceValue.ModelType, serviceValue.KeyType)) is IRepositoryFrameworkOptions options && !options.IsNotExposable)
             {
                 foreach (var (interfaceType, currentType) in serviceValue.RepositoryTypes.Select(x => x.Value))
                     foreach (var method in currentType.GetMethods(BindingFlags.Public | BindingFlags.Instance))

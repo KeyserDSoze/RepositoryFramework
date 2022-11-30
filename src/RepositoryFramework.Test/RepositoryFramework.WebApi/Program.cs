@@ -29,7 +29,7 @@ builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
 builder.Services.AddRepositoryInMemoryStorage<SuperiorUser, string>(null, x =>
 {
-    x.IsNotExposableAsApi = true;
+    x.IsNotExposable = true;
 })
 .PopulateWithRandomData(x => x.Email!, 120, 5)
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com")
