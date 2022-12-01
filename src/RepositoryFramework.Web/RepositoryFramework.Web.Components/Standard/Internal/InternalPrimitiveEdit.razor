@@ -27,6 +27,10 @@
                     {
                         <DatePicker TValue="DateTime?" Date="dateTime" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
                     }
+                    else if (Value is DateOnly dateOnly)
+                    {
+                        <DatePicker TValue="DateOnly?" Date="dateOnly" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
+                    }
                     else if (typeof(T).IsNumeric())
                     {
                         <NumericEdit TValue="T" Value="Value" ValueChanged="x => InternalUpdate(x)" Disabled="DisableEdit"></NumericEdit>
@@ -57,9 +61,18 @@
             {
                 <Addon AddonType="AddonType.End">
                     <AddonLabel>
-                        <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => InternalUpdate(PropertyRetrieved.Default)">
-                            Set default
-                        </Blazorise.Bootstrap.Button>
+                        @if (RestorableValue == null)
+                        {
+                            <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => SetDefault()">
+                                Set default
+                            </Blazorise.Bootstrap.Button>
+                        }
+                        else
+                        {
+                            <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => Restore()">
+                                Restore
+                            </Blazorise.Bootstrap.Button>
+                        }
                     </AddonLabel>
                 </Addon>
             }
@@ -79,6 +92,7 @@
     public bool DisableEdit { get; set; }
     [Parameter]
     public RepositoryUiPropertyValueRetrieved? PropertyRetrieved { get; set; }
+    private T? RestorableValue;
 
     public void InternalUpdate(object? value)
     {
@@ -89,5 +103,16 @@
     public void InternalProxyUpdate(string label)
     {
         InternalUpdate(PropertyRetrieved!.Values!.FirstOrDefault(x => x.Label == label)?.Value);
+    }
+    public void SetDefault()
+    {
+        RestorableValue = Value;
+        InternalUpdate(PropertyRetrieved!.Default);
+    }
+    public void Restore()
+    {
+        Value = RestorableValue;
+        RestorableValue = default;
+        InternalUpdate(Value);
     }
 }

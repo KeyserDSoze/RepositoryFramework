@@ -12,6 +12,8 @@ namespace RepositoryFramework.Web.Components
         public Type[] Generics { get; private protected set; } = null!;
         public string NavigationPath { get; }
         private readonly List<PropertyInfo> _valueFromContextStack = new();
+        public List<BaseProperty> Primitives { get; }
+        public List<BaseProperty> NonPrimitives { get; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1699:Constructors should only call non-overridable methods", Justification = "Needed for logic flow.")]
         protected BaseProperty(PropertyInfo info, BaseProperty? father)
         {
@@ -28,6 +30,8 @@ namespace RepositoryFramework.Web.Components
             }
             _valueFromContextStack.Reverse();
             NavigationPath = string.Join('.', _valueFromContextStack.Select(x => x.Name));
+            Primitives = Sons.Where(x => x.Type == PropertyType.Primitive).ToList();
+            NonPrimitives = Sons.Where(x => x.Type != PropertyType.Primitive).ToList();
         }
         protected abstract void ConstructWell();
         public abstract IEnumerable<BaseProperty> GetQueryableProperty();

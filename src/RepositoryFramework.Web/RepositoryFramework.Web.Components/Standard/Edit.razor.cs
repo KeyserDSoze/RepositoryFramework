@@ -20,6 +20,7 @@ namespace RepositoryFramework.Web.Components.Standard
 
         private T? _entity;
         private bool _isNew;
+        private bool _isRequestedToCreateNew;
         private TKey _key = default!;
         private RepositoryFeedback? _feedback;
         private Dictionary<string, RepositoryUiPropertyValueRetrieved> _propertiesRetrieved = new();
@@ -28,13 +29,14 @@ namespace RepositoryFramework.Web.Components.Standard
             await base.OnParametersSetAsync().NoContext();
             foreach (var retrieve in RepositoryUiPropertyValueRetriever<T, TKey>.Instance.Retrieves)
             {
-                _propertiesRetrieved.Add(retrieve.Key, new RepositoryUiPropertyValueRetrieved
-                {
-                    Default = retrieve.Value.Default,
-                    IsMultiple = retrieve.Value.IsMultiple,
-                    Values = retrieve.Value.Retriever != null ? await retrieve.Value.Retriever.Invoke(ServiceProvider).NoContext() : default,
-                    LabelComparer = retrieve.Value.LabelComparer,
-                });
+                if (!_propertiesRetrieved.ContainsKey(retrieve.Key))
+                    _propertiesRetrieved.Add(retrieve.Key, new RepositoryUiPropertyValueRetrieved
+                    {
+                        Default = retrieve.Value.Default,
+                        IsMultiple = retrieve.Value.IsMultiple,
+                        Values = retrieve.Value.Retriever != null ? await retrieve.Value.Retriever.Invoke(ServiceProvider).NoContext() : default,
+                        LabelComparer = retrieve.Value.LabelComparer,
+                    });
             }
 
             if (Query != null)
@@ -44,10 +46,16 @@ namespace RepositoryFramework.Web.Components.Standard
                     _key = s_keyParser(Key);
                     _entity = await Query.GetAsync(_key).NoContext();
                 }
+                else
+                {
+                    _key = default;
+                    _entity = default;
+                }
                 if (_entity == null)
                 {
                     _entity = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
                     _isNew = true;
+                    _isRequestedToCreateNew = true;
                 }
             }
         }

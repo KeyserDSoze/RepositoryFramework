@@ -11,43 +11,22 @@
     <div style="padding-top:15px;">
         <Row>
             <Column>
-                @while (Enumerator.MoveNext())
+                @for (int i = 0; i < TypeShowcase.Primitives.Count; i += 2)
                 {
-                    var value = Enumerator.Current;
-                    if (value.Type == PropertyType.Primitive)
-                    {
-                        if (Enumerator.MoveNext())
+                    var value = TypeShowcase.Primitives[i];
+                    var nextValue = i + 1 < TypeShowcase.Primitives.Count ? TypeShowcase.Primitives[i + 1] : null;
+                    <Fields>
+                        @LoadPrimitiveEdit(value)
+                        @if (nextValue != null)
                         {
-                            var nextValue = Enumerator.Current;
-                            if (nextValue.Type == PropertyType.Primitive)
-                            {
-                                <Fields>
-                                    @LoadPrimitiveEdit(value)
-                                    @LoadPrimitiveEdit(nextValue)
-                                </Fields>
-                            }
-                            else
-                            {
-                                <Fields>
-                                    @LoadPrimitiveEdit(value)
-                                </Fields>
-                                <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
-                                @LoadNext(value)
-                            }
+                            @LoadPrimitiveEdit(nextValue)
                         }
-                        else
-                        {
-                            <Fields>
-                                @LoadPrimitiveEdit(value)
-                            </Fields>
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
-                        @LoadNext(value)
-                    }
+                    </Fields>
+                }
+                @foreach(var value in TypeShowcase.NonPrimitives)
+                {
+                    <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
+                    @LoadNext(value)
                 }
             </Column>
         </Row>

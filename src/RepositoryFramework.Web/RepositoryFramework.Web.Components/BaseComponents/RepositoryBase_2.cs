@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.Web.Components.Standard;
 
 namespace RepositoryFramework.Web.Components
 {
@@ -19,27 +17,22 @@ namespace RepositoryFramework.Web.Components
         protected ICommand<T, TKey>? Command { get; private set; }
         private protected TypeShowcase TypeShowcase { get; set; } = null!;
         private protected bool CanEdit { get; set; }
-        private bool _alreadySet;
-        protected override Task OnInitializedAsync()
+        protected override Task OnParametersSetAsync()
         {
-            if (!_alreadySet)
+            TypeShowcase = PropertyHandler.GetEntity(typeof(T));
+            Repository = ServiceProvider?.GetService<IRepository<T, TKey>>();
+            if (Repository != null)
             {
-                _alreadySet = true;
-                TypeShowcase = PropertyHandler.GetEntity(typeof(T));
-                Repository = ServiceProvider?.GetService<IRepository<T, TKey>>();
-                if (Repository != null)
-                {
-                    Query = Repository;
-                    Command = Repository;
-                }
-                else
-                {
-                    Query = ServiceProvider?.GetService<IQuery<T, TKey>>();
-                    Command = ServiceProvider?.GetService<ICommand<T, TKey>>();
-                }
-                CanEdit = Command != null;
+                Query = Repository;
+                Command = Repository;
             }
-            return base.OnInitializedAsync();
+            else
+            {
+                Query = ServiceProvider?.GetService<IQuery<T, TKey>>();
+                Command = ServiceProvider?.GetService<ICommand<T, TKey>>();
+            }
+            CanEdit = Command != null;
+            return base.OnParametersSetAsync();
         }
     }
 }

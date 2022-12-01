@@ -36,9 +36,18 @@
             {
                 <Addon AddonType="AddonType.End">
                     <AddonLabel>
-                        <Blazorise.Bootstrap.Button Clicked="() => InternalDefault(PropertyRetrieved.Default)">
-                            Set default
-                        </Blazorise.Bootstrap.Button>
+                        @if (RestorableValues == null)
+                        {
+                            <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => SetDefault()">
+                                Set default
+                            </Blazorise.Bootstrap.Button>
+                        }
+                        else
+                        {
+                            <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => Restore()">
+                                Restore
+                            </Blazorise.Bootstrap.Button>
+                        }
                     </AddonLabel>
                 </Addon>
             }
@@ -58,24 +67,31 @@
     public bool DisableEdit { get; set; }
     [Parameter]
     public RepositoryUiPropertyValueRetrieved? PropertyRetrieved { get; set; }
-
+    private List<T>? RestorableValues;
     public void InternalUpdate(IEnumerable<string> labels)
     {
         List<T> values = new();
         foreach (var label in labels)
         {
-            var item = PropertyRetrieved.Values.FirstOrDefault(x => x.Label == label)?.Value;
+            var item = PropertyRetrieved?.Values?.FirstOrDefault(x => x.Label == label)?.Value;
             if (item != null)
                 values.Add((T)item);
         }
         Update(values);
         Values = values;
     }
-    public void InternalDefault(object? item)
+    public void SetDefault()
     {
-        var t = item.Cast<T>();
-        List<T> values = new() { t };
+        var entity = PropertyRetrieved!.Default.Cast<T>();
+        List<T> values = new() { entity! };
+        RestorableValues = values;
         Update(values);
         Values = values;
+    }
+    public void Restore()
+    {
+        Values = RestorableValues;
+        RestorableValues = default;
+        Update(Values!);
     }
 }

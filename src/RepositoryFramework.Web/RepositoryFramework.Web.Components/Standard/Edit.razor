@@ -23,12 +23,16 @@
                     <InternalPrimitiveEdit Name="@Constant.Key" Value="@_key" T="TKey" Update="x => _key = (TKey)x" DisableEdit="!_isNew"></InternalPrimitiveEdit>
                 </div>
             }
-            @if (!_isNew)
-            {
-                <Button Color="Color.Primary" Clicked="() => _isNew = true">
-                    <Icon Name="IconName.Unlock" />
-                </Button>
-            }
+                <Switch TValue="bool" @bind-Checked="_isNew">
+                    Edit key
+                </Switch>
+                @if (_isNew && !_isRequestedToCreateNew)
+                {
+                    <Alert Color="Color.Warning" Visible>
+                        <AlertMessage>Warning!! Active it only if you want to copy an item.</AlertMessage>
+                        <AlertDescription>If you active the key editing, and you change it, on save you will create a copy of this element with your new key.</AlertDescription>
+                    </Alert>
+                }
             <Divider DividerType="DividerType.TextContent" Text="@typeof(T).Name" />
             <InternalEdit Entity="_entity" DisableEdit="DisableEdit" PropertiesRetrieved="_propertiesRetrieved"></InternalEdit>
             @if (!DisableEdit)

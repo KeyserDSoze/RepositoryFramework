@@ -18,7 +18,7 @@ namespace RepositoryFramework.Web.Components
         private protected abstract Type StandardType { get; }
         private protected abstract Action<RenderTreeBuilder>? RenderTreeBuilderConfigurator { get; }
         private protected bool IsLoadable => _keyType != null && _modelType != null;
-        protected override Task OnInitializedAsync()
+        protected override Task OnParametersSetAsync()
         {
             if (!string.IsNullOrWhiteSpace(Name))
             {
@@ -27,7 +27,7 @@ namespace RepositoryFramework.Web.Components
                 _modelType = AppMenu.Models[name].ModelType;
             }
 
-            return base.OnInitializedAsync();
+            return base.OnParametersSetAsync();
         }
         private protected RenderFragment LoadStandard()
         {

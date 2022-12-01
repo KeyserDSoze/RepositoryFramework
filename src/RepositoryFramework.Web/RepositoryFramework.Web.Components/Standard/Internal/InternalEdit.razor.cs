@@ -16,13 +16,11 @@ namespace RepositoryFramework.Web.Components.Standard
         [Inject]
         public required PropertyHandler PropertyHandler { get; set; }
         private TypeShowcase TypeShowcase { get; set; } = null!;
-        private IEnumerator<BaseProperty> Enumerator { get; set; } = null!;
-        protected override Task OnParametersSetAsync()
+        protected override async Task OnParametersSetAsync()
         {
+            await base.OnParametersSetAsync().NoContext();
             Entity ??= typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
             TypeShowcase = PropertyHandler.GetEntity(typeof(T));
-            Enumerator = TypeShowcase.Properties.GetEnumerator();
-            return base.OnParametersSetAsync();
         }
         private RenderFragment LoadNext(BaseProperty property)
         {
