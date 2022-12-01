@@ -22,6 +22,6 @@
 }
 
 hr.divider.divider-text::before {
-    color: #be6666 !important;
+    color: var(--bs-info) !important;
     font-size: 1.6em !important;
 }

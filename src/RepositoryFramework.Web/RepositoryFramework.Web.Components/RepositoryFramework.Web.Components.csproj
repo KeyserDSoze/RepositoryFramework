@@ -11,6 +11,7 @@
         <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
         <EmbedRazorGenerateSources>true</EmbedRazorGenerateSources>
         <GenerateMvcApplicationPartsAssemblyAttributes>true</GenerateMvcApplicationPartsAssemblyAttributes>
+        <StaticWebAssetBasePath>_content/$(PackageId)</StaticWebAssetBasePath>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <DebugSymbols>true</DebugSymbols>
         <EmbedAllSources>true</EmbedAllSources>
@@ -24,7 +25,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
         <PackageId>Rystem.RepositoryFramework.Web.Components</PackageId>
-        <Version>3.0.25</Version>
+        <Version>3.0.26</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
@@ -43,7 +44,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.App" Version="6.0.11" />
     </ItemGroup>
-
+    
     <Choose>
         <When Condition=" '$(Configuration)'=='Debug' ">
             <ItemGroup>
@@ -65,9 +66,4 @@
         <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Content Update="wwwroot\repository.css">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
 </Project>

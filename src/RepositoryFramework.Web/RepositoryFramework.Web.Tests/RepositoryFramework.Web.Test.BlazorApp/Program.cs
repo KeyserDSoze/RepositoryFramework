@@ -3,7 +3,6 @@ using RepositoryFramework.Web.Components;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 builder.Services.AddServerSideBlazor();
 builder.Services

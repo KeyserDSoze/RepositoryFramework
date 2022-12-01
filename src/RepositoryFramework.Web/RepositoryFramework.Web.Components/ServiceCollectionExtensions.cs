@@ -19,6 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
             };
             settings.Invoke(options);
             services.AddSingleton(options);
+            
             services.AddSingleton<PropertyHandler>();
             services.AddSingleton<AppMenu>();
             services.AddBlazorise(options =>
