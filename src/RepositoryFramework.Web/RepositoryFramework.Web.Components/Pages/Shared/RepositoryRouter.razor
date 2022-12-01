@@ -8,9 +8,19 @@
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(RepositoryMainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
+        @if (AppConstant.Instance.RootName != null)
+        {
+            <PageTitle>@AppConstant.Instance.RootName</PageTitle>
+            <LayoutView Layout="@typeof(RepositoryMainLayout)">
+                <Query Name="@AppConstant.Instance.RootName"></Query>
+            </LayoutView>
+        }
+        else
+        {
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(RepositoryMainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        }
     </NotFound>
 </Router>
