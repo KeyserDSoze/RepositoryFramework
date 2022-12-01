@@ -41,7 +41,6 @@
         <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.4.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
     </ItemGroup>
-
     <Choose>
         <When Condition=" '$(Configuration)'=='Debug' ">
             <ItemGroup>
