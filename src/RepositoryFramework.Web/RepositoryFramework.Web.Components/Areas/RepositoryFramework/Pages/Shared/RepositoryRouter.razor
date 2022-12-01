@@ -8,11 +8,11 @@
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        @if (AppConstant.Instance.RootName != null)
+        @if (AppInternalSettings.Instance.RootName != null)
         {
-            <PageTitle>@AppConstant.Instance.RootName</PageTitle>
+            <PageTitle>@AppInternalSettings.Instance.RootName</PageTitle>
             <LayoutView Layout="@typeof(RepositoryMainLayout)">
-                <Query Name="@AppConstant.Instance.RootName"></Query>
+                <Query Name="@AppInternalSettings.Instance.RootName"></Query>
             </LayoutView>
         }
         else

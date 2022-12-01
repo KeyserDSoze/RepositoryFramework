@@ -4,18 +4,16 @@ using RepositoryFramework.Web.Components;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class EndpointRouteBuilderExtensions
+    public static class WebApplicationExtensions
     {
         public static IEndpointRouteBuilder AddDefaultRepositoryEndpoints(this WebApplication app)
         {
-            var settings = app.Services.GetService<AppSettings>()!;
-            if (settings.WithAuthentication)
+            if (AppInternalSettings.Instance.IsAuthenticated)
                 app
-                .MapFallbackToPage("/_AuthenticatedHost");
+                    .MapFallbackToAreaPage("/_AuthenticatedHost", nameof(RepositoryFramework));
             else
                 app
-                    .MapFallbackToPage("/_Host");
-
+                    .MapFallbackToAreaPage("/_Host", nameof(RepositoryFramework));
             app
                 .MapRazorPages();
             return app;

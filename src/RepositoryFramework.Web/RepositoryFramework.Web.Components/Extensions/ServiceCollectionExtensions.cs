@@ -26,6 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddBootstrap5Components()
             .AddFontAwesomeIcons();
             services.AddRazorPages();
+           
             return new RepositoryUiBuilder(services);
         }
     }

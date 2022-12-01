@@ -78,6 +78,4 @@ app.UseRouting();
 app.MapBlazorHub();
 app.AddDefaultRepositoryEndpoints();
 
-app.MapFallbackToPage("/_Host");
-
 app.Run();

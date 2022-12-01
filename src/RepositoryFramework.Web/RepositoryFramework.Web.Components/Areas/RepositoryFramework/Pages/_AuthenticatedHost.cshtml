@@ -1,7 +1,7 @@
-﻿@page "/"
+﻿@page
 @using Microsoft.AspNetCore.Components.Web
 @using RepositoryFramework.Web.Components;
-@namespace RepositoryFramework.Web.Test.BlazorApp.Pages
+@namespace BlazorApp1.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
@@ -12,14 +12,13 @@
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
-    <link href="RepositoryFramework.Web.Test.BlazorApp.styles.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="favicon.png"/>
+    <link href="BlazorApp1.styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="favicon.png" />
     <partial name="RepositoryStyle" />
-
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
-    <component type="typeof(RepositoryApp<App>)" render-mode="ServerPrerendered" />
+    <component type="typeof(RepositoryAuthenticatedApp<AppInternalSettings>)" render-mode="ServerPrerendered" />
 
     <div id="blazor-error-ui">
         <environment include="Staging,Production">
@@ -34,6 +33,5 @@
 
     <script src="_framework/blazor.server.js"></script>
     <partial name="RepositoryScript" />
-    
 </body>
 </html>

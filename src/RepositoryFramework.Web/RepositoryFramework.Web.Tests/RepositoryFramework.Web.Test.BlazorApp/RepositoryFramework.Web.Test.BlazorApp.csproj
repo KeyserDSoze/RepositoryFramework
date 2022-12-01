@@ -15,4 +15,8 @@
     <ProjectReference Include="..\..\RepositoryFramework.Web.Components\RepositoryFramework.Web.Components.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shared\" />
+  </ItemGroup>
+
 </Project>
