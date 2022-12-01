@@ -19,9 +19,10 @@
                 {
                     @if (Value is bool booleanValue)
                     {
-                        <Check TValue="bool" Checked="booleanValue" CheckedChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
-                            @Name
-                        </Check>
+                        <div class="primitive-boolean">
+                            <Switch TValue="bool" Checked="booleanValue" CheckedChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
+                            </Switch>
+                        </div>
                     }
                     else if (Value is DateTime dateTime)
                     {

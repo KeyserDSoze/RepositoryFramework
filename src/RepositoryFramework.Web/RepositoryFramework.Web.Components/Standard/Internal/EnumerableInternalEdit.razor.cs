@@ -16,6 +16,8 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public Dictionary<string, RepositoryUiPropertyValueRetrieved>? PropertiesRetrieved { get; set; }
         [Parameter]
+        public int Deep { get; set; }
+        [Parameter]
         public RepositoryUiPropertyValueRetrieved PropertyRetrieved { get; set; }
         [Parameter]
         public string? NavigationPath { get; set; }

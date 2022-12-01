@@ -1,19 +1,23 @@
 ﻿@inherits LayoutComponentBase
 @namespace RepositoryFramework.Web.Components
+@using Blazorise
 
-<PageTitle>@AppSettings.Name</PageTitle>
+<PageTitle>@AppSettings!.Name</PageTitle>
 
 <div class="page">
     <main>
-        <RepositoryMenu></RepositoryMenu>
-
-        <article>
-            @Body
-        </article>
+        <Layout Margin="Margin.Is1.OnDesktop">
+            <LayoutHeader>
+                <RepositoryMenu></RepositoryMenu>
+            </LayoutHeader>
+            <LayoutContent>
+                @Body
+            </LayoutContent>
+        </Layout>
     </main>
 </div>
 
 @code {
     [Inject]
-    public AppSettings AppSettings { get; set; }
+    public AppSettings? AppSettings { get; set; }
 }

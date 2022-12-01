@@ -2,6 +2,7 @@
 using RepositoryFramework;
 using RepositoryFramework.Web.Components;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
+using Whistleblowing.Licensing.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -12,7 +13,7 @@ builder.Services
         x.Name = "SuperSite";
         x.Palette = AppPalette.Pastels;
     })
-    .WithDefault<AppUser>()
+    .WithDefault<AppConfiguration>()
     .Configure<AppUser, int>()
     .MapDefault(x => x.Email, "Default email")
     .MapChoices(x => x.Groups, async (serviceProvider) =>
@@ -48,7 +49,8 @@ builder.Services
             "AppManager",
             "SuperAppManager" }.AsEnumerable());
     }, x => x);
-
+builder.Services.AddRepositoryInMemoryStorage<AppConfiguration, string>()
+    .PopulateWithRandomData(x => x.ApiDomain, 34, 2);
 builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()
     .PopulateWithRandomData(x => x.Id, 67, 2);
 builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>

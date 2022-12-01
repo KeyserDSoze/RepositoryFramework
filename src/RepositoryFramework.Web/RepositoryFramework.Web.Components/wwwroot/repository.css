@@ -25,3 +25,8 @@ hr.divider.divider-text::before {
     color: var(--bs-info) !important;
     font-size: 1.6em !important;
 }
+
+.form-check-input {
+    font-size: 1.9em;
+    margin-left: -32px;
+}

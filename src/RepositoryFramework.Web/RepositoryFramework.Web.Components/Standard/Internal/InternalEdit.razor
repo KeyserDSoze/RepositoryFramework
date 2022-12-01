@@ -25,7 +25,7 @@
                 }
                 @foreach(var value in TypeShowcase.NonPrimitives)
                 {
-                    <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" />
+                    <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" Style="@_fontSizeForDivider" />
                     @LoadNext(value)
                 }
             </Column>

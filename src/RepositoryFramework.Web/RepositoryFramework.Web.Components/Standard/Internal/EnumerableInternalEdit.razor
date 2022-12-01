@@ -20,7 +20,7 @@
                             @if (TypeShowcase != null)
                             {
                                 <InternalEdit Entity="entity" DisableEdit="DisableEdit" NavigationPath="@GetNextNavigationPath()"
-                                   T="T" PropertiesRetrieved="PropertiesRetrieved">
+                                   T="T" PropertiesRetrieved="PropertiesRetrieved" Deep="Deep + 1">
                                 </InternalEdit>
                             }
                             else
@@ -49,7 +49,7 @@
                     <div style="position:relative;float:left;width:94%;margin-left:2%;">
                         <Fields>
                             <InternalMultiSelectEdit Name="@Property.Self.Name" Values="Entities" T="T" DisableEdit="DisableEdit"
-                                             Update="@((object x) => Update((IEnumerable<T>)x))" PropertyRetrieved="@PropertyRetrieved">
+                                Update="@((object x) => Update((IEnumerable<T>)x))" PropertyRetrieved="@PropertyRetrieved">
                             </InternalMultiSelectEdit>
                         </Fields>
                     </div>

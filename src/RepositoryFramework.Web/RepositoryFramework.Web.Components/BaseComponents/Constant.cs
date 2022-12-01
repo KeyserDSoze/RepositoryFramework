@@ -15,6 +15,7 @@
         public const string NavigationPath = nameof(NavigationPath);
         public const string PropertyRetrieved = nameof(PropertyRetrieved);
         public const string PropertiesRetrieved = nameof(PropertiesRetrieved);
+        public const string Deep = nameof(Deep);
         public const string AllowDelete = nameof(AllowDelete);
         public const string None = nameof(None);
     }

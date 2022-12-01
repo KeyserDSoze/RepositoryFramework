@@ -13,6 +13,9 @@ namespace RepositoryFramework.Web.Components.Standard
         public Dictionary<string, RepositoryUiPropertyValueRetrieved>? PropertiesRetrieved { get; set; }
         [Parameter]
         public string? NavigationPath { get; set; }
+        [Parameter]
+        public int Deep { get; set; }
+        private string _fontSizeForDivider;
         [Inject]
         public required PropertyHandler PropertyHandler { get; set; }
         private TypeShowcase TypeShowcase { get; set; } = null!;
@@ -21,6 +24,10 @@ namespace RepositoryFramework.Web.Components.Standard
             await base.OnParametersSetAsync().NoContext();
             Entity ??= typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
             TypeShowcase = PropertyHandler.GetEntity(typeof(T));
+            var fontSize = (1.4 - ((float)Deep * 3 / 10));
+            if (fontSize < 0.5)
+                fontSize = 0.5;
+            _fontSizeForDivider = $"font-size: {fontSize.ToString(".0")}em !important";
         }
         private RenderFragment LoadNext(BaseProperty property)
         {
@@ -37,6 +44,7 @@ namespace RepositoryFramework.Web.Components.Standard
                     b.AddAttribute(3, Constant.DisableEdit, DisableEdit);
                     b.AddAttribute(4, Constant.NavigationPath, nextNavigationPath);
                     b.AddAttribute(5, Constant.PropertiesRetrieved, PropertiesRetrieved);
+                    b.AddAttribute(6, Constant.Deep, Deep + 1);
                     b.CloseComponent();
                 });
                 return frag;
@@ -54,6 +62,7 @@ namespace RepositoryFramework.Web.Components.Standard
                     b.AddAttribute(6, Constant.NavigationPath, nextNavigationPath);
                     b.AddAttribute(7, Constant.PropertyRetrieved, propertyRetrieved);
                     b.AddAttribute(8, Constant.PropertiesRetrieved, PropertiesRetrieved);
+                    b.AddAttribute(9, Constant.Deep, Deep + 1);
                     b.CloseComponent();
                 });
                 return frag;
