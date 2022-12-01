@@ -21,7 +21,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
         <PackageId>Rystem.RepositoryFramework.Web.Components</PackageId>
-        <Version>3.0.29</Version>
+        <Version>3.0.30</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
