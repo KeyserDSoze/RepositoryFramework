@@ -2,7 +2,7 @@ name: SonarLint.RepositoryFramework
 on:
   push:
     branches:
-      - master
+      - sonar
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
