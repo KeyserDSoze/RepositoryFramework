@@ -21,14 +21,10 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
         <PackageId>Rystem.RepositoryFramework.Web.Components</PackageId>
-        <Version>3.0.31</Version>
+        <Version>3.0.32</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Content Remove="Pages\_Host.cshtml" />
-    </ItemGroup>
 
     <ItemGroup>
         <SupportedPlatform Include="browser" />

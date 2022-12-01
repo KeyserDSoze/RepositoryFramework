@@ -12,10 +12,6 @@ namespace RepositoryFramework.Web.Components
         public IRepositoryUiBuilder WithDefault<T>()
         {
             AppConstant.Instance.RootName = typeof(T).Name;
-            Services.AddRazorPages(x =>
-            {
-                x.Conventions.AddPageRoute($"/Repository/{typeof(T).Name}/Query", "/");
-            });
             return this;
         }
 

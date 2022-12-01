@@ -1,4 +1,5 @@
-﻿using RepositoryFramework;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework;
 using RepositoryFramework.Web.Components;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
 
@@ -75,10 +76,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.MapBlazorHub();
-app.UseEndpoints(x =>
-{
-    x.AddDefaultRepositoryEndpoints();
-});
+app.AddDefaultRepositoryEndpoints();
 
 app.MapFallbackToPage("/_Host");
 
