@@ -7,11 +7,6 @@
         <Nullable>enable</Nullable>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <IncludeRazorContentInPack>true</IncludeRazorContentInPack>
-        <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
-        <EmbedRazorGenerateSources>true</EmbedRazorGenerateSources>
-        <UseRazorSourceGenerator>false</UseRazorSourceGenerator>
-        <GenerateMvcApplicationPartsAssemblyAttributes>true</GenerateMvcApplicationPartsAssemblyAttributes>
         <StaticWebAssetBasePath>_content/$(PackageId)</StaticWebAssetBasePath>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <DebugSymbols>true</DebugSymbols>
@@ -26,7 +21,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
         <PackageId>Rystem.RepositoryFramework.Web.Components</PackageId>
-        <Version>3.0.28</Version>
+        <Version>3.0.20</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
@@ -34,7 +29,9 @@
     <ItemGroup>
         <SupportedPlatform Include="browser" />
     </ItemGroup>
-
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Blazorise" Version="1.1.4.1" />
         <PackageReference Include="Blazorise.Bootstrap" Version="1.1.4.1" />
@@ -43,9 +40,8 @@
         <PackageReference Include="Blazorise.DataGrid" Version="1.1.4.1" />
         <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.4.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.App" Version="6.0.11" />
     </ItemGroup>
-    
+
     <Choose>
         <When Condition=" '$(Configuration)'=='Debug' ">
             <ItemGroup>

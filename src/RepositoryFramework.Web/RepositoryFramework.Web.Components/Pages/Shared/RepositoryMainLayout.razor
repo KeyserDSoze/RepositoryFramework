@@ -1,0 +1,19 @@
+﻿@inherits LayoutComponentBase
+@namespace RepositoryFramework.Web.Components
+
+<PageTitle>@AppSettings.Name</PageTitle>
+
+<div class="page">
+    <main>
+        <RepositoryMenu></RepositoryMenu>
+
+        <article>
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    [Inject]
+    public AppSettings AppSettings { get; set; }
+}
