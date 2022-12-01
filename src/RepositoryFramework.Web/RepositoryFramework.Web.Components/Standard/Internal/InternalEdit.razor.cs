@@ -15,7 +15,7 @@ namespace RepositoryFramework.Web.Components.Standard
         public string? NavigationPath { get; set; }
         [Parameter]
         public int Deep { get; set; }
-        private string _fontSizeForDivider;
+        private string? _fontSizeForDivider;
         [Inject]
         public required PropertyHandler PropertyHandler { get; set; }
         private TypeShowcase TypeShowcase { get; set; } = null!;
@@ -27,7 +27,7 @@ namespace RepositoryFramework.Web.Components.Standard
             var fontSize = (1.4 - ((float)Deep * 3 / 10));
             if (fontSize < 0.5)
                 fontSize = 0.5;
-            _fontSizeForDivider = $"font-size: {fontSize.ToString(".0")}em !important";
+            _fontSizeForDivider = $"font-size: {fontSize:.0}em !important";
         }
         private RenderFragment LoadNext(BaseProperty property)
         {

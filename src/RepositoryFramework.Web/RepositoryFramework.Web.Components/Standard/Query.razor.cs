@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Web;
 using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Components;
 
@@ -49,9 +50,9 @@ namespace RepositoryFramework.Web.Components.Standard
         private string GetCreateUri()
             => s_createUri ?? string.Empty;
         private string GetEditUri(TKey key)
-            => s_editUri != null ? string.Format(s_editUri, IKey.AsString(key)) : string.Empty;
+            => s_editUri != null ? string.Format(s_editUri, key.ToBase64()) : string.Empty;
         private string GetDeleteUri(TKey key)
-            => s_showUri != null ? string.Format(s_showUri, IKey.AsString(key)) : string.Empty;
+            => s_showUri != null ? string.Format(s_showUri, key.ToBase64()) : string.Empty;
         private async Task OnReadData(DataGridReadDataEventArgs<Entity<T, TKey>> e)
         {
             if (!e.CancellationToken.IsCancellationRequested)

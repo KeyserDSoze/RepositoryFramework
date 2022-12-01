@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text;
 using Microsoft.AspNetCore.Components;
 
 namespace RepositoryFramework.Web.Components.Standard
@@ -6,7 +7,6 @@ namespace RepositoryFramework.Web.Components.Standard
     public partial class Edit<T, TKey>
         where TKey : notnull
     {
-        private static readonly Func<string, TKey> s_keyParser = IKey.Parser<TKey>();
         [Parameter]
         public string Key { get; set; } = null!;
         [Parameter]
@@ -43,12 +43,12 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 if (!string.IsNullOrWhiteSpace(Key))
                 {
-                    _key = s_keyParser(Key);
+                    _key = Key.FromBase64<TKey>();
                     _entity = await Query.GetAsync(_key).NoContext();
                 }
                 else
                 {
-                    _key = default;
+                    _key = default!;
                     _entity = default;
                 }
                 if (_entity == null)
