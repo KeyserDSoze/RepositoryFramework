@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,6 +10,7 @@
         <IncludeRazorContentInPack>true</IncludeRazorContentInPack>
         <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
         <EmbedRazorGenerateSources>true</EmbedRazorGenerateSources>
+        <UseRazorSourceGenerator>false</UseRazorSourceGenerator>
         <GenerateMvcApplicationPartsAssemblyAttributes>true</GenerateMvcApplicationPartsAssemblyAttributes>
         <StaticWebAssetBasePath>_content/$(PackageId)</StaticWebAssetBasePath>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -25,7 +26,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
         <PackageId>Rystem.RepositoryFramework.Web.Components</PackageId>
-        <Version>3.0.27</Version>
+        <Version>3.0.28</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     </PropertyGroup>
