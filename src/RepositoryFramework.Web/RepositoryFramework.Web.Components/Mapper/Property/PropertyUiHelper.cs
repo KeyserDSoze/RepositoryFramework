@@ -10,6 +10,7 @@ namespace RepositoryFramework.Web
             public object? Default { get; set; }
             public Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>>? Retriever { get; set; }
             public bool IsMultiple { get; set; }
+            public bool HasTextEditor { get; set; }
             public Func<object, string>? LabelComparer { get; set; }
         }
         private readonly Dictionary<string, RepositoryUiPropertyConfiguratorHelper> _retrieves = new();
@@ -22,31 +23,39 @@ namespace RepositoryFramework.Web
                 {
                     Default = helper.Value.Default,
                     IsMultiple = helper.Value.IsMultiple,
+                    HasTextEditor = helper.Value.HasTextEditor,
                     LabelComparer = helper.Value.LabelComparer,
                     Values = helper.Value.Retriever != null ? await helper.Value.Retriever(serviceProvider).NoContext() : null
                 });
             }
             return values;
         }
-        public IPropertyUiHelper<T, TKey> MapDefault<TProperty>(Expression<Func<T, TProperty>> navigationProperty, TProperty defaultValue)
+        private RepositoryUiPropertyConfiguratorHelper GetHelper<TProperty>(Expression<Func<T, TProperty>> navigationProperty)
         {
             var name = navigationProperty.Body.ToString();
             name = name.Substring(name.IndexOf('.') + 1);
             if (!_retrieves.ContainsKey(name))
                 _retrieves.Add(name, new RepositoryUiPropertyConfiguratorHelper { });
             var retrieve = _retrieves[name];
+            return retrieve;
+        }
+        public IPropertyUiHelper<T, TKey> MapDefault<TProperty>(Expression<Func<T, TProperty>> navigationProperty, TProperty defaultValue)
+        {
+            var retrieve = GetHelper(navigationProperty);
             retrieve.Default = defaultValue;
+            return this;
+        }
+        public IPropertyUiHelper<T, TKey> SetTextEditor<TProperty>(Expression<Func<T, TProperty>> navigationProperty)
+        {
+            var retrieve = GetHelper(navigationProperty);
+            retrieve.HasTextEditor = true;
             return this;
         }
         public IPropertyUiHelper<T, TKey> MapChoice<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
             Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>> retriever,
             Func<TProperty, string> labelComparer)
         {
-            var name = navigationProperty.Body.ToString();
-            name = name.Substring(name.IndexOf('.') + 1);
-            if (!_retrieves.ContainsKey(name))
-                _retrieves.Add(name, new RepositoryUiPropertyConfiguratorHelper { });
-            var retrieve = _retrieves[name];
+            var retrieve = GetHelper(navigationProperty);
             retrieve.IsMultiple = false;
             retrieve.Retriever = retriever;
             retrieve.LabelComparer = x => x != null ? labelComparer((TProperty)x) : string.Empty;
@@ -56,11 +65,7 @@ namespace RepositoryFramework.Web
             Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>> retriever,
             Func<TProperty, string> labelComparer)
         {
-            var name = navigationProperty.Body.ToString();
-            name = name.Substring(name.IndexOf('.') + 1);
-            if (!_retrieves.ContainsKey(name))
-                _retrieves.Add(name, new RepositoryUiPropertyConfiguratorHelper { });
-            var retrieve = _retrieves[name];
+            var retrieve = GetHelper(navigationProperty);
             retrieve.IsMultiple = true;
             retrieve.Retriever = retriever;
             retrieve.LabelComparer = x => x != null ? labelComparer((TProperty)x) : string.Empty;

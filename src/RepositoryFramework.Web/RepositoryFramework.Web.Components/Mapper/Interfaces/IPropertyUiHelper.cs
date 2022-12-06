@@ -7,6 +7,7 @@ namespace RepositoryFramework.Web
     {
         Task<Dictionary<string, PropertyUiValue>> ValuesAsync(IServiceProvider serviceProvider);
         IPropertyUiHelper<T, TKey> MapDefault<TProperty>(Expression<Func<T, TProperty>> navigationProperty, TProperty defaultValue);
+        IPropertyUiHelper<T, TKey> SetTextEditor<TProperty>(Expression<Func<T, TProperty>> navigationProperty);
         IPropertyUiHelper<T, TKey> MapChoice<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
             Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>> retriever,
             Func<TProperty, string> labelComparer);
