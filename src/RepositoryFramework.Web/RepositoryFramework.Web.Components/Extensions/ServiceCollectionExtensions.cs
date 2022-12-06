@@ -7,8 +7,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IRepositoryUiBuilder AddRepositoryUi(this IServiceCollection services,
-            Action<AppSettings> settings)
+        public static IServiceCollection AddRepositoryUi(this IServiceCollection services,
+           Action<AppSettings> settings)
         {
             var options = new AppSettings()
             {
@@ -26,8 +26,12 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddBootstrap5Components()
             .AddFontAwesomeIcons();
             services.AddRazorPages();
-           
-            return new RepositoryUiBuilder(services);
+            return services;
+        }
+        public static IServiceCollection WithAuthenticatedUi(this IServiceCollection services)
+        {
+            AppInternalSettings.Instance.IsAuthenticated = true;
+            return services;
         }
     }
 }

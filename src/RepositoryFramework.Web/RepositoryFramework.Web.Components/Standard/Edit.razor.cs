@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
@@ -23,21 +24,14 @@ namespace RepositoryFramework.Web.Components.Standard
         private bool _isRequestedToCreateNew;
         private TKey _key = default!;
         private RepositoryFeedback? _feedback;
-        private Dictionary<string, RepositoryUiPropertyValueRetrieved> _propertiesRetrieved = new();
+        private Dictionary<string, PropertyUiValue> _propertiesRetrieved;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
-            foreach (var retrieve in RepositoryUiPropertyValueRetriever<T, TKey>.Instance.Retrieves)
-            {
-                if (!_propertiesRetrieved.ContainsKey(retrieve.Key))
-                    _propertiesRetrieved.Add(retrieve.Key, new RepositoryUiPropertyValueRetrieved
-                    {
-                        Default = retrieve.Value.Default,
-                        IsMultiple = retrieve.Value.IsMultiple,
-                        Values = retrieve.Value.Retriever != null ? await retrieve.Value.Retriever.Invoke(ServiceProvider).NoContext() : default,
-                        LabelComparer = retrieve.Value.LabelComparer,
-                    });
-            }
+            _propertiesRetrieved = 
+                ServiceProvider.GetService<IPropertyUiMapper<T, TKey>>() is IPropertyUiMapper<T, TKey> uiMapper ?
+                await uiMapper.ValuesAsync(ServiceProvider!).NoContext()
+                : new();
 
             if (Query != null)
             {

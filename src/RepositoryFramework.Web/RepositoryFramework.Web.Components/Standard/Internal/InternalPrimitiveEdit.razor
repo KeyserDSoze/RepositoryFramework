@@ -92,7 +92,7 @@
     [Parameter]
     public bool DisableEdit { get; set; }
     [Parameter]
-    public RepositoryUiPropertyValueRetrieved? PropertyRetrieved { get; set; }
+    public PropertyUiValue? PropertyRetrieved { get; set; }
     private T? RestorableValue;
 
     public void InternalUpdate(object? value)

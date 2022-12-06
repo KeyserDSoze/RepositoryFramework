@@ -10,7 +10,7 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public bool DisableEdit { get; set; }
         [Parameter]
-        public Dictionary<string, RepositoryUiPropertyValueRetrieved>? PropertiesRetrieved { get; set; }
+        public Dictionary<string, PropertyUiValue>? PropertiesRetrieved { get; set; }
         [Parameter]
         public string? NavigationPath { get; set; }
         [Parameter]
@@ -94,7 +94,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 navigationPath = property.Self.Name;
             return navigationPath;
         }
-        private RepositoryUiPropertyValueRetrieved? GetPropertyValueRetrieved(BaseProperty property)
+        private PropertyUiValue? GetPropertyValueRetrieved(BaseProperty property)
         {
             var nextNavigationPath = GetNextNavigationPath(property);
             var propertyRetrieved = PropertiesRetrieved != null && PropertiesRetrieved.ContainsKey(nextNavigationPath) ? PropertiesRetrieved[nextNavigationPath] : null;

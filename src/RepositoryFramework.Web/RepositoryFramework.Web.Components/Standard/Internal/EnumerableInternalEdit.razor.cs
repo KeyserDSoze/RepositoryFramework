@@ -14,11 +14,11 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public bool DisableEdit { get; set; }
         [Parameter]
-        public Dictionary<string, RepositoryUiPropertyValueRetrieved>? PropertiesRetrieved { get; set; }
+        public Dictionary<string, PropertyUiValue>? PropertiesRetrieved { get; set; }
         [Parameter]
         public int Deep { get; set; }
         [Parameter]
-        public RepositoryUiPropertyValueRetrieved PropertyRetrieved { get; set; }
+        public PropertyUiValue PropertyRetrieved { get; set; }
         [Parameter]
         public string? NavigationPath { get; set; }
         [Inject]
