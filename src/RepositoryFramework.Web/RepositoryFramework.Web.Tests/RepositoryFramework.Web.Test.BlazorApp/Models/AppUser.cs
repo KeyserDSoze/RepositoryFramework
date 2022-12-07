@@ -2,9 +2,9 @@
 
 namespace RepositoryFramework.Web.Test.BlazorApp.Models
 {
-    internal sealed class AppUserDesignMapper : IUiMapper<AppUser, int>
+    internal sealed class AppUserDesignMapper : IRepositoryUiMapper<AppUser, int>
     {
-        public void Map(IPropertyUiHelper<AppUser, int> mapper)
+        public void Map(IRepositoryPropertyUiHelper<AppUser, int> mapper)
         {
             mapper
             .MapDefault(x => x.Email, "Default email")

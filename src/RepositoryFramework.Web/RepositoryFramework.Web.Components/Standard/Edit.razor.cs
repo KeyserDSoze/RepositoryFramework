@@ -29,7 +29,7 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             await base.OnParametersSetAsync().NoContext();
             _propertiesRetrieved = 
-                ServiceProvider.GetService<IPropertyUiMapper<T, TKey>>() is IPropertyUiMapper<T, TKey> uiMapper ?
+                ServiceProvider.GetService<IRepositoryPropertyUiMapper<T, TKey>>() is IRepositoryPropertyUiMapper<T, TKey> uiMapper ?
                 await uiMapper.ValuesAsync(ServiceProvider!).NoContext()
                 : new();
 

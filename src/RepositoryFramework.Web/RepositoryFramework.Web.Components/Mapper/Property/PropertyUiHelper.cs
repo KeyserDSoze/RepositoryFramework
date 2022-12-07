@@ -2,7 +2,7 @@
 
 namespace RepositoryFramework.Web
 {
-    internal sealed class PropertyUiHelper<T, TKey> : IPropertyUiHelper<T, TKey>
+    internal sealed class PropertyUiHelper<T, TKey> : IRepositoryPropertyUiHelper<T, TKey>
         where TKey : notnull
     {
         private sealed class RepositoryUiPropertyConfiguratorHelper
@@ -35,19 +35,19 @@ namespace RepositoryFramework.Web
         private RepositoryUiPropertyConfiguratorHelper GetHelper<TProperty>(Expression<Func<T, TProperty>> navigationProperty)
         {
             var name = navigationProperty.Body.ToString();
-            name = name.Contains('.') ? name.Substring(name.IndexOf('.') + 1) : string.Empty;
+            name = name.Contains('.') ? name[(name.IndexOf('.') + 1)..] : string.Empty;
             if (!_retrieves.ContainsKey(name))
                 _retrieves.Add(name, new RepositoryUiPropertyConfiguratorHelper { });
             var retrieve = _retrieves[name];
             return retrieve;
         }
-        public IPropertyUiHelper<T, TKey> MapDefault<TProperty>(Expression<Func<T, TProperty>> navigationProperty, TProperty defaultValue)
+        public IRepositoryPropertyUiHelper<T, TKey> MapDefault<TProperty>(Expression<Func<T, TProperty>> navigationProperty, TProperty defaultValue)
         {
             var retrieve = GetHelper(navigationProperty);
             retrieve.Default = defaultValue;
             return this;
         }
-        public IPropertyUiHelper<T, TKey> SetTextEditor<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
+        public IRepositoryPropertyUiHelper<T, TKey> SetTextEditor<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
             int minHeight)
         {
             var retrieve = GetHelper(navigationProperty);
@@ -55,7 +55,7 @@ namespace RepositoryFramework.Web
             retrieve.MinHeight = minHeight;
             return this;
         }
-        public IPropertyUiHelper<T, TKey> MapChoice<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
+        public IRepositoryPropertyUiHelper<T, TKey> MapChoice<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
             Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>> retriever,
             Func<TProperty, string> labelComparer)
         {
@@ -65,7 +65,7 @@ namespace RepositoryFramework.Web
             retrieve.LabelComparer = x => x != null ? labelComparer((TProperty)x) : string.Empty;
             return this;
         }
-        public IPropertyUiHelper<T, TKey> MapChoices<TProperty>(Expression<Func<T, IEnumerable<TProperty>>> navigationProperty,
+        public IRepositoryPropertyUiHelper<T, TKey> MapChoices<TProperty>(Expression<Func<T, IEnumerable<TProperty>>> navigationProperty,
             Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>> retriever,
             Func<TProperty, string> labelComparer)
         {

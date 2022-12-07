@@ -4,17 +4,18 @@ using Polly.Extensions.Http;
 
 namespace RepositoryFramework
 {
-    internal sealed class HttpClientBuilder<T, TKey> : IHttpClientBuilder<T, TKey>
+    internal sealed class HttpClientBuilder<T, TKey> : IRepositoryHttpClientBuilder<T, TKey>
         where TKey : notnull
     {
-        public IApiBuilder<T, TKey> Builder { get; }
+        public IRepositoryApiBuilder<T, TKey> ApiBuilder { get; }
         public IHttpClientBuilder ClientBuilder { get; }
-        public HttpClientBuilder(IApiBuilder<T, TKey> apiBuilder, IHttpClientBuilder clientBuilder)
+        public IRepositoryBuilder<T, TKey> RepositoryBuilder => ApiBuilder.RepositoryBuilder;
+        public HttpClientBuilder(IRepositoryApiBuilder<T, TKey> apiBuilder, IHttpClientBuilder clientBuilder)
         {
-            Builder = apiBuilder;
+            ApiBuilder = apiBuilder;
             ClientBuilder = clientBuilder;
         }
-        public IHttpClientBuilder<T, TKey> WithDefaultRetryPolicy()
+        public IRepositoryHttpClientBuilder<T, TKey> WithDefaultRetryPolicy()
         {
             var defaultPolicy = Policy<HttpResponseMessage>
                 .Handle<HttpRequestException>()

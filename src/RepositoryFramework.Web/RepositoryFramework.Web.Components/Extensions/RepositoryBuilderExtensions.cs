@@ -23,11 +23,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IRepositoryBuilder<T, TKey> MapPropertiesForUi<T, TKey, TUiMapper>(
             this IRepositoryBuilder<T, TKey> builder)
             where TKey : notnull
-            where TUiMapper : class, IUiMapper<T, TKey>
+            where TUiMapper : class, IRepositoryUiMapper<T, TKey>
         {
-            builder.Services.AddSingleton<IPropertyUiHelper<T, TKey>, PropertyUiHelper<T, TKey>>();
-            builder.Services.AddSingleton<IUiMapper<T, TKey>, TUiMapper>();
-            builder.Services.AddSingleton<IPropertyUiMapper<T, TKey>, PropertyUiMapper<T, TKey>>();
+            builder.Services.AddSingleton<IRepositoryPropertyUiHelper<T, TKey>, PropertyUiHelper<T, TKey>>();
+            builder.Services.AddSingleton<IRepositoryUiMapper<T, TKey>, TUiMapper>();
+            builder.Services.AddSingleton<IRepositoryPropertyUiMapper<T, TKey>, PropertyUiMapper<T, TKey>>();
             return builder;
         }
     }

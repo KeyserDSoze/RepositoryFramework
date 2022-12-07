@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
-        private static IApiBuilder<T, TKey> AddApiClient<T, TKey>(this IServiceCollection services,
+        private static IRepositoryApiBuilder<T, TKey> AddApiClient<T, TKey>(this IServiceCollection services,
             PatternType clientType,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TKey : notnull
@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IApiBuilder<T, TKey> AddRepositoryApiClient<T, TKey>(this IServiceCollection services,
+        public static IRepositoryApiBuilder<T, TKey> AddRepositoryApiClient<T, TKey>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TKey : notnull
             => services.AddApiClient<T, TKey>(PatternType.Repository, serviceLifetime);
@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IApiBuilder<T, TKey> AddCommandApiClient<T, TKey>(this IServiceCollection services,
+        public static IRepositoryApiBuilder<T, TKey> AddCommandApiClient<T, TKey>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TKey : notnull
             => services.AddApiClient<T, TKey>(PatternType.Command, serviceLifetime);
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">IServiceCollection</param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IApiBuilder<T, TKey> AddQueryApiClient<T, TKey>(this IServiceCollection services,
+        public static IRepositoryApiBuilder<T, TKey> AddQueryApiClient<T, TKey>(this IServiceCollection services,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TKey : notnull
             => services.AddApiClient<T, TKey>(PatternType.Query, serviceLifetime);

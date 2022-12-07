@@ -1,11 +1,11 @@
 ﻿namespace RepositoryFramework.Web
 {
-    internal sealed class PropertyUiMapper<T, TKey> : IPropertyUiMapper<T, TKey>
+    internal sealed class PropertyUiMapper<T, TKey> : IRepositoryPropertyUiMapper<T, TKey>
         where TKey : notnull
     {
-        private readonly IPropertyUiHelper<T, TKey> _propertyUiHelper;
+        private readonly IRepositoryPropertyUiHelper<T, TKey> _propertyUiHelper;
 
-        public PropertyUiMapper(IPropertyUiHelper<T, TKey> propertyUiHelper, IUiMapper<T, TKey> uiMapper)
+        public PropertyUiMapper(IRepositoryPropertyUiHelper<T, TKey> propertyUiHelper, IRepositoryUiMapper<T, TKey> uiMapper)
         {
             _propertyUiHelper = propertyUiHelper;
             uiMapper.Map(_propertyUiHelper);
