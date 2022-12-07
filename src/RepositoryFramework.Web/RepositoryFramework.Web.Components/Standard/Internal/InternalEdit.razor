@@ -4,6 +4,8 @@
 @using System.Collections;
 @using System.Text.Json;
 @using Blazorise.DataGrid
+@using Radzen.Blazor
+@using Radzen;
 @typeparam T
 
 @if (Entity != null)
@@ -11,6 +13,19 @@
     <div style="padding-top:15px;">
         <Row>
             <Column>
+                @if (_entitySettings?.Default != null)
+                {
+                    <div class="text-center">
+                        @if (_restorableValue == null)
+                        {
+                            <RadzenButton Click=@(args => SetDefault()) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
+                        }
+                        else
+                        {
+                            <RadzenButton Click=@(args => Restore()) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
+                        }
+                    </div>
+                }
                 @for (int i = 0; i < TypeShowcase.Primitives.Count; i += 2)
                 {
                     var value = TypeShowcase.Primitives[i];
@@ -23,9 +38,23 @@
                         }
                     </Fields>
                 }
-                @foreach(var value in TypeShowcase.NonPrimitives)
+                @foreach (var value in TypeShowcase.NonPrimitives)
                 {
+                    var propertySettings = GetPropertySettings(value);
                     <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" Style="@_fontSizeForDivider" />
+                    @if (value.Type == PropertyType.Enumerable && propertySettings?.Default != null)
+                    {
+                        <div class="text-center mt-4 mb-2">
+                            @if (!_restorableValues.ContainsKey(value.NavigationPath))
+                            {
+                                <RadzenButton Click=@(args => SetDefault(value, propertySettings.Default)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
+                            }
+                            else
+                            {
+                                <RadzenButton Click=@(args => Restore(value)) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
+                            }
+                        </div>
+                    }
                     @LoadNext(value)
                 }
             </Column>

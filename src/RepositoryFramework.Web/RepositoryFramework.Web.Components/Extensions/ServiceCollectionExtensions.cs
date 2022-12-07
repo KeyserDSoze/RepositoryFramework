@@ -1,6 +1,7 @@
 ﻿using Blazorise;
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
+using Radzen;
 using RepositoryFramework.Web.Components;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -25,6 +26,11 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddBootstrap5Providers()
             .AddBootstrap5Components()
             .AddFontAwesomeIcons();
+            services
+                .AddScoped<DialogService>()
+                .AddScoped<NotificationService>()
+                .AddScoped<TooltipService>()
+                .AddScoped<ContextMenuService>();
             services.AddRazorPages();
             return services;
         }

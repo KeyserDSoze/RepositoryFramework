@@ -10,7 +10,7 @@
             _propertyUiHelper = propertyUiHelper;
             uiMapper.Map(_propertyUiHelper);
         }
-        public Task<Dictionary<string, PropertyUiValue>> ValuesAsync(IServiceProvider serviceProvider)
-            => _propertyUiHelper.ValuesAsync(serviceProvider);
+        public Task<Dictionary<string, PropertyUiSettings>> ValuesAsync(IServiceProvider serviceProvider)
+            => _propertyUiHelper.SettingsAsync(serviceProvider);
     }
 }

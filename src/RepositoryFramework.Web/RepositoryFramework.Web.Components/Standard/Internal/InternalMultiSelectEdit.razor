@@ -15,24 +15,24 @@
                 <AddonLabel>@Name</AddonLabel>
             </Addon>
             <Addon AddonType="AddonType.Body">
-                @if (PropertyRetrieved.HasValues())
+                @if (PropertyUiSettings.HasValues())
                 {
                     <SelectList TValue="string"
                             TItem="string"
                             DefaultItemText="@Constant.None"
                             DefaultItemValue="@Constant.None"
-                            Data="@PropertyRetrieved.Values.Select(x => x.Label)"
+                            Data="@PropertyUiSettings.Values.Select(x => x.Label)"
                             Class="select-checkbox"
                             TextField="@(x => x)"
                             ValueField="@(x => x)"
-                            SelectedValues="@Values?.Select(x => PropertyRetrieved.LabelComparer(x)).ToList()"
+                            SelectedValues="@Values?.Select(x => PropertyUiSettings.LabelComparer(x)).ToList()"
                             Multiple=true
                             Disabled="DisableEdit"
                             SelectedValuesChanged="@InternalUpdate">
                         </SelectList>
                 }
             </Addon>
-            @if (PropertyRetrieved?.Default != null && !DisableEdit)
+            @if (PropertyUiSettings?.Default != null && !DisableEdit)
             {
                 <Addon AddonType="AddonType.End">
                     <AddonLabel>
@@ -66,14 +66,14 @@
     [Parameter]
     public bool DisableEdit { get; set; }
     [Parameter]
-    public PropertyUiValue? PropertyRetrieved { get; set; }
+    public PropertyUiSettings? PropertyUiSettings { get; set; }
     private List<T>? RestorableValues;
     public void InternalUpdate(IEnumerable<string> labels)
     {
         List<T> values = new();
         foreach (var label in labels)
         {
-            var item = PropertyRetrieved?.Values?.FirstOrDefault(x => x.Label == label)?.Value;
+            var item = PropertyUiSettings?.Values?.FirstOrDefault(x => x.Label == label)?.Value;
             if (item != null)
                 values.Add((T)item);
         }
@@ -82,7 +82,7 @@
     }
     public void SetDefault()
     {
-        var entity = PropertyRetrieved!.Default.Cast<T>();
+        var entity = PropertyUiSettings!.Default.Cast<T>();
         List<T> values = new() { entity! };
         RestorableValues = values;
         Update(values);

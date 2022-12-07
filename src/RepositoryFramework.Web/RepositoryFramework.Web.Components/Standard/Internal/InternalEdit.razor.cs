@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System;
 using Microsoft.AspNetCore.Components;
 
 namespace RepositoryFramework.Web.Components.Standard
@@ -10,19 +11,30 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public bool DisableEdit { get; set; }
         [Parameter]
-        public Dictionary<string, PropertyUiValue>? PropertiesRetrieved { get; set; }
+        public Dictionary<string, PropertyUiSettings>? PropertiesUiSettings { get; set; }
         [Parameter]
-        public string? NavigationPath { get; set; }
+        public string NavigationPath { get; set; } = string.Empty;
         [Parameter]
         public int Deep { get; set; }
         private string? _fontSizeForDivider;
         [Inject]
         public required PropertyHandler PropertyHandler { get; set; }
         private TypeShowcase TypeShowcase { get; set; } = null!;
+        private PropertyUiSettings? _entitySettings;
+        private readonly Dictionary<string, object> _restorableValues = new();
+        private T? _restorableValue;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
-            Entity ??= typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
+            if (PropertiesUiSettings != null && PropertiesUiSettings.ContainsKey(NavigationPath))
+                _entitySettings = PropertiesUiSettings[NavigationPath];
+            if (Entity == null || Entity.Equals(default(T)))
+            {
+                if (_entitySettings?.Default != null)
+                    Entity = (T)_entitySettings.Default;
+                else
+                    Entity = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
+            }
             TypeShowcase = PropertyHandler.GetEntity(typeof(T));
             var fontSize = (1.4 - ((float)Deep * 3 / 10));
             if (fontSize < 0.5)
@@ -32,7 +44,7 @@ namespace RepositoryFramework.Web.Components.Standard
         private RenderFragment LoadNext(BaseProperty property)
         {
             var value = property.Value(Entity);
-            var propertyRetrieved = GetPropertyValueRetrieved(property);
+            var propertyUiSettings = GetPropertySettings(property);
             var nextNavigationPath = GetNextNavigationPath(property);
             if (property.Type == PropertyType.Complex)
             {
@@ -43,7 +55,7 @@ namespace RepositoryFramework.Web.Components.Standard
                     b.AddAttribute(2, Constant.Entity, value);
                     b.AddAttribute(3, Constant.DisableEdit, DisableEdit);
                     b.AddAttribute(4, Constant.NavigationPath, nextNavigationPath);
-                    b.AddAttribute(5, Constant.PropertiesRetrieved, PropertiesRetrieved);
+                    b.AddAttribute(5, Constant.PropertiesUiSettings, PropertiesUiSettings);
                     b.AddAttribute(6, Constant.Deep, Deep + 1);
                     b.CloseComponent();
                 });
@@ -60,8 +72,8 @@ namespace RepositoryFramework.Web.Components.Standard
                     b.AddAttribute(4, Constant.Context, Entity);
                     b.AddAttribute(5, Constant.DisableEdit, DisableEdit);
                     b.AddAttribute(6, Constant.NavigationPath, nextNavigationPath);
-                    b.AddAttribute(7, Constant.PropertyRetrieved, propertyRetrieved);
-                    b.AddAttribute(8, Constant.PropertiesRetrieved, PropertiesRetrieved);
+                    b.AddAttribute(7, Constant.PropertyUiSettings, propertyUiSettings);
+                    b.AddAttribute(8, Constant.PropertiesUiSettings, PropertiesUiSettings);
                     b.AddAttribute(9, Constant.Deep, Deep + 1);
                     b.CloseComponent();
                 });
@@ -72,7 +84,7 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             var value = property.Value(Entity);
             var genericType = typeof(InternalPrimitiveEdit<>).MakeGenericType(new[] { property.Self.PropertyType });
-            var propertyRetrieved = GetPropertyValueRetrieved(property);
+            var propertyUiSettings = GetPropertySettings(property);
             var frag = new RenderFragment(b =>
            {
                b.OpenComponent(1, genericType);
@@ -80,7 +92,7 @@ namespace RepositoryFramework.Web.Components.Standard
                b.AddAttribute(3, Constant.Value, value);
                b.AddAttribute(4, Constant.Update, (object x) => property.Set(Entity, x));
                b.AddAttribute(5, Constant.DisableEdit, DisableEdit);
-               b.AddAttribute(6, Constant.PropertyRetrieved, propertyRetrieved);
+               b.AddAttribute(6, Constant.PropertyUiSettings, propertyUiSettings);
                b.CloseComponent();
            });
             return frag;
@@ -88,17 +100,44 @@ namespace RepositoryFramework.Web.Components.Standard
         private string? GetNextNavigationPath(BaseProperty property)
         {
             var navigationPath = NavigationPath;
-            if (navigationPath != null)
+            if (!string.IsNullOrWhiteSpace(navigationPath))
                 navigationPath = $"{NavigationPath}.{property.Self.Name}";
             else
                 navigationPath = property.Self.Name;
             return navigationPath;
         }
-        private PropertyUiValue? GetPropertyValueRetrieved(BaseProperty property)
+        private PropertyUiSettings? GetPropertySettings(BaseProperty property)
         {
             var nextNavigationPath = GetNextNavigationPath(property);
-            var propertyRetrieved = PropertiesRetrieved != null && PropertiesRetrieved.ContainsKey(nextNavigationPath) ? PropertiesRetrieved[nextNavigationPath] : null;
-            return propertyRetrieved;
+            var propertyUiSettings = PropertiesUiSettings != null && PropertiesUiSettings.ContainsKey(nextNavigationPath) ? PropertiesUiSettings[nextNavigationPath] : null;
+            return propertyUiSettings;
+        }
+        public void SetDefault(BaseProperty property, object value)
+        {
+            if (!_restorableValues.ContainsKey(property.NavigationPath))
+                _restorableValues.Add(property.NavigationPath, property.Value(Entity));
+            property.Set(Entity, value.ToDeepCopy());
+        }
+        public void Restore(BaseProperty property)
+        {
+            if (_restorableValues.ContainsKey(property.NavigationPath))
+            {
+                _restorableValues.Remove(property.NavigationPath, out var value);
+                property.Set(Entity, value);
+            }
+        }
+        public void SetDefault()
+        {
+            if (_entitySettings != null)
+            {
+                _restorableValue = Entity.ToDeepCopy();
+                Entity!.CopyPropertiesFrom(_entitySettings.Default.ToDeepCopy());
+            }
+        }
+        public void Restore()
+        {
+            Entity.CopyPropertiesFrom(_restorableValue);
+            _restorableValue = default;
         }
     }
 }

@@ -11,19 +11,21 @@ namespace RepositoryFramework.Web
             public Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>>? Retriever { get; set; }
             public bool IsMultiple { get; set; }
             public bool HasTextEditor { get; set; }
+            public int MinHeight { get; set; } = 200;
             public Func<object, string>? LabelComparer { get; set; }
         }
         private readonly Dictionary<string, RepositoryUiPropertyConfiguratorHelper> _retrieves = new();
-        public async Task<Dictionary<string, PropertyUiValue>> ValuesAsync(IServiceProvider serviceProvider)
+        public async Task<Dictionary<string, PropertyUiSettings>> SettingsAsync(IServiceProvider serviceProvider)
         {
-            var values = new Dictionary<string, PropertyUiValue>();
+            var values = new Dictionary<string, PropertyUiSettings>();
             foreach (var helper in _retrieves)
             {
-                values.Add(helper.Key, new PropertyUiValue
+                values.Add(helper.Key, new PropertyUiSettings
                 {
                     Default = helper.Value.Default,
                     IsMultiple = helper.Value.IsMultiple,
                     HasTextEditor = helper.Value.HasTextEditor,
+                    MinHeight = helper.Value.MinHeight,
                     LabelComparer = helper.Value.LabelComparer,
                     Values = helper.Value.Retriever != null ? await helper.Value.Retriever(serviceProvider).NoContext() : null
                 });
@@ -33,7 +35,7 @@ namespace RepositoryFramework.Web
         private RepositoryUiPropertyConfiguratorHelper GetHelper<TProperty>(Expression<Func<T, TProperty>> navigationProperty)
         {
             var name = navigationProperty.Body.ToString();
-            name = name.Substring(name.IndexOf('.') + 1);
+            name = name.Contains('.') ? name.Substring(name.IndexOf('.') + 1) : string.Empty;
             if (!_retrieves.ContainsKey(name))
                 _retrieves.Add(name, new RepositoryUiPropertyConfiguratorHelper { });
             var retrieve = _retrieves[name];
@@ -45,10 +47,12 @@ namespace RepositoryFramework.Web
             retrieve.Default = defaultValue;
             return this;
         }
-        public IPropertyUiHelper<T, TKey> SetTextEditor<TProperty>(Expression<Func<T, TProperty>> navigationProperty)
+        public IPropertyUiHelper<T, TKey> SetTextEditor<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
+            int minHeight)
         {
             var retrieve = GetHelper(navigationProperty);
             retrieve.HasTextEditor = true;
+            retrieve.MinHeight = minHeight;
             return this;
         }
         public IPropertyUiHelper<T, TKey> MapChoice<TProperty>(Expression<Func<T, TProperty>> navigationProperty,

@@ -12,7 +12,7 @@
     <Row>
         <Column>
             <div style="position:relative;float:left;width:100%;border-left:solid 1px #ddd;margin-bottom:10px;padding-top:15px;">
-                @if (!PropertyRetrieved.HasValues())
+                @if (!PropertyUiSettings.HasValues())
                 {
                     foreach (var entity in Entities)
                     {
@@ -20,7 +20,7 @@
                             @if (TypeShowcase != null)
                             {
                                 <InternalEdit Entity="entity" DisableEdit="DisableEdit" NavigationPath="@GetNextNavigationPath()"
-                                   T="T" PropertiesRetrieved="PropertiesRetrieved" Deep="Deep + 1">
+                                   T="T" PropertiesUiSettings="PropertiesUiSettings" Deep="Deep + 1">
                                 </InternalEdit>
                             }
                             else
@@ -28,7 +28,7 @@
                                 var index = counter;
                                 <Fields>
                                     <InternalPrimitiveEdit Name="@($"{index + 1}.")" Value="entity" T="T" DisableEdit="DisableEdit"
-                                           Update="@((object x) => Update(index, (T)x))" PropertyRetrieved="@PropertyRetrieved">
+                                           Update="@((object x) => Update(index, (T)x))" PropertyUiSettings="@PropertyUiSettings">
                                     </InternalPrimitiveEdit>
                                 </Fields>
                             }
@@ -49,13 +49,13 @@
                     <div style="position:relative;float:left;width:94%;margin-left:2%;">
                         <Fields>
                             <InternalMultiSelectEdit Name="@Property.Self.Name" Values="Entities" T="T" DisableEdit="DisableEdit"
-                                Update="@((object x) => Update((IEnumerable<T>)x))" PropertyRetrieved="@PropertyRetrieved">
+                                Update="@((object x) => Update((IEnumerable<T>)x))" PropertyUiSettings="@PropertyUiSettings">
                             </InternalMultiSelectEdit>
                         </Fields>
                     </div>
                 }
             </div>
-            @if (!DisableEdit && !PropertyRetrieved.HasValues())
+            @if (!DisableEdit && !PropertyUiSettings.HasValues())
             {
                 <Button Clicked="x => New()">
                     <Icon Name="IconName.Add"></Icon>

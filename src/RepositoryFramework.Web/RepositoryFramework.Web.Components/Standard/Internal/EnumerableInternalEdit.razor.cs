@@ -14,11 +14,11 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public bool DisableEdit { get; set; }
         [Parameter]
-        public Dictionary<string, PropertyUiValue>? PropertiesRetrieved { get; set; }
+        public Dictionary<string, PropertyUiSettings>? PropertiesUiSettings { get; set; }
         [Parameter]
         public int Deep { get; set; }
         [Parameter]
-        public PropertyUiValue PropertyRetrieved { get; set; }
+        public PropertyUiSettings PropertyUiSettings { get; set; }
         [Parameter]
         public string? NavigationPath { get; set; }
         [Inject]

@@ -2,7 +2,7 @@
 {
     public static class PropertyUiValueExtensions
     {
-        public static bool HasValues(this PropertyUiValue? retrievd)
+        public static bool HasValues(this PropertyUiSettings? retrievd)
             => retrievd?.Values != null;
     }
 }

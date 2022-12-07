@@ -6,6 +6,8 @@
 @using Blazorise.DataGrid
 @using System.Linq.Expressions;
 @using Blazorise.Components;
+@using Radzen
+@using Radzen.Blazor
 @typeparam T
 
 <Field ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnMobile">
@@ -15,9 +17,20 @@
                 <AddonLabel>@Name</AddonLabel>
             </Addon>
             <Addon AddonType="AddonType.Body">
-                @if (!PropertyRetrieved.HasValues())
+                @if (!PropertyUiSettings.HasValues())
                 {
-                    @if (Value is bool booleanValue)
+                    @if (PropertyUiSettings?.HasTextEditor == true)
+                    {
+                        string style = $"height: {PropertyUiSettings.MinHeight}px; margin-bottom: 1rem;";
+
+                        <RadzenHtmlEditor Value="@Value?.ToString()"
+                                  ValueChanged="@((x) => InternalUpdate(x))"
+                                  Style="@style"
+                                  Change=@OnChange
+                                  Paste=@OnPaste
+                                  Execute=@OnExecute />
+                    }
+                    else if (Value is bool booleanValue)
                     {
                         <div class="primitive-boolean">
                             <Switch TValue="bool" Checked="booleanValue" CheckedChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
@@ -48,17 +61,17 @@
                             TItem="string"
                             DefaultItemText="@Constant.None"
                             DefaultItemValue="@Constant.None"
-                            Data="@PropertyRetrieved!.Values!.Select(x => x.Label)"
+                            Data="@PropertyUiSettings!.Values!.Select(x => x.Label)"
                             TextField="@(x => x)"
                             ValueField="@(x => x)"
-                            SelectedValue="@PropertyRetrieved!.LabelComparer(Value)"
+                            SelectedValue="@PropertyUiSettings!.LabelComparer(Value)"
                             Multiple=false
                             Disabled="DisableEdit"
                             SelectedValueChanged="@InternalProxyUpdate">
                     </SelectList>
                 }
             </Addon>
-            @if (PropertyRetrieved?.Default != null && !DisableEdit)
+            @if (PropertyUiSettings?.Default != null && !DisableEdit)
             {
                 <Addon AddonType="AddonType.End">
                     <AddonLabel>
@@ -92,28 +105,40 @@
     [Parameter]
     public bool DisableEdit { get; set; }
     [Parameter]
-    public PropertyUiValue? PropertyRetrieved { get; set; }
+    public PropertyUiSettings? PropertyUiSettings { get; set; }
     private T? RestorableValue;
 
     public void InternalUpdate(object? value)
     {
-        var currentValue = value.Cast<T>();
+        var currentValue = value.Cast<T>()!;
         Update(currentValue);
         Value = currentValue;
     }
     public void InternalProxyUpdate(string label)
     {
-        InternalUpdate(PropertyRetrieved!.Values!.FirstOrDefault(x => x.Label == label)?.Value);
+        InternalUpdate(PropertyUiSettings!.Values!.FirstOrDefault(x => x.Label == label)?.Value);
     }
     public void SetDefault()
     {
         RestorableValue = Value;
-        InternalUpdate(PropertyRetrieved!.Default);
+        InternalUpdate(PropertyUiSettings!.Default);
     }
     public void Restore()
     {
         Value = RestorableValue;
         RestorableValue = default;
         InternalUpdate(Value);
+    }
+    void OnPaste(HtmlEditorPasteEventArgs args)
+    {
+        InternalUpdate(args.Html);
+    }
+    void OnChange(string html)
+    {
+        InternalUpdate(html);
+    }
+    void OnExecute(HtmlEditorExecuteEventArgs args)
+    {
+        var q = $"Execute: {args.CommandName}";
     }
 }

@@ -8,6 +8,22 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
         {
             mapper
             .MapDefault(x => x.Email, "Default email")
+            .SetTextEditor(x => x.Name, 700)
+            .MapDefault(x => x, new AppUser
+            {
+                Email = "default",
+                Groups = new(),
+                Id = 1,
+                Name = "default",
+                Password = "default",
+                Settings = new AppSettings
+                {
+                    Color = "default",
+                    Options = "default",
+                    Maps = new()
+                }
+            })
+            .MapDefault(x => x.Settings, new AppSettings { Color = "a", Options = "b", Maps = new() })
             .MapChoices(x => x.Groups, async (serviceProvider) =>
             {
                 var repository = serviceProvider.GetService<IRepository<AppGroup, string>>();
