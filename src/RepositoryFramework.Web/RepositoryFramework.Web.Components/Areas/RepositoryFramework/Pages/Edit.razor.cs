@@ -11,7 +11,7 @@ namespace RepositoryFramework.Web.Components
             b.AddAttribute(2, Constant.Key, Key);
             b.AddAttribute(3, Constant.EditableKey, true);
             b.AddAttribute(4, Constant.DisableEdit, false);
-            b.AddAttribute(5, Constant.AllowDelete, false);
+            b.AddAttribute(5, Constant.AllowDelete, true);
         };
     }
 }

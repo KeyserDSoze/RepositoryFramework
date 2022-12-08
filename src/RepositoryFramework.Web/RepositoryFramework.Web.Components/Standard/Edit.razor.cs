@@ -26,7 +26,6 @@ namespace RepositoryFramework.Web.Components.Standard
         private bool _isNew;
         private bool _isRequestedToCreateNew;
         private TKey _key = default!;
-        private RepositoryFeedback? _feedback;
         private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
         protected override async Task OnParametersSetAsync()
         {

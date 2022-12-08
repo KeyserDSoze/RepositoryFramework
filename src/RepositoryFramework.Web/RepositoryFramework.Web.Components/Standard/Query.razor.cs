@@ -1,9 +1,11 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Components;
+using Radzen;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
@@ -22,9 +24,11 @@ namespace RepositoryFramework.Web.Components.Standard
         private static readonly string? s_createUri = $"Repository/{typeof(T).Name}/Create";
         private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
         private static readonly string? s_showUri = $"Repository/{typeof(T).Name}/Show/{{0}}";
+        private string _tableWidth;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
+            _tableWidth = $"width:{TypeShowcase.FlatProperties.Count * 200}px;min-width:100%;";
             if (Query != null)
             {
                 if (Progressive)
@@ -53,51 +57,53 @@ namespace RepositoryFramework.Web.Components.Standard
             => s_editUri != null ? string.Format(s_editUri, key.ToBase64()) : string.Empty;
         private string GetDeleteUri(TKey key)
             => s_showUri != null ? string.Format(s_showUri, key.ToBase64()) : string.Empty;
-        private async Task OnReadData(DataGridReadDataEventArgs<Entity<T, TKey>> e)
+        private async Task OnReadData(LoadDataArgs args)
         {
-            if (!e.CancellationToken.IsCancellationRequested)
-            {
-                StringBuilder query = new();
-                var properties = typeof(T).FetchProperties();
-                foreach (var column in e.Columns.Where(x => x.SearchValue != null))
-                {
-                    var searchValue = column.SearchValue.ToString();
-                    if (!string.IsNullOrEmpty(searchValue))
-                    {
-                        query.Append(query.Length <= 0 ? "x => " : " AndAlso ");
-                        var name = column.Field.Replace("Value.", string.Empty, 1);
-                        var property = properties.First(x => x.Name == name);
-                        if (property.PropertyType.IsNumeric())
-                        {
-                            query.Append($"x.{name} == {searchValue}");
-                        }
-                        else if (property.PropertyType == typeof(string))
-                        {
-                            query.Append($"x.{name}.Contains(\"{searchValue}\")");
-                        }
-                    }
-                }
-                var nextQuery = query.ToString();
-                if (!string.IsNullOrWhiteSpace(nextQuery))
-                {
-                    var where = nextQuery.Deserialize<T, bool>();
-                    var response = Prefilter == null ?
-                        await Query!.Where(where).PageAsync(e.Page, e.PageSize).NoContext() :
-                        await Query!.Where(Prefilter).Where(where).PageAsync(e.Page, e.PageSize).NoContext();
-                    _entities = response.Items!.ToList();
-                    _totalItems = (int)response.TotalCount;
-                }
-                else
-                {
-                    var response =
-                        Prefilter == null ?
-                        await Query!.PageAsync(e.Page, e.PageSize).NoContext() :
-                        await Query!.Where(Prefilter).PageAsync(e.Page, e.PageSize).NoContext();
-                    _entities = response.Items!.ToList();
-                    _totalItems = (int)response.TotalCount;
-                }
-            }
+            //if (!e.CancellationToken.IsCancellationRequested)
+            //{
+            //    StringBuilder query = new();
+            //    var properties = typeof(T).FetchProperties();
+            //    foreach (var column in e.Columns.Where(x => x.SearchValue != null))
+            //    {
+            //        var searchValue = column.SearchValue.ToString();
+            //        if (!string.IsNullOrEmpty(searchValue))
+            //        {
+            //            query.Append(query.Length <= 0 ? "x => " : " AndAlso ");
+            //            var name = column.Field.Replace("Value.", string.Empty, 1);
+            //            var property = properties.First(x => x.Name == name);
+            //            if (property.PropertyType.IsNumeric())
+            //            {
+            //                query.Append($"x.{name} == {searchValue}");
+            //            }
+            //            else if (property.PropertyType == typeof(string))
+            //            {
+            //                query.Append($"x.{name}.Contains(\"{searchValue}\")");
+            //            }
+            //        }
+            //    }
+            //    var nextQuery = query.ToString();
+            //    if (!string.IsNullOrWhiteSpace(nextQuery))
+            //    {
+            //        var where = nextQuery.Deserialize<T, bool>();
+            //        var response = Prefilter == null ?
+            //            await Query!.Where(where).PageAsync(e.Page, e.PageSize).NoContext() :
+            //            await Query!.Where(Prefilter).Where(where).PageAsync(e.Page, e.PageSize).NoContext();
+            //        _entities = response.Items!.ToList();
+            //        _totalItems = (int)response.TotalCount;
+            //    }
+            //    else
+            //    {
+            //        var response =
+            //            Prefilter == null ?
+            //            await Query!.PageAsync(e.Page, e.PageSize).NoContext() :
+            //            await Query!.Where(Prefilter).PageAsync(e.Page, e.PageSize).NoContext();
+            //        _entities = response.Items!.ToList();
+            //        _totalItems = (int)response.TotalCount;
+            //    }
+            //}
         }
+        private string GetKey(Entity<T, TKey> entity)
+            => entity!.Key!.GetType().IsPrimitive() ? entity.Key.ToString() : entity.Key.ToJson();
         private string GetRealNavigationPath(string navigationPath)
             => $"{nameof(Entity<T, TKey>.Value)}.{navigationPath}";
         private protected RenderFragment OpenEnumerableVisualizer(T? entity, BaseProperty property)

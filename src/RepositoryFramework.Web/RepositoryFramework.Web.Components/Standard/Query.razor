@@ -1,75 +1,42 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
-@using System.Reflection;
-@using Blazorise
-@using System.Collections;
-@using System.Text.Json;
-@using Blazorise.DataGrid
+@using Radzen.Blazor
+@using Radzen;
 @typeparam T
 @typeparam TKey where TKey: notnull
 @inherits RepositoryBase<T, TKey>
 
-<DataGrid TItem="Entity<T, TKey>"
-          Data="@_entities"
-          @bind-SelectedRow="@_selectedEntity"
-          ReadData="@OnReadData"
-          TotalItems="@_totalItems"
-          Editable="@CanEdit"
-          EditMode="DataGridEditMode.Popup"
-          UseInternalEditing="true"
-          PageSize="PageSize"
-          ShowPager="true"
-          ShowPageSizes="true"
-          Filterable="true"
-          Responsive="true"
-          PopupSize="ModalSize.Large"
-          CommandMode="DataGridCommandMode.Default"
-          Striped="true"
-          Sortable="true">
-
-    <DataGridCommandColumn NewCommandAllowed="CanEdit" EditCommandAllowed="CanEdit" DeleteCommandAllowed="CanEdit">
-        <NewCommandTemplate>
-            <Link To="@GetCreateUri()">
-            <Icon Name="IconName.Add" />
-            </Link>
-        </NewCommandTemplate>
-        <EditCommandTemplate>
-            <Link To="@GetEditUri(context.Item!.Key!)">
-            <Icon Name="IconName.Edit" IconSize="IconSize.Large" />
-            </Link>
-        </EditCommandTemplate>
-        <DeleteCommandTemplate>
-            <Link To="@GetDeleteUri(context.Item!.Key!)" Margin="Margin.Is1.OnX">
-            <Icon Name="IconName.Eye" IconSize="IconSize.Large" />
-            </Link>
-        </DeleteCommandTemplate>
-    </DataGridCommandColumn>
-
-    <DataGridColumn Field="@nameof(_selectedEntity.Key)" Caption="#" Sortable="true" Filterable="false">
-        <DisplayTemplate>
-            @if (context!.Key!.GetType().IsPrimitive())
+<RadzenDataGrid Data="@_entities"
+                Count="@_totalItems"
+                LoadData="@OnReadData"
+                TItem="Entity<T, TKey>"
+                AllowVirtualization="true"
+                Style="@_tableWidth"
+                AllowFiltering="true"
+                FilterCaseSensitivity="FilterCaseSensitivity.Default"
+                LogicalFilterOperator="LogicalFilterOperator.Or"
+                AllowPaging="true"
+                AllowSorting="true">
+    <Columns>
+        <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="Key" Title="Key">
+            <Template Context="context">
+                <RadzenLink Path="@GetEditUri(context.Key!)" Text="@GetKey(context)" />
+            </Template>
+        </RadzenDataGridColumn>
+        @foreach (var value in TypeShowcase.FlatProperties)
+        {
+            if (value.Type != PropertyType.Enumerable)
             {
-                @context.Key.ToString()
+                <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@GetRealNavigationPath(value.NavigationPath)" Title="@value.Self.Name" Sortable="true" />
             }
             else
             {
-                @context.Key.ToJson()
+                <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@GetRealNavigationPath(value.NavigationPath)" Title="@value.Self.Name" Sortable="true" Filterable="false">
+                    <Template Context="context">
+                        @OpenEnumerableVisualizer(context!.Value, value)
+                    </Template>
+                </RadzenDataGridColumn>
             }
-        </DisplayTemplate>
-    </DataGridColumn>
+        }
+    </Columns>
+</RadzenDataGrid>
 
-    @foreach (var value in TypeShowcase.FlatProperties)
-    {
-        if (value.Type != PropertyType.Enumerable)
-        {
-            <DataGridColumn Field="@GetRealNavigationPath(value.NavigationPath)" Caption="@value.Self.Name" Sortable="true" />
-        }
-        else
-        {
-            <DataGridColumn Field="@GetRealNavigationPath(value.NavigationPath)" Caption="@value.Self.Name" Sortable="true" Filterable="false">
-                <DisplayTemplate>
-                    @OpenEnumerableVisualizer(context!.Value, value)
-                </DisplayTemplate>
-            </DataGridColumn>
-        }
-    }
-</DataGrid>
