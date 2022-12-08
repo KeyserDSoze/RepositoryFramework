@@ -1,66 +1,51 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
-@using System.Reflection;
-@using Blazorise
-@using System.Collections;
-@using System.Text.Json;
-@using Blazorise.DataGrid
+@using Radzen.Blazor
+@using Radzen;
 @typeparam T
 
 @if (Entities != null)
 {
     var counter = 0;
-    <Row>
-        <Column>
-            <div style="position:relative;float:left;width:100%;border-left:solid 1px #ddd;margin-bottom:10px;padding-top:15px;">
-                @if (!PropertyUiSettings.HasValues())
-                {
-                    foreach (var entity in Entities)
+    @if (!PropertyUiSettings.HasValues())
+    {
+        foreach (var entity in Entities)
+        {
+            <div class="row">
+                <div class="col">
+                    @if (TypeShowcase != null)
                     {
-                        <div style="position:relative;float:left;width:94%;margin-left:2%;">
-                            @if (TypeShowcase != null)
-                            {
-                                <InternalEdit Entity="entity" DisableEdit="DisableEdit" NavigationPath="@GetNextNavigationPath()"
-                                   T="T" PropertiesUiSettings="PropertiesUiSettings" Deep="Deep + 1">
-                                </InternalEdit>
-                            }
-                            else
-                            {
-                                var index = counter;
-                                <Fields>
-                                    <InternalPrimitiveEdit Name="@($"{index + 1}.")" Value="entity" T="T" DisableEdit="DisableEdit"
-                                           Update="@((object x) => Update(index, (T)x))" PropertyUiSettings="@PropertyUiSettings">
-                                    </InternalPrimitiveEdit>
-                                </Fields>
-                            }
-                        </div>
-                        @if (!DisableEdit)
-                        {
-                            <div style="position:relative;float:left;width:3%;height:100%;margin-left:1%;padding-top:15px;">
-                                <Button Clicked="x => Delete(entity)">
-                                    <Icon Name="IconName.Delete"></Icon>
-                                </Button>
-                            </div>
-                        }
-                        counter++;
+                        <InternalEdit Entity="entity" DisableEdit="DisableEdit" NavigationPath="@GetNextNavigationPath()"
+                            T="T" PropertiesUiSettings="PropertiesUiSettings" Deep="Deep + 1">
+                        </InternalEdit>
                     }
-                }
-                else
+                    else
+                    {
+                        var index = counter;
+                        <InternalPrimitiveEdit Name="@($"{index + 1}.")" Value="entity" T="T" DisableEdit="DisableEdit"
+                               Update="@((object x) => Update(index, (T)x))" PropertyUiSettings="@PropertyUiSettings">
+                        </InternalPrimitiveEdit>
+                    }
+                </div>
+                @if (!DisableEdit)
                 {
-                    <div style="position:relative;float:left;width:94%;margin-left:2%;">
-                        <Fields>
-                            <InternalMultiSelectEdit Name="@Property.Self.Name" Values="Entities" T="T" DisableEdit="DisableEdit"
-                                Update="@((object x) => Update((IEnumerable<T>)x))" PropertyUiSettings="@PropertyUiSettings">
-                            </InternalMultiSelectEdit>
-                        </Fields>
+                    <div class="col-auto">
+                        <RadzenButton Click=@(args => Delete(entity)) Icon="add" ButtonStyle="ButtonStyle.Primary" />
                     </div>
                 }
+                counter++;
             </div>
-            @if (!DisableEdit && !PropertyUiSettings.HasValues())
-            {
-                <Button Clicked="x => New()">
-                    <Icon Name="IconName.Add"></Icon>
-                </Button>
-            }
-        </Column>
-    </Row>
+        }
+    }
+    else
+    {
+        <InternalMultiSelectEdit Name="@Property.Self.Name" Values="Entities" T="T" DisableEdit="DisableEdit"
+                         Update="@((object x) => Update((IEnumerable<T>)x))" PropertyUiSettings="@PropertyUiSettings">
+        </InternalMultiSelectEdit>
+    }
+    @if (!DisableEdit && !PropertyUiSettings.HasValues())
+    {
+        <Button Clicked="x => New()">
+            <Icon Name="IconName.Add"></Icon>
+        </Button>
+    }
 }

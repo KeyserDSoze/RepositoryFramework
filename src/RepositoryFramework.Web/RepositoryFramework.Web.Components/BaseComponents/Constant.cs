@@ -12,6 +12,7 @@
         public const string Update = nameof(Update);
         public const string EditableKey = nameof(EditableKey);
         public const string DisableEdit = nameof(DisableEdit);
+        public const string Edit = nameof(Edit);
         public const string NavigationPath = nameof(NavigationPath);
         public const string PropertyUiSettings = nameof(PropertyUiSettings);
         public const string PropertiesUiSettings = nameof(PropertiesUiSettings);

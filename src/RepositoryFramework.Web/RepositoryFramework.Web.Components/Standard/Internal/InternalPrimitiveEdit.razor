@@ -10,92 +10,95 @@
 @using Radzen.Blazor
 @typeparam T
 
-<Field ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnMobile">
-    <FieldBody>
-        <Addons ColumnSize="ColumnSize.IsQuarter">
-            <Addon AddonType="AddonType.Start">
-                <AddonLabel>@Name</AddonLabel>
-            </Addon>
-            <Addon AddonType="AddonType.Body">
-                @if (!PropertyUiSettings.HasValues())
-                {
-                    @if (PropertyUiSettings?.HasTextEditor == true)
-                    {
-                        string style = $"height: {PropertyUiSettings.MinHeight}px; margin-bottom: 1rem;";
+@{
+    var defaultClass = "col my-2";
+    if (!PropertyUiSettings.HasValues() && PropertyUiSettings?.HasTextEditor == true)
+    {
+        defaultClass = "col-12 my-2";
+    }
+}
+<div class="@defaultClass">
+    <div class="input-group">
+        <span class="input-group-text">
+            @Name
+        </span>
+        @if (!PropertyUiSettings.HasValues())
+        {
+            @if (PropertyUiSettings?.HasTextEditor == true)
+            {
+                string style = $"height: {PropertyUiSettings.MinHeight}px;";
 
-                        <RadzenHtmlEditor Value="@Value?.ToString()"
-                                  ValueChanged="@((x) => InternalUpdate(x))"
-                                  Style="@style"
-                                  Change=@OnChange
-                                  Paste=@OnPaste
-                                  Execute=@OnExecute />
-                    }
-                    else if (Value is bool booleanValue)
-                    {
-                        <div class="primitive-boolean">
-                            <Switch TValue="bool" Checked="booleanValue" CheckedChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
-                            </Switch>
-                        </div>
-                    }
-                    else if (Value is DateTime dateTime)
-                    {
-                        <DatePicker TValue="DateTime?" Date="dateTime" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
-                    }
-                    else if (Value is DateOnly dateOnly)
-                    {
-                        <DatePicker TValue="DateOnly?" Date="dateOnly" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
-                    }
-                    else if (typeof(T).IsNumeric())
-                    {
-                        <NumericEdit TValue="T" Value="Value" ValueChanged="x => InternalUpdate(x)" Disabled="DisableEdit"></NumericEdit>
-                    }
-                    else
-                    {
-                        <TextEdit Text="@Value?.ToString()" TextChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
-                        </TextEdit>
-                    }
+                <RadzenHtmlEditor Value="@Value?.ToString()"
+                          ValueChanged="@((x) => InternalUpdate(x))"
+                          class="form-control"
+                          Style="@style"
+                          Change=@OnChange
+                          Paste=@OnPaste
+                          Execute=@OnExecute />
+            }
+            else if (Value is bool booleanValue)
+            {
+                <div class="primitive-boolean">
+                    <Switch TValue="bool" Checked="booleanValue" CheckedChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
+                    </Switch>
+                </div>
+            }
+            else if (Value is DateTime dateTime)
+            {
+                <DatePicker TValue="DateTime?" Date="dateTime" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
+            }
+            else if (Value is DateOnly dateOnly)
+            {
+                <DatePicker TValue="DateOnly?" Date="dateOnly" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
+            }
+            else if (typeof(T).IsNumeric())
+            {
+                <NumericEdit TValue="T" Value="Value" ValueChanged="x => InternalUpdate(x)" Disabled="DisableEdit"></NumericEdit>
+            }
+            else
+            {
+                <TextEdit Text="@Value?.ToString()" TextChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
+                </TextEdit>
+            }
+        }
+        else
+        {
+            <SelectList TValue="string"
+                    TItem="string"
+                    DefaultItemText="@Constant.None"
+                    DefaultItemValue="@Constant.None"
+                    Data="@PropertyUiSettings!.Values!.Select(x => x.Label)"
+                    TextField="@(x => x)"
+                    ValueField="@(x => x)"
+                    SelectedValue="@PropertyUiSettings!.LabelComparer(Value)"
+                    Multiple=false
+                    Disabled="DisableEdit"
+                    SelectedValueChanged="@InternalProxyUpdate">
+            </SelectList>
+        }
+
+        @if (PropertyUiSettings?.Default != null && !DisableEdit)
+        {
+            <span class="input-group-text">
+                @if (RestorableValue == null)
+                {
+                    <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => SetDefault()">
+                        <Icon Name="IconName.Star" />
+                    </Blazorise.Bootstrap.Button>
                 }
                 else
                 {
-                    <SelectList TValue="string"
-                            TItem="string"
-                            DefaultItemText="@Constant.None"
-                            DefaultItemValue="@Constant.None"
-                            Data="@PropertyUiSettings!.Values!.Select(x => x.Label)"
-                            TextField="@(x => x)"
-                            ValueField="@(x => x)"
-                            SelectedValue="@PropertyUiSettings!.LabelComparer(Value)"
-                            Multiple=false
-                            Disabled="DisableEdit"
-                            SelectedValueChanged="@InternalProxyUpdate">
-                    </SelectList>
+                    <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => Restore()">
+                        <Icon Name="IconName.ArrowLeft" />
+                    </Blazorise.Bootstrap.Button>
                 }
-            </Addon>
-            <Addon AddonType="AddonType.End">
-                <AddonLabel>
-                    @if (PropertyUiSettings?.Default != null && !DisableEdit)
-                    {
-                        @if (RestorableValue == null)
-                        {
-                            <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => SetDefault()">
-                                <Icon Name="IconName.Star" />
-                            </Blazorise.Bootstrap.Button>
-                        }
-                        else
-                        {
-                            <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => Restore()">
-                                <Icon Name="IconName.ArrowLeft" />
-                            </Blazorise.Bootstrap.Button>
-                        }
-                        <div class="vr mx-2"></div>
-                    }
-                    <Copy ValueToCopy="() => Value?.ToString()"></Copy>
-                </AddonLabel>
-            </Addon>
-        </Addons>
-    </FieldBody>
-</Field>
-
+            </span>
+        }
+        <span class="input-group-text">
+            <Copy ValueToCopy="() => Value?.ToString()"></Copy>
+        </span>
+    </div>
+</div>
 
 @code {
     [Parameter]

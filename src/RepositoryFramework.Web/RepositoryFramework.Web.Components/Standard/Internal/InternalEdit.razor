@@ -1,63 +1,55 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
-@using System.Reflection;
-@using Blazorise
-@using System.Collections;
-@using System.Text.Json;
-@using Blazorise.DataGrid
 @using Radzen.Blazor
-@using Radzen;
+@using Radzen
 @typeparam T
 
 @if (Entity != null)
 {
-    <div style="padding-top:15px;">
-        <Row>
-            <Column>
-                @if (_entitySettings?.Default != null)
+    <div class="row row-cols-2">
+        @if (_entitySettings?.Default != null)
+        {
+            <div class="text-center mb-2 w-100">
+                @if (_restorableValue == null)
                 {
-                    <div class="text-center mb-2">
-                        @if (_restorableValue == null)
-                        {
-                            <RadzenButton Click=@(args => SetDefault()) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
-                        }
-                        else
-                        {
-                            <RadzenButton Click=@(args => Restore()) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
-                        }
-                    </div>
+                    <RadzenButton Click=@(args => SetDefault()) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
                 }
-                @for (int i = 0; i < TypeShowcase.Primitives.Count; i += 2)
+                else
                 {
-                    var value = TypeShowcase.Primitives[i];
-                    var nextValue = i + 1 < TypeShowcase.Primitives.Count ? TypeShowcase.Primitives[i + 1] : null;
-                    <Fields>
-                        @LoadPrimitiveEdit(value)
-                        @if (nextValue != null)
-                        {
-                            @LoadPrimitiveEdit(nextValue)
-                        }
-                    </Fields>
+                    <RadzenButton Click=@(args => Restore()) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
                 }
+            </div>
+        }
+        @foreach (var value in TypeShowcase.Primitives)
+        {
+            @LoadPrimitiveEdit(value)
+        }
+    </div>
+    <div class="row row-cols">
+        <RadzenTabs SelectedIndex="0">
+            <Tabs>
                 @foreach (var value in TypeShowcase.NonPrimitives)
                 {
                     var propertySettings = GetPropertySettings(value);
-                    <Divider DividerType="DividerType.TextContent" Text="@value.Self.Name" Style="@_fontSizeForDivider" />
-                    @if (value.Type == PropertyType.Enumerable && propertySettings?.Default != null)
-                    {
-                        <div class="text-center mt-4 mb-2">
-                            @if (!_restorableValues.ContainsKey(value.NavigationPath))
-                            {
-                                <RadzenButton Click=@(args => SetDefault(value, propertySettings.Default)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
-                            }
-                            else
-                            {
-                                <RadzenButton Click=@(args => Restore(value)) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
-                            }
+                    <RadzenTabsItem Text="@value.Self.Name">
+                        @if (value.Type == PropertyType.Enumerable && propertySettings?.Default != null)
+                        {
+                            <div class="text-center mt-4 mb-2">
+                                @if (!_restorableValues.ContainsKey(value.NavigationPath))
+                                {
+                                    <RadzenButton Click=@(args => SetDefault(value, propertySettings.Default)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
+                                }
+                                else
+                                {
+                                    <RadzenButton Click=@(args => Restore(value)) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
+                                }
+                            </div>
+                        }
+                        <div class="col-12">
+                            @LoadNext(value)
                         </div>
-                    }
-                    @LoadNext(value)
+                    </RadzenTabsItem>
                 }
-            </Column>
-        </Row>
+            </Tabs>
+        </RadzenTabs>
     </div>
 }

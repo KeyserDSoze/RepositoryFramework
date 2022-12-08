@@ -4,6 +4,7 @@
 @using System.Collections;
 @using System.Text.Json;
 @using Blazorise.DataGrid
+@using Radzen.Blazor
 @typeparam T
 @typeparam TKey where TKey: notnull
 @inherits RepositoryBase<T, TKey>
@@ -12,17 +13,15 @@
 {
     <Row>
         <Column>
-            <Divider DividerType="DividerType.TextContent" Text="@Constant.Key" />
-            @if (!typeof(TKey).IsPrimitive())
-            {
-                <InternalEdit Entity="_key" DisableEdit="!_isNew"></InternalEdit>
-            }
-            else
-            {
-                <div style="padding-top:15px;">
+            <RadzenFieldset Text="@Constant.Key">
+                @if (!typeof(TKey).IsPrimitive())
+                {
+                    <InternalEdit Entity="_key" DisableEdit="!_isNew"></InternalEdit>
+                }
+                else
+                {
                     <InternalPrimitiveEdit Name="@Constant.Key" Value="@_key" T="TKey" Update="x => _key = (TKey)x" DisableEdit="!_isNew"></InternalPrimitiveEdit>
-                </div>
-            }
+                }
                 <Switch TValue="bool" @bind-Checked="_isNew">
                     Edit key
                 </Switch>
@@ -33,25 +32,30 @@
                         <AlertDescription>If you active the key editing, and you change it, on save you will create a copy of this element with your new key.</AlertDescription>
                     </Alert>
                 }
-            <Divider DividerType="DividerType.TextContent" Text="@typeof(T).Name" />
-            <InternalEdit Entity="_entity" DisableEdit="DisableEdit" PropertiesUiSettings="_propertiesRetrieved" Deep="1"></InternalEdit>
-            @if (!DisableEdit)
+            </RadzenFieldset>
+            <RadzenFieldset Text="@typeof(T).Name">
+                <InternalEdit Entity="_entity" DisableEdit="DisableEdit" PropertiesUiSettings="_propertiesRetrieved" Deep="1"></InternalEdit>
+            </RadzenFieldset>
+            @if (!DisableEdit || AllowDelete)
             {
-                <Divider DividerType="DividerType.Solid" />
-                <Button Color="Color.Primary" Clicked="@(() => SaveAsync(false))">
-                    <Blazorise.Icons.FontAwesome.Icon Name="IconName.Save"></Blazorise.Icons.FontAwesome.Icon>
-                </Button>
-                <Button Color="Color.Success" Clicked="@(() => SaveAsync(true))">
-                    <Blazorise.Icons.FontAwesome.Icon Name="IconName.Save"></Blazorise.Icons.FontAwesome.Icon>
-                    <Blazorise.Icons.FontAwesome.Icon Name="IconName.Forward"></Blazorise.Icons.FontAwesome.Icon>
-                </Button>
-            }
-            @if (AllowDelete)
-            {
-                <Divider DividerType="DividerType.Solid" />
-                <Button Color="Color.Danger" Clicked="@(() => CheckIfYouWantToDelete())">
-                    <Blazorise.Icons.FontAwesome.Icon Name="IconName.Delete"></Blazorise.Icons.FontAwesome.Icon>
-                </Button>
+                <RadzenFieldset Text="@Constant.Edit">
+                    @if (!DisableEdit)
+                    {
+                        <Button Color="Color.Primary" Clicked="@(() => SaveAsync(false))">
+                            <Blazorise.Icons.FontAwesome.Icon Name="IconName.Save"></Blazorise.Icons.FontAwesome.Icon>
+                        </Button>
+                        <Button Color="Color.Success" Clicked="@(() => SaveAsync(true))">
+                            <Blazorise.Icons.FontAwesome.Icon Name="IconName.Save"></Blazorise.Icons.FontAwesome.Icon>
+                            <Blazorise.Icons.FontAwesome.Icon Name="IconName.Forward"></Blazorise.Icons.FontAwesome.Icon>
+                        </Button>
+                    }
+                    @if (AllowDelete)
+                    {
+                        <Button Color="Color.Danger" Clicked="@(() => CheckIfYouWantToDelete())">
+                            <Blazorise.Icons.FontAwesome.Icon Name="IconName.Delete"></Blazorise.Icons.FontAwesome.Icon>
+                        </Button>
+                    }
+                </RadzenFieldset>
             }
         </Column>
     </Row>
