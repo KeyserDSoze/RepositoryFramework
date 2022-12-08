@@ -21,6 +21,8 @@ namespace RepositoryFramework.Web.Components.Standard
         public AppSettings AppSettings { get; set; }
         [Inject]
         public DialogService DialogService { get; set; }
+        [Inject]
+        public NotificationService NotificationService { get; set; }
 
         private T? _entity;
         private bool _isNew;
@@ -66,24 +68,26 @@ namespace RepositoryFramework.Web.Components.Standard
                     NavigationManager.NavigateTo($"../../../../Repository/{typeof(T).Name}/Query");
                 if (!result.IsOk)
                 {
-                    _feedback = new RepositoryFeedback
+                    NotificationService.Notify(new Radzen.NotificationMessage
                     {
-                        IsOk = false,
-                        Message = result.Message,
-                        Title = "Saving error",
-                        IsVisible = true,
-                    };
+                        Duration = 4,
+                        CloseOnClick = true,
+                        Severity = Radzen.NotificationSeverity.Success,
+                        Summary = "Saving error",
+                        Detail = result.Message
+                    });
                 }
             }
             else
             {
-                _feedback = new RepositoryFeedback
+                NotificationService.Notify(new Radzen.NotificationMessage
                 {
-                    IsOk = false,
-                    Message = "Command pattern or repository pattern not installed to perform the task. It's not possible to save the current item.",
-                    Title = "Saving error",
-                    IsVisible = true,
-                };
+                    Duration = 4,
+                    CloseOnClick = true,
+                    Severity = Radzen.NotificationSeverity.Success,
+                    Summary = "Saving error",
+                    Detail = "Command pattern or repository pattern not installed to perform the task. It's not possible to save the current item."
+                });
             }
         }
         private async Task CheckIfYouWantToDelete()
@@ -103,23 +107,25 @@ namespace RepositoryFramework.Web.Components.Standard
                 if (result.IsOk)
                     NavigationManager.NavigateTo($"../../../../Repository/{typeof(T).Name}/Query");
                 else
-                    _feedback = new RepositoryFeedback
+                    NotificationService.Notify(new Radzen.NotificationMessage
                     {
-                        IsOk = false,
-                        Message = result.Message,
-                        Title = "Delete error",
-                        IsVisible = true,
-                    };
+                        Duration = 4,
+                        CloseOnClick = true,
+                        Severity = Radzen.NotificationSeverity.Success,
+                        Summary = "Deleting error",
+                        Detail = "Command pattern or repository pattern not installed to perform the task. It's not possible to save the current item."
+                    });
             }
             else
             {
-                _feedback = new RepositoryFeedback
+                NotificationService.Notify(new Radzen.NotificationMessage
                 {
-                    IsOk = false,
-                    Message = "Command pattern or repository pattern not installed to perform the task. It's not possible to delete the current item.",
-                    Title = "Delete error",
-                    IsVisible = true,
-                };
+                    Duration = 4,
+                    CloseOnClick = true,
+                    Severity = Radzen.NotificationSeverity.Success,
+                    Summary = "Deleting error",
+                    Detail = "Command pattern or repository pattern not installed to perform the task. It's not possible to delete the current item."
+                });
             }
         }
     }

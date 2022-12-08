@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System;
 using Microsoft.AspNetCore.Components;
 
 namespace RepositoryFramework.Web.Components.Standard
@@ -16,7 +15,6 @@ namespace RepositoryFramework.Web.Components.Standard
         public string NavigationPath { get; set; } = string.Empty;
         [Parameter]
         public int Deep { get; set; }
-        private string? _fontSizeForDivider;
         [Inject]
         public required PropertyHandler PropertyHandler { get; set; }
         private TypeShowcase TypeShowcase { get; set; } = null!;
@@ -36,10 +34,6 @@ namespace RepositoryFramework.Web.Components.Standard
                     Entity = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
             }
             TypeShowcase = PropertyHandler.GetEntity(typeof(T));
-            var fontSize = (1.4 - ((float)Deep * 3 / 10));
-            if (fontSize < 0.5)
-                fontSize = 0.5;
-            _fontSizeForDivider = $"font-size: {fontSize:.0}em !important";
         }
         private RenderFragment LoadNext(BaseProperty property)
         {
@@ -118,20 +112,20 @@ namespace RepositoryFramework.Web.Components.Standard
                 _restorableValues.Add(property.NavigationPath, property.Value(Entity));
             property.Set(Entity, value.ToDeepCopy());
         }
-        public void Restore(BaseProperty property)
-        {
-            if (_restorableValues.ContainsKey(property.NavigationPath))
-            {
-                _restorableValues.Remove(property.NavigationPath, out var value);
-                property.Set(Entity, value);
-            }
-        }
         public void SetDefault()
         {
             if (_entitySettings != null)
             {
                 _restorableValue = Entity.ToDeepCopy();
                 Entity!.CopyPropertiesFrom(_entitySettings.Default.ToDeepCopy());
+            }
+        }
+        public void Restore(BaseProperty property)
+        {
+            if (_restorableValues.ContainsKey(property.NavigationPath))
+            {
+                _restorableValues.Remove(property.NavigationPath, out var value);
+                property.Set(Entity, value);
             }
         }
         public void Restore()

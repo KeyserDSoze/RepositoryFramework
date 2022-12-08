@@ -1,16 +1,15 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
-@using Blazorise;
 @using Microsoft.JSInterop;
+@using Radzen;
+@using Radzen.Blazor
 
-<Button Padding="Padding.Is0" Clicked="() => CopyAsync()">
-    <Icon Name="IconName.Archive" />
-</Button>
+<RadzenButton Click="() => CopyAsync()" Icon="file_copy" />
 
 @code {
     [Inject]
     public IJSRuntime JsInterop { get; set; }
     [Inject]
-    public Radzen.NotificationService NotificationService { get; set; }
+    public NotificationService NotificationService { get; set; }
 
     [Parameter]
     public Func<string> ValueToCopy { get; set; }
