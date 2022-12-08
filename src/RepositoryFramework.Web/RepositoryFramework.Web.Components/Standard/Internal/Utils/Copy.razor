@@ -21,7 +21,7 @@
         await JsInterop.InvokeVoidAsync("navigator.clipboard.writeText", ValueToCopy.Invoke()).NoContext();
         NotificationService.Notify(new Radzen.NotificationMessage
             {
-                Duration = 4_000,
+                Duration = 4,
                 CloseOnClick = true,
                 Severity = Radzen.NotificationSeverity.Success,
                 Summary = Copied,

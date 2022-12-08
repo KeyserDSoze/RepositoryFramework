@@ -2,6 +2,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Radzen;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
@@ -18,6 +19,8 @@ namespace RepositoryFramework.Web.Components.Standard
         public bool AllowDelete { get; set; }
         [Inject]
         public AppSettings AppSettings { get; set; }
+        [Inject]
+        public DialogService DialogService { get; set; }
 
         private T? _entity;
         private bool _isNew;
@@ -28,7 +31,7 @@ namespace RepositoryFramework.Web.Components.Standard
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
-            _propertiesRetrieved = 
+            _propertiesRetrieved =
                 ServiceProvider.GetService<IRepositoryPropertyUiMapper<T, TKey>>() is IRepositoryPropertyUiMapper<T, TKey> uiMapper ?
                 await uiMapper.ValuesAsync(ServiceProvider!).NoContext()
                 : new();
@@ -84,17 +87,14 @@ namespace RepositoryFramework.Web.Components.Standard
                 };
             }
         }
-        private void CheckIfYouWantToDelete()
+        private async Task CheckIfYouWantToDelete()
         {
-            _feedback = new RepositoryFeedback
-            {
-                IsOk = true,
-                Message = $"Are you sure to delete the current item with key {Key}",
-                Title = "Delete",
-                IsVisible = true,
-                Ok = () => DeleteAsync(),
-                HasCancelButton = true
-            };
+            _ = await DialogService.OpenAsync<Popup>("Delete confirmation",
+                new Dictionary<string, object>
+                {
+                    { "Ok", () => DeleteAsync() },
+                    { "Message", $"Are you sure to delete the current item with key {Key.FromBase64<TKey>()}" },
+                });
         }
         private async ValueTask DeleteAsync()
         {

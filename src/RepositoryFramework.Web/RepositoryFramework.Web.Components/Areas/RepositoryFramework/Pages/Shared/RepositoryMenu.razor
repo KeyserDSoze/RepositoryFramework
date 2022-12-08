@@ -1,46 +1,19 @@
-﻿@using Blazorise
-@namespace RepositoryFramework.Web.Components
+﻿@namespace RepositoryFramework.Web.Components
+@using Radzen.Blazor
 
-<Bar Breakpoint="Breakpoint.Desktop"
-     Background="Background.Light"
-     ThemeContrast="ThemeContrast.Light">
-    <BarBrand Padding="Padding.Is2.OnX">
-        @Settings.Name
-    </BarBrand>
-    <BarToggler />
-    <BarMenu>
-        <BarStart>
-            @if (StartFragment != null)
-            {
-                @StartFragment
-            }
-            @foreach (var app in AppMenu.Models)
-            {
-                <BarItem>
-                    <BarDropdown>
-                        <BarDropdownToggle>@app.Value.ModelType.Name</BarDropdownToggle>
-                        <BarDropdownMenu>
-                            <BarDropdownItem>
-                                <BarLink To="@($"../../../../Repository/{app.Value.ModelType.Name}/Query")">
-                                    Query
-                                </BarLink>
-                            </BarDropdownItem>
-                            <BarDropdownDivider />
-                            <BarDropdownItem>
-                                <BarLink To="@($"../../../../Repository/{app.Value.ModelType.Name}/Create")">
-                                    Create
-                                </BarLink>
-                            </BarDropdownItem>
-                        </BarDropdownMenu>
-                    </BarDropdown>
-                </BarItem>
-            }
-        </BarStart>
-        <BarEnd>
-            @if (EndFragment != null)
-            {
-                @EndFragment
-            }
-        </BarEnd>
-    </BarMenu>
-</Bar>
+<RadzenPanelMenu class="w-100">
+    @foreach (var app in AppMenu.Models)
+    {
+        <RadzenPanelMenuItem Text="@app.Value.ModelType.Name" Icon="explore">
+            <RadzenPanelMenuItem Text="Query" Path="@($"../../../../Repository/{app.Value.ModelType.Name}/Query")" Icon="list"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Create" Path="@($"../../../../Repository/{app.Value.ModelType.Name}/Create")" Icon="add"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+    }
+</RadzenPanelMenu>
+
+@code {
+    [Inject]
+    public AppMenu AppMenu { get; set; } = null!;
+    [Inject]
+    public AppSettings Settings { get; set; } = null!;
+}

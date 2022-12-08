@@ -1,18 +1,15 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
 @using System.Reflection;
-@using Blazorise
-@using System.Collections;
-@using System.Text.Json;
-@using Blazorise.DataGrid
 @using Radzen.Blazor
+@using Radzen;
 @typeparam T
 @typeparam TKey where TKey: notnull
 @inherits RepositoryBase<T, TKey>
 
 @if (_entity != null)
 {
-    <Row>
-        <Column>
+    <div class="row">
+        <div class="col">
             <RadzenFieldset Text="@Constant.Key">
                 @if (!typeof(TKey).IsPrimitive())
                 {
@@ -22,15 +19,14 @@
                 {
                     <InternalPrimitiveEdit Name="@Constant.Key" Value="@_key" T="TKey" Update="x => _key = (TKey)x" DisableEdit="!_isNew"></InternalPrimitiveEdit>
                 }
-                <Switch TValue="bool" @bind-Checked="_isNew">
-                    Edit key
-                </Switch>
+                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Edit key</RadzenText>
+                <RadzenSwitch @bind-Value=@_isNew />
                 @if (_isNew && !_isRequestedToCreateNew)
                 {
-                    <Alert Color="Color.Warning" Visible>
-                        <AlertMessage>Warning!! Active it only if you want to copy an item.</AlertMessage>
-                        <AlertDescription>If you active the key editing, and you change it, on save you will create a copy of this element with your new key.</AlertDescription>
-                    </Alert>
+                    <RadzenAlert Variant="Variant.Filled" AlertStyle="AlertStyle.Warning" Size="AlertSize.Medium" Shade="Shade.Darker" AllowClose=false>
+                        Warning!! Active it only if you want to copy an item.
+                        If you active the key editing, and you change it, on save you will create a copy of this element with your new key.
+                    </RadzenAlert>
                 }
             </RadzenFieldset>
             <RadzenFieldset Text="@typeof(T).Name">
@@ -41,23 +37,18 @@
                 <RadzenFieldset Text="@Constant.Edit">
                     @if (!DisableEdit)
                     {
-                        <Button Color="Color.Primary" Clicked="@(() => SaveAsync(false))">
-                            <Blazorise.Icons.FontAwesome.Icon Name="IconName.Save"></Blazorise.Icons.FontAwesome.Icon>
-                        </Button>
-                        <Button Color="Color.Success" Clicked="@(() => SaveAsync(true))">
-                            <Blazorise.Icons.FontAwesome.Icon Name="IconName.Save"></Blazorise.Icons.FontAwesome.Icon>
-                            <Blazorise.Icons.FontAwesome.Icon Name="IconName.Forward"></Blazorise.Icons.FontAwesome.Icon>
-                        </Button>
+                        <RadzenButton Click=@(args => SaveAsync(false))
+                          Icon="assignment_turned_in" ButtonStyle="ButtonStyle.Secondary" />
+                        <RadzenButton Click=@(args => SaveAsync(true))
+                          Icon="note_add" ButtonStyle="ButtonStyle.Primary" />
                     }
                     @if (AllowDelete)
                     {
-                        <Button Color="Color.Danger" Clicked="@(() => CheckIfYouWantToDelete())">
-                            <Blazorise.Icons.FontAwesome.Icon Name="IconName.Delete"></Blazorise.Icons.FontAwesome.Icon>
-                        </Button>
+                        <RadzenButton Click=@(args => CheckIfYouWantToDelete())
+                          Icon="delete" ButtonStyle="ButtonStyle.Danger" />
                     }
                 </RadzenFieldset>
             }
-        </Column>
-    </Row>
-    <Message Feedback="_feedback"></Message>
+        </div>
+    </div>
 }

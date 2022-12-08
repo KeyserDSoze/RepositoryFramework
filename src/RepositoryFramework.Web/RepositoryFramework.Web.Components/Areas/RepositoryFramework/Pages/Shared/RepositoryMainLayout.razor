@@ -1,26 +1,31 @@
-﻿@inherits LayoutComponentBase
-@namespace RepositoryFramework.Web.Components
-@using Blazorise
+﻿@namespace RepositoryFramework.Web.Components
 @using Radzen.Blazor
+@inherits LayoutComponentBase
 
-<PageTitle>@AppSettings!.Name</PageTitle>
-
-<div class="page">
-    <main>
-        <Layout Margin="Margin.Is1.OnDesktop">
-            <LayoutHeader>
-                <RepositoryMenu></RepositoryMenu>
-            </LayoutHeader>
-            <LayoutContent>
+<div class="container-fluid p-0">
+    <RadzenLayout class="rz-shadow-3" Style="grid-template-columns: 1fr auto; grid-template-areas: 'rz-header rz-header' 'rz-body rz-sidebar'">
+        <RadzenHeader>
+            <div class="d-flex justify-content-end align-items-center">
+                <RadzenLabel Text="@AppSettings!.Name" />
+                <RadzenSidebarToggle Click="@(() => _sidebarExpanded = !_sidebarExpanded)" Style="margin:0" />
+            </div>
+        </RadzenHeader>
+        <RadzenSidebar @bind-Expanded="@_sidebarExpanded">
+            <RepositoryMenu></RepositoryMenu>
+        </RadzenSidebar>
+        <RadzenBody>
+            <div class="p-2">
                 @Body
-            </LayoutContent>
+            </div>
             <RadzenNotification />
             <RadzenTooltip />
-        </Layout>
-    </main>
+            <RadzenDialog />
+        </RadzenBody>
+    </RadzenLayout>
 </div>
 
 @code {
     [Inject]
     public AppSettings? AppSettings { get; set; }
+    private bool _sidebarExpanded = true;
 }
