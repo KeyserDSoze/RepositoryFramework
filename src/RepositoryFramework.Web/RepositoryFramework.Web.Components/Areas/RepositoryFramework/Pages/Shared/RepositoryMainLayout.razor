@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @namespace RepositoryFramework.Web.Components
 @using Blazorise
+@using Radzen.Blazor
 
 <PageTitle>@AppSettings!.Name</PageTitle>
 
@@ -13,6 +14,8 @@
             <LayoutContent>
                 @Body
             </LayoutContent>
+            <RadzenNotification />
+            <RadzenTooltip />
         </Layout>
     </main>
 </div>

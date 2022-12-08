@@ -71,25 +71,27 @@
                     </SelectList>
                 }
             </Addon>
-            @if (PropertyUiSettings?.Default != null && !DisableEdit)
-            {
-                <Addon AddonType="AddonType.End">
-                    <AddonLabel>
+            <Addon AddonType="AddonType.End">
+                <AddonLabel>
+                    @if (PropertyUiSettings?.Default != null && !DisableEdit)
+                    {
                         @if (RestorableValue == null)
                         {
                             <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => SetDefault()">
-                                Set default
+                                <Icon Name="IconName.Star" />
                             </Blazorise.Bootstrap.Button>
                         }
                         else
                         {
                             <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => Restore()">
-                                Restore
+                                <Icon Name="IconName.ArrowLeft" />
                             </Blazorise.Bootstrap.Button>
                         }
-                    </AddonLabel>
-                </Addon>
-            }
+                        <div class="vr mx-2"></div>
+                    }
+                    <Copy ValueToCopy="() => Value?.ToString()"></Copy>
+                </AddonLabel>
+            </Addon>
         </Addons>
     </FieldBody>
 </Field>
