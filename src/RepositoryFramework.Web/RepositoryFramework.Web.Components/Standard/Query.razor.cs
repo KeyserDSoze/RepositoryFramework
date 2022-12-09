@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Xml.Linq;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using RepositoryFramework.Web.Components.Services;
@@ -32,6 +31,7 @@ namespace RepositoryFramework.Web.Components.Standard
             _isLoading = true;
             if (Query != null)
             {
+                int actualPage = (args.Top.Value + args.Skip.Value) / PageSize;
                 if (args.Filters.Any())
                 {
                     StringBuilder whereBuilder = new();
@@ -72,11 +72,17 @@ namespace RepositoryFramework.Web.Components.Standard
                             };
                         }
                     }
+                    var where = whereBuilder.ToString().Deserialize<T, bool>();
+                    var page = await Query.Where(where).PageAsync(actualPage, PageSize).NoContext();
+                    _totalItems = (int)page.TotalCount;
+                    _entities = page.Items.ToList();
                 }
-                int actualPage = (args.Top.Value + args.Skip.Value) / PageSize;
-                var page = await Query.PageAsync(actualPage, PageSize).NoContext();
-                _totalItems = (int)page.TotalCount;
-                _entities = page.Items.ToList();
+                else
+                {
+                    var page = await Query.PageAsync(actualPage, PageSize).NoContext();
+                    _totalItems = (int)page.TotalCount;
+                    _entities = page.Items.ToList();
+                }
             }
             _isLoading = false;
         }
