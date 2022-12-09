@@ -3,66 +3,69 @@
 @using System.Collections;
 @using System.Text.Json;
 @using System.Linq.Dynamic.Core;
-@typeparam T where T: IEnumerable
 
 @if (Entity != null)
 {
-    <RadzenAccordion class="overflow-scroll">
-        <Items>
-            <RadzenAccordionItem class="p-0" Text="@($"{_counter} items!")" Icon="account_balance_wallet">
-                <table class="table-striped">
-                    <tbody>
-                        @foreach (var item in Entity)
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                @if (_isPrimitive)
+                {
+                    <th scope="col">#</th>
+                }
+                else
+                {
+                    foreach (var property in TypeShowcase.FlatProperties)
+                    {
+                        <th scope="col">@property.NavigationPath</th>
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Entity)
+            {
+                <tr>
+                    @if (_isPrimitive)
+                    {
+                        <td>
+                            @item?.ToString()
+                        </td>
+                    }
+                    else
+                    {
+
+                        @foreach (var property in TypeShowcase.FlatProperties)
                         {
-                            var type = item.GetType();
-                            <tr>
-                                @if (type.IsPrimitive())
-                                {
-                                    <td>
-                                        @item.ToString()
-                                    </td>
-                                }
-                                else
-                                {
-                                    foreach (var innerItem in type.FetchProperties())
-                                    {
-                                        if (innerItem.PropertyType.IsPrimitive())
-                                        {
-                                            <td>
-                                                @innerItem.GetValue(item)
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                @innerItem.GetValue(item).ToJson()
-                                            </td>
-                                        }
-                                    }
-                                }
-                            </tr>
+                            <td>
+                                @property.Value(item)?.ToString()
+                            </td>
                         }
-                    </tbody>
-                </table>
-            </RadzenAccordionItem>
-        </Items>
-    </RadzenAccordion>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
 }
 
 @code {
     [Parameter]
-    public T? Entity { get; set; }
-    private bool _isVisible;
-    private int _counter;
-    protected override Task OnParametersSetAsync()
+    public IEnumerable? Entity { get; set; }
+    [Inject]
+    public PropertyHandler PropertyHandler { get; set; } = null!;
+    private TypeShowcase TypeShowcase { get; set; } = null!;
+    private bool _isPrimitive;
+    protected override void OnParametersSet()
     {
-        if (Entity != null)
+        base.OnParametersSet();
+        var enumerator = Entity?.GetEnumerator();
+        if (enumerator?.MoveNext() == true)
         {
-            if (Entity is IList listable)
-                _counter = listable.Count;
-            else if (Entity is IEnumerable enumerable)
-                _counter = enumerable.AsQueryable().Count();
+            var type = enumerator.Current.GetType();
+            _isPrimitive = type.IsPrimitive();
+            if (!_isPrimitive)
+                TypeShowcase = PropertyHandler.GetEntity(type);
         }
-        return base.OnParametersSetAsync();
     }
 }

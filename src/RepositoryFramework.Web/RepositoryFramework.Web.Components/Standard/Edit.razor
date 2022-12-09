@@ -40,7 +40,7 @@
                     }
                     @if (AllowDelete)
                     {
-                        <RadzenButton Click=@(args => CheckIfYouWantToDelete()) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
+                        <RadzenButton Click=@(args => CheckIfYouWantToDeleteAsync()) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
                     }
                 </RadzenFieldset>
             }

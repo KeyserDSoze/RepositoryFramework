@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections;
+using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -90,26 +92,58 @@ namespace RepositoryFramework.Web.Components.Standard
             => entity!.Key!.GetType().IsPrimitive() ? entity.Key.ToString() : entity.Key.ToJson();
         private protected RenderFragment OpenEnumerableVisualizer(T? entity, BaseProperty property)
         {
-            if (entity != null)
-            {
-                var value = property.Value(entity);
-                if (value != null)
-                {
-                    var genericType = typeof(Visualizer<>).MakeGenericType(new[] { property.Self.PropertyType });
-                    var frag = new RenderFragment(b =>
-                    {
-                        b.OpenComponent(1, genericType);
-                        b.AddAttribute(2, nameof(Entity), value);
-                        b.CloseComponent();
-                    });
-                    return frag;
-                }
-            }
+            //if (entity != null)
+            //{
+            //    var value = property.Value(entity);
+            //    if (value != null)
+            //    {
+            //        var genericType = typeof(Visualizer<>).MakeGenericType(new[] { property.Self.PropertyType });
+            //        var frag = new RenderFragment(b =>
+            //        {
+            //            b.OpenComponent(1, genericType);
+            //            b.AddAttribute(2, nameof(Entity), value);
+            //            b.CloseComponent();
+            //        });
+            //        return frag;
+            //    }
+            //}
             return null;
         }
         private void ShowTooltip(ElementReference elementReference, string value)
         {
-            TooltipService.Open(elementReference, value);
+            TooltipService.Open(elementReference, value, new TooltipOptions
+            {
+                Position = TooltipPosition.Top
+            });
+        }
+        private async Task ShowMoreValuesAsync(T? entity, BaseProperty property)
+        {
+            _ = await DialogService.OpenAsync<Visualizer>(property.NavigationPath,
+                new Dictionary<string, object>
+                {
+                    { "Entity", property.Value(entity) },
+                }, new DialogOptions
+                {
+                    Width = "80%"
+                });
+        }
+        private const string EnumerableLabelCount = "Show {0} items.";
+        private string EnumerableCountAsString(T? entity, BaseProperty property)
+            => string.Format(EnumerableLabelCount, EnumerableCount(entity, property));
+        private int EnumerableCount(T? entity, BaseProperty property)
+        {
+            var items = property.Value(entity);
+            if (items == null)
+                return 0;
+            else if (items is IList list)
+                return list.Count;
+            else if (items is IQueryable queryable)
+                return queryable.Count();
+            else if (items.GetType().IsArray)
+                return ((dynamic)items).Length;
+            else if (items is IEnumerable enumerable)
+                return enumerable.AsQueryable().Count();
+            return 0;
         }
     }
 }

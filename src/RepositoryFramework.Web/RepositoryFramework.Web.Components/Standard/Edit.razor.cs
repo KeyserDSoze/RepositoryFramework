@@ -90,7 +90,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 });
             }
         }
-        private async Task CheckIfYouWantToDelete()
+        private async Task CheckIfYouWantToDeleteAsync()
         {
             _ = await DialogService.OpenAsync<Popup>("Delete confirmation",
                 new Dictionary<string, object>

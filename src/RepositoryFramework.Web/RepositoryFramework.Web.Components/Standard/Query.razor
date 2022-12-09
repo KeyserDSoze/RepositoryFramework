@@ -13,6 +13,7 @@
                 PageSize="@PageSize"
                 IsLoading="@_isLoading"
                 AllowFiltering="true"
+                Style="min-height:250px"
                 FilterCaseSensitivity="FilterCaseSensitivity.Default"
                 LogicalFilterOperator="LogicalFilterOperator.Or"
                 AllowPaging="true"
@@ -32,7 +33,9 @@
                         @{
                             var stringedValue = value.Value(context.Value)?.ToString();
                         }
-                        <RadzenButton class="bg-transparent text-dark p-0" Click="@((x) => Copy.CopyAsync(stringedValue))" MouseEnter="@((x) => ShowTooltip(x, stringedValue))" Text="@stringedValue" />
+                        <RadzenButton class="bg-transparent text-dark p-0"
+                        Click="@((x) => Copy.CopyAsync(stringedValue))"
+                        MouseEnter="@((x) => ShowTooltip(x, stringedValue))" Text="@stringedValue" />
                     </Template>
                 </RadzenDataGridColumn>
             }
@@ -40,7 +43,9 @@
             {
                 <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@value.NavigationPath" Title="@value.NavigationPath" Sortable="true" Filterable="false">
                     <Template Context="context">
-                        @OpenEnumerableVisualizer(context!.Value, value)
+                        <RadzenButton class="bg-transparent text-dark p-0"
+                              Click="@((x) => ShowMoreValuesAsync(context.Value, value))"
+                              Text="@EnumerableCountAsString(context.Value, value)" />
                     </Template>
                 </RadzenDataGridColumn>
             }
