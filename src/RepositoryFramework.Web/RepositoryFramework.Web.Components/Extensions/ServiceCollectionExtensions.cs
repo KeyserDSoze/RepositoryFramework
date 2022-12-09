@@ -1,7 +1,4 @@
-﻿using Blazorise;
-using Blazorise.Bootstrap5;
-using Blazorise.Icons.FontAwesome;
-using Radzen;
+﻿using Radzen;
 using RepositoryFramework.Web.Components;
 using RepositoryFramework.Web.Components.Services;
 
@@ -20,13 +17,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(options);
             services.AddSingleton<PropertyHandler>();
             services.AddSingleton<AppMenu>();
-            services.AddBlazorise(options =>
-            {
-                options.Immediate = true;
-            })
-            .AddBootstrap5Providers()
-            .AddBootstrap5Components()
-            .AddFontAwesomeIcons();
             services
                 .AddScoped<DialogService>()
                 .AddScoped<NotificationService>()
