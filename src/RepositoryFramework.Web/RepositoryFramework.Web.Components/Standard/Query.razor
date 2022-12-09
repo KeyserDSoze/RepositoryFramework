@@ -9,17 +9,19 @@
                 TItem="Entity<T, TKey>"
                 AllowVirtualization="false"
                 FilterMode="FilterMode.Advanced"
-                ColumnWidth="200px"
                 PageSize="@PageSize"
                 IsLoading="@_isLoading"
                 AllowFiltering="true"
-                Style="min-height:250px"
+                ColumnWidth="200px" 
+                AllowColumnResize="true"
+                Style="min-height:350px"
                 FilterCaseSensitivity="FilterCaseSensitivity.Default"
                 LogicalFilterOperator="LogicalFilterOperator.Or"
+                AllowColumnPicking="true" 
                 AllowPaging="true"
                 AllowSorting="true">
     <Columns>
-        <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="Key" Title="Key">
+        <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="Key" Title="Key" Frozen="true">
             <Template Context="context">
                 <RadzenLink Path="@GetEditUri(context.Key!)" Text="@GetKey(context)" />
             </Template>
@@ -34,8 +36,8 @@
                             var stringedValue = value.Value(context.Value)?.ToString();
                         }
                         <RadzenButton class="bg-transparent text-dark p-0"
-                        Click="@((x) => Copy.CopyAsync(stringedValue))"
-                        MouseEnter="@((x) => ShowTooltip(x, stringedValue))" Text="@stringedValue" />
+                              Click="@((x) => Copy.CopyAsync(stringedValue))"
+                              MouseEnter="@((x) => ShowTooltip(x, stringedValue))" Text="@stringedValue" />
                     </Template>
                 </RadzenDataGridColumn>
             }
@@ -52,4 +54,3 @@
         }
     </Columns>
 </RadzenDataGrid>
-

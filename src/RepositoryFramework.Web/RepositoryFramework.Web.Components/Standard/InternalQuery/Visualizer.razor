@@ -6,47 +6,48 @@
 
 @if (Entity != null)
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                @if (_isPrimitive)
-                {
-                    <th scope="col">#</th>
-                }
-                else
-                {
-                    foreach (var property in TypeShowcase.FlatProperties)
-                    {
-                        <th scope="col">@property.NavigationPath</th>
-                    }
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Entity)
-            {
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
                 <tr>
                     @if (_isPrimitive)
                     {
-                        <td>
-                            @item?.ToString()
-                        </td>
+                        <th scope="col">#</th>
                     }
                     else
                     {
-
-                        @foreach (var property in TypeShowcase.FlatProperties)
+                        foreach (var property in TypeShowcase.FlatProperties)
                         {
-                            <td>
-                                @property.Value(item)?.ToString()
-                            </td>
+                            <th scope="col">@property.NavigationPath</th>
                         }
                     }
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Entity)
+                {
+                    <tr>
+                        @if (_isPrimitive)
+                        {
+                            <td>
+                                @item?.ToString()
+                            </td>
+                        }
+                        else
+                        {
 
+                            @foreach (var property in TypeShowcase.FlatProperties)
+                            {
+                                <td>
+                                    @property.Value(item)?.ToString()
+                                </td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {
