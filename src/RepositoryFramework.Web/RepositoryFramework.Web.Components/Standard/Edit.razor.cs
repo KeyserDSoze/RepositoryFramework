@@ -70,9 +70,9 @@ namespace RepositoryFramework.Web.Components.Standard
                 {
                     NotificationService.Notify(new Radzen.NotificationMessage
                     {
-                        Duration = 4,
+                        Duration = 4_000,
                         CloseOnClick = true,
-                        Severity = Radzen.NotificationSeverity.Success,
+                        Severity = Radzen.NotificationSeverity.Error,
                         Summary = "Saving error",
                         Detail = result.Message
                     });
@@ -82,9 +82,9 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 NotificationService.Notify(new Radzen.NotificationMessage
                 {
-                    Duration = 4,
+                    Duration = 4_000,
                     CloseOnClick = true,
-                    Severity = Radzen.NotificationSeverity.Success,
+                    Severity = Radzen.NotificationSeverity.Error,
                     Summary = "Saving error",
                     Detail = "Command pattern or repository pattern not installed to perform the task. It's not possible to save the current item."
                 });
@@ -109,9 +109,9 @@ namespace RepositoryFramework.Web.Components.Standard
                 else
                     NotificationService.Notify(new Radzen.NotificationMessage
                     {
-                        Duration = 4,
+                        Duration = 4_000,
                         CloseOnClick = true,
-                        Severity = Radzen.NotificationSeverity.Success,
+                        Severity = Radzen.NotificationSeverity.Error,
                         Summary = "Deleting error",
                         Detail = "Command pattern or repository pattern not installed to perform the task. It's not possible to save the current item."
                     });
@@ -120,13 +120,22 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 NotificationService.Notify(new Radzen.NotificationMessage
                 {
-                    Duration = 4,
+                    Duration = 4_000,
                     CloseOnClick = true,
-                    Severity = Radzen.NotificationSeverity.Success,
+                    Severity = Radzen.NotificationSeverity.Error,
                     Summary = "Deleting error",
                     Detail = "Command pattern or repository pattern not installed to perform the task. It's not possible to delete the current item."
                 });
             }
+        }
+        private TKey? _keyBeforeEdit;
+        private void ChangeKeyEditingStatus(bool x)
+        {
+            _isNew = x;
+            if (_isNew)
+                _keyBeforeEdit = _key;
+            else
+                _key = _keyBeforeEdit!;
         }
     }
 }

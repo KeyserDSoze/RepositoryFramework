@@ -44,8 +44,6 @@
     }
     @if (!DisableEdit && !PropertyUiSettings.HasValues())
     {
-        <Button Clicked="x => New()">
-            <Icon Name="IconName.Add"></Icon>
-        </Button>
+        <RadzenButton Click="x => New()" Icon="add" />
     }
 }

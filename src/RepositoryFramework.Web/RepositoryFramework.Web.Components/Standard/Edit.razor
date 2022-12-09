@@ -1,7 +1,5 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
 @using System.Reflection;
-@using Radzen.Blazor
-@using Radzen;
 @typeparam T
 @typeparam TKey where TKey: notnull
 @inherits RepositoryBase<T, TKey>
@@ -20,7 +18,7 @@
                     <InternalPrimitiveEdit Name="@Constant.Key" Value="@_key" T="TKey" Update="x => _key = (TKey)x" DisableEdit="!_isNew"></InternalPrimitiveEdit>
                 }
                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Edit key</RadzenText>
-                <RadzenSwitch @bind-Value=@_isNew />
+                <RadzenSwitch Value="@_isNew" ValueChanged="@ChangeKeyEditingStatus" />
                 @if (_isNew && !_isRequestedToCreateNew)
                 {
                     <RadzenAlert Variant="Variant.Filled" AlertStyle="AlertStyle.Warning" Size="AlertSize.Medium" Shade="Shade.Darker" AllowClose=false>
@@ -37,15 +35,12 @@
                 <RadzenFieldset Text="@Constant.Edit">
                     @if (!DisableEdit)
                     {
-                        <RadzenButton Click=@(args => SaveAsync(false))
-                          Icon="assignment_turned_in" ButtonStyle="ButtonStyle.Secondary" />
-                        <RadzenButton Click=@(args => SaveAsync(true))
-                          Icon="note_add" ButtonStyle="ButtonStyle.Primary" />
+                        <RadzenButton Click=@(args => SaveAsync(false)) Icon="assignment_turned_in" ButtonStyle="ButtonStyle.Secondary" />
+                        <RadzenButton Click=@(args => SaveAsync(true)) Icon="note_add" ButtonStyle="ButtonStyle.Primary" />
                     }
                     @if (AllowDelete)
                     {
-                        <RadzenButton Click=@(args => CheckIfYouWantToDelete())
-                          Icon="delete" ButtonStyle="ButtonStyle.Danger" />
+                        <RadzenButton Click=@(args => CheckIfYouWantToDelete()) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
                     }
                 </RadzenFieldset>
             }

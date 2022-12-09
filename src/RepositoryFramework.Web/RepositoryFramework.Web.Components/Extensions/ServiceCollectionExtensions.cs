@@ -3,6 +3,7 @@ using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
 using Radzen;
 using RepositoryFramework.Web.Components;
+using RepositoryFramework.Web.Components.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -31,6 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<NotificationService>()
                 .AddScoped<TooltipService>()
                 .AddScoped<ContextMenuService>();
+            services.AddScoped<ICopyService, CopyService>();
             services.AddRazorPages();
             return services;
         }

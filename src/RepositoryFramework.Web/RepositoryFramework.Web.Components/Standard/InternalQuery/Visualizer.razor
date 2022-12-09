@@ -1,63 +1,52 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
 @using System.Reflection;
-@using Blazorise
 @using System.Collections;
 @using System.Text.Json;
-@using Blazorise.DataGrid
 @using System.Linq.Dynamic.Core;
 @typeparam T where T: IEnumerable
 
 @if (Entity != null)
 {
-    <div>
-        <Accordion>
-            <Collapse Visible="_isVisible">
-                <CollapseHeader>
-                    <Heading Size="HeadingSize.Is5">
-                        <Button Clicked="@(()=>_isVisible = !_isVisible)">
-                            @_counter items!
-                        </Button>
-                    </Heading>
-                </CollapseHeader>
-                <CollapseBody>
-                    <Table Striped="true">
-                        <TableBody>
-                            @foreach (var item in Entity)
-                            {
-                                var type = item.GetType();
-                                <TableRow>
-                                    @if (type.IsPrimitive())
+    <RadzenAccordion class="overflow-scroll">
+        <Items>
+            <RadzenAccordionItem class="p-0" Text="@($"{_counter} items!")" Icon="account_balance_wallet">
+                <table class="table-striped">
+                    <tbody>
+                        @foreach (var item in Entity)
+                        {
+                            var type = item.GetType();
+                            <tr>
+                                @if (type.IsPrimitive())
+                                {
+                                    <td>
+                                        @item.ToString()
+                                    </td>
+                                }
+                                else
+                                {
+                                    foreach (var innerItem in type.FetchProperties())
                                     {
-                                        <TableRowCell>
-                                            @item.ToString()
-                                        </TableRowCell>
-                                    }
-                                    else
-                                    {
-                                        foreach (var innerItem in type.FetchProperties())
+                                        if (innerItem.PropertyType.IsPrimitive())
                                         {
-                                            if (innerItem.PropertyType.IsPrimitive())
-                                            {
-                                                <TableRowCell>
-                                                    @innerItem.GetValue(item)
-                                                </TableRowCell>
-                                            }
-                                            else
-                                            {
-                                                <TableRowCell>
-                                                    @innerItem.GetValue(item).ToJson()
-                                                </TableRowCell>
-                                            }
+                                            <td>
+                                                @innerItem.GetValue(item)
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                @innerItem.GetValue(item).ToJson()
+                                            </td>
                                         }
                                     }
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-                </CollapseBody>
-            </Collapse>
-        </Accordion>
-    </div>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </RadzenAccordionItem>
+        </Items>
+    </RadzenAccordion>
 }
 
 @code {

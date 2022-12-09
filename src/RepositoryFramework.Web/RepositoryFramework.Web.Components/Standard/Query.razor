@@ -1,6 +1,4 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
-@using Radzen.Blazor
-@using Radzen;
 @typeparam T
 @typeparam TKey where TKey: notnull
 @inherits RepositoryBase<T, TKey>
@@ -9,8 +7,10 @@
                 Count="@_totalItems"
                 LoadData="@OnReadData"
                 TItem="Entity<T, TKey>"
-                AllowVirtualization="true"
-                Style="@_tableWidth"
+                AllowVirtualization="false"
+                ColumnWidth="200px"
+                PageSize="@PageSize"
+                IsLoading="@_isLoading"
                 AllowFiltering="true"
                 FilterCaseSensitivity="FilterCaseSensitivity.Default"
                 LogicalFilterOperator="LogicalFilterOperator.Or"
@@ -26,11 +26,18 @@
         {
             if (value.Type != PropertyType.Enumerable)
             {
-                <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@GetRealNavigationPath(value.NavigationPath)" Title="@value.Self.Name" Sortable="true" />
+                <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@value.NavigationPath" Title="@value.NavigationPath" Sortable="true">
+                    <Template Context="context">
+                        @{
+                            var stringedValue = value.Value(context.Value)?.ToString();
+                        }
+                        <RadzenButton class="bg-transparent text-dark p-0" Click="@((x) => Copy.CopyAsync(stringedValue))" MouseEnter="@((x) => ShowTooltip(x, stringedValue))" Text="@stringedValue" />
+                    </Template>
+                </RadzenDataGridColumn>
             }
             else
             {
-                <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@GetRealNavigationPath(value.NavigationPath)" Title="@value.Self.Name" Sortable="true" Filterable="false">
+                <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@value.NavigationPath" Title="@value.NavigationPath" Sortable="true" Filterable="false">
                     <Template Context="context">
                         @OpenEnumerableVisualizer(context!.Value, value)
                     </Template>

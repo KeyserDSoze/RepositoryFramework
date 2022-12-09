@@ -1,13 +1,9 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
 @using System.Reflection;
-@using Blazorise;
 @using System.Collections;
 @using System.Text.Json;
-@using Blazorise.DataGrid
 @using System.Linq.Expressions;
-@using Blazorise.Components;
-@using Radzen
-@using Radzen.Blazor
+@using RepositoryFramework.Web.Components.Services;
 @typeparam T
 
 @{
@@ -34,47 +30,73 @@
                           Style="@style"
                           Change=@OnChange
                           Paste=@OnPaste
-                          Execute=@OnExecute />
+                          Execute=@OnExecute 
+                          Disabled="@DisableEdit" />
             }
             else if (Value is bool booleanValue)
             {
-                <div class="primitive-boolean">
-                    <Switch TValue="bool" Checked="booleanValue" CheckedChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
-                    </Switch>
-                </div>
+                if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    <RadzenCheckBox class="form-control" Value="@booleanValue" TriState=true TValue="bool?" Change=@(args => InternalUpdate(args)) Disabled="@DisableEdit" />
+                }
+                else
+                {
+                    <RadzenCheckBox class="form-control" Value="@booleanValue" TriState=false TValue="bool" Change=@(args => InternalUpdate(args)) Disabled="@DisableEdit" />
+                }
             }
             else if (Value is DateTime dateTime)
             {
-                <DatePicker TValue="DateTime?" Date="dateTime" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
+                <RadzenDatePicker class="form-control"
+                    TValue="DateTime?" 
+                    ShowTime="true"
+                    ShowSeconds="true"
+                    HoursStep="1.5" 
+                    MinutesStep="5" 
+                    SecondsStep="10"
+                    Value="Value"
+                    Change=@(args => InternalUpdate(args))
+                    DateFormat="yyyy/MM/dd HH:mm:ss" 
+                    Disabled="@DisableEdit" />
             }
             else if (Value is DateOnly dateOnly)
             {
-                <DatePicker TValue="DateOnly?" Date="dateOnly" DateChanged="x => InternalUpdate(x)" Disabled="DisableEdit" />
+                <RadzenDatePicker class="form-control"
+                    TValue="DateOnly?" 
+                    Value="Value"
+                    Change=@(args => InternalUpdate(args))
+                    DateFormat="yyyy/MM/dd" 
+                    Disabled="@DisableEdit" />
             }
             else if (typeof(T).IsNumeric())
             {
-                <NumericEdit TValue="T" Value="Value" ValueChanged="x => InternalUpdate(x)" Disabled="DisableEdit"></NumericEdit>
+                <RadzenNumeric 
+                    class="form-control"
+                    TValue="T" 
+                    Value="Value"
+                    Placeholder="Enter or clear value"
+                    Change="@(args => InternalUpdate(args))" 
+                    TextAlign="TextAlign.Right"
+                    Disabled="@DisableEdit" />
             }
             else
             {
-                <TextEdit Text="@Value?.ToString()" TextChanged="x => InternalUpdate(x)" Disabled="DisableEdit">
-                </TextEdit>
+                <RadzenTextBox class="form-control" Value="@Value?.ToString()" Change=@(args => InternalUpdate(args)) Disabled="DisableEdit" />
             }
         }
         else
         {
-            <SelectList TValue="string"
-                    TItem="string"
-                    DefaultItemText="@Constant.None"
-                    DefaultItemValue="@Constant.None"
-                    Data="@PropertyUiSettings!.Values!.Select(x => x.Label)"
-                    TextField="@(x => x)"
-                    ValueField="@(x => x)"
-                    SelectedValue="@PropertyUiSettings!.LabelComparer(Value)"
-                    Multiple=false
-                    Disabled="DisableEdit"
-                    SelectedValueChanged="@InternalProxyUpdate">
-            </SelectList>
+            <RadzenDropDown TValue="string"
+                        AllowClear="true"
+                        AllowFiltering="true"
+                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                        Multiple="false"
+                        Placeholder="Select..."
+                        Data="@PropertyUiSettings!.Values"
+                        TextProperty="Label"
+                        ValueProperty="Label"
+                        Change="@InternalProxyUpdate"
+                        class="form-control"
+                        Disabled="@DisableEdit" />
         }
 
         @if (PropertyUiSettings?.Default != null && !DisableEdit)
@@ -82,20 +104,16 @@
             <span class="input-group-text">
                 @if (RestorableValue == null)
                 {
-                    <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => SetDefault()">
-                        <Icon Name="IconName.Star" />
-                    </Blazorise.Bootstrap.Button>
+                    <RadzenButton Icon="star" Click="@((x) => SetDefault())" />
                 }
                 else
                 {
-                    <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => Restore()">
-                        <Icon Name="IconName.ArrowLeft" />
-                    </Blazorise.Bootstrap.Button>
+                    <RadzenButton Icon="arrow_back" Click="@((x) => Restore())" />
                 }
             </span>
         }
         <span class="input-group-text">
-            <Copy ValueToCopy="() => Value?.ToString()"></Copy>
+            <RadzenButton Click="() => Copy.CopyAsync(Value?.ToString())" Icon="file_copy" />
         </span>
     </div>
 </div>
@@ -111,6 +129,8 @@
     public bool DisableEdit { get; set; }
     [Parameter]
     public PropertyUiSettings? PropertyUiSettings { get; set; }
+    [Inject]
+    public ICopyService Copy { get; set; }
     private T? RestorableValue;
 
     public void InternalUpdate(object? value)
@@ -119,8 +139,9 @@
         Update(currentValue);
         Value = currentValue;
     }
-    public void InternalProxyUpdate(string label)
+    public void InternalProxyUpdate(object x)
     {
+        var label = x?.ToString();
         InternalUpdate(PropertyUiSettings!.Values!.FirstOrDefault(x => x.Label == label)?.Value);
     }
     public void SetDefault()

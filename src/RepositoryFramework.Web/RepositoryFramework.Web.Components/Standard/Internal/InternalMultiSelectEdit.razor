@@ -1,59 +1,44 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
 @using System.Reflection;
-@using Blazorise;
 @using System.Collections;
 @using System.Text.Json;
-@using Blazorise.DataGrid
 @using System.Linq.Expressions;
-@using Blazorise.Components;
 @typeparam T
 
-<Field ColumnSize="ColumnSize.IsFull">
-    <FieldBody>
-        <Addons ColumnSize="ColumnSize.IsQuarter">
-            <Addon AddonType="AddonType.Start">
-                <AddonLabel>@Name</AddonLabel>
-            </Addon>
-            <Addon AddonType="AddonType.Body">
-                @if (PropertyUiSettings.HasValues())
+<div class="col-12 my-2">
+    <div class="input-group">
+        <span class="input-group-text">
+            @Name
+        </span>
+        @if (PropertyUiSettings.HasValues())
+        {
+            <RadzenDropDown TValue="IEnumerable<string>"
+                        AllowClear="true"
+                        AllowFiltering="true"
+                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                        Multiple="true"
+                        Placeholder="Select..."
+                        Data="@PropertyUiSettings!.Values"
+                        TextProperty="Label"
+                        ValueProperty="Label"
+                        Change="@InternalUpdate"
+                        class="form-control" />
+        }
+        @if (PropertyUiSettings?.Default != null && !DisableEdit)
+        {
+            <span class="input-group-text">
+                @if (RestorableValues == null)
                 {
-                    <SelectList TValue="string"
-                            TItem="string"
-                            DefaultItemText="@Constant.None"
-                            DefaultItemValue="@Constant.None"
-                            Data="@PropertyUiSettings.Values.Select(x => x.Label)"
-                            Class="select-checkbox"
-                            TextField="@(x => x)"
-                            ValueField="@(x => x)"
-                            SelectedValues="@Values?.Select(x => PropertyUiSettings.LabelComparer(x)).ToList()"
-                            Multiple=true
-                            Disabled="DisableEdit"
-                            SelectedValuesChanged="@InternalUpdate">
-                        </SelectList>
+                    <RadzenButton Icon="star" Click="@((x) => SetDefault())" />
                 }
-            </Addon>
-            @if (PropertyUiSettings?.Default != null && !DisableEdit)
-            {
-                <Addon AddonType="AddonType.End">
-                    <AddonLabel>
-                        @if (RestorableValues == null)
-                        {
-                            <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => SetDefault()">
-                                Set default
-                            </Blazorise.Bootstrap.Button>
-                        }
-                        else
-                        {
-                            <Blazorise.Bootstrap.Button Padding="Padding.Is0" Clicked="() => Restore()">
-                                Restore
-                            </Blazorise.Bootstrap.Button>
-                        }
-                    </AddonLabel>
-                </Addon>
-            }
-        </Addons>
-    </FieldBody>
-</Field>
+                else
+                {
+                    <RadzenButton Icon="arrow_back" Click="@((x) => Restore())" />
+                }
+            </span>
+        }
+    </div>
+</div>
 
 
 @code {
@@ -68,14 +53,17 @@
     [Parameter]
     public PropertyUiSettings? PropertyUiSettings { get; set; }
     private List<T>? RestorableValues;
-    public void InternalUpdate(IEnumerable<string> labels)
+    public void InternalUpdate(object x)
     {
         List<T> values = new();
-        foreach (var label in labels)
+        if (x is IEnumerable<string> labels)
         {
-            var item = PropertyUiSettings?.Values?.FirstOrDefault(x => x.Label == label)?.Value;
-            if (item != null)
-                values.Add((T)item);
+            foreach (var label in labels)
+            {
+                var item = PropertyUiSettings?.Values?.FirstOrDefault(x => x.Label == label)?.Value;
+                if (item != null)
+                    values.Add((T)item);
+            }
         }
         Update(values);
         Values = values;
