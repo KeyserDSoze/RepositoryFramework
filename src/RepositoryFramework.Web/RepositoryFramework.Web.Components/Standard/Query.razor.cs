@@ -18,8 +18,6 @@ namespace RepositoryFramework.Web.Components.Standard
         [Inject]
         public ICopyService Copy { get; set; }
         [Inject]
-        public TooltipService TooltipService { get; set; }
-        [Inject]
         public DialogService DialogService { get; set; }
         private bool _isLoading = true;
         private List<Entity<T, TKey>>? _entities;
@@ -90,32 +88,6 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         private string GetKey(Entity<T, TKey> entity)
             => entity!.Key!.GetType().IsPrimitive() ? entity.Key.ToString() : entity.Key.ToJson();
-        private protected RenderFragment OpenEnumerableVisualizer(T? entity, BaseProperty property)
-        {
-            //if (entity != null)
-            //{
-            //    var value = property.Value(entity);
-            //    if (value != null)
-            //    {
-            //        var genericType = typeof(Visualizer<>).MakeGenericType(new[] { property.Self.PropertyType });
-            //        var frag = new RenderFragment(b =>
-            //        {
-            //            b.OpenComponent(1, genericType);
-            //            b.AddAttribute(2, nameof(Entity), value);
-            //            b.CloseComponent();
-            //        });
-            //        return frag;
-            //    }
-            //}
-            return null;
-        }
-        private void ShowTooltip(ElementReference elementReference, string value)
-        {
-            TooltipService.Open(elementReference, value, new TooltipOptions
-            {
-                Position = TooltipPosition.Top
-            });
-        }
         private async Task ShowMoreValuesAsync(T? entity, BaseProperty property)
         {
             _ = await DialogService.OpenAsync<Visualizer>(property.NavigationPath,

@@ -14,7 +14,7 @@
                 AllowFiltering="true"
                 ColumnWidth="@AppSettings.Sizing.ColumnWidth"
                 AllowColumnResize="true"
-                Style="min-height:350px"
+                Style="min-height:400px"
                 FilterCaseSensitivity="FilterCaseSensitivity.Default"
                 LogicalFilterOperator="LogicalFilterOperator.Or"
                 PageSizeOptions="s_pageSizeOptions"
@@ -39,7 +39,8 @@
                         }
                         <RadzenButton class="bg-transparent text-dark p-0"
                               Click="@((x) => Copy.CopyAsync(stringedValue))"
-                              MouseEnter="@((x) => ShowTooltip(x, stringedValue))" Text="@stringedValue" />
+                              data-bs-toggle="tooltip" title="@stringedValue"
+                               Text="@stringedValue" />
                     </Template>
                 </RadzenDataGridColumn>
             }
