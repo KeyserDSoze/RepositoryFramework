@@ -25,7 +25,7 @@ namespace RepositoryFramework.Web.Components.Standard
         private List<Entity<T, TKey>>? _entities;
         private int _totalItems;
         private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
-
+        private static readonly List<int> s_pageSizeOptions = new() { 10, 20, 50, 100, 200 };
         private string GetEditUri(TKey key)
             => s_editUri != null ? string.Format(s_editUri, key.ToBase64()) : string.Empty;
         private async Task OnReadData(LoadDataArgs args)

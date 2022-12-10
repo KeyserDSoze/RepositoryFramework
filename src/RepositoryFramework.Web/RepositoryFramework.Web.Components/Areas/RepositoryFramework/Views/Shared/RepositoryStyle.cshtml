@@ -1,7 +1,47 @@
-﻿<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+﻿@using RepositoryFramework.Web.Components;
+@inject AppSettings Settings
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
 <link rel="stylesheet" href="_content/Radzen.Blazor/css/default-base.css">
 <link href="_content/Rystem.RepositoryFramework.Web.Components/repository.css" rel="stylesheet" />
 <style>
+    :root {
+        --rz-base-50: @(Settings.Palette.Base50);
+        --rz-base-100: @(Settings.Palette.Base100);
+        --rz-base-200: @(Settings.Palette.Base200);
+        --rz-base-300: @(Settings.Palette.Base300);
+        --rz-base-400: @(Settings.Palette.Base400);
+        --rz-base-500: @(Settings.Palette.Base500);
+        --rz-base-600: @(Settings.Palette.Base600);
+        --rz-base-700: @(Settings.Palette.Base700);
+        --rz-base-800: @(Settings.Palette.Base800);
+        --rz-base-900: @(Settings.Palette.Base900);
+        --rz-primary: @(Settings.Palette.Primary);
+        --rz-primary-light: @(Settings.Palette.PrimaryLight);
+        --rz-primary-lighter: @(Settings.Palette.PrimaryLighter);
+        --rz-primary-dark: @(Settings.Palette.PrimaryDark);
+        --rz-primary-darker: @(Settings.Palette.PrimaryDarker);
+        --rz-secondary: @(Settings.Palette.Secondary);
+        --rz-secondary-light: @(Settings.Palette.SecondaryLight);
+        --rz-secondary-lighter: @(Settings.Palette.SecondaryLighter);
+        --rz-secondary-dark: @(Settings.Palette.SecondaryDark);
+        --rz-secondary-darker: @(Settings.Palette.SecondaryDarker);
+        --rz-series-1: @(Settings.Palette.Series1);
+        --rz-series-2: @(Settings.Palette.Series2);
+        --rz-series-3: @(Settings.Palette.Series3);
+        --rz-series-4: @(Settings.Palette.Series4);
+        --rz-series-5: @(Settings.Palette.Series5);
+        --rz-series-6: @(Settings.Palette.Series6);
+        --rz-series-7: @(Settings.Palette.Series7);
+        --rz-series-8: @(Settings.Palette.Series8);
+        --rz-border-width: @(Settings.Sizing.BorderWidth);
+        --rz-root-font-size: @(Settings.Sizing.RootFontSize);
+        --rz-body-font-size: @(Settings.Sizing.BodyFontSize);
+        --rz-body-line-height: @(Settings.Sizing.BodyLineHeight);
+        --rz-icon-size: @(Settings.Sizing.IconSize);
+        --rz-text-font-family: @(Settings.Sizing.TextFontFamily);
+    }
+
     .form-control {
         min-height: 50px;
     }

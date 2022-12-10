@@ -18,8 +18,6 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public bool AllowDelete { get; set; }
         [Inject]
-        public AppSettings AppSettings { get; set; }
-        [Inject]
         public DialogService DialogService { get; set; }
         [Inject]
         public NotificationService NotificationService { get; set; }

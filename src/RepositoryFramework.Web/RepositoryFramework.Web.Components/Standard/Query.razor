@@ -12,12 +12,14 @@
                 PageSize="@PageSize"
                 IsLoading="@_isLoading"
                 AllowFiltering="true"
-                ColumnWidth="200px" 
+                ColumnWidth="@AppSettings.Sizing.ColumnWidth"
                 AllowColumnResize="true"
                 Style="min-height:350px"
                 FilterCaseSensitivity="FilterCaseSensitivity.Default"
                 LogicalFilterOperator="LogicalFilterOperator.Or"
-                AllowColumnPicking="true" 
+                PageSizeOptions="s_pageSizeOptions"
+                PageSizeChanged="@((x) => PageSize = x)"
+                AllowColumnPicking="true"
                 AllowPaging="true"
                 AllowSorting="true">
     <Columns>

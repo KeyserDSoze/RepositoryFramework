@@ -23,8 +23,6 @@ namespace RepositoryFramework.Web.Components.Standard
         public string? NavigationPath { get; set; }
         [Inject]
         public PropertyHandler PropertyHandler { get; set; } = null!;
-        [Inject]
-        public AppSettings AppSettings { get; set; } = null!;
         private TypeShowcase TypeShowcase { get; set; } = null!;
         private string? GetNextNavigationPath()
         {

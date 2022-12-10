@@ -3,13 +3,11 @@ using RepositoryFramework.Web.Test.BlazorApp.Models;
 using Whistleblowing.Licensing.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
 builder.Services.AddServerSideBlazor();
 builder.Services
     .AddRepositoryUi(x =>
     {
         x.Name = "SuperSite";
-        x.Palette = AppPalette.Pastels;
     });
 
 builder.Services

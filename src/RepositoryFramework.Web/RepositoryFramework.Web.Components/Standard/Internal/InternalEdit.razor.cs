@@ -21,11 +21,13 @@ namespace RepositoryFramework.Web.Components.Standard
         private PropertyUiSettings? _entitySettings;
         private readonly Dictionary<string, object> _restorableValues = new();
         private T? _restorableValue;
+        private string _containerClass;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
             if (PropertiesUiSettings != null && PropertiesUiSettings.ContainsKey(NavigationPath))
                 _entitySettings = PropertiesUiSettings[NavigationPath];
+            _containerClass = Deep > 2 ? "row row-cols-1" : "row row-cols-2 row-cols-lg-1";
             if (Entity == null || Entity.Equals(default(T)))
             {
                 if (_entitySettings?.Default != null)
