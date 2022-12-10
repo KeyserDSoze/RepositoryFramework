@@ -27,7 +27,7 @@ namespace RepositoryFramework.Web.Components.Standard
             await base.OnParametersSetAsync().NoContext();
             if (PropertiesUiSettings != null && PropertiesUiSettings.ContainsKey(NavigationPath))
                 _entitySettings = PropertiesUiSettings[NavigationPath];
-            _containerClass = Deep > 2 ? "row row-cols-1" : "row row-cols-2 row-cols-lg-1";
+            _containerClass = Deep > 3 ? "row row-cols-1" : "row row-cols-1 row-cols-lg-2";
             if (Entity == null || Entity.Equals(default(T)))
             {
                 if (_entitySettings?.Default != null)

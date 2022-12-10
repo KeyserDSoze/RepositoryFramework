@@ -22,32 +22,35 @@
             @LoadPrimitiveEdit(value)
         }
     </div>
-    <div class="row row-cols">
-        <RadzenTabs SelectedIndex="0">
-            <Tabs>
-                @foreach (var value in TypeShowcase.NonPrimitives)
-                {
-                    var propertySettings = GetPropertySettings(value);
-                    <RadzenTabsItem Text="@value.Self.Name">
-                        @if (value.Type == PropertyType.Enumerable && propertySettings?.Default != null)
-                        {
-                            <div class="text-center mt-4 mb-2">
-                                @if (!_restorableValues.ContainsKey(value.NavigationPath))
-                                {
-                                    <RadzenButton Click=@(args => SetDefault(value, propertySettings.Default)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
-                                }
-                                else
-                                {
-                                    <RadzenButton Click=@(args => Restore(value)) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
-                                }
+    @if (TypeShowcase.NonPrimitives.Count > 0)
+    {
+        <div class="row row-cols">
+            <RadzenTabs SelectedIndex="0">
+                <Tabs>
+                    @foreach (var value in TypeShowcase.NonPrimitives)
+                    {
+                        var propertySettings = GetPropertySettings(value);
+                        <RadzenTabsItem Text="@value.Self.Name">
+                            @if (value.Type == PropertyType.Enumerable && propertySettings?.Default != null)
+                            {
+                                <div class="text-center mt-4 mb-2">
+                                    @if (!_restorableValues.ContainsKey(value.NavigationPath))
+                                    {
+                                        <RadzenButton Click=@(args => SetDefault(value, propertySettings.Default)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
+                                    }
+                                    else
+                                    {
+                                        <RadzenButton Click=@(args => Restore(value)) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
+                                    }
+                                </div>
+                            }
+                            <div class="col-12">
+                                @LoadNext(value)
                             </div>
-                        }
-                        <div class="col-12">
-                            @LoadNext(value)
-                        </div>
-                    </RadzenTabsItem>
-                }
-            </Tabs>
-        </RadzenTabs>
-    </div>
+                        </RadzenTabsItem>
+                    }
+                </Tabs>
+            </RadzenTabs>
+        </div>
+    }
 }
