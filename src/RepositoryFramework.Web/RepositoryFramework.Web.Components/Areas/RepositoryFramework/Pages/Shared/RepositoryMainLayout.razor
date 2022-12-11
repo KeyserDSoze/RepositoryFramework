@@ -5,14 +5,8 @@
 <div class="p-0">
     <RadzenLayout Style="grid-template-columns: 1fr auto; grid-template-areas: 'rz-header rz-sidebar' 'rz-body rz-sidebar'">
         <RadzenHeader>
-            <div class="d-flex justify-content-end align-items-center">
-                <RadzenLabel Text="@AppSettings!.Name" />
-                <RadzenSidebarToggle Click="@(() => _sidebarExpanded = !_sidebarExpanded)" Style="margin:0" />
-            </div>
-        </RadzenHeader>
-        <RadzenSidebar @bind-Expanded="@_sidebarExpanded">
             <RepositoryMenu></RepositoryMenu>
-        </RadzenSidebar>
+        </RadzenHeader>
         <RadzenBody class="p-0">
             <div class="p-2">
                 @Body

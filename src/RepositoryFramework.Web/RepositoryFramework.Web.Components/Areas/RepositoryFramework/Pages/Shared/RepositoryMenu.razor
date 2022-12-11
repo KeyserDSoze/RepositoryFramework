@@ -1,15 +1,35 @@
 ﻿@namespace RepositoryFramework.Web.Components
-@using Radzen.Blazor
 
-<RadzenPanelMenu class="w-100">
-    @foreach (var app in AppMenu.Models)
-    {
-        <RadzenPanelMenuItem Text="@app.Value.ModelType.Name" Icon="explore">
-            <RadzenPanelMenuItem Text="Query" Path="@($"../../../../Repository/{app.Value.ModelType.Name}/Query")" Icon="list"></RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Create" Path="@($"../../../../Repository/{app.Value.ModelType.Name}/Create")" Icon="add"></RadzenPanelMenuItem>
-        </RadzenPanelMenuItem>
-    }
-</RadzenPanelMenu>
+<nav class="navbar bg-light fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="../../../../">@AppSettings.Name</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    @foreach (var app in AppMenu.Models)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @app.Key
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="@($"../../../../Repository/{app.Value.ModelType.Name}/Query")">Query</a></li>
+                                <li><a class="dropdown-item" href="@($"../../../../Repository/{app.Value.ModelType.Name}/Query")">Create</a></li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
 
 @code {
     [Inject]
