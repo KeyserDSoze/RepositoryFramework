@@ -2,26 +2,18 @@
 @using Radzen.Blazor
 @inherits LayoutComponentBase
 
-<div class="p-0">
-    <RadzenLayout Style="grid-template-columns: 1fr auto; grid-template-areas: 'rz-header rz-sidebar' 'rz-body rz-sidebar'">
-        <RadzenHeader>
-            <RepositoryMenu></RepositoryMenu>
-        </RadzenHeader>
-        <RadzenBody class="p-0">
-            <div class="p-2">
-                @Body
+<div class="container p-0">
+    <RepositoryMenu></RepositoryMenu>
+    <section class="p-0 content">
+        <div class="p-2">
+            @Body
+        </div>
+        <RadzenNotification />
+        <div class="tooltip bs-tooltip-top" role="tooltip">
+            <div class="tooltip-arrow"></div>
+            <div class="tooltip-inner">
             </div>
-            <RadzenNotification />
-            <div class="tooltip bs-tooltip-top" role="tooltip">
-                <div class="tooltip-arrow"></div>
-                <div class="tooltip-inner">
-                </div>
-            </div>
-            <RadzenDialog />
-        </RadzenBody>
-    </RadzenLayout>
+        </div>
+        <RadzenDialog />
+    </section>
 </div>
-
-@code {
-    private bool _sidebarExpanded = true;
-}
