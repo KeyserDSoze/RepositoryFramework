@@ -1,43 +1,55 @@
 ﻿@namespace RepositoryFramework.Web.Components
 
-<nav class="navbar bg-light fixed-top">
+<nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="../../../../">@AppSettings.Name</a>
-        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#nabar_main" aria-controls="offcanvasNavbar">
+        <a class="navbar-brand" href="../../../../">
+            @if(AppSettings.Image != null)
+            {
+                <img src="@AppSettings.Image" alt="" width="35" height="35" class="d-inline-block align-text-top"/>
+            }
+            @if(AppSettings.Icon != null)
+            {
+                <span class="material-symbols-outlined align-center">
+                    @AppSettings.Icon
+                </span>
+            }
+            @AppSettings.Name
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="navbar_main">
-            <div class="container-fluid">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <ul class="navbar-nav">
-                    @foreach (var app in AppMenu.Models)
-                    {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="material-symbols-outlined align-baseline">
-                                    home
-                                </span>
-                                <span>@app.Key</span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" href="@($"../../../../Repository/{app.Value.ModelType.Name}/Query")">
-                                        <span>Query</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="@($"../../../../Repository/{app.Value.ModelType.Name}/Create")">
-                                        <span>Create</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    }
-                </ul>
-            </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                @foreach (var nav in AppMenu.Navigations.Select(x => x.Value))
+                {
+                    <li class="nav-item dropdown">
+                        <a class="@(nav.ModelType.Name == _selected ? SelectedCss : NotSelectedCss)" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="material-symbols-outlined align-center">
+                                @nav.Icon
+                            </span>
+                            <span>@nav.Name</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="@nav.QueryUri">
+                                    <span class="material-symbols-outlined align-center">
+                                        list
+                                    </span>
+                                    <span>Query</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="@nav.CreateUri">
+                                    <span class="material-symbols-outlined align-center">
+                                        note_add
+                                    </span>
+                                    <span>Create</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
         </div>
     </div>
 </nav>
@@ -45,4 +57,23 @@
 @code {
     [Inject]
     public AppMenu AppMenu { get; set; } = null!;
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = null!;
+    private string? _selected;
+    private const string SelectedCss = "nav-link dropdown-toggle active";
+    private const string NotSelectedCss = "nav-link dropdown-toggle";
+    protected override void OnInitialized()
+    {
+        _selected = AppInternalSettings.Instance.RootName;
+        NavigationManager.LocationChanged += (x, location) =>
+        {
+            var uri = location.Location.Split('/');
+            if (uri.Length < 5)
+                _selected = AppInternalSettings.Instance.RootName;
+            else
+                _selected = uri[4];
+            StateHasChanged();
+        };
+        base.OnInitialized();
+    }
 }

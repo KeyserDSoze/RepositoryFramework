@@ -1,5 +1,4 @@
-﻿using RepositoryFramework.Web.Components;
-using RepositoryFramework.Web.Test.BlazorApp.Models;
+﻿using RepositoryFramework.Web.Test.BlazorApp.Models;
 using Whistleblowing.Licensing.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,25 +7,32 @@ builder.Services
     .AddRepositoryUi(x =>
     {
         x.Name = "SuperSite";
+        x.Icon = "savings";
+        x.Image = "https://www.pngitem.com/pimgs/m/432-4328680_crime-dashboard-navigation-icon-emblem-hd-png-download.png";
     });
 
 builder.Services
     .AddRepositoryInMemoryStorage<AppConfiguration, string>()
     .PopulateWithRandomData(x => x.AppDomain, 34, 2)
     .And()
-    .SetDefaultUiRoot();
+    .ExposeFor(3);
 builder.Services
     .AddRepositoryInMemoryStorage<AppUser, int>()
     .PopulateWithRandomData(x => x.Id, 67, 2)
     .And()
-    .MapPropertiesForUi<AppUser, int, AppUserDesignMapper>();
+    .MapPropertiesForUi<AppUser, int, AppUserDesignMapper>()
+    .WithIcon("manage_accounts")
+    .WithName("User")
+    .ExposeFor(2);
 builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>
 {
     x.IsNotExposable = false;
 })
     .PopulateWithRandomData(x => x.Id, 24, 2);
 builder.Services.AddRepositoryInMemoryStorage<Weather, int>()
-    .PopulateWithRandomData(x => x.Id, 5, 2);
+    .PopulateWithRandomData(x => x.Id, 5, 2)
+    .And()
+    .SetDefaultUiRoot();
 
 var app = builder.Build();
 await app.Services.WarmUpAsync();

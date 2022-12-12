@@ -20,6 +20,36 @@ namespace Microsoft.Extensions.DependencyInjection
             AppInternalSettings.Instance.NotExposableRepositories.Add(typeof(T).Name);
             return builder;
         }
+        private static AppMenuSettings GetAppMenuSettings<T, TKey>(this IRepositoryBuilder<T, TKey> builder)
+            where TKey : notnull
+        {
+            var name = typeof(T).Name.ToLower();
+            if (!AppInternalSettings.Instance.MenuInternalSettings.ContainsKey(name))
+                AppInternalSettings.Instance.MenuInternalSettings.Add(name,
+                    AppMenuSettings.CreateDefault(typeof(T), typeof(TKey)));
+            return AppInternalSettings.Instance.MenuInternalSettings[name];
+        }
+        public static IRepositoryBuilder<T, TKey> ExposeFor<T, TKey>(
+            this IRepositoryBuilder<T, TKey> builder, int index)
+            where TKey : notnull
+        {
+            builder.GetAppMenuSettings().Index = index;
+            return builder;
+        }
+        public static IRepositoryBuilder<T, TKey> WithIcon<T, TKey>(
+            this IRepositoryBuilder<T, TKey> builder, string icon)
+            where TKey : notnull
+        {
+            builder.GetAppMenuSettings().Icon = icon;
+            return builder;
+        }
+        public static IRepositoryBuilder<T, TKey> WithName<T, TKey>(
+            this IRepositoryBuilder<T, TKey> builder, string name)
+            where TKey : notnull
+        {
+            builder.GetAppMenuSettings().Name = name;
+            return builder;
+        }
         public static IRepositoryBuilder<T, TKey> MapPropertiesForUi<T, TKey, TUiMapper>(
             this IRepositoryBuilder<T, TKey> builder)
             where TKey : notnull

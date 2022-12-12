@@ -23,8 +23,8 @@ namespace RepositoryFramework.Web.Components
             if (!string.IsNullOrWhiteSpace(Name))
             {
                 var name = Name.ToLower();
-                _keyType = AppMenu.Models[name].KeyType;
-                _modelType = AppMenu.Models[name].ModelType;
+                _modelType = AppMenu.Navigations[name].ModelType;
+                _keyType = AppMenu.Navigations[name].KeyType;
             }
 
             return base.OnParametersSetAsync();

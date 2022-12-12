@@ -46,12 +46,16 @@
     .form-control {
         min-height: 50px;
     }
+
     input {
         font-size: @(Settings.Sizing.InputFontSize) !important;
     }
 
-    .navigation-item {
+    .navbar-brand, .nav-item, .dropdown-item {
         font-size: @(Settings.Sizing.NavigationFontSize) !important;
-        font-weight: @(Settings.Sizing.NavigationFontWeight) !important;
     }
+
+        .nav-item .active {
+            font-weight: @(Settings.Sizing.NavigationFontWeight) !important;
+        }
 </style>

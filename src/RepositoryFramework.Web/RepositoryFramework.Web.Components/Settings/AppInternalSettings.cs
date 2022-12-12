@@ -7,5 +7,6 @@
         public string? RootName { get; set; }
         public bool IsAuthenticated { get; set; }
         public List<string> NotExposableRepositories { get; set; } = new();
+        public Dictionary<string, AppMenuSettings> MenuInternalSettings { get; } = new();
     }
 }

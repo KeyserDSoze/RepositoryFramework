@@ -2,16 +2,18 @@
 {
     public sealed class AppMenu
     {
-        public AppMenu(RepositoryFrameworkRegistry repositoryFrameworkRegistry, IServiceProvider serviceProvider)
+        public AppMenu(RepositoryFrameworkRegistry repositoryFrameworkRegistry)
         {
-            Models = new();
+            var navigations = new List<AppMenuSettings>();
+            navigations.AddRange(AppInternalSettings.Instance.MenuInternalSettings.Select(x => x.Value));
             foreach (var service in repositoryFrameworkRegistry.Services)
             {
                 if (!AppInternalSettings.Instance.NotExposableRepositories.Any(x => x.ToLower() == service.ModelType.Name.ToLower())
-                    && !Models.ContainsKey(service.ModelType.Name.ToLower()))
-                    Models.Add(service.ModelType.Name.ToLower(), service);
+                    && !navigations.Any(x => x.ModelType.FullName.ToLower() == service.ModelType.FullName.ToLower()))
+                    navigations.Add(AppMenuSettings.CreateDefault(service.ModelType, service.KeyType));
             }
+            Navigations = navigations.OrderBy(x => x.Index).ToDictionary(x => x.ModelType.Name.ToLower(), x => x);
         }
-        public Dictionary<string, RepositoryFrameworkService> Models { get; set; }
+        public Dictionary<string, AppMenuSettings> Navigations { get; set; }
     }
 }

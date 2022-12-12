@@ -1,2 +1,14 @@
 ﻿<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+<script>
+    new MutationObserver((mutations, observer) => {
+        if (document.querySelector('#components-reconnect-modal h5 a')) {
+            async function attemptReload() {
+                location.reload();
+            }
+            observer.disconnect();
+            attemptReload();
+            setInterval(attemptReload, 10000);
+        }
+    }).observe(document.body, { childList: true, subtree: true });
+</script>

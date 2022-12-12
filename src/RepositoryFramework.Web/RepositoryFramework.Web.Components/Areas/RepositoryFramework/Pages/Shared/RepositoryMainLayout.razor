@@ -2,9 +2,9 @@
 @using Radzen.Blazor
 @inherits LayoutComponentBase
 
-<div class="container p-0">
+<div class="container-fluid p-0">
     <RepositoryMenu></RepositoryMenu>
-    <section class="p-0 content">
+    <div class="container-fluid p-0">
         <div class="p-2">
             @Body
         </div>
@@ -15,5 +15,5 @@
             </div>
         </div>
         <RadzenDialog />
-    </section>
+    </div>
 </div>
