@@ -44,7 +44,17 @@ namespace System.Linq
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <param name="entity"></param>
-        /// <param name="top">Number of elements to take.</param>
+        /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static QueryBuilder<T, TKey> AsQueryBuilder<T, TKey>(this IQueryPattern<T, TKey> entity)
+            where TKey : notnull
+            => new QueryBuilder<T, TKey>(entity);
+        /// <summary>
+        /// Take all elements by <paramref name="predicate"/> query.
+        /// </summary>
+        /// <typeparam name="T">Model used for your repository.</typeparam>
+        /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
+        /// <param name="entity"></param>
+        /// <param name="predicate">Query request.</param>
         /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static QueryBuilder<T, TKey> Where<T, TKey>(this IQueryPattern<T, TKey> entity,
             Expression<Func<T, bool>> predicate)

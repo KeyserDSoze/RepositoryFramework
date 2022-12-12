@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -31,7 +32,8 @@ namespace RepositoryFramework.Web.Components.Standard
             _isLoading = true;
             if (Query != null)
             {
-                int actualPage = (args.Top.Value + args.Skip.Value) / PageSize;
+                var actualPage = (args.Top.Value + args.Skip.Value) / PageSize;
+                QueryBuilder<T, TKey>? request = Query.AsQueryBuilder();
                 if (args.Filters.Any())
                 {
                     StringBuilder whereBuilder = new();
@@ -72,17 +74,20 @@ namespace RepositoryFramework.Web.Components.Standard
                             };
                         }
                     }
-                    var where = whereBuilder.ToString().Deserialize<T, bool>();
-                    var page = await Query.Where(where).PageAsync(actualPage, PageSize).NoContext();
-                    _totalItems = (int)page.TotalCount;
-                    _entities = page.Items.ToList();
+                    var whereExpression = whereBuilder.ToString().Deserialize<T, bool>();
+                    request = request.Where(whereExpression);
                 }
-                else
+                if (!string.IsNullOrWhiteSpace(args.OrderBy))
                 {
-                    var page = await Query.PageAsync(actualPage, PageSize).NoContext();
-                    _totalItems = (int)page.TotalCount;
-                    _entities = page.Items.ToList();
+                    var orderExpression = $"x => x.{args.OrderBy.Split(' ').First()}".DeserializeAsDynamic(typeof(T));
+                    if (args.OrderBy.EndsWith(" desc"))
+                        request = request.OrderByDescending(x => orderExpression.Compile().DynamicInvoke(x));
+                    else
+                        request = request.OrderBy(x => orderExpression.Compile().DynamicInvoke(x));
                 }
+                var page = await request.PageAsync(actualPage, PageSize).NoContext();
+                _totalItems = (int)page.TotalCount;
+                _entities = page.Items.ToList();
             }
             _isLoading = false;
         }
