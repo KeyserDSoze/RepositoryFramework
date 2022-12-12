@@ -54,6 +54,7 @@ namespace RepositoryFramework.Web.Components.Standard
                     _isRequestedToCreateNew = true;
                 }
             }
+            LoadService.Hide();
         }
         private async Task SaveAsync(bool withRedirect)
         {

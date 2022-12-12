@@ -1,16 +1,25 @@
-﻿using RepositoryFramework.Web.Test.BlazorApp.Models;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
+using RepositoryFramework.Web.Test.BlazorApp.Models;
 using Whistleblowing.Licensing.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddServerSideBlazor();
 builder.Services
-    .AddRepositoryUi(x =>
+        .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
+        .EnableTokenAcquisitionToCallDownstreamApi(builder.Configuration["AzureAd:Scopes"]!.Split(' '))
+        .AddInMemoryTokenCaches();
+builder.Services.AddAuthorization();
+builder.Services.AddServerSideBlazor()
+    .AddMicrosoftIdentityConsentHandler();
+builder.Services
+    .AddRepositoryUi<ApiConfiguration>(x =>
     {
         x.Name = "SuperSite";
         x.Icon = "savings";
         x.Image = "https://www.pngitem.com/pimgs/m/432-4328680_crime-dashboard-navigation-icon-emblem-hd-png-download.png";
-    });
-
+    })
+    .WithAuthenticatedUi();
 builder.Services
     .AddRepositoryInMemoryStorage<AppConfiguration, string>()
     .PopulateWithRandomData(x => x.AppDomain, 34, 2)
@@ -50,7 +59,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapBlazorHub();
 app.AddDefaultRepositoryEndpoints();
 

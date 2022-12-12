@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Http;
 using RepositoryFramework.Web.Components.Services;
 
@@ -14,17 +15,17 @@ namespace RepositoryFramework.Web.Components
         public IPolicyEvaluatorManager? PolicyEvaluatorManager { get; set; }
         [CascadingParameter]
         public HttpContext HttpContext { get; set; } = null!;
-        public List<AppMenuItem>? _contextAppMenu;
+        private List<AppMenuItem>? _contextAppMenu;
         protected override async Task OnInitializedAsync()
         {
             await VerifyMenuAsync();
-            NavigationManager.LocationChanged += (x, location) =>
-            {
-                _ = VerifyMenuAsync(location.Location);
-            };
+            NavigationManager.LocationChanged += LocationChanged;
             await base.OnInitializedAsync().NoContext();
         }
-
+        private void LocationChanged(object? navigator, LocationChangedEventArgs eventArgs)
+        {
+            _ = VerifyMenuAsync(eventArgs.Location);
+        }
         private async ValueTask VerifyMenuAsync(string? uri = null)
         {
             List<AppMenuItem> contextAppMenu = new();
@@ -75,6 +76,15 @@ namespace RepositoryFramework.Web.Components
             }
             _contextAppMenu = contextAppMenu;
             StateHasChanged();
+        }
+        private void NavigateTo(string uri)
+        {
+            LoadService.Show();
+            NavigationManager.NavigateTo(uri);
+        }
+        public void Dispose()
+        {
+            NavigationManager.LocationChanged -= LocationChanged;
         }
     }
 }

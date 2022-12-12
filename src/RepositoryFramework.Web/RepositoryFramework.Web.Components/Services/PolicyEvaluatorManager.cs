@@ -1,21 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization.Policy;
+﻿using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using System.Data;
 using Microsoft.AspNetCore.Http;
 
 namespace RepositoryFramework.Web.Components.Services
 {
-    public interface IPolicyEvaluatorManager
-    {
-        ValueTask<bool> ValidateAsync(HttpContext httpContext, List<string> policies);
-    }
     public class PolicyEvaluatorManager : IPolicyEvaluatorManager
     {
         private readonly IPolicyEvaluator _policyEvaluator;

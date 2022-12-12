@@ -90,6 +90,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 _entities = page.Items.ToList();
             }
             _isLoading = false;
+            LoadService.Hide();
         }
         private string GetKey(Entity<T, TKey> entity)
             => entity!.Key!.GetType().IsPrimitive() ? entity.Key.ToString() : entity.Key.ToJson();

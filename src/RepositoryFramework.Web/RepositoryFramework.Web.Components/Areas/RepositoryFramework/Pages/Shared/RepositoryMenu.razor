@@ -1,6 +1,7 @@
 ﻿@namespace RepositoryFramework.Web.Components
 @using Microsoft.AspNetCore.Http;
 @using RepositoryFramework.Web.Components.Services;
+@implements IDisposable
 
 @if (_contextAppMenu != null)
 {
@@ -40,7 +41,7 @@
                                     @foreach (var item in nav.Items)
                                     {
                                         <li>
-                                            <a class="@item.CssForSelectedForSub" href="@item.Uri">
+                                            <button type="button" class="@item.CssForSelectedForSub" onclick="@(() => NavigateTo(item.Uri))">
                                                 @if (item.Icon != null)
                                                 {
                                                     <span class="material-symbols-outlined align-center">
@@ -48,7 +49,7 @@
                                                     </span>
                                                 }
                                                 <span>@item.Name</span>
-                                            </a>
+                                            </button>
                                         </li>
                                     }
                                 </ul>

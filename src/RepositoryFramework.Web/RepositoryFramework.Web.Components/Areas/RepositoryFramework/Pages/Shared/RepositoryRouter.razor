@@ -2,10 +2,9 @@
 @using Microsoft.AspNetCore.Http;
 @namespace RepositoryFramework.Web.Components
 @inject IHttpContextAccessor HttpContextAccessor
-@typeparam TApp
 
 <CascadingValue Name="@nameof(IHttpContextAccessor.HttpContext)" Value="@HttpContextAccessor.HttpContext">
-    <Router AppAssembly="@typeof(TApp).Assembly" AdditionalAssemblies="new[] { typeof(RepositoryRouter<>).Assembly}">
+    <Router AppAssembly="@typeof(RepositoryRouter).Assembly" AdditionalAssemblies="AppSettings.RazorPagesForRoutingAdditionalAssemblies">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(RepositoryMainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
