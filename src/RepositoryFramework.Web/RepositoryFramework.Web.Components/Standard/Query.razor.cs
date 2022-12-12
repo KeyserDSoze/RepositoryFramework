@@ -33,7 +33,7 @@ namespace RepositoryFramework.Web.Components.Standard
             if (Query != null)
             {
                 var actualPage = (args.Top.Value + args.Skip.Value) / PageSize;
-                QueryBuilder<T, TKey>? request = Query.AsQueryBuilder();
+                var queryBuilder = Query.AsQueryBuilder();
                 if (args.Filters.Any())
                 {
                     StringBuilder whereBuilder = new();
@@ -75,17 +75,17 @@ namespace RepositoryFramework.Web.Components.Standard
                         }
                     }
                     var whereExpression = whereBuilder.ToString().Deserialize<T, bool>();
-                    request = request.Where(whereExpression);
+                    queryBuilder = queryBuilder.Where(whereExpression);
                 }
                 if (!string.IsNullOrWhiteSpace(args.OrderBy))
                 {
                     var orderExpression = $"x => x.{args.OrderBy.Split(' ').First()}".DeserializeAsDynamic(typeof(T));
                     if (args.OrderBy.EndsWith(" desc"))
-                        request = request.OrderByDescending(x => orderExpression.Compile().DynamicInvoke(x));
+                        queryBuilder = queryBuilder.OrderByDescending(x => orderExpression.Compile().DynamicInvoke(x));
                     else
-                        request = request.OrderBy(x => orderExpression.Compile().DynamicInvoke(x));
+                        queryBuilder = queryBuilder.OrderBy(x => orderExpression.Compile().DynamicInvoke(x));
                 }
-                var page = await request.PageAsync(actualPage, PageSize).NoContext();
+                var page = await queryBuilder.PageAsync(actualPage, PageSize).NoContext();
                 _totalItems = (int)page.TotalCount;
                 _entities = page.Items.ToList();
             }
