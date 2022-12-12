@@ -4,5 +4,14 @@
 
 @if (IsLoadable)
 {
-    @LoadStandard()
+    @if (_policies?.Count > 0)
+    {
+        <Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+            @LoadStandard()
+        </Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+    }
+    else
+    {
+        @LoadStandard()
+    }
 }

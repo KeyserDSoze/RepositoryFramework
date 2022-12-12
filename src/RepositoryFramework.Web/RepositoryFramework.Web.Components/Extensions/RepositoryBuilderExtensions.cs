@@ -20,14 +20,14 @@ namespace Microsoft.Extensions.DependencyInjection
             AppInternalSettings.Instance.NotExposableRepositories.Add(typeof(T).Name);
             return builder;
         }
-        private static AppMenuSettings GetAppMenuSettings<T, TKey>(this IRepositoryBuilder<T, TKey> builder)
+        private static RepositoryAppMenuItem GetAppMenuSettings<T, TKey>(this IRepositoryBuilder<T, TKey> builder)
             where TKey : notnull
         {
             var name = typeof(T).Name.ToLower();
-            if (!AppInternalSettings.Instance.MenuInternalSettings.ContainsKey(name))
-                AppInternalSettings.Instance.MenuInternalSettings.Add(name,
-                    AppMenuSettings.CreateDefault(typeof(T), typeof(TKey)));
-            return AppInternalSettings.Instance.MenuInternalSettings[name];
+            if (!AppInternalSettings.Instance.RepositoryAppMenuItems.ContainsKey(name))
+                AppInternalSettings.Instance.RepositoryAppMenuItems.Add(name,
+                    RepositoryAppMenuItem.CreateDefault(typeof(T), typeof(TKey)));
+            return AppInternalSettings.Instance.RepositoryAppMenuItems[name];
         }
         public static IRepositoryBuilder<T, TKey> ExposeFor<T, TKey>(
             this IRepositoryBuilder<T, TKey> builder, int index)
