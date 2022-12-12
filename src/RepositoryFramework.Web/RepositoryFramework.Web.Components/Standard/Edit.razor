@@ -17,8 +17,10 @@
                 {
                     <InternalPrimitiveEdit Name="@Constant.Key" Value="@_key" T="TKey" Update="x => _key = (TKey)x" DisableEdit="!_isNew"></InternalPrimitiveEdit>
                 }
-                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Edit key</RadzenText>
-                <RadzenSwitch Value="@_isNew" ValueChanged="@ChangeKeyEditingStatus" />
+                @if (!_isRequestedToCreateNew)
+                {
+                    <RadzenSwitch Value="@_isNew" ValueChanged="@ChangeKeyEditingStatus" />
+                }
                 @if (_isNew && !_isRequestedToCreateNew)
                 {
                     <RadzenAlert Variant="Variant.Filled" AlertStyle="AlertStyle.Warning" Size="AlertSize.Medium" Shade="Shade.Darker" AllowClose=false>

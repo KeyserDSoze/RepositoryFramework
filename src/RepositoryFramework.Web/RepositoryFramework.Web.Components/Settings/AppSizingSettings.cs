@@ -6,7 +6,7 @@
         public string RootFontSize { get; set; } = "16px";
         public string BodyFontSize { get; set; } = "0.875rem";
         public string BodyLineHeight { get; set; } = "1.429";
-        public string IconSize { get; set; } = "1rem";
+        public string IconSize { get; set; } = "1.3rem";
         public string ColumnWidth { get; set; } = "180px";
         public string InputFontSize { get; set; } = "1.0em";
         public string NavigationFontSize { get; set; } = "1.4em";
