@@ -32,6 +32,7 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
                     values.Add(new LabelledPropertyValue
                     {
                         Label = entity.Value.Name,
+                        Id = entity.Value.Name,
                         Value = new Group
                         {
                             Id = entity.Value.Id,
@@ -47,6 +48,19 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
                     "Y",
                     "Z",
                     "A" }.AsEnumerable());
+            }, x => x)
+            .MapChoice(x => x.MainGroup, async (serviceProvider) =>
+            {
+                var repository = serviceProvider.GetService<IRepository<AppGroup, string>>();
+                List<LabelledPropertyValue> values = new();
+                await foreach (var entity in repository.QueryAsync())
+                    values.Add(new LabelledPropertyValue
+                    {
+                        Label = entity.Value.Name,
+                        Id = entity.Value.Id,
+                        Value = entity.Value.Id
+                    });
+                return values;
             }, x => x);
         }
     }
@@ -58,6 +72,8 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
         public string Password { get; set; }
         public List<Group> Groups { get; set; }
         public AppSettings Settings { get; init; }
+        public List<string> Claims { get; set; }
+        public string MainGroup { get; set; }
     }
     public sealed class Group
     {

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Components;
 
 namespace RepositoryFramework.Web.Components.Standard
@@ -71,30 +72,33 @@ namespace RepositoryFramework.Web.Components.Standard
                     collection.Add(value);
             }
         }
-        public void Delete(T entity)
+        public void Delete(int index)
         {
-            if (entity != null)
+            InvokeAsync(() =>
             {
                 if (Entities is ICollection<T> collection)
                 {
-                    collection.Remove(entity);
+                    var entity = Entities.Skip(index).FirstOrDefault();
+                    if (entity != null)
+                        collection.Remove(entity);
                 }
                 else if (Entities is T[] array)
                 {
                     var newArray = new T[array.Length - 1];
                     var counter = 0;
-                    foreach (var element in array)
+                    for (var i = 0; i < array.Length; i++)
                     {
-                        if (!entity.Equals(element))
+                        if (i != index)
                         {
-                            newArray[counter] = element;
+                            newArray[counter] = array[i];
                             counter++;
                         }
                     }
                     Entities = newArray;
                     Property.Set(Context, newArray);
                 }
-            }
+                StateHasChanged();
+            });
         }
         public void New()
         {

@@ -30,10 +30,17 @@
 
     protected override void OnInitialized()
     {
-        LoadService.OnChange += StateHasChanged;
+        LoadService.OnChange += OnVisibilityChangeForLoadService;
     }
     public void Dispose()
     {
-        LoadService.OnChange -= StateHasChanged;
+        LoadService.OnChange -= OnVisibilityChangeForLoadService;
+    }
+    private async void OnVisibilityChangeForLoadService()
+    {
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
     }
 }

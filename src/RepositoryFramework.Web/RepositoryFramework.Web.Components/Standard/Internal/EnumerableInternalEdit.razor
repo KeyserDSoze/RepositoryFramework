@@ -22,17 +22,14 @@
                     {
                         var index = counter;
                         <InternalPrimitiveEdit Name="@($"{index + 1}.")" Value="entity" T="T" DisableEdit="DisableEdit"
-                               Update="@((object x) => Update(index, (T)x))" PropertyUiSettings="@PropertyUiSettings">
+                               Update="@((object x) => Update(index, (T)x))" PropertyUiSettings="@PropertyUiSettings"
+                               Delete="@(() => Delete(index))">
                         </InternalPrimitiveEdit>
                     }
                 </div>
-                @if (!DisableEdit)
-                {
-                    <div class="col-auto">
-                        <RadzenButton Click=@(args => Delete(entity)) Icon="add" ButtonStyle="ButtonStyle.Primary" />
-                    </div>
+                @{
+                    counter++;
                 }
-                counter++;
             </div>
         }
     }

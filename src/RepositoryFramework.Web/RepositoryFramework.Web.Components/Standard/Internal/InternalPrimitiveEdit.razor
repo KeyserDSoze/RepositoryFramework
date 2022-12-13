@@ -30,7 +30,7 @@
                           Style="@style"
                           Change=@OnChange
                           Paste=@OnPaste
-                          Execute=@OnExecute 
+                          Execute=@OnExecute
                           Disabled="@DisableEdit" />
             }
             else if (Value is bool booleanValue)
@@ -47,36 +47,35 @@
             else if (Value is DateTime dateTime)
             {
                 <RadzenDatePicker class="form-control"
-                    TValue="DateTime?" 
-                    ShowTime="true"
-                    ShowSeconds="true"
-                    HoursStep="1.5" 
-                    MinutesStep="5" 
-                    SecondsStep="10"
-                    Value="Value"
-                    Change=@(args => InternalUpdate(args))
-                    DateFormat="yyyy/MM/dd HH:mm:ss" 
-                    Disabled="@DisableEdit" />
+                          TValue="DateTime?"
+                          ShowTime="true"
+                          ShowSeconds="true"
+                          HoursStep="1.5"
+                          MinutesStep="5"
+                          SecondsStep="10"
+                          Value="Value"
+                          Change=@(args => InternalUpdate(args))
+                          DateFormat="yyyy/MM/dd HH:mm:ss"
+                          Disabled="@DisableEdit" />
             }
             else if (Value is DateOnly dateOnly)
             {
                 <RadzenDatePicker class="form-control"
-                    TValue="DateOnly?" 
-                    Value="Value"
-                    Change=@(args => InternalUpdate(args))
-                    DateFormat="yyyy/MM/dd" 
-                    Disabled="@DisableEdit" />
+                          TValue="DateOnly?"
+                          Value="Value"
+                          Change=@(args => InternalUpdate(args))
+                          DateFormat="yyyy/MM/dd"
+                          Disabled="@DisableEdit" />
             }
             else if (typeof(T).IsNumeric())
             {
-                <RadzenNumeric 
-                    class="form-control"
-                    TValue="T" 
-                    Value="Value"
-                    Placeholder="Enter or clear value"
-                    Change="@(args => InternalUpdate(args))" 
-                    TextAlign="TextAlign.Right"
-                    Disabled="@DisableEdit" />
+                <RadzenNumeric class="form-control"
+                       TValue="T"
+                       Value="Value"
+                       Placeholder="Enter or clear value"
+                       Change="@(args => InternalUpdate(args))"
+                       TextAlign="TextAlign.Right"
+                       Disabled="@DisableEdit" />
             }
             else
             {
@@ -92,8 +91,9 @@
                         Multiple="false"
                         Placeholder="Select..."
                         Data="@PropertyUiSettings!.Values"
+                        Value="@(PropertyUiSettings.LabelComparer(Value))"
                         TextProperty="Label"
-                        ValueProperty="Label"
+                        ValueProperty="Id"
                         Change="@InternalProxyUpdate"
                         class="form-control"
                         Disabled="@DisableEdit" />
@@ -113,8 +113,14 @@
             </span>
         }
         <span class="input-group-text">
-            <RadzenButton Click="() => Copy.CopyAsync(Value?.ToString())" Icon="file_copy" />
+            <RadzenButton Click="@((x) => Copy.CopyAsync(Value?.ToString()))" Icon="file_copy" />
         </span>
+        @if (!DisableEdit && Delete != null)
+        {
+            <span class="input-group-text">
+                <RadzenButton Click="@((x) => Delete.Invoke())" Icon="delete" />
+            </span>
+        }
     </div>
 </div>
 
@@ -131,6 +137,8 @@
     public PropertyUiSettings? PropertyUiSettings { get; set; }
     [Inject]
     public ICopyService Copy { get; set; }
+    [Parameter]
+    public Action? Delete { get; set; }
     private T? RestorableValue;
 
     public void InternalUpdate(object? value)
@@ -141,8 +149,8 @@
     }
     public void InternalProxyUpdate(object x)
     {
-        var label = x?.ToString();
-        InternalUpdate(PropertyUiSettings!.Values!.FirstOrDefault(x => x.Label == label)?.Value);
+        var id = x?.ToString();
+        InternalUpdate(PropertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value);
     }
     public void SetDefault()
     {

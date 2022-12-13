@@ -2,12 +2,15 @@
 {
     public sealed class LabelledPropertyValue
     {
-        public string Label { get; set; } = null!;
-        public object Value { get; set; } = null!;
+        public required string Label { get; init; }
+        public required string Id { get; init; }
+        public required object Value { get; init; }
+
         public static implicit operator LabelledPropertyValue(string value)
             => new()
             {
                 Label = value,
+                Id = value,
                 Value = value
             };
     }

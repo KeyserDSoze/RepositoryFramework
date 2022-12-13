@@ -2,7 +2,7 @@
 {
     internal sealed class LoadService : ILoaderService
     {
-        private bool _isVisible;
+        private bool _isVisible = true;
         public bool IsVisible => _isVisible;
 
         public event Action? OnChange;

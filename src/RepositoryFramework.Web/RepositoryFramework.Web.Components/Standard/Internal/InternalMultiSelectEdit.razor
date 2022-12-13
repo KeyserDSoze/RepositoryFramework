@@ -20,8 +20,10 @@
                         Placeholder="Select..."
                         Data="@PropertyUiSettings!.Values"
                         TextProperty="Label"
-                        ValueProperty="Label"
+                        ValueProperty="Id"
+                        Value="@Values?.Select(x => PropertyUiSettings.LabelComparer(x))"
                         Change="@InternalUpdate"
+                        Disabled="@DisableEdit"
                         class="form-control" />
         }
         @if (PropertyUiSettings?.Default != null && !DisableEdit)
@@ -56,11 +58,11 @@
     public void InternalUpdate(object x)
     {
         List<T> values = new();
-        if (x is IEnumerable<string> labels)
+        if (x is IEnumerable<string> identifiers)
         {
-            foreach (var label in labels)
+            foreach (var identify in identifiers)
             {
-                var item = PropertyUiSettings?.Values?.FirstOrDefault(x => x.Label == label)?.Value;
+                var item = PropertyUiSettings?.Values?.FirstOrDefault(x => x.Id == identify)?.Value;
                 if (item != null)
                     values.Add((T)item);
             }
