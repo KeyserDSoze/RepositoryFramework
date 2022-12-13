@@ -60,13 +60,17 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             if (Command != null)
             {
+                LoadService.Show();
                 var result = _isNew ?
                     await Command.InsertAsync(_key, _entity).NoContext() :
                     await Command.UpdateAsync(_key, _entity).NoContext();
                 if (result.IsOk && withRedirect)
                     NavigationManager.NavigateTo($"../../../../Repository/{typeof(T).Name}/Query");
+                else
+                    LoadService.Hide();
                 if (!result.IsOk)
                 {
+                    LoadService.Hide();
                     NotificationService.Notify(new Radzen.NotificationMessage
                     {
                         Duration = 4_000,
@@ -102,10 +106,12 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             if (Command != null)
             {
+                LoadService.Show();
                 var result = await Command.DeleteAsync(_key).NoContext();
                 if (result.IsOk)
                     NavigationManager.NavigateTo($"../../../../Repository/{typeof(T).Name}/Query");
                 else
+                {
                     NotificationService.Notify(new Radzen.NotificationMessage
                     {
                         Duration = 4_000,
@@ -114,6 +120,8 @@ namespace RepositoryFramework.Web.Components.Standard
                         Summary = "Deleting error",
                         Detail = "Command pattern or repository pattern not installed to perform the task. It's not possible to save the current item."
                     });
+                    LoadService.Hide();
+                }
             }
             else
             {

@@ -41,7 +41,7 @@
                                     @foreach (var item in nav.Items)
                                     {
                                         <li>
-                                            <button type="button" class="@item.CssForSelectedForSub" onclick="@(() => NavigateTo(item.Uri))">
+                                            <button type="button" class="@item.CssForSelectedForSub" @onclick="() => NavigateTo(item.Uri)">
                                                 @if (item.Icon != null)
                                                 {
                                                     <span class="material-symbols-outlined align-middle">

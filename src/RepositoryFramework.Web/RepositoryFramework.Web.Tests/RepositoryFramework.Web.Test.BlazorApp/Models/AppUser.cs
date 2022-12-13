@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Security.Cryptography;
 
 namespace RepositoryFramework.Web.Test.BlazorApp.Models
 {
@@ -74,6 +75,7 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
         public AppSettings Settings { get; init; }
         public List<string> Claims { get; set; }
         public string MainGroup { get; set; }
+        public string HashedMainGroup => MainGroup.ToHash();
     }
     public sealed class Group
     {

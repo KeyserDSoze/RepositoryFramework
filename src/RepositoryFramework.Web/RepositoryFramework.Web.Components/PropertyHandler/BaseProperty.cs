@@ -49,7 +49,7 @@ namespace RepositoryFramework.Web.Components
         }
         public void Set(object? context, object? value)
         {
-            context = Value(context, true);
+            context = Try.WithDefaultOnCatch(() => Value(context, true)).Entity;
             if (context != null)
                 Self.SetValue(context, value);
         }

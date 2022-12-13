@@ -41,7 +41,7 @@
         }
     </div>
 </div>
-
+<ErrorCatcher Error="@Error" />
 
 @code {
     [Parameter]
@@ -54,6 +54,8 @@
     public bool DisableEdit { get; set; }
     [Parameter]
     public PropertyUiSettings? PropertyUiSettings { get; set; }
+    [Parameter]
+    public string? Error { get; set; }
     private List<T>? RestorableValues;
     public void InternalUpdate(object x)
     {

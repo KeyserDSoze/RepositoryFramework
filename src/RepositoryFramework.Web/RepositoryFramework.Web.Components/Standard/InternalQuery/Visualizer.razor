@@ -38,9 +38,7 @@
 
                             @foreach (var property in TypeShowcase.FlatProperties)
                             {
-                                <td>
-                                    @property.Value(item)?.ToString()
-                                </td>
+                                <CopyButton GetValue="@(() => property.Value(item))" />
                             }
                         }
                     </tr>
@@ -55,6 +53,8 @@
     public IEnumerable? Entity { get; set; }
     [Inject]
     public PropertyHandler PropertyHandler { get; set; } = null!;
+    [Inject]
+    public ICopyService Copy { get; set; }
     private TypeShowcase TypeShowcase { get; set; } = null!;
     private bool _isPrimitive;
     protected override void OnParametersSet()

@@ -19,5 +19,6 @@
         public const string Deep = nameof(Deep);
         public const string AllowDelete = nameof(AllowDelete);
         public const string None = nameof(None);
+        public const string Error = nameof(Error);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -99,7 +98,7 @@ namespace RepositoryFramework.Web.Components.Standard
             _ = await DialogService.OpenAsync<Visualizer>(property.NavigationPath,
                 new Dictionary<string, object>
                 {
-                    { "Entity", property.Value(entity) },
+                    { "Entity", Try.WithDefaultOnCatch(() => property.Value(entity)).Entity },
                 }, new DialogOptions
                 {
                     Width = "80%"
@@ -110,7 +109,10 @@ namespace RepositoryFramework.Web.Components.Standard
             => string.Format(EnumerableLabelCount, EnumerableCount(entity, property));
         private int EnumerableCount(T? entity, BaseProperty property)
         {
-            var items = property.Value(entity);
+            var response = Try.WithDefaultOnCatch(() => property.Value(entity));
+            if (response.Exception != null)
+                return -1;
+            var items = response.Entity;
             if (items == null)
                 return 0;
             else if (items is IList list)

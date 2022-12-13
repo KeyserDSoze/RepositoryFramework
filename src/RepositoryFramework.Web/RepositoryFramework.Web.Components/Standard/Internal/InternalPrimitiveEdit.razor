@@ -121,6 +121,7 @@
                 <RadzenButton Click="@((x) => Delete.Invoke())" Icon="delete" />
             </span>
         }
+        <ErrorCatcher Error="@Error" />
     </div>
 </div>
 
@@ -135,12 +136,13 @@
     public bool DisableEdit { get; set; }
     [Parameter]
     public PropertyUiSettings? PropertyUiSettings { get; set; }
-    [Inject]
-    public ICopyService Copy { get; set; }
     [Parameter]
     public Action? Delete { get; set; }
+    [Parameter]
+    public string? Error { get; set; }
+    [Inject]
+    public ICopyService Copy { get; set; }
     private T? RestorableValue;
-
     public void InternalUpdate(object? value)
     {
         var currentValue = value.Cast<T>()!;

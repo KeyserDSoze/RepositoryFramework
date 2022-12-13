@@ -22,6 +22,8 @@ namespace RepositoryFramework.Web.Components.Standard
         public PropertyUiSettings PropertyUiSettings { get; set; }
         [Parameter]
         public string? NavigationPath { get; set; }
+        [Parameter]
+        public string? Error { get; set; }
         [Inject]
         public PropertyHandler PropertyHandler { get; set; } = null!;
         private TypeShowcase TypeShowcase { get; set; } = null!;

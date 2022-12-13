@@ -34,13 +34,7 @@
             {
                 <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@value.NavigationPath" Title="@value.NavigationPath" Sortable="true">
                     <Template Context="context">
-                        @{
-                            var stringedValue = value.Value(context.Value)?.ToString();
-                        }
-                        <RadzenButton class="bg-transparent text-dark p-0"
-                              Click="@((x) => Copy.CopyAsync(stringedValue))"
-                              data-bs-toggle="tooltip" title="@stringedValue"
-                               Text="@stringedValue" />
+                        <CopyButton GetValue="@(() => value.Value(context.Value))" />
                     </Template>
                 </RadzenDataGridColumn>
             }
