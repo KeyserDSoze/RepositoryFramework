@@ -6,7 +6,7 @@
 {
     @if (_policies?.Count > 0)
     {
-        <Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+        <Microsoft.AspNetCore.Components.Authorization.AuthorizeView Policy="@string.Join(',', _policies)">
             @LoadStandard()
         </Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
     }

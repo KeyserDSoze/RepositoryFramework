@@ -17,9 +17,13 @@ namespace RepositoryFramework.Web.Components
         protected ICommand<T, TKey>? Command { get; private set; }
         private protected TypeShowcase TypeShowcase { get; set; } = null!;
         private protected bool CanEdit { get; set; }
-        protected override Task OnParametersSetAsync()
+        protected override void OnInitialized()
         {
             TypeShowcase = PropertyHandler.GetEntity(typeof(T));
+            base.OnInitialized();
+        }
+        protected override Task OnParametersSetAsync()
+        {
             Repository = ServiceProvider?.GetService<IRepository<T, TKey>>();
             if (Repository != null)
             {

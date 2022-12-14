@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.QuickGrid;
 using Radzen;
 using RepositoryFramework.Web.Components.Services;
 
@@ -19,77 +19,53 @@ namespace RepositoryFramework.Web.Components.Standard
         public ICopyService Copy { get; set; }
         [Inject]
         public DialogService DialogService { get; set; }
-        private bool _isLoading = true;
-        private List<Entity<T, TKey>>? _entities;
-        private int _totalItems;
+        private PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
         private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
-        private static readonly List<int> s_pageSizeOptions = new() { 10, 20, 50, 100, 200 };
+        private Dictionary<string, ColumnOptions> _columns = new();
+
+        private sealed class ColumnOptions
+        {
+            public bool IsActive { get; set; } = true;
+            public Type Type { get; set; }
+            public string Value { get; set; }
+        }
+        private void UpdateColumnsVisibility(object keys)
+        {
+            if (keys is IEnumerable<string> values)
+            {
+                foreach (var item in _columns)
+                    item.Value.IsActive = false;
+                foreach (var key in values)
+                    _columns[key].IsActive = true;
+            }
+        }
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+            _columns.Add("Key", new()
+            {
+                Type = typeof(TKey),
+            });
+            foreach (var property in TypeShowcase.FlatProperties)
+            {
+                _columns.Add(property.NavigationPath, new ColumnOptions
+                {
+                    Type = property.Self.PropertyType
+                });
+            }
+        }
         private string GetEditUri(TKey key)
             => s_editUri != null ? string.Format(s_editUri, key.ToBase64()) : string.Empty;
-        private async Task OnReadData(LoadDataArgs args)
+        private async Task<GridItemsProviderResult<Entity<T, TKey>>> OnReadDataAsync(GridItemsProviderRequest<Entity<T, TKey>> request)
         {
-            _isLoading = true;
-            if (Query != null)
-            {
-                var actualPage = (args.Top.Value + args.Skip.Value) / PageSize;
-                var queryBuilder = Query.AsQueryBuilder();
-                if (args.Filters.Any())
-                {
-                    StringBuilder whereBuilder = new();
-                    var properties = typeof(T).FetchProperties();
-                    foreach (var filter in args.Filters)
-                    {
-                        var property = properties.First(x => x.Name == filter.Property);
-                        foreach (var value in Values())
-                        {
-                            whereBuilder.Append(whereBuilder.Length <= 0 ? "x => " : " AndAlso ");
-                            whereBuilder.Append(GetValidOperation(property.Name, value.Operator, value.Value, property.PropertyType.IsNumeric()));
-                        }
-                        IEnumerable<(object Value, FilterOperator Operator)> Values()
-                        {
-                            yield return (filter.FilterValue, filter.FilterOperator);
-                            if (filter.SecondFilterValue != null || filter.FilterOperator == FilterOperator.IsNull)
-                                yield return (filter.SecondFilterValue, filter.SecondFilterOperator);
-                        }
-                        string GetValidOperation(string name, FilterOperator op, object? value, bool isNumeric)
-                        {
-                            var stringedValue = value?.ToString();
-                            if (!isNumeric)
-                                stringedValue = $"\"{stringedValue}\"";
-                            return op switch
-                            {
-                                FilterOperator.GreaterThan => $"x.{name} > {stringedValue}",
-                                FilterOperator.LessThan => $"x.{name} < {stringedValue}",
-                                FilterOperator.GreaterThanOrEquals => $"x.{name} >= {stringedValue}",
-                                FilterOperator.LessThanOrEquals => $"x.{name} <= {stringedValue}",
-                                FilterOperator.NotEquals => $"x.{name} != {stringedValue}",
-                                FilterOperator.Contains => $"x.{name}.Contains({stringedValue})",
-                                FilterOperator.DoesNotContain => $"!x.{name}.Contains({stringedValue})",
-                                FilterOperator.EndsWith => $"!x.{name}.EndsWith({stringedValue})",
-                                FilterOperator.StartsWith => $"!x.{name}.StartsWith({stringedValue})",
-                                FilterOperator.IsNull => $"!x.{name} == null",
-                                FilterOperator.IsNotNull => $"!x.{name} != null",
-                                _ => $"x.{name} == {stringedValue}",
-                            };
-                        }
-                    }
-                    var whereExpression = whereBuilder.ToString().Deserialize<T, bool>();
-                    queryBuilder = queryBuilder.Where(whereExpression);
-                }
-                if (!string.IsNullOrWhiteSpace(args.OrderBy))
-                {
-                    var orderExpression = $"x => x.{args.OrderBy.Split(' ').First()}".DeserializeAsDynamic(typeof(T));
-                    if (args.OrderBy.EndsWith(" desc"))
-                        queryBuilder = queryBuilder.OrderByDescending(x => orderExpression.Compile().DynamicInvoke(x));
-                    else
-                        queryBuilder = queryBuilder.OrderBy(x => orderExpression.Compile().DynamicInvoke(x));
-                }
-                var page = await queryBuilder.PageAsync(actualPage, PageSize).NoContext();
-                _totalItems = (int)page.TotalCount;
-                _entities = page.Items.ToList();
-            }
-            _isLoading = false;
+            LoadService.Show();
+            GridItemsProviderResult<Entity<T, TKey>> items = new();
+            var page = await Query.PageAsync(1 + request.StartIndex / pagination.ItemsPerPage, pagination.ItemsPerPage).NoContext();
+            items.TotalItemCount = (int)page.TotalCount;
+            items.Items = page.Items.ToList();
             LoadService.Hide();
+            return items;
         }
         private string GetKey(Entity<T, TKey> entity)
             => entity!.Key!.GetType().IsPrimitive() ? entity.Key.ToString() : entity.Key.ToJson();

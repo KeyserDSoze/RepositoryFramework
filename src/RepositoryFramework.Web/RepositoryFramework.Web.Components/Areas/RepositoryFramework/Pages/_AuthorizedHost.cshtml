@@ -1,7 +1,9 @@
 ﻿@page
+@using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Web
 @using RepositoryFramework.Web.Components;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@attribute [Authorize]
 
 <!DOCTYPE html>
 <html lang="en">

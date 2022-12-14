@@ -1,54 +1,89 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
+@using Microsoft.AspNetCore.Components.QuickGrid
 @typeparam T
 @typeparam TKey where TKey: notnull
 @inherits RepositoryBase<T, TKey>
 
-
-<RadzenDataGrid Data="@_entities"
-                Count="@_totalItems"
-                LoadData="@OnReadData"
-                TItem="Entity<T, TKey>"
-                AllowVirtualization="false"
-                FilterMode="FilterMode.Advanced"
-                PageSize="@PageSize"
-                IsLoading="@_isLoading"
-                AllowFiltering="true"
-                ColumnWidth="@AppSettings.Sizing.ColumnWidth"
-                AllowColumnResize="true"
-                Style="min-height:400px"
-                FilterCaseSensitivity="FilterCaseSensitivity.Default"
-                LogicalFilterOperator="LogicalFilterOperator.Or"
-                PageSizeOptions="s_pageSizeOptions"
-                PageSizeChanged="@((x) => PageSize = x)"
-                AllowColumnPicking="true"
-                AllowPaging="true"
-                AllowSorting="true">
-    <Columns>
-        <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="Key" Title="Key" Frozen="true">
-            <Template Context="context">
-                <RadzenLink Path="@GetEditUri(context.Key!)" Text="@GetKey(context)" />
-            </Template>
-        </RadzenDataGridColumn>
-        @foreach (var value in TypeShowcase.FlatProperties)
-        {
-            if (value.Type != PropertyType.Enumerable)
+<div class="my-2">
+    <RadzenFieldset Text="Filters">
+        <div class="container-fluid row">
+            @if (pagination.TotalItemCount.HasValue)
             {
-                <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@value.NavigationPath" Title="@value.NavigationPath" Sortable="true">
-                    <Template Context="context">
-                        <CopyButton GetValue="@(() => value.Value(context.Value))" />
-                    </Template>
-                </RadzenDataGridColumn>
+                <div class="summary col-12 col-md-">
+                    <strong>@pagination.TotalItemCount</strong> items
+                </div>
+                <select class="form-control col-12 col-md-2" @bind="@pagination.ItemsPerPage">
+                    <option>5</option>
+                    <option>10</option>
+                    <option>20</option>
+                    <option>50</option>
+                    <option>100</option>
+                </select>
+                <RadzenDropDown TValue="IEnumerable<string>"
+                            AllowClear="true"
+                            AllowFiltering="true"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            Multiple="true"
+                            Placeholder="Select..."
+                            Data="@_columns.Select(x => x.Key)"
+                            Value="@_columns.Where(x => x.Value.IsActive).Select(x => x.Key)"
+                            Change="@UpdateColumnsVisibility"
+                            class="form-control col-12 col-md-4" />
+                <div class="paginator col-12 col-md-5">
+                    <nav role="navigation">
+                        <button class="go-first" title="Go to first page" aria-title="Go to first page"></button>
+                        <button class="go-previous" title="Go to previous page" aria-title="Go to previous page"></button>
+                        <div class="pagination-text">
+                            Page <strong>1</strong>
+                            of <strong>10</strong>
+                        </div>
+                        <button class="go-next" title="Go to next page" aria-title="Go to next page"></button>
+                        <button class="go-last" title="Go to last page" aria-title="Go to last page"></button>
+                    </nav>
+                </div>
             }
-            else
-            {
-                <RadzenDataGridColumn TItem="Entity<T, TKey>" Property="@value.NavigationPath" Title="@value.NavigationPath" Sortable="true" Filterable="false">
-                    <Template Context="context">
-                        <RadzenButton class="bg-transparent text-dark p-0"
-                              Click="@((x) => ShowMoreValuesAsync(context.Value, value))"
-                              Text="@EnumerableCountAsString(context.Value, value)" />
-                    </Template>
-                </RadzenDataGridColumn>
-            }
-        }
-    </Columns>
-</RadzenDataGrid>
+        </div>
+    </RadzenFieldset>
+    <RadzenFieldset Text="@typeof(T).Name">
+        <div class="w-100 overflow-auto" style="min-height:400px;" tabindex="-1">
+            <QuickGrid TGridItem="Entity<T, TKey>" ResizableColumns=true class="table table-striped" Pagination="@pagination" ItemsProvider="@(async (x) => await OnReadDataAsync(x))">
+                @if (_columns[Constant.Key].IsActive)
+                {
+                    <TemplateColumn Title="Key">
+                        <RadzenLink Path="@GetEditUri(context.Key!)" Text="@GetKey(context)" />
+                    </TemplateColumn>
+                }
+                @foreach (var value in TypeShowcase.FlatProperties)
+                {
+                    if (_columns[value.NavigationPath].IsActive)
+                    {
+                        if (value.Type != PropertyType.Enumerable)
+                        {
+                            <TemplateColumn Title="@value.NavigationPath">
+                                <ChildContent>
+                                    <CopyButton GetValue="@(() => value.Value(context.Value))" />
+                                </ChildContent>
+                                <ColumnOptions>
+                                    <label>
+                                        <input type="checkbox" /> Ongoing only
+                                    </label>
+                                </ColumnOptions>
+                            </TemplateColumn>
+                        }
+                        else
+                        {
+                            <TemplateColumn Title="@value.NavigationPath">
+                                <RadzenButton class="bg-transparent text-dark p-0"
+                                  Click="@((x) => ShowMoreValuesAsync(context.Value, value))"
+                                  Text="@EnumerableCountAsString(context.Value, value)" />
+                            </TemplateColumn>
+                        }
+                    }
+                }
+            </QuickGrid>
+        </div>
+        <div class="container-fluid row">
+            <Paginator Value="@pagination" />
+        </div>
+    </RadzenFieldset>
+</div>

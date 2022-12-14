@@ -20,6 +20,10 @@ builder.Services
         x.Image = "https://www.pngitem.com/pimgs/m/432-4328680_crime-dashboard-navigation-icon-emblem-hd-png-download.png";
     })
     .WithAuthenticatedUi();
+builder.Services.AddApplicationInsightsTelemetry(x =>
+{
+    x.ConnectionString = "in secrets";
+});
 builder.Services
     .AddRepositoryInMemoryStorage<AppConfiguration, string>()
     .PopulateWithRandomData(x => x.AppDomain, 34, 2)

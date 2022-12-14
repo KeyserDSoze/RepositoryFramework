@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using RepositoryFramework.Web.Components;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -7,7 +8,11 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IEndpointRouteBuilder AddDefaultRepositoryEndpoints(this WebApplication app)
         {
-            app
+            if (AppInternalSettings.Instance.IsAuthenticated)
+                app
+                    .MapFallbackToAreaPage("/_AuthorizedHost", nameof(RepositoryFramework));
+            else
+                app
                 .MapFallbackToAreaPage("/_Host", nameof(RepositoryFramework));
             app
                 .MapRazorPages();
