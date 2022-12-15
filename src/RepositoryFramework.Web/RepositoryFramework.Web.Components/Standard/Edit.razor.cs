@@ -21,20 +21,14 @@ namespace RepositoryFramework.Web.Components.Standard
         public DialogService DialogService { get; set; }
         [Inject]
         public NotificationService NotificationService { get; set; }
-
+        private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
         private T? _entity;
         private bool _isNew;
         private bool _isRequestedToCreateNew;
         private TKey _key = default!;
-        private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
-            _propertiesRetrieved =
-                ServiceProvider.GetService<IRepositoryPropertyUiMapper<T, TKey>>() is IRepositoryPropertyUiMapper<T, TKey> uiMapper ?
-                await uiMapper.ValuesAsync(ServiceProvider!).NoContext()
-                : new();
-
             if (Query != null)
             {
                 if (!string.IsNullOrWhiteSpace(Key))
@@ -53,6 +47,10 @@ namespace RepositoryFramework.Web.Components.Standard
                     _isNew = true;
                     _isRequestedToCreateNew = true;
                 }
+                _propertiesRetrieved =
+               ServiceProvider?.GetService<IRepositoryPropertyUiMapper<T, TKey>>() is IRepositoryPropertyUiMapper<T, TKey> uiMapper ?
+               await uiMapper.ValuesAsync(ServiceProvider!, _entity, _key).NoContext()
+               : new();
             }
             LoadService.Hide();
         }

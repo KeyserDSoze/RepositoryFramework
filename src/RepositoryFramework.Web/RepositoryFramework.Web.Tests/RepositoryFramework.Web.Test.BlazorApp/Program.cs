@@ -36,16 +36,15 @@ builder.Services
     .MapPropertiesForUi<AppUser, int, AppUserDesignMapper>()
     .WithIcon("manage_accounts")
     .WithName("User")
-    .ExposeFor(2);
+    .ExposeFor(2)
+    .SetDefaultUiRoot();
 builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>
 {
     x.IsNotExposable = false;
 })
     .PopulateWithRandomData(x => x.Id, 24, 2);
 builder.Services.AddRepositoryInMemoryStorage<Weather, int>()
-    .PopulateWithRandomData(x => x.Id, 5, 2)
-    .And()
-    .SetDefaultUiRoot();
+    .PopulateWithRandomData(x => x.Id, 5, 2);
 
 var app = builder.Build();
 await app.Services.WarmUpAsync();

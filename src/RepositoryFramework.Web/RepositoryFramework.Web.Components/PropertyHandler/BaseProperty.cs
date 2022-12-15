@@ -11,6 +11,7 @@ namespace RepositoryFramework.Web.Components
         public List<BaseProperty> Sons { get; } = new();
         public Type[] Generics { get; private protected set; } = null!;
         public string NavigationPath { get; }
+        public Type AssemblyType => Self.PropertyType;
         private readonly List<PropertyInfo> _valueFromContextStack = new();
         public List<BaseProperty> Primitives { get; }
         public List<BaseProperty> NonPrimitives { get; }

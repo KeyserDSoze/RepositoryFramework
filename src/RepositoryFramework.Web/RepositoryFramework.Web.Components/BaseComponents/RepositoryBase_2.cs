@@ -22,6 +22,10 @@ namespace RepositoryFramework.Web.Components
             TypeShowcase = PropertyHandler.GetEntity(typeof(T));
             base.OnInitialized();
         }
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync().NoContext();
+        }
         protected override Task OnParametersSetAsync()
         {
             Repository = ServiceProvider?.GetService<IRepository<T, TKey>>();

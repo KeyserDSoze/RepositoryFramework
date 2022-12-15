@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
 namespace RepositoryFramework.Web.Test.BlazorApp.Models
 {
@@ -25,24 +24,24 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
                 }
             })
             .MapDefault(x => x.Settings, new AppSettings { Color = "a", Options = "b", Maps = new() })
-            .MapChoices(x => x.Groups, async (serviceProvider) =>
+            .MapChoices(x => x.Groups, async (serviceProvider, entity, key) =>
             {
                 var repository = serviceProvider.GetService<IRepository<AppGroup, string>>();
                 List<LabelledPropertyValue> values = new();
-                await foreach (var entity in repository.QueryAsync())
+                await foreach (var item in repository.QueryAsync())
                     values.Add(new LabelledPropertyValue
                     {
-                        Label = entity.Value.Name,
-                        Id = entity.Value.Name,
+                        Label = item.Value.Name,
+                        Id = item.Value.Name,
                         Value = new Group
                         {
-                            Id = entity.Value.Id,
-                            Name = entity.Value.Name,
+                            Id = item.Value.Id,
+                            Name = item.Value.Name,
                         }
                     });
                 return values;
             }, x => x.Name)
-            .MapChoices(x => x.Settings.Maps, serviceProvider =>
+            .MapChoices(x => x.Settings.Maps, (serviceProvider, entity, key) =>
             {
                 return Task.FromResult(new List<LabelledPropertyValue> {
                     "X",
@@ -50,16 +49,16 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
                     "Z",
                     "A" }.AsEnumerable());
             }, x => x)
-            .MapChoice(x => x.MainGroup, async (serviceProvider) =>
+            .MapChoice(x => x.MainGroup, async (serviceProvider, entity, key) =>
             {
                 var repository = serviceProvider.GetService<IRepository<AppGroup, string>>();
                 List<LabelledPropertyValue> values = new();
-                await foreach (var entity in repository.QueryAsync())
+                await foreach (var item in repository.QueryAsync())
                     values.Add(new LabelledPropertyValue
                     {
-                        Label = entity.Value.Name,
-                        Id = entity.Value.Id,
-                        Value = entity.Value.Id
+                        Label = item.Value.Name,
+                        Id = item.Value.Id,
+                        Value = item.Value.Id
                     });
                 return values;
             }, x => x);

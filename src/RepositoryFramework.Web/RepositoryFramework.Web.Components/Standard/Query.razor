@@ -6,84 +6,96 @@
 
 <div class="my-2">
     <RadzenFieldset Text="Filters">
-        <div class="container-fluid row">
-            @if (pagination.TotalItemCount.HasValue)
+        <div class="row">
+            @if (Pagination.TotalItemCount.HasValue)
             {
-                <div class="summary col-12 col-md-">
-                    <strong>@pagination.TotalItemCount</strong> items
-                </div>
-                <select class="form-control col-12 col-md-2" @bind="@pagination.ItemsPerPage">
-                    <option>5</option>
-                    <option>10</option>
-                    <option>20</option>
-                    <option>50</option>
-                    <option>100</option>
-                </select>
-                <RadzenDropDown TValue="IEnumerable<string>"
-                            AllowClear="true"
-                            AllowFiltering="true"
-                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                            Multiple="true"
-                            Placeholder="Select..."
-                            Data="@_columns.Select(x => x.Key)"
-                            Value="@_columns.Where(x => x.Value.IsActive).Select(x => x.Key)"
-                            Change="@UpdateColumnsVisibility"
-                            class="form-control col-12 col-md-4" />
-                <div class="paginator col-12 col-md-5">
-                    <nav role="navigation">
-                        <button class="go-first" title="Go to first page" aria-title="Go to first page"></button>
-                        <button class="go-previous" title="Go to previous page" aria-title="Go to previous page"></button>
-                        <div class="pagination-text">
-                            Page <strong>1</strong>
-                            of <strong>10</strong>
-                        </div>
-                        <button class="go-next" title="Go to next page" aria-title="Go to next page"></button>
-                        <button class="go-last" title="Go to last page" aria-title="Go to last page"></button>
-                    </nav>
+                <div class="w-100 row">
+                    <div class="col-12 col-md-4">
+                        <RadzenDropDown TValue="IEnumerable<string>"
+                                    AllowClear="true"
+                                    AllowFiltering="true"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    Multiple="true"
+                                    Placeholder="Select..."
+                                    SelectedItemsText="columns selected."
+                                    SelectAllText="All columns selected."
+                                    Data="@_columns.Select(x => x.Key)"
+                                    Value="@_columns.Where(x => x.Value.IsActive).Select(x => x.Key)"
+                                    Change="@UpdateColumnsVisibility" />
+                    </div>
+                    <div class="summary col-6 col-md-1 mt-1">
+                        <strong>@Pagination.TotalItemCount items</strong>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <select class="rz-dropdown rz-clear" @bind="@Pagination.ItemsPerPage">
+                            <option value="5">5 per page</option>
+                            <option value="10">10 per page</option>
+                            <option value="20">20 per page</option>
+                            <option value="50">50 per page</option>
+                            <option value="100">100 per page</option>
+                            <option value="500">500 per page</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-5">
+                        <nav role="navigation" b-3qssc0bm46>
+                            <button @onclick="@(() => GoToPageAsync(0))" disabled="@(Pagination.CurrentPageIndex <= 0)" class="go-first" title="Go to first page" aria-title="Go to first page" b-3qssc0bm46></button>
+                            <button @onclick="@(() => GoToPageAsync(Pagination.CurrentPageIndex - 1))" disabled="@(Pagination.CurrentPageIndex <= 0)" class="go-previous" title="Go to previous page" aria-title="Go to previous page" b-3qssc0bm46></button>
+                            <div class="pagination-text" b-3qssc0bm46>
+                                Page
+                                <RadzenDropDown TValue="IEnumerable<PageWrapper>"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            Multiple="false"
+                                            Placeholder="Select..."
+                                            Data="@GetPages()"
+                                            TextProperty="Label"
+                                            ValueProperty="Value"
+                                            Value="@Pagination.CurrentPageIndex"
+                                            Change="@((x) => GoToPageAsync((int)x))"
+                                            style="width:75px;" />
+
+                                of <strong b-3qssc0bm46>@(Pagination.LastPageIndex + 1)</strong>
+                            </div>
+                            <button @onclick="@(() => GoToPageAsync(Pagination.CurrentPageIndex + 1))" disabled="@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex)" class="go-next" title="Go to next page" aria-title="Go to next page" b-3qssc0bm46></button>
+                            <button @onclick="@(() => GoToPageAsync(Pagination.LastPageIndex.Value))" disabled="@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex)" class="go-last" title="Go to last page" aria-title="Go to last page" b-3qssc0bm46></button>
+                        </nav>
+                    </div>
                 </div>
             }
         </div>
     </RadzenFieldset>
-    <RadzenFieldset Text="@typeof(T).Name">
-        <div class="w-100 overflow-auto" style="min-height:400px;" tabindex="-1">
-            <QuickGrid TGridItem="Entity<T, TKey>" ResizableColumns=true class="table table-striped" Pagination="@pagination" ItemsProvider="@(async (x) => await OnReadDataAsync(x))">
-                @if (_columns[Constant.Key].IsActive)
+    <div class="w-100 overflow-auto mt-2" style="min-height:400px;" tabindex="-1">
+        <QuickGrid TGridItem="Entity<T, TKey>" ResizableColumns=true class="table table-striped" Pagination="@Pagination" ItemsProvider="@(async (x) => await OnReadDataAsync(x))">
+            @if (_columns[Constant.Key].IsActive)
+            {
+                <TemplateColumn Title="Key">
+                    <RadzenLink Path="@GetEditUri(context.Key!)" Text="@GetKey(context)" />
+                </TemplateColumn>
+            }
+            @foreach (var value in TypeShowcase.FlatProperties)
+            {
+                if (_columns[value.NavigationPath].IsActive)
                 {
-                    <TemplateColumn Title="Key">
-                        <RadzenLink Path="@GetEditUri(context.Key!)" Text="@GetKey(context)" />
-                    </TemplateColumn>
-                }
-                @foreach (var value in TypeShowcase.FlatProperties)
-                {
-                    if (_columns[value.NavigationPath].IsActive)
+                    if (value.Type != PropertyType.Enumerable)
                     {
-                        if (value.Type != PropertyType.Enumerable)
-                        {
-                            <TemplateColumn Title="@value.NavigationPath">
-                                <ChildContent>
-                                    <CopyButton GetValue="@(() => value.Value(context.Value))" />
-                                </ChildContent>
-                                <ColumnOptions>
-                                    <label>
-                                        <input type="checkbox" /> Ongoing only
-                                    </label>
-                                </ColumnOptions>
-                            </TemplateColumn>
-                        }
-                        else
-                        {
-                            <TemplateColumn Title="@value.NavigationPath">
-                                <RadzenButton class="bg-transparent text-dark p-0"
-                                  Click="@((x) => ShowMoreValuesAsync(context.Value, value))"
-                                  Text="@EnumerableCountAsString(context.Value, value)" />
-                            </TemplateColumn>
-                        }
+                        <TemplateColumn Title="@value.NavigationPath" Sortable="true">
+                            <ChildContent>
+                                <CopyButton GetValue="@(() => value.Value(context.Value))" />
+                            </ChildContent>
+                            <ColumnOptions>
+                                <QueryFilter SearchValue="_searchDictionary.Get(value)" PropertyUiSettings="GetPropertySettings(value)" Search="@Search" />
+                            </ColumnOptions>
+                        </TemplateColumn>
+                    }
+                    else
+                    {
+                        <TemplateColumn Title="@value.NavigationPath">
+                            <RadzenButton class="bg-transparent text-dark p-0"
+                              Click="@((x) => ShowMoreValuesAsync(context.Value, value))"
+                              Text="@EnumerableCountAsString(context.Value, value)" />
+                        </TemplateColumn>
                     }
                 }
-            </QuickGrid>
-        </div>
-        <div class="container-fluid row">
-            <Paginator Value="@pagination" />
-        </div>
-    </RadzenFieldset>
+            }
+        </QuickGrid>
+    </div>
 </div>

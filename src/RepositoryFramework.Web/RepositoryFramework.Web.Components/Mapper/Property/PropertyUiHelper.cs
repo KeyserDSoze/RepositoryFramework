@@ -8,14 +8,14 @@ namespace RepositoryFramework.Web
         private sealed class RepositoryUiPropertyConfiguratorHelper
         {
             public object? Default { get; set; }
-            public Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>>? Retriever { get; set; }
+            public Func<IServiceProvider, T?, TKey?, Task<IEnumerable<LabelledPropertyValue>>>? Retriever { get; set; }
             public bool IsMultiple { get; set; }
             public bool HasTextEditor { get; set; }
             public int MinHeight { get; set; } = 200;
             public Func<object, string>? LabelComparer { get; set; }
         }
         private readonly Dictionary<string, RepositoryUiPropertyConfiguratorHelper> _retrieves = new();
-        public async Task<Dictionary<string, PropertyUiSettings>> SettingsAsync(IServiceProvider serviceProvider)
+        public async Task<Dictionary<string, PropertyUiSettings>> SettingsAsync(IServiceProvider serviceProvider, T? entity = default, TKey? key = default)
         {
             var values = new Dictionary<string, PropertyUiSettings>();
             foreach (var helper in _retrieves)
@@ -27,7 +27,7 @@ namespace RepositoryFramework.Web
                     HasTextEditor = helper.Value.HasTextEditor,
                     MinHeight = helper.Value.MinHeight,
                     LabelComparer = helper.Value.LabelComparer,
-                    Values = helper.Value.Retriever != null ? await helper.Value.Retriever(serviceProvider).NoContext() : null
+                    Values = helper.Value.Retriever != null ? await helper.Value.Retriever(serviceProvider, entity, key).NoContext() : null
                 });
             }
             return values;
@@ -56,7 +56,7 @@ namespace RepositoryFramework.Web
             return this;
         }
         public IRepositoryPropertyUiHelper<T, TKey> MapChoice<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
-            Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>> retriever,
+            Func<IServiceProvider, T?, TKey?, Task<IEnumerable<LabelledPropertyValue>>> retriever,
             Func<TProperty, string> labelComparer)
         {
             var retrieve = GetHelper(navigationProperty);
@@ -66,7 +66,7 @@ namespace RepositoryFramework.Web
             return this;
         }
         public IRepositoryPropertyUiHelper<T, TKey> MapChoices<TProperty>(Expression<Func<T, IEnumerable<TProperty>>> navigationProperty,
-            Func<IServiceProvider, Task<IEnumerable<LabelledPropertyValue>>> retriever,
+            Func<IServiceProvider, T?, TKey?, Task<IEnumerable<LabelledPropertyValue>>> retriever,
             Func<TProperty, string> labelComparer)
         {
             var retrieve = GetHelper(navigationProperty);

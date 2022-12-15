@@ -30,7 +30,6 @@
                           Style="@style"
                           Change=@OnChange
                           Paste=@OnPaste
-                          Execute=@OnExecute
                           Disabled="@DisableEdit" />
             }
             else if (Value is bool booleanValue)
@@ -172,9 +171,5 @@
     void OnChange(string html)
     {
         InternalUpdate(html);
-    }
-    void OnExecute(HtmlEditorExecuteEventArgs args)
-    {
-        var q = $"Execute: {args.CommandName}";
     }
 }
