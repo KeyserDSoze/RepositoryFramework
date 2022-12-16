@@ -18,6 +18,8 @@ namespace RepositoryFramework.Web.Components.Standard
         private ValueBearer<DateOnly>? _date { get; set; }
         private ValueBearer<decimal>? _number { get; set; }
         private IEnumerable<string>? _optionKeys { get; set; }
+        private const string FromLabel = "From";
+        private const string ToLabel = "To";
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
@@ -62,8 +64,22 @@ namespace RepositoryFramework.Web.Components.Standard
             Search();
         }
 
-        public void DateTimeSearch()
+        public void DateTimeSearch(object? value, bool atStart)
         {
+            if (value is DateTime date)
+            {
+                if (atStart)
+                    _dateTime.Start = date;
+                else
+                    _dateTime.End = date;
+            }
+            else
+            {
+                if (atStart)
+                    _dateTime.Start = default;
+                else
+                    _dateTime.End = default;
+            }
             if (_dateTime?.Start != null && _dateTime?.End != null)
                 SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_dateTime.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_dateTime.End}";
             else if (_dateTime?.Start != null)
@@ -76,13 +92,27 @@ namespace RepositoryFramework.Web.Components.Standard
             Search();
         }
 
-        public void DateSearch()
+        public void DateSearch(object? value, bool atStart)
         {
-            if (_date?.Start != null && _date?.End != null)
+            if (value is DateOnly date)
+            {
+                if (atStart)
+                    _date.Start = date;
+                else
+                    _date.End = date;
+            }
+            else
+            {
+                if (atStart)
+                    _date.Start = default;
+                else
+                    _date.End = default;
+            }
+            if (_date?.Start != default && _date?.End != default)
                 SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_date.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_date.End}";
-            else if (_date?.Start != null)
+            else if (_date?.Start != default)
                 SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_date.Start}";
-            else if (_date?.End != null)
+            else if (_date?.End != default)
                 SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} <= {_date.End}";
             else
                 SearchValue.Expression = null;
@@ -90,53 +120,69 @@ namespace RepositoryFramework.Web.Components.Standard
             Search();
         }
 
-        public void NumberSearch(decimal value, bool atStart)
+        public void NumberSearch(object? value, bool atStart)
         {
-            if (atStart)
-                _number.Start = value;
+            if (value is decimal number)
+            {
+                if (atStart)
+                    _number.Start = number;
+                else
+                    _number.End = number;
+            }
             else
-                _number.End = value;
-            if (_number?.Start != null && _number?.End != null)
+            {
+                if (atStart)
+                    _number.Start = default;
+                else
+                    _number.End = default;
+            }
+            if (_number?.Start != default && _number?.End != default)
                 SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_number.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_number.End}";
-            else if (_number?.Start != null)
+            else if (_number?.Start != default)
                 SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_number.Start}";
-            else if (_number?.End != null)
+            else if (_number?.End != default)
                 SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} <= {_number.End}";
             else
                 SearchValue.Expression = null;
             SearchValue.Value = _number;
             Search();
         }
-
-        public void BoolSearch()
+        public void BoolSearch(object? value, bool emptyIsValid)
         {
-            if (_booleanValue == null)
+            if (value == null && emptyIsValid)
                 SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} == null";
+            else if (value is bool booleanValue)
+                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} == {booleanValue}";
             else
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} == {_booleanValue}";
-            SearchValue.Value = _booleanValue;
+                SearchValue.Expression = null;
+            SearchValue.Value = value;
             Search();
         }
 
-        public void MultipleChoices(object x)
+        public void MultipleChoices(object? x)
         {
-            StringBuilder builder = new();
-            if (x is IEnumerable<string> ids)
+            if (x is ChangeEventArgs eventArgs)
             {
-                foreach (var id in ids)
+                StringBuilder builder = new();
+                if (eventArgs.Value is IEnumerable<string> ids)
                 {
-                    if (builder.Length == 0)
-                        builder.Append("x => ");
-                    else
-                        builder.Append(" OrElse ");
-                    var value = PropertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value;
-                    if (value.GetType().IsNumeric())
-                        builder.Append($"x.{SearchValue.BaseProperty.NavigationPath} == {value}");
-                    else
-                        builder.Append($"x.{SearchValue.BaseProperty.NavigationPath} == \"{value}'\"");
+                    foreach (var id in ids)
+                    {
+                        if (builder.Length == 0)
+                            builder.Append("x => ");
+                        else
+                            builder.Append(" OrElse ");
+                        var value = PropertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value;
+                        if (value.GetType().IsNumeric())
+                            builder.Append($"x.{SearchValue.BaseProperty.NavigationPath} == {value}");
+                        else
+                            builder.Append($"x.{SearchValue.BaseProperty.NavigationPath} == \"{value}\"");
+                    }
                 }
+                SearchValue.Expression = builder.ToString();
             }
-            SearchValue.Expression = builder.ToString();
+            else
+                SearchValue.Expression = null;
             SearchValue.Value = x;
             Search();
         }

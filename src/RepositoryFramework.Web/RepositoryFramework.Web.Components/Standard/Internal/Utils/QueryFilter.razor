@@ -11,105 +11,97 @@
     {
         if (SearchValue.BaseProperty.AssemblyType == typeof(bool) || SearchValue.BaseProperty.AssemblyType == typeof(bool?))
         {
-            <div class="w-100">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        Check:
-                    </span>
-                </div>
-                <RadzenCheckBox class="form-control" Value="_booleanValue" TriState=true TValue="bool?" Change=@(args => BoolSearch()) />
-            </div>
+            <Labeller Class="w-100">
+                <Body>
+                    <RadzenCheckBox class="form-control" Value="_booleanValue" TriState=true TValue="bool?" Change=@(args => BoolSearch(args, SearchValue.BaseProperty.AssemblyType == typeof(bool?))) />
+                </Body>
+                <First>
+                    <RadzenButton Icon="close" Click="@((x) => BoolSearch(null, false))" />
+                </First>
+            </Labeller>
         }
         else if (SearchValue.BaseProperty.AssemblyType == typeof(DateTime) || SearchValue.BaseProperty.AssemblyType == typeof(DateTime?))
         {
-            <Labeller Class="w-100" Text="from">
+            <Labeller Class="w-100" Text="@FromLabel">
                 <Body>
                     <RadzenDatePicker class="form-control"
                           TValue="DateTime?"
-                          ShowTime="true"
-                          ShowSeconds="true"
-                          HoursStep="1.5"
-                          MinutesStep="5"
-                          SecondsStep="10"
                           Value="_dateTime.Start"
-                          Change=@(args => DateTimeSearch())
-                          DateFormat="yyyy/MM/dd HH:mm:ss" />
+                          Change=@(args => DateTimeSearch(args, true))
+                          DateFormat="yyyy/MM/dd" />
                 </Body>
+                <First>
+                    <RadzenButton Icon="close" Click="@((x) => DateTimeSearch(null, true))" />
+                </First>
             </Labeller>
-
-            <div class="w-100">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </span>
-                </div>
-                <RadzenDatePicker class="form-control"
-                      TValue="DateTime?"
-                      ShowTime="true"
-                      ShowSeconds="true"
-                      HoursStep="1.5"
-                      MinutesStep="5"
-                      SecondsStep="10"
-                      Value="_dateTime.End"
-                      Change=@(args => DateTimeSearch())
-                      DateFormat="yyyy/MM/dd HH:mm:ss" />
-            </div>
+            <Labeller Class="w-100 mt-1" Text="@ToLabel">
+                <Body>
+                    <RadzenDatePicker class="form-control"
+                          TValue="DateTime?"
+                          Value="_dateTime.End"
+                          Change=@(args => DateTimeSearch(args, false))
+                          DateFormat="yyyy/MM/dd" />
+                </Body>
+                <First>
+                    <RadzenButton Icon="close" Click="@((x) => DateTimeSearch(null, false))" />
+                </First>
+            </Labeller>
         }
         else if (SearchValue.BaseProperty.AssemblyType == typeof(DateOnly) || SearchValue.BaseProperty.AssemblyType == typeof(DateOnly?))
         {
-            <div class="w-100">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        From:
-                    </span>
-                </div>
-                <RadzenDatePicker class="form-control"
-                      TValue="DateOnly?"
-                      Value="_date.Start"
-                      Change=@(args => DateSearch())
-                      DateFormat="yyyy/MM/dd" />
-            </div>
-            <div class="w-100">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </span>
-                </div>
-                <RadzenDatePicker class="form-control"
-                      TValue="DateOnly?"
-                      Value="_date.End"
-                      Change=@(args => DateSearch())
-                      DateFormat="yyyy/MM/dd" />
-            </div>
+            <Labeller Class="w-100" Text="@FromLabel">
+                <Body>
+                    <RadzenDatePicker class="form-control"
+                          TValue="DateOnly?"
+                          Value="_date.Start"
+                          Change=@(args => DateSearch(args, true))
+                          DateFormat="yyyy/MM/dd" />
+                </Body>
+                <First>
+                    <RadzenButton Icon="close" Click="@((x) => DateSearch(null, true))" />
+                </First>
+            </Labeller>
+            <Labeller Class="w-100 mt-1" Text="@ToLabel">
+                <Body>
+                    <RadzenDatePicker class="form-control"
+                          TValue="DateOnly?"
+                          Value="_date.End"
+                          Change=@(args => DateSearch(args, false))
+                          DateFormat="yyyy/MM/dd" />
+                </Body>
+                <First>
+                    <RadzenButton Icon="close" Click="@((x) => DateSearch(null, false))" />
+                </First>
+            </Labeller>
         }
         else if (SearchValue.BaseProperty.AssemblyType.IsNumeric())
         {
-            <div class="w-100">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        From:
-                    </span>
+            <Labeller Class="w-100" Text="@FromLabel">
+                <Body>
                     <RadzenNumeric class="form-control"
                        TValue="decimal?"
                        Value="_number.Start"
                        Placeholder="Enter or clear value"
-                       Change="@(args => NumberSearch((decimal)args, true))"
+                       Change="@(args => NumberSearch(args, true))"
                        TextAlign="TextAlign.Right" />
-                </div>
-            </div>
-            <div class="w-100 mt-1">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </span>
+                </Body>
+                <First>
+                    <RadzenButton Icon="close" Click="@((x) => NumberSearch(null, true))" />
+                </First>
+            </Labeller>
+            <Labeller Class="w-100 mt-1" Text="@ToLabel">
+                <Body>
                     <RadzenNumeric class="form-control"
                        TValue="decimal?"
                        Value="_number.End"
                        Placeholder="Enter or clear value"
-                       Change="@(args => NumberSearch((decimal)args, false))"
+                       Change="@(args => NumberSearch(args, false))"
                        TextAlign="TextAlign.Right" />
-                </div>
-            </div>
+                </Body>
+                <First>
+                    <RadzenButton Icon="close" Click="@((x) => NumberSearch(null, false))" />
+                </First>
+            </Labeller>
         }
         else
         {
@@ -125,17 +117,19 @@
     }
     else
     {
-        <RadzenDropDown TValue="IEnumerable<string>"
-                AllowClear="true"
-                AllowFiltering="true"
-                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                Multiple="true"
-                Placeholder="Select..."
-                Data="@PropertyUiSettings!.Values"
-                Value="@_optionKeys"
-                TextProperty="Label"
-                ValueProperty="Id"
-                Change="@MultipleChoices"
-                class="form-control" />
+        <Labeller Class="w-100">
+            <Body>
+                <select class="form-control" multiple @onchange="MultipleChoices">
+                    @foreach (var option in PropertyUiSettings.Values)
+                    {
+                        <option value="@option.Id" selected="@(_optionKeys?.Contains(option.Id) == true)">@option.Label</option>
+                    }
+                </select>
+            </Body>
+            <First>
+                <RadzenButton Icon="close" Click="@((x) => MultipleChoices(null))" />
+            </First>
+        </Labeller>
+
     }
 }

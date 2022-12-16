@@ -68,7 +68,9 @@
             @if (_columns[Constant.Key].IsActive)
             {
                 <TemplateColumn Title="Key">
-                    <RadzenLink Path="@GetEditUri(context.Key!)" Text="@GetKey(context)" />
+                    <ChildContent>
+                        <RadzenLink Path="@GetEditUri(context.Key!)" Text="@GetKey(context)" />
+                    </ChildContent>
                 </TemplateColumn>
             }
             @foreach (var value in TypeShowcase.FlatProperties)
