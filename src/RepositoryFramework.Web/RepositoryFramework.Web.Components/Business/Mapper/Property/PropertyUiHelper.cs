@@ -5,16 +5,7 @@ namespace RepositoryFramework.Web
     internal sealed class PropertyUiHelper<T, TKey> : IRepositoryPropertyUiHelper<T, TKey>
         where TKey : notnull
     {
-        private sealed class RepositoryUiPropertyConfiguratorHelper
-        {
-            public object? Default { get; set; }
-            public Func<IServiceProvider, T?, TKey?, Task<IEnumerable<LabelledPropertyValue>>>? Retriever { get; set; }
-            public bool IsMultiple { get; set; }
-            public bool HasTextEditor { get; set; }
-            public int MinHeight { get; set; } = 200;
-            public Func<object, string>? LabelComparer { get; set; }
-        }
-        private readonly Dictionary<string, RepositoryUiPropertyConfiguratorHelper> _retrieves = new();
+        private readonly Dictionary<string, RepositoryUiPropertyConfiguratorHelper<T, TKey>> _retrieves = new();
         public async Task<Dictionary<string, PropertyUiSettings>> SettingsAsync(IServiceProvider serviceProvider, T? entity = default, TKey? key = default)
         {
             var values = new Dictionary<string, PropertyUiSettings>();
@@ -23,6 +14,8 @@ namespace RepositoryFramework.Web
                 values.Add(helper.Key, new PropertyUiSettings
                 {
                     Default = helper.Value.Default,
+                    DefaultKey = helper.Value.DefaultKey,
+                    ValueRetriever = helper.Value.ValueRetriever,
                     IsMultiple = helper.Value.IsMultiple,
                     HasTextEditor = helper.Value.HasTextEditor,
                     MinHeight = helper.Value.MinHeight,
@@ -32,12 +25,12 @@ namespace RepositoryFramework.Web
             }
             return values;
         }
-        private RepositoryUiPropertyConfiguratorHelper GetHelper<TProperty>(Expression<Func<T, TProperty>> navigationProperty)
+        private RepositoryUiPropertyConfiguratorHelper<T, TKey> GetHelper<TProperty>(Expression<Func<T, TProperty>> navigationProperty)
         {
             var name = navigationProperty.Body.ToString();
             name = name.Contains('.') ? name[(name.IndexOf('.') + 1)..] : string.Empty;
             if (!_retrieves.ContainsKey(name))
-                _retrieves.Add(name, new RepositoryUiPropertyConfiguratorHelper { });
+                _retrieves.Add(name, new RepositoryUiPropertyConfiguratorHelper<T, TKey>());
             var retrieve = _retrieves[name];
             return retrieve;
         }
@@ -45,6 +38,14 @@ namespace RepositoryFramework.Web
         {
             var retrieve = GetHelper(navigationProperty);
             retrieve.Default = defaultValue;
+            return this;
+        }
+        public IRepositoryPropertyUiHelper<T, TKey> MapDefault<TProperty>(Expression<Func<T, TProperty>> navigationProperty, TKey defaultKey)
+        {
+            var retrieve = GetHelper(navigationProperty);
+            retrieve.DefaultKey = defaultKey;
+            var function = navigationProperty.Compile();
+            retrieve.ValueRetriever = (entity) => entity != null ? function.Invoke((T)entity) : null;
             return this;
         }
         public IRepositoryPropertyUiHelper<T, TKey> SetTextEditor<TProperty>(Expression<Func<T, TProperty>> navigationProperty,

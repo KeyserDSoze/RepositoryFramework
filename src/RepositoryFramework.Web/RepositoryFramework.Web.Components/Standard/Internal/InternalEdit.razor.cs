@@ -7,6 +7,10 @@ namespace RepositoryFramework.Web.Components.Standard
     {
         [Parameter]
         public required T? Entity { get; set; }
+        [CascadingParameter]
+        public object? BaseEntity { get; set; }
+        [CascadingParameter]
+        public Func<object?, Task<object?>>? EntityRetrieverByKey { get; set; }
         [Parameter]
         public bool DisableEdit { get; set; }
         [Parameter]
@@ -118,8 +122,11 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         public void SetDefault(BaseProperty property, object value)
         {
+            var oldValue = Try.WithDefaultOnCatch(() => property.Value(Entity)).Entity;
             if (!_restorableValues.ContainsKey(property.NavigationPath))
-                _restorableValues.Add(property.NavigationPath, Try.WithDefaultOnCatch(() => property.Value(Entity)).Entity);
+                _restorableValues.Add(property.NavigationPath, oldValue);
+            else
+                _restorableValues[property.NavigationPath] = oldValue;
             property.Set(Entity, value.ToDeepCopy());
         }
         public void SetDefault()
@@ -130,6 +137,21 @@ namespace RepositoryFramework.Web.Components.Standard
                 Entity!.CopyPropertiesFrom(_entitySettings.Default.ToDeepCopy());
             }
         }
+        public async Task SetDefaultWithKeyAsync(BaseProperty property, PropertyUiSettings settings)
+        {
+            var entityRetrieved = await EntityRetrieverByKey.Invoke(settings.DefaultKey).NoContext();
+            if (entityRetrieved != null)
+            {
+                var value = settings.ValueRetriever(entityRetrieved);
+                var oldValue = Try.WithDefaultOnCatch(() => property.Value(Entity)).Entity;
+                if (!_restorableValues.ContainsKey(property.NavigationPath))
+                    _restorableValues.Add(property.NavigationPath, oldValue);
+                else
+                    _restorableValues[property.NavigationPath] = oldValue;
+                property.Set(Entity, value);
+            }
+        }
+     
         public void Restore(BaseProperty property)
         {
             if (_restorableValues.ContainsKey(property.NavigationPath))

@@ -8,6 +8,7 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
         {
             mapper
             .MapDefault(x => x.Email, "Default email")
+            .MapDefault(x => x.InternalAppSettings, 23)
             .SetTextEditor(x => x.Name, 700)
             .MapDefault(x => x, new AppUser
             {
@@ -16,6 +17,12 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
                 Id = 1,
                 Name = "default",
                 Password = "default",
+                InternalAppSettings = new InternalAppSettings
+                {
+                    Index = 44,
+                    Maps = new(),
+                    Options = "default options"
+                },
                 Settings = new AppSettings
                 {
                     Color = "default",
@@ -72,6 +79,7 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
         public string Password { get; set; }
         public List<Group> Groups { get; set; }
         public AppSettings Settings { get; init; }
+        public InternalAppSettings InternalAppSettings { get; set; }
         public List<string> Claims { get; set; }
         public string MainGroup { get; set; }
         public string HashedMainGroup => MainGroup.ToHash();
@@ -84,6 +92,12 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
     public sealed class AppSettings
     {
         public string Color { get; set; }
+        public string Options { get; set; }
+        public List<string> Maps { get; set; }
+    }
+    public sealed class InternalAppSettings
+    {
+        public int Index { get; set; }
         public string Options { get; set; }
         public List<string> Maps { get; set; }
     }

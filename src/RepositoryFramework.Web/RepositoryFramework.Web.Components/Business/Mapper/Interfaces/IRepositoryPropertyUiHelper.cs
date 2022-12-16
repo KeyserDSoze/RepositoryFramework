@@ -7,6 +7,7 @@ namespace RepositoryFramework.Web
     {
         Task<Dictionary<string, PropertyUiSettings>> SettingsAsync(IServiceProvider serviceProvider, T? entity = default, TKey? key = default);
         IRepositoryPropertyUiHelper<T, TKey> MapDefault<TProperty>(Expression<Func<T, TProperty>> navigationProperty, TProperty defaultValue);
+        IRepositoryPropertyUiHelper<T, TKey> MapDefault<TProperty>(Expression<Func<T, TProperty>> navigationProperty, TKey defaultKey);
         IRepositoryPropertyUiHelper<T, TKey> SetTextEditor<TProperty>(Expression<Func<T, TProperty>> navigationProperty, int minHeight);
         IRepositoryPropertyUiHelper<T, TKey> MapChoice<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
             Func<IServiceProvider, T?, TKey?, Task<IEnumerable<LabelledPropertyValue>>> retriever,

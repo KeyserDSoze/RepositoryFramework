@@ -30,7 +30,13 @@
                 }
             </RadzenFieldset>
             <RadzenFieldset Text="@typeof(T).Name">
-                <InternalEdit Entity="_entity" DisableEdit="DisableEdit" PropertiesUiSettings="_propertiesRetrieved" Deep="1"></InternalEdit>
+                <CascadingValue Name="@Constant.BaseEntity" Value="_entity">
+                    <CascadingValue Name="@Constant.EntityRetrieverByKey" Value="@ValueRetrieverByKey">
+                        <CascadingValue Name="@Constant.RestorableValues" Value="@_restorableValues">
+                            <InternalEdit Entity="_entity" DisableEdit="DisableEdit" PropertiesUiSettings="_propertiesRetrieved" Deep="1"></InternalEdit>
+                        </CascadingValue>
+                    </CascadingValue>
+                </CascadingValue>
             </RadzenFieldset>
             @if (!DisableEdit || AllowDelete)
             {

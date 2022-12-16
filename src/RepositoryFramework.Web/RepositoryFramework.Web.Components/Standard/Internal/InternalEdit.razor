@@ -4,7 +4,7 @@
 @if (Entity != null)
 {
     <div class="@_containerClass">
-        @if (_entitySettings?.Default != null)
+        @if (_entitySettings?.HasDefault == true)
         {
             <div class="text-center mb-2 w-100">
                 @if (_restorableValue == null)
@@ -31,12 +31,19 @@
                     {
                         var propertySettings = GetPropertySettings(value);
                         <RadzenTabsItem Text="@value.Self.Name">
-                            @if (value.Type == PropertyType.Enumerable && propertySettings?.Default != null)
+                            @if (value.Type == PropertyType.Enumerable && propertySettings?.HasDefault == true)
                             {
                                 <div class="text-center mt-4 mb-2">
                                     @if (!_restorableValues.ContainsKey(value.NavigationPath))
                                     {
-                                        <RadzenButton Click=@(args => SetDefault(value, propertySettings.Default)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
+                                        if (propertySettings.Default != null)
+                                        {
+                                            <RadzenButton Click=@(args => SetDefault(value, propertySettings.Default)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
+                                        }
+                                        else
+                                        {
+                                            <RadzenButton Click=@(args => SetDefaultWithKeyAsync(value, propertySettings)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
+                                        }
                                     }
                                     else
                                     {

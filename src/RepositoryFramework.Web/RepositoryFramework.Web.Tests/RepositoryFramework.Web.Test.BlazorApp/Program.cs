@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
+using RepositoryFramework;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
 using Whistleblowing.Licensing.Models;
 
@@ -45,6 +46,33 @@ builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>
     .PopulateWithRandomData(x => x.Id, 24, 2);
 builder.Services.AddRepositoryInMemoryStorage<Weather, int>()
     .PopulateWithRandomData(x => x.Id, 5, 2);
+builder.Services.AddWarmUp(async serviceProvider =>
+{
+    var repository = serviceProvider.GetService<IRepository<AppUser, int>>();
+    if (repository != null)
+    {
+        await repository.InsertAsync(23, new AppUser
+        {
+            Email = "23 default",
+            Groups = new(),
+            Id = 23,
+            Name = "23 default",
+            Password = "23 default",
+            InternalAppSettings = new InternalAppSettings
+            {
+                Index = 44,
+                Maps = new() { "23" },
+                Options = "23 default options"
+            },
+            Settings = new AppSettings
+            {
+                Color = "23 default",
+                Options = "23 default",
+                Maps = new() { "23" }
+            }
+        }).NoContext();
+    }
+});
 
 var app = builder.Build();
 await app.Services.WarmUpAsync();

@@ -26,12 +26,12 @@
                         Disabled="@DisableEdit"
                         class="form-control" />
         }
-        @if (PropertyUiSettings?.Default != null && !DisableEdit)
+        @if (PropertyUiSettings?.HasDefault == true && !DisableEdit)
         {
             <span class="input-group-text">
                 @if (RestorableValues == null)
                 {
-                    <RadzenButton Icon="star" Click="@((x) => SetDefault())" />
+                    <RadzenButton Icon="star" Click="@((x) => SetDefaultAsync())" />
                 }
                 else
                 {
@@ -56,6 +56,10 @@
     public PropertyUiSettings? PropertyUiSettings { get; set; }
     [Parameter]
     public string? Error { get; set; }
+    [CascadingParameter]
+    public object? BaseEntity { get; set; }
+    [CascadingParameter]
+    public Func<object?, Task<object?>>? EntityRetrieverByKey { get; set; }
     private List<T>? RestorableValues;
     public void InternalUpdate(object x)
     {
@@ -72,9 +76,16 @@
         Update(values);
         Values = values;
     }
-    public void SetDefault()
+    public async Task SetDefaultAsync()
     {
-        var entity = PropertyUiSettings!.Default.Cast<T>();
+        T? entity = default(T);
+        if (PropertyUiSettings!.Default != null)
+            entity = PropertyUiSettings!.Default.Cast<T>();
+        else
+        {
+            var entityRetrieved = await EntityRetrieverByKey.Invoke(PropertyUiSettings.DefaultKey).NoContext();
+            entity = PropertyUiSettings.ValueRetriever(entityRetrieved).Cast<T>();
+        }
         List<T> values = new() { entity! };
         RestorableValues = values;
         Update(values);

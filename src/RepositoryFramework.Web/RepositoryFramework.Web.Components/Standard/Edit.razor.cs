@@ -21,6 +21,7 @@ namespace RepositoryFramework.Web.Components.Standard
         public DialogService DialogService { get; set; }
         [Inject]
         public NotificationService NotificationService { get; set; }
+        private readonly Dictionary<string, object> _restorableValues = new();
         private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
         private T? _entity;
         private bool _isNew;
@@ -53,6 +54,12 @@ namespace RepositoryFramework.Web.Components.Standard
                : new();
             }
             LoadService.Hide();
+        }
+        private async Task<object?> ValueRetrieverByKey(object? key)
+        {
+            if (key is TKey tKey)
+                return await Query.GetAsync(tKey).NoContext();
+            return null;
         }
         private async Task SaveAsync(bool withRedirect)
         {

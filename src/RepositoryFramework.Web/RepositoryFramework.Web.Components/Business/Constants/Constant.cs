@@ -4,6 +4,9 @@
     {
         public const string Key = nameof(Key);
         public const string Entity = nameof(Entity);
+        public const string BaseEntity = nameof(BaseEntity);
+        public const string EntityRetrieverByKey = nameof(EntityRetrieverByKey);
+        public const string RestorableValues = nameof(RestorableValues);
         public const string Entities = nameof(Entities);
         public const string Property = nameof(Property);
         public const string Context = nameof(Context);

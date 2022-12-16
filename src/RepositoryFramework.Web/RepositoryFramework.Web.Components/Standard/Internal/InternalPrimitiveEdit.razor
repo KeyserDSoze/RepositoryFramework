@@ -97,20 +97,12 @@
                         class="form-control"
                         Disabled="@DisableEdit" />
         }
-
-        @if (PropertyUiSettings?.Default != null && !DisableEdit)
-        {
-            <span class="input-group-text">
-                @if (RestorableValue == null)
-                {
-                    <RadzenButton Icon="star" Click="@((x) => SetDefault())" />
-                }
-                else
-                {
-                    <RadzenButton Icon="arrow_back" Click="@((x) => Restore())" />
-                }
-            </span>
-        }
+        <DefaultButton 
+            Class="input-group-text"
+            WithIcon=true
+            Update="@InternalUpdate"
+            PropertyUiSettings="@PropertyUiSettings" 
+            Value="Value" />
         <span class="input-group-text">
             <RadzenButton Click="@((x) => Copy.CopyAsync(Value?.ToString()))" Icon="file_copy" />
         </span>
@@ -139,6 +131,10 @@
     public Action? Delete { get; set; }
     [Parameter]
     public string? Error { get; set; }
+    [CascadingParameter]
+    public object? BaseEntity { get; set; }
+    [CascadingParameter]
+    public Func<object?, Task<object?>>? EntityRetrieverByKey { get; set; }
     [Inject]
     public ICopyService Copy { get; set; }
     private T? RestorableValue;
@@ -153,10 +149,17 @@
         var id = x?.ToString();
         InternalUpdate(PropertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value);
     }
-    public void SetDefault()
+    public async Task SetDefaultAsync()
     {
         RestorableValue = Value;
-        InternalUpdate(PropertyUiSettings!.Default);
+        if (PropertyUiSettings!.Default != null)
+            InternalUpdate(PropertyUiSettings!.Default);
+        else
+        {
+            var entityRetrieved = await EntityRetrieverByKey.Invoke(PropertyUiSettings.DefaultKey).NoContext();
+            var entity = PropertyUiSettings.ValueRetriever(entityRetrieved);
+            InternalUpdate(entity);
+        }
     }
     public void Restore()
     {

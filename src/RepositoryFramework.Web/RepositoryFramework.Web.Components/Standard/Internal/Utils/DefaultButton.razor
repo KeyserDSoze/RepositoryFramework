@@ -1,0 +1,76 @@
+﻿@namespace RepositoryFramework.Web.Components.Standard
+@using Radzen;
+@using Radzen.Blazor
+
+@if (propertySettings?.HasDefault == true)
+{
+    if (WithIcon)
+    {
+        <span class="@Class">
+            @if (!RestorableValues.ContainsKey(BaseProperty.NavigationPath))
+            {
+                <RadzenButton Click=@(args => SetDefaultAsync()) Icon="star" ButtonStyle="ButtonStyle.Primary" />
+            }
+            else
+            {
+                <RadzenButton Click=@(args => Restore(value)) Icon="arrow_back" ButtonStyle="ButtonStyle.Warning" />
+            }
+        </span>
+    }
+    else
+    {
+        <div class="@Class">
+            @if (!RestorableValues.ContainsKey(BaseProperty.NavigationPath))
+            {
+                <RadzenButton Click=@(args => SetDefaultAsync()) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
+            }
+            else
+            {
+                <RadzenButton Click=@(args => Restore(value)) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
+            }
+        </div>
+    }
+}
+
+@code {
+    [CascadingParameter]
+    public object? BaseEntity { get; set; }
+    [CascadingParameter]
+    public Func<object?, Task<object?>>? EntityRetrieverByKey { get; set; }
+    [CascadingParameter]
+    public Dictionary<string, object?> RestorableValues { get; set; }
+    [Parameter]
+    public BaseProperty BaseProperty { get; set; }
+    [Parameter]
+    public PropertyUiSettings PropertyUiSettings { get; set; }
+    [Parameter]
+    public Action<object?> Update { get; set; }
+    [Parameter]
+    public string Class { get; set; }
+    [Parameter]
+    public object? Value { get; set; }
+    [Parameter]
+    public bool WithIcon { get; set; }
+    private object? _restorableValue;
+    public async Task SetDefaultAsync()
+    {
+        object? entity;
+        if (PropertyUiSettings!.Default != null)
+            entity = PropertyUiSettings!.Default;
+        else
+        {
+            var entityRetrieved = await EntityRetrieverByKey.Invoke(PropertyUiSettings.DefaultKey).NoContext();
+            entity = PropertyUiSettings.ValueRetriever(entityRetrieved);
+        }
+        _restorableValue = Value;
+        Update(entity);
+        Value = entity;
+    }
+    public void Restore()
+    {
+        Value = _restorableValue;
+        Update(_restorableValue);
+        _restorableValue = null;
+    }
+}
+
