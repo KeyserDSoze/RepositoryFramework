@@ -2,31 +2,31 @@
 @using Radzen;
 @using Radzen.Blazor
 
-@if (propertySettings?.HasDefault == true)
+@if (EditParameterBearer != null && PropertyUiSettings?.HasDefault == true && !DisableEdit)
 {
     if (WithIcon)
     {
         <span class="@Class">
-            @if (!RestorableValues.ContainsKey(BaseProperty.NavigationPath))
+            @if (!EditParameterBearer.RestorableValues.ContainsKey(BaseProperty.NavigationPath))
             {
                 <RadzenButton Click=@(args => SetDefaultAsync()) Icon="star" ButtonStyle="ButtonStyle.Primary" />
             }
             else
             {
-                <RadzenButton Click=@(args => Restore(value)) Icon="arrow_back" ButtonStyle="ButtonStyle.Warning" />
+                <RadzenButton Click=@(args => Restore()) Icon="arrow_back" ButtonStyle="ButtonStyle.Warning" />
             }
         </span>
     }
     else
     {
         <div class="@Class">
-            @if (!RestorableValues.ContainsKey(BaseProperty.NavigationPath))
+            @if (!EditParameterBearer.RestorableValues.ContainsKey(BaseProperty.NavigationPath))
             {
                 <RadzenButton Click=@(args => SetDefaultAsync()) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
             }
             else
             {
-                <RadzenButton Click=@(args => Restore(value)) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
+                <RadzenButton Click=@(args => Restore()) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
             }
         </div>
     }
@@ -34,11 +34,7 @@
 
 @code {
     [CascadingParameter]
-    public object? BaseEntity { get; set; }
-    [CascadingParameter]
-    public Func<object?, Task<object?>>? EntityRetrieverByKey { get; set; }
-    [CascadingParameter]
-    public Dictionary<string, object?> RestorableValues { get; set; }
+    public EditParameterBearer EditParameterBearer { get; set; }
     [Parameter]
     public BaseProperty BaseProperty { get; set; }
     [Parameter]
@@ -46,12 +42,18 @@
     [Parameter]
     public Action<object?> Update { get; set; }
     [Parameter]
-    public string Class { get; set; }
+    public bool DisableEdit { get; set; }
     [Parameter]
-    public object? Value { get; set; }
+    public string Class { get; set; }
+    private object? _value;
     [Parameter]
     public bool WithIcon { get; set; }
     private object? _restorableValue;
+    protected override void OnParametersSet()
+    {
+        _value = BaseProperty.Value(EditParameterBearer.BaseEntity);
+        base.OnParametersSet();
+    }
     public async Task SetDefaultAsync()
     {
         object? entity;
@@ -59,16 +61,16 @@
             entity = PropertyUiSettings!.Default;
         else
         {
-            var entityRetrieved = await EntityRetrieverByKey.Invoke(PropertyUiSettings.DefaultKey).NoContext();
+            var entityRetrieved = await EditParameterBearer.EntityRetrieverByKey.Invoke(PropertyUiSettings.DefaultKey).NoContext();
             entity = PropertyUiSettings.ValueRetriever(entityRetrieved);
         }
-        _restorableValue = Value;
+        _restorableValue = _value;
         Update(entity);
-        Value = entity;
+        _value = entity;
     }
     public void Restore()
     {
-        Value = _restorableValue;
+        _value = _restorableValue;
         Update(_restorableValue);
         _restorableValue = null;
     }

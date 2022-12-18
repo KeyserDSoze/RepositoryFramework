@@ -21,12 +21,15 @@ namespace RepositoryFramework.Web.Components.Standard
         public DialogService DialogService { get; set; }
         [Inject]
         public NotificationService NotificationService { get; set; }
-        private readonly Dictionary<string, object> _restorableValues = new();
+        private readonly EditParameterBearer _editParameterBearer = new()
+        {
+            RestorableValues = new(),
+            BaseEntity = null,
+        };
         private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
-        private T? _entity;
+        private Entity<T, TKey> _entity;
         private bool _isNew;
         private bool _isRequestedToCreateNew;
-        private TKey _key = default!;
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync().NoContext();
@@ -34,28 +37,25 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 if (!string.IsNullOrWhiteSpace(Key))
                 {
-                    _key = Key.FromBase64<TKey>();
-                    _entity = await Query.GetAsync(_key).NoContext();
+                    var key = Key.FromBase64<TKey>();
+                    _entity = new(await Query.GetAsync(key).NoContext(), key);
                 }
                 else
+                    _entity = new();
+                if (_entity.Value == null)
                 {
-                    _key = default!;
-                    _entity = default;
-                }
-                if (_entity == null)
-                {
-                    _entity = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
+                    _entity.Value = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
                     _isNew = true;
                     _isRequestedToCreateNew = true;
                 }
-                _propertiesRetrieved =
-               ServiceProvider?.GetService<IRepositoryPropertyUiMapper<T, TKey>>() is IRepositoryPropertyUiMapper<T, TKey> uiMapper ?
-               await uiMapper.ValuesAsync(ServiceProvider!, _entity, _key).NoContext()
-               : new();
+                _propertiesRetrieved = ServiceProvider?.GetService<IRepositoryPropertyUiMapper<T, TKey>>() is IRepositoryPropertyUiMapper<T, TKey> uiMapper ?
+                await uiMapper.ValuesAsync(ServiceProvider!, _entity).NoContext() : new();
+                _editParameterBearer.BaseEntity = _entity;
+                _editParameterBearer.EntityRetrieverByKey = ValueRetrieverByKeyAsync;
             }
             LoadService.Hide();
         }
-        private async Task<object?> ValueRetrieverByKey(object? key)
+        private async Task<object?> ValueRetrieverByKeyAsync(object? key)
         {
             if (key is TKey tKey)
                 return await Query.GetAsync(tKey).NoContext();
@@ -67,8 +67,8 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 LoadService.Show();
                 var result = _isNew ?
-                    await Command.InsertAsync(_key, _entity).NoContext() :
-                    await Command.UpdateAsync(_key, _entity).NoContext();
+                    await Command.InsertAsync(_entity.Key, _entity.Value).NoContext() :
+                    await Command.UpdateAsync(_entity.Key, _entity.Value).NoContext();
                 if (result.IsOk && withRedirect)
                     NavigationManager.NavigateTo($"../../../../Repository/{typeof(T).Name}/Query");
                 else
@@ -112,7 +112,7 @@ namespace RepositoryFramework.Web.Components.Standard
             if (Command != null)
             {
                 LoadService.Show();
-                var result = await Command.DeleteAsync(_key).NoContext();
+                var result = await Command.DeleteAsync(_entity.Key).NoContext();
                 if (result.IsOk)
                     NavigationManager.NavigateTo($"../../../../Repository/{typeof(T).Name}/Query");
                 else
@@ -145,9 +145,9 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             _isNew = x;
             if (_isNew)
-                _keyBeforeEdit = _key;
+                _keyBeforeEdit = _entity.Key;
             else
-                _key = _keyBeforeEdit!;
+                _entity.Key = _keyBeforeEdit!;
         }
     }
 }

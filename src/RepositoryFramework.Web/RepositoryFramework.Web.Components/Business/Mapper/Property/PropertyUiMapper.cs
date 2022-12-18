@@ -10,7 +10,7 @@
             _propertyUiHelper = propertyUiHelper;
             uiMapper.Map(_propertyUiHelper);
         }
-        public Task<Dictionary<string, PropertyUiSettings>> ValuesAsync(IServiceProvider serviceProvider, T? entity = default, TKey? key = default)
-            => _propertyUiHelper.SettingsAsync(serviceProvider, entity, key);
+        public Task<Dictionary<string, PropertyUiSettings>> ValuesAsync(IServiceProvider serviceProvider, Entity<T, TKey>? entity = null)
+            => _propertyUiHelper.SettingsAsync(serviceProvider, entity);
     }
 }

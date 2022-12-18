@@ -3,6 +3,6 @@
     internal sealed class RepositoryUiPropertyConfiguratorHelper<T, TKey> : BasePropertyUiSettings
         where TKey : notnull
     {
-        public Func<IServiceProvider, T?, TKey?, Task<IEnumerable<LabelledPropertyValue>>>? Retriever { get; set; }
+        public Func<IServiceProvider, Entity<T, TKey>?, Task<IEnumerable<LabelledPropertyValue>>>? Retriever { get; set; }
     }
 }

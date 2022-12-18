@@ -6,6 +6,9 @@
     <div class="@_containerClass">
         @if (_entitySettings?.HasDefault == true)
         {
+           @* <DefaultButton BaseProperty="value" Class="text-center mb-2 w-100"
+                   PropertyUiSettings="propertySettings"
+                   Update="@((x) => SetDefault(value, x))" />
             <div class="text-center mb-2 w-100">
                 @if (_restorableValue == null)
                 {
@@ -15,7 +18,7 @@
                 {
                     <RadzenButton Click=@(args => Restore()) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
                 }
-            </div>
+            </div>*@
         }
         @foreach (var value in TypeShowcase.Primitives)
         {
@@ -33,23 +36,9 @@
                         <RadzenTabsItem Text="@value.Self.Name">
                             @if (value.Type == PropertyType.Enumerable && propertySettings?.HasDefault == true)
                             {
-                                <div class="text-center mt-4 mb-2">
-                                    @if (!_restorableValues.ContainsKey(value.NavigationPath))
-                                    {
-                                        if (propertySettings.Default != null)
-                                        {
-                                            <RadzenButton Click=@(args => SetDefault(value, propertySettings.Default)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
-                                        }
-                                        else
-                                        {
-                                            <RadzenButton Click=@(args => SetDefaultWithKeyAsync(value, propertySettings)) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <RadzenButton Click=@(args => Restore(value)) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
-                                    }
-                                </div>
+                                <DefaultButton BaseProperty="value" Class="text-center mt-4 mb-2"
+                               PropertyUiSettings="propertySettings"
+                               Update="@((x) => SetDefault(value, x))" />
                             }
                             <div class="col-12">
                                 @LoadNext(value)

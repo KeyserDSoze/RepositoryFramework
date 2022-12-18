@@ -11,11 +11,11 @@
             <RadzenFieldset Text="@Constant.Key">
                 @if (!typeof(TKey).IsPrimitive())
                 {
-                    <InternalEdit Entity="_key" DisableEdit="!_isNew"></InternalEdit>
+                    <InternalEdit Entity="@_entity.Key" DisableEdit="!_isNew"></InternalEdit>
                 }
                 else
                 {
-                    <InternalPrimitiveEdit Name="@Constant.Key" Value="@_key" T="TKey" Update="x => _key = (TKey)x" DisableEdit="!_isNew"></InternalPrimitiveEdit>
+                    <InternalPrimitiveEdit Name="@Constant.Key" Value="@_entity.Key" T="TKey" Update="@(x => _entity.Key = (TKey)x)" DisableEdit="!_isNew"></InternalPrimitiveEdit>
                 }
                 @if (!_isRequestedToCreateNew)
                 {
@@ -30,12 +30,8 @@
                 }
             </RadzenFieldset>
             <RadzenFieldset Text="@typeof(T).Name">
-                <CascadingValue Name="@Constant.BaseEntity" Value="_entity">
-                    <CascadingValue Name="@Constant.EntityRetrieverByKey" Value="@ValueRetrieverByKey">
-                        <CascadingValue Name="@Constant.RestorableValues" Value="@_restorableValues">
-                            <InternalEdit Entity="_entity" DisableEdit="DisableEdit" PropertiesUiSettings="_propertiesRetrieved" Deep="1"></InternalEdit>
-                        </CascadingValue>
-                    </CascadingValue>
+                <CascadingValue Name="@Constant.EditParameterBearer" Value="@_editParameterBearer">
+                    <InternalEdit Entity="_entity.Value" DisableEdit="DisableEdit" PropertiesUiSettings="_propertiesRetrieved" Deep="1"></InternalEdit>
                 </CascadingValue>
             </RadzenFieldset>
             @if (!DisableEdit || AllowDelete)

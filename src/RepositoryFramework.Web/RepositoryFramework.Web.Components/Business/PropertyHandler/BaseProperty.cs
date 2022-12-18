@@ -11,6 +11,7 @@ namespace RepositoryFramework.Web.Components
         public List<BaseProperty> Sons { get; } = new();
         public Type[] Generics { get; private protected set; } = null!;
         public string NavigationPath { get; }
+        public string Title { get; }
         public Type AssemblyType => Self.PropertyType;
         private readonly List<PropertyInfo> _valueFromContextStack = new();
         public List<BaseProperty> Primitives { get; }
@@ -31,6 +32,10 @@ namespace RepositoryFramework.Web.Components
             }
             _valueFromContextStack.Reverse();
             NavigationPath = string.Join('.', _valueFromContextStack.Select(x => x.Name));
+            if (NavigationPath.StartsWith(Constant.ValueWithSeparator))
+                Title = NavigationPath.Replace(Constant.ValueWithSeparator, string.Empty, 1);
+            else
+                Title = NavigationPath;
             Primitives = Sons.Where(x => x.Type == PropertyType.Primitive).ToList();
             NonPrimitives = Sons.Where(x => x.Type != PropertyType.Primitive).ToList();
         }

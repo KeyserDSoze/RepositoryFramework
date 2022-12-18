@@ -4,14 +4,14 @@
     {
         public const string Key = nameof(Key);
         public const string Entity = nameof(Entity);
-        public const string BaseEntity = nameof(BaseEntity);
-        public const string EntityRetrieverByKey = nameof(EntityRetrieverByKey);
-        public const string RestorableValues = nameof(RestorableValues);
+        public const string EditParameterBearer = nameof(EditParameterBearer);
         public const string Entities = nameof(Entities);
         public const string Property = nameof(Property);
         public const string Context = nameof(Context);
         public const string Name = nameof(Name);
         public const string Value = nameof(Value);
+        public const string Label = nameof(Label);
+        public const string ValueWithSeparator = $"{nameof(Value)}.";
         public const string Update = nameof(Update);
         public const string EditableKey = nameof(EditableKey);
         public const string DisableEdit = nameof(DisableEdit);

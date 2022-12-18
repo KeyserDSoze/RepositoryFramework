@@ -132,9 +132,7 @@
     [Parameter]
     public string? Error { get; set; }
     [CascadingParameter]
-    public object? BaseEntity { get; set; }
-    [CascadingParameter]
-    public Func<object?, Task<object?>>? EntityRetrieverByKey { get; set; }
+    public EditParameterBearer EditParameterBearer { get; set; }
     [Inject]
     public ICopyService Copy { get; set; }
     private T? RestorableValue;
@@ -156,7 +154,7 @@
             InternalUpdate(PropertyUiSettings!.Default);
         else
         {
-            var entityRetrieved = await EntityRetrieverByKey.Invoke(PropertyUiSettings.DefaultKey).NoContext();
+            var entityRetrieved = await EditParameterBearer.EntityRetrieverByKey.Invoke(PropertyUiSettings.DefaultKey).NoContext();
             var entity = PropertyUiSettings.ValueRetriever(entityRetrieved);
             InternalUpdate(entity);
         }

@@ -40,15 +40,14 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             base.OnInitialized();
             Pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
-            _columns.Add("Key", new()
-            {
-                Type = typeof(TKey),
-            });
             foreach (var property in TypeShowcase.FlatProperties)
             {
                 _columns.Add(property.NavigationPath, new ColumnOptions
                 {
-                    Type = property.Self.PropertyType
+                    Type = property.Self.PropertyType,
+                    IsActive = true,
+                    Label = property.Title,
+                    Value = property.NavigationPath
                 });
             }
         }
@@ -99,8 +98,6 @@ namespace RepositoryFramework.Web.Components.Standard
             }
             return _lastQuery;
         }
-        private string GetKey(Entity<T, TKey> entity)
-            => entity!.Key!.GetType().IsPrimitive() ? entity.Key.ToString() : entity.Key.ToJson();
         public async ValueTask GoToPageAsync(int page)
         {
             if (page < 0)
@@ -109,7 +106,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 page = Pagination.LastPageIndex.Value;
             await Pagination.SetCurrentPageIndexAsync(page).NoContext();
         }
-        private async Task ShowMoreValuesAsync(T? entity, BaseProperty property)
+        private async Task ShowMoreValuesAsync(Entity<T, TKey>? entity, BaseProperty property)
         {
             _ = await DialogService.OpenAsync<Visualizer>(property.NavigationPath,
                 new Dictionary<string, object>
@@ -132,9 +129,9 @@ namespace RepositoryFramework.Web.Components.Standard
             }
         }
         private const string EnumerableLabelCount = "Show {0} items.";
-        private string EnumerableCountAsString(T? entity, BaseProperty property)
+        private string EnumerableCountAsString(Entity<T, TKey>? entity, BaseProperty property)
             => string.Format(EnumerableLabelCount, EnumerableCount(entity, property));
-        private int EnumerableCount(T? entity, BaseProperty property)
+        private int EnumerableCount(Entity<T, TKey>? entity, BaseProperty property)
         {
             var response = Try.WithDefaultOnCatch(() => property.Value(entity));
             if (response.Exception != null)

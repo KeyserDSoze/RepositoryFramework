@@ -19,7 +19,9 @@
                                     Placeholder="Select..."
                                     SelectedItemsText="columns selected."
                                     SelectAllText="All columns selected."
-                                    Data="@_columns.Select(x => x.Key)"
+                                    Data="@_columns.Select(x => x.Value)"
+                                    ValueProperty="@Constant.Value"
+                                    TextProperty="@Constant.Label"
                                     Value="@_columns.Where(x => x.Value.IsActive).Select(x => x.Key)"
                                     Change="@UpdateColumnsVisibility" />
                     </div>
@@ -65,23 +67,20 @@
     </RadzenFieldset>
     <div class="w-100 overflow-auto mt-2" style="min-height:400px;" tabindex="-1">
         <QuickGrid TGridItem="Entity<T, TKey>" ResizableColumns=true class="table table-striped" Pagination="@Pagination" ItemsProvider="@(async (x) => await OnReadDataAsync(x))">
-            @if (_columns[Constant.Key].IsActive)
-            {
-                <TemplateColumn Title="Key">
-                    <ChildContent>
-                        <RadzenLink Path="@GetEditUri(context.Key!)" Text="@GetKey(context)" />
-                    </ChildContent>
-                </TemplateColumn>
-            }
+            <TemplateColumn Title="#">
+                <ChildContent>
+                    <RadzenLink Path="@GetEditUri(context.Key!)" Icon="edit" />
+                </ChildContent>
+            </TemplateColumn>
             @foreach (var value in TypeShowcase.FlatProperties)
             {
                 if (_columns[value.NavigationPath].IsActive)
                 {
                     if (value.Type != PropertyType.Enumerable)
                     {
-                        <TemplateColumn Title="@value.NavigationPath" Sortable="true">
+                        <TemplateColumn Title="@value.Title" Sortable="true">
                             <ChildContent>
-                                <CopyButton GetValue="@(() => value.Value(context.Value))" />
+                                <CopyButton GetValue="@(() => value.Value(context))" />
                             </ChildContent>
                             <ColumnOptions>
                                 <QueryFilter SearchValue="_searchDictionary.Get(value)" PropertyUiSettings="GetPropertySettings(value)" Search="@Search" />
@@ -90,10 +89,10 @@
                     }
                     else
                     {
-                        <TemplateColumn Title="@value.NavigationPath">
+                        <TemplateColumn Title="@value.Title">
                             <RadzenButton class="bg-transparent text-dark p-0"
-                              Click="@((x) => ShowMoreValuesAsync(context.Value, value))"
-                              Text="@EnumerableCountAsString(context.Value, value)" />
+                              Click="@((x) => ShowMoreValuesAsync(context, value))"
+                              Text="@EnumerableCountAsString(context, value)" />
                         </TemplateColumn>
                     }
                 }

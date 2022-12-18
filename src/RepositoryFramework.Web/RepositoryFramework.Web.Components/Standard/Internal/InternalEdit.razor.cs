@@ -5,12 +5,10 @@ namespace RepositoryFramework.Web.Components.Standard
 {
     public partial class InternalEdit<T>
     {
+        [CascadingParameter]
+        public EditParameterBearer EditParameterBearer { get; set; }
         [Parameter]
         public required T? Entity { get; set; }
-        [CascadingParameter]
-        public object? BaseEntity { get; set; }
-        [CascadingParameter]
-        public Func<object?, Task<object?>>? EntityRetrieverByKey { get; set; }
         [Parameter]
         public bool DisableEdit { get; set; }
         [Parameter]
@@ -25,8 +23,6 @@ namespace RepositoryFramework.Web.Components.Standard
         public required PropertyHandler PropertyHandler { get; set; }
         private TypeShowcase TypeShowcase { get; set; } = null!;
         private PropertyUiSettings? _entitySettings;
-        private readonly Dictionary<string, object> _restorableValues = new();
-        private T? _restorableValue;
         private string _containerClass;
         protected override async Task OnParametersSetAsync()
         {
@@ -122,48 +118,7 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         public void SetDefault(BaseProperty property, object value)
         {
-            var oldValue = Try.WithDefaultOnCatch(() => property.Value(Entity)).Entity;
-            if (!_restorableValues.ContainsKey(property.NavigationPath))
-                _restorableValues.Add(property.NavigationPath, oldValue);
-            else
-                _restorableValues[property.NavigationPath] = oldValue;
             property.Set(Entity, value.ToDeepCopy());
-        }
-        public void SetDefault()
-        {
-            if (_entitySettings != null)
-            {
-                _restorableValue = Entity.ToDeepCopy();
-                Entity!.CopyPropertiesFrom(_entitySettings.Default.ToDeepCopy());
-            }
-        }
-        public async Task SetDefaultWithKeyAsync(BaseProperty property, PropertyUiSettings settings)
-        {
-            var entityRetrieved = await EntityRetrieverByKey.Invoke(settings.DefaultKey).NoContext();
-            if (entityRetrieved != null)
-            {
-                var value = settings.ValueRetriever(entityRetrieved);
-                var oldValue = Try.WithDefaultOnCatch(() => property.Value(Entity)).Entity;
-                if (!_restorableValues.ContainsKey(property.NavigationPath))
-                    _restorableValues.Add(property.NavigationPath, oldValue);
-                else
-                    _restorableValues[property.NavigationPath] = oldValue;
-                property.Set(Entity, value);
-            }
-        }
-     
-        public void Restore(BaseProperty property)
-        {
-            if (_restorableValues.ContainsKey(property.NavigationPath))
-            {
-                _restorableValues.Remove(property.NavigationPath, out var value);
-                property.Set(Entity, value);
-            }
-        }
-        public void Restore()
-        {
-            Entity.CopyPropertiesFrom(_restorableValue);
-            _restorableValue = default;
         }
     }
 }

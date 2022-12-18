@@ -31,7 +31,7 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
                 }
             })
             .MapDefault(x => x.Settings, new AppSettings { Color = "a", Options = "b", Maps = new() })
-            .MapChoices(x => x.Groups, async (serviceProvider, entity, key) =>
+            .MapChoices(x => x.Groups, async (serviceProvider, entity) =>
             {
                 var repository = serviceProvider.GetService<IRepository<AppGroup, string>>();
                 List<LabelledPropertyValue> values = new();
@@ -48,7 +48,7 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
                     });
                 return values;
             }, x => x.Name)
-            .MapChoices(x => x.Settings.Maps, (serviceProvider, entity, key) =>
+            .MapChoices(x => x.Settings.Maps, (serviceProvider, entity) =>
             {
                 return Task.FromResult(new List<LabelledPropertyValue> {
                     "X",
@@ -56,7 +56,7 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
                     "Z",
                     "A" }.AsEnumerable());
             }, x => x)
-            .MapChoice(x => x.MainGroup, async (serviceProvider, entity, key) =>
+            .MapChoice(x => x.MainGroup, async (serviceProvider, entity) =>
             {
                 var repository = serviceProvider.GetService<IRepository<AppGroup, string>>();
                 List<LabelledPropertyValue> values = new();

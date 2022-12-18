@@ -25,9 +25,7 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public string? Error { get; set; }
         [CascadingParameter]
-        public object? BaseEntity { get; set; }
-        [CascadingParameter]
-        public Func<object?, Task<object?>>? EntityRetrieverByKey { get; set; }
+        public EditParameterBearer EditParameterBearer { get; set; }
         [Inject]
         public PropertyHandler PropertyHandler { get; set; } = null!;
         private TypeShowcase TypeShowcase { get; set; } = null!;

@@ -19,7 +19,7 @@ namespace RepositoryFramework.Web.Components
         private protected bool CanEdit { get; set; }
         protected override void OnInitialized()
         {
-            TypeShowcase = PropertyHandler.GetEntity(typeof(T));
+            TypeShowcase = PropertyHandler.GetEntity(typeof(Entity<T, TKey>));
             base.OnInitialized();
         }
         protected override async Task OnInitializedAsync()
