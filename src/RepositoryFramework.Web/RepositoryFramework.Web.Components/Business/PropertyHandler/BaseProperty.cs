@@ -1,5 +1,6 @@
 ﻿using System.Linq.Dynamic.Core;
 using System.Reflection;
+using RepositoryFramework.Web.Components.Standard;
 
 namespace RepositoryFramework.Web.Components
 {
@@ -12,6 +13,7 @@ namespace RepositoryFramework.Web.Components
         public Type[] Generics { get; private protected set; } = null!;
         public string NavigationPath { get; }
         public string Title { get; }
+        public int Deep { get; }
         public Type AssemblyType => Self.PropertyType;
         private readonly List<PropertyInfo> _valueFromContextStack = new();
         public List<BaseProperty> Primitives { get; }
@@ -32,6 +34,7 @@ namespace RepositoryFramework.Web.Components
             }
             _valueFromContextStack.Reverse();
             NavigationPath = string.Join('.', _valueFromContextStack.Select(x => x.Name));
+            Deep = NavigationPath.Split('.').Length;
             if (NavigationPath.StartsWith(Constant.ValueWithSeparator))
                 Title = NavigationPath.Replace(Constant.ValueWithSeparator, string.Empty, 1);
             else

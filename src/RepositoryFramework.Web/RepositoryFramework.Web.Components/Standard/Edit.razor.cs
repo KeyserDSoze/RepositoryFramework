@@ -21,12 +21,12 @@ namespace RepositoryFramework.Web.Components.Standard
         public DialogService DialogService { get; set; }
         [Inject]
         public NotificationService NotificationService { get; set; }
-        private readonly EditParameterBearer _editParameterBearer = new()
+        private TypeShowcase TypeShowcase { get; set; } = null!;
+        private readonly EditParametersBearer _parametersBearer = new()
         {
             RestorableValues = new(),
             BaseEntity = null,
         };
-        private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
         private Entity<T, TKey> _entity;
         private bool _isNew;
         private bool _isRequestedToCreateNew;
@@ -48,10 +48,13 @@ namespace RepositoryFramework.Web.Components.Standard
                     _isNew = true;
                     _isRequestedToCreateNew = true;
                 }
-                _propertiesRetrieved = ServiceProvider?.GetService<IRepositoryPropertyUiMapper<T, TKey>>() is IRepositoryPropertyUiMapper<T, TKey> uiMapper ?
-                await uiMapper.ValuesAsync(ServiceProvider!, _entity).NoContext() : new();
-                _editParameterBearer.BaseEntity = _entity;
-                _editParameterBearer.EntityRetrieverByKey = ValueRetrieverByKeyAsync;
+                _parametersBearer.PropertiesRetrieved =
+                    ServiceProvider?.GetService<IRepositoryPropertyUiMapper<T, TKey>>() is IRepositoryPropertyUiMapper<T, TKey> uiMapper ?
+                        await uiMapper.ValuesAsync(ServiceProvider!, _entity).NoContext() : new();
+                _parametersBearer.BaseEntity = _entity;
+                _parametersBearer.EntityRetrieverByKey = ValueRetrieverByKeyAsync;
+                _parametersBearer.BaseTypeShowcase = PropertyHandler.GetEntity(typeof(Entity<T, TKey>));
+                _parametersBearer.DisableEdit = DisableEdit;
             }
             LoadService.Hide();
         }
@@ -148,6 +151,11 @@ namespace RepositoryFramework.Web.Components.Standard
                 _keyBeforeEdit = _entity.Key;
             else
                 _entity.Key = _keyBeforeEdit!;
+        }
+        private void SetEntityDefault(object? x)
+        {
+            if (x is T t)
+                _entity.Value = t;
         }
     }
 }

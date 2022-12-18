@@ -2,7 +2,7 @@
 @using Radzen;
 @using Radzen.Blazor
 
-@if (EditParameterBearer != null && PropertyUiSettings?.HasDefault == true && !DisableEdit)
+@if (EditParameterBearer != null && _propertyUiSettings?.HasDefault == true && !DisableEdit)
 {
     if (WithIcon)
     {
@@ -34,35 +34,35 @@
 
 @code {
     [CascadingParameter]
-    public EditParameterBearer EditParameterBearer { get; set; }
+    public EditParametersBearer EditParameterBearer { get; set; }
     [Parameter]
     public BaseProperty BaseProperty { get; set; }
-    [Parameter]
-    public PropertyUiSettings PropertyUiSettings { get; set; }
     [Parameter]
     public Action<object?> Update { get; set; }
     [Parameter]
     public bool DisableEdit { get; set; }
     [Parameter]
     public string Class { get; set; }
-    private object? _value;
     [Parameter]
     public bool WithIcon { get; set; }
+    private PropertyUiSettings? _propertyUiSettings;
+    private object? _value;
     private object? _restorableValue;
     protected override void OnParametersSet()
     {
+        _propertyUiSettings = BaseProperty.GetSettings(EditParameterBearer);
         _value = BaseProperty.Value(EditParameterBearer.BaseEntity);
         base.OnParametersSet();
     }
     public async Task SetDefaultAsync()
     {
         object? entity;
-        if (PropertyUiSettings!.Default != null)
-            entity = PropertyUiSettings!.Default;
+        if (_propertyUiSettings!.Default != null)
+            entity = _propertyUiSettings!.Default;
         else
         {
-            var entityRetrieved = await EditParameterBearer.EntityRetrieverByKey.Invoke(PropertyUiSettings.DefaultKey).NoContext();
-            entity = PropertyUiSettings.ValueRetriever(entityRetrieved);
+            var entityRetrieved = await EditParameterBearer.EntityRetrieverByKey.Invoke(_propertyUiSettings.DefaultKey).NoContext();
+            entity = _propertyUiSettings.ValueRetriever(entityRetrieved);
         }
         _restorableValue = _value;
         Update(entity);

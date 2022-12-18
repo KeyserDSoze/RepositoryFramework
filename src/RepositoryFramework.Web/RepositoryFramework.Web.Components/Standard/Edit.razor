@@ -8,46 +8,54 @@
 {
     <div class="row">
         <div class="col">
-            <RadzenFieldset Text="@Constant.Key">
-                @if (!typeof(TKey).IsPrimitive())
-                {
-                    <InternalEdit Entity="@_entity.Key" DisableEdit="!_isNew"></InternalEdit>
-                }
-                else
-                {
-                    <InternalPrimitiveEdit Name="@Constant.Key" Value="@_entity.Key" T="TKey" Update="@(x => _entity.Key = (TKey)x)" DisableEdit="!_isNew"></InternalPrimitiveEdit>
-                }
-                @if (!_isRequestedToCreateNew)
-                {
-                    <RadzenSwitch Value="@_isNew" ValueChanged="@ChangeKeyEditingStatus" />
-                }
-                @if (_isNew && !_isRequestedToCreateNew)
-                {
-                    <RadzenAlert Variant="Variant.Filled" AlertStyle="AlertStyle.Warning" Size="AlertSize.Medium" Shade="Shade.Darker" AllowClose=false>
-                        Warning!! Active it only if you want to copy an item.
-                        If you active the key editing, and you change it, on save you will create a copy of this element with your new key.
-                    </RadzenAlert>
-                }
-            </RadzenFieldset>
-            <RadzenFieldset Text="@typeof(T).Name">
-                <CascadingValue Name="@Constant.EditParameterBearer" Value="@_editParameterBearer">
-                    <InternalEdit Entity="_entity.Value" DisableEdit="DisableEdit" PropertiesUiSettings="_propertiesRetrieved" Deep="1"></InternalEdit>
-                </CascadingValue>
-            </RadzenFieldset>
-            @if (!DisableEdit || AllowDelete)
-            {
-                <RadzenFieldset Text="@Constant.Edit">
-                    @if (!DisableEdit)
+            <CascadingValue Name="@Constant.EditParametersBearer" Value="@_parametersBearer">
+                <RadzenFieldset Text="@Constant.Key">
+                    @if (!typeof(TKey).IsPrimitive())
                     {
-                        <RadzenButton Click=@(args => SaveAsync(false)) Icon="assignment_turned_in" ButtonStyle="ButtonStyle.Secondary" />
-                        <RadzenButton Click=@(args => SaveAsync(true)) Icon="note_add" ButtonStyle="ButtonStyle.Primary" />
+                        <InternalEdit BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.First()"
+                              Deep="1"
+                              NavigationPath="@string.Empty" />
                     }
-                    @if (AllowDelete)
+                    else
                     {
-                        <RadzenButton class="float-end" Click=@(args => CheckIfYouWantToDeleteAsync()) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
+                        <InternalPrimitiveEdit BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.First()" />
+                    }
+                    @if (!_isRequestedToCreateNew)
+                    {
+                        <RadzenSwitch Value="@_isNew" ValueChanged="@ChangeKeyEditingStatus" />
+                    }
+                    @if (_isNew && !_isRequestedToCreateNew)
+                    {
+                        <RadzenAlert Variant="Variant.Filled" AlertStyle="AlertStyle.Warning" Size="AlertSize.Medium" Shade="Shade.Darker" AllowClose=false>
+                            Warning!! Active it only if you want to copy an item.
+                            If you active the key editing, and you change it, on save you will create a copy of this element with your new key.
+                        </RadzenAlert>
                     }
                 </RadzenFieldset>
-            }
+                <RadzenFieldset>
+                    <DefaultButton BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.Last()"
+                               Class="text-center mb-2 w-100"
+                               Update="@((x) => SetEntityDefault(x))" />
+                    <InternalEdit 
+                        BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.Last()"
+                        NavigationPath="@string.Empty"
+                    />
+                </RadzenFieldset>
+                @if (!DisableEdit || AllowDelete)
+                {
+                    <RadzenFieldset Text="@Constant.Edit">
+                        @if (!DisableEdit)
+                        {
+                            <RadzenButton Click=@(args => SaveAsync(false)) Icon="assignment_turned_in" ButtonStyle="ButtonStyle.Secondary" />
+                            <RadzenButton Click=@(args => SaveAsync(true)) Icon="note_add" ButtonStyle="ButtonStyle.Primary" />
+                        }
+                        @if (AllowDelete)
+                        {
+                            <RadzenButton class="float-end" Click=@(args => CheckIfYouWantToDeleteAsync()) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
+                        }
+                    </RadzenFieldset>
+                }
+            </CascadingValue>
         </div>
     </div>
 }

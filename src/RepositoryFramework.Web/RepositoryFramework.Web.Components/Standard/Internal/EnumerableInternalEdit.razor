@@ -1,30 +1,24 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
 @using Radzen.Blazor
 @using Radzen;
-@typeparam T
 
-@if (Entities != null)
+@if (_entities != null)
 {
     var counter = 0;
-    @if (!PropertyUiSettings.HasValues())
+    @if (!_propertyUiSettings.HasValues())
     {
-        foreach (var entity in Entities)
+        foreach (var entity in _entities)
         {
             <div class="row">
                 <div class="col">
-                    @if (TypeShowcase != null)
+                    @if (BaseProperty.Type != PropertyType.Primitive)
                     {
-                        <InternalEdit Entity="entity" DisableEdit="DisableEdit" NavigationPath="@GetNextNavigationPath()"
-                            T="T" PropertiesUiSettings="PropertiesUiSettings" Deep="Deep + 1">
-                        </InternalEdit>
+                        <InternalEdit BaseProperty="@BaseProperty.NonPrimitives.First()" />
                     }
                     else
                     {
                         var index = counter;
-                        <InternalPrimitiveEdit Name="@($"{index + 1}.")" Value="entity" T="T" DisableEdit="DisableEdit"
-                               Update="@((object x) => Update(index, (T)x))" PropertyUiSettings="@PropertyUiSettings"
-                               Delete="@(() => Delete(index))">
-                        </InternalPrimitiveEdit>
+                        <InternalPrimitiveEdit BaseProperty="@BaseProperty.NonPrimitives.First()" />
                     }
                 </div>
                 @{
@@ -35,13 +29,13 @@
     }
     else
     {
-        <InternalMultiSelectEdit Name="@Property.Self.Name" Values="Entities" T="T" DisableEdit="DisableEdit"
-                         Update="@((object x) => Update((IEnumerable<T>)x))" PropertyUiSettings="@PropertyUiSettings">
+        <InternalMultiSelectEdit Name="@BaseProperty.Self.Name"
+            Update="@((object x) => Update((IEnumerable<T>)x))" PropertyUiSettings="@PropertyUiSettings">
         </InternalMultiSelectEdit>
     }
-    @if (!DisableEdit && !PropertyUiSettings.HasValues())
+    @if (EditParametersBearer.CanEdit(BaseProperty) && !_propertyUiSettings.HasValues())
     {
         <RadzenButton Click="x => New()" Icon="add" />
     }
 }
-<ErrorCatcher Error="@Error" />
+<ErrorCatcher Error="@_error" />

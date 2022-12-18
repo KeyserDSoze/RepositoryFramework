@@ -1,53 +1,38 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
-@typeparam T
 
-@if (Entity != null)
-{
-    <div class="@_containerClass">
-        @if (_entitySettings?.HasDefault == true)
-        {
-           @* <DefaultButton BaseProperty="value" Class="text-center mb-2 w-100"
-                   PropertyUiSettings="propertySettings"
-                   Update="@((x) => SetDefault(value, x))" />
-            <div class="text-center mb-2 w-100">
-                @if (_restorableValue == null)
-                {
-                    <RadzenButton Click=@(args => SetDefault()) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
-                }
-                else
-                {
-                    <RadzenButton Click=@(args => Restore()) Text="Restore" ButtonStyle="ButtonStyle.Warning" />
-                }
-            </div>*@
-        }
-        @foreach (var value in TypeShowcase.Primitives)
-        {
-            @LoadPrimitiveEdit(value)
-        }
-    </div>
-    @if (TypeShowcase.NonPrimitives.Count > 0)
+<div class="@_containerClass">
+    @foreach (var baseProperty in BaseProperty.Primitives)
     {
-        <div class="row row-cols">
-            <RadzenTabs SelectedIndex="0">
-                <Tabs>
-                    @foreach (var value in TypeShowcase.NonPrimitives)
-                    {
-                        var propertySettings = GetPropertySettings(value);
-                        <RadzenTabsItem Text="@value.Self.Name">
-                            @if (value.Type == PropertyType.Enumerable && propertySettings?.HasDefault == true)
-                            {
-                                <DefaultButton BaseProperty="value" Class="text-center mt-4 mb-2"
-                               PropertyUiSettings="propertySettings"
-                               Update="@((x) => SetDefault(value, x))" />
-                            }
-                            <div class="col-12">
-                                @LoadNext(value)
-                            </div>
-                        </RadzenTabsItem>
-                    }
-                </Tabs>
-            </RadzenTabs>
-        </div>
+        <InternalPrimitiveEdit BaseProperty="@baseProperty" />
     }
+</div>
+@if (BaseProperty.NonPrimitives.Count > 0)
+{
+    <div class="row row-cols">
+        <RadzenTabs SelectedIndex="0">
+            <Tabs>
+                @foreach (var baseProperty in BaseProperty.NonPrimitives)
+                {
+                    <RadzenTabsItem Text="@baseProperty.Self.Name">
+                        @if (baseProperty.Type == PropertyType.Enumerable)
+                        {
+                            <DefaultButton 
+                               BaseProperty="@baseProperty"
+                               Class="text-center mt-4 mb-2" />
+                        }
+                        <div class="col-12">
+                            @if (baseProperty.Type == PropertyType.Complex)
+                            {
+                                <InternalEdit BaseProperty="@baseProperty" />
+                            }
+                            else
+                            {
+                                <EnumerableInternalEdit BaseProperty="@baseProperty" />
+                            }
+                        </div>
+                    </RadzenTabsItem>
+                }
+            </Tabs>
+        </RadzenTabs>
+    </div>
 }
-<ErrorCatcher Error="@Error" />

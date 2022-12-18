@@ -57,7 +57,7 @@
     [Parameter]
     public string? Error { get; set; }
     [CascadingParameter]
-    public EditParameterBearer EditParameterBearer { get; set; }
+    public EditParametersBearer EditParameterBearer { get; set; }
     private List<T>? RestorableValues;
     public void InternalUpdate(object x)
     {

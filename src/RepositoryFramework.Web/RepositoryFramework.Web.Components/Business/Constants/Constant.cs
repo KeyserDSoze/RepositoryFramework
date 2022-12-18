@@ -4,7 +4,8 @@
     {
         public const string Key = nameof(Key);
         public const string Entity = nameof(Entity);
-        public const string EditParameterBearer = nameof(EditParameterBearer);
+        public const string EditParametersBearer = nameof(EditParametersBearer);
+        public const string BaseProperty = nameof(BaseProperty);
         public const string Entities = nameof(Entities);
         public const string Property = nameof(Property);
         public const string Context = nameof(Context);

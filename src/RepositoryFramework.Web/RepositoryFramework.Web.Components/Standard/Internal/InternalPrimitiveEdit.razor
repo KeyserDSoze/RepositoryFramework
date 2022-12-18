@@ -4,7 +4,6 @@
 @using System.Text.Json;
 @using System.Linq.Expressions;
 @using RepositoryFramework.Web.Components.Services;
-@typeparam T
 
 @{
     var defaultClass = "col my-2";
@@ -117,25 +116,12 @@
 </div>
 
 @code {
-    [Parameter]
-    public string? Name { get; set; }
-    [Parameter]
-    public T? Value { get; set; }
-    [Parameter]
-    public Action<object> Update { get; set; }
-    [Parameter]
-    public bool DisableEdit { get; set; }
-    [Parameter]
-    public PropertyUiSettings? PropertyUiSettings { get; set; }
-    [Parameter]
-    public Action? Delete { get; set; }
-    [Parameter]
-    public string? Error { get; set; }
     [CascadingParameter]
-    public EditParameterBearer EditParameterBearer { get; set; }
+    public EditParametersBearer EditParametersBearer { get; set; }
+    [Parameter]
+    public BaseProperty BaseProperty { get; set; }
     [Inject]
     public ICopyService Copy { get; set; }
-    private T? RestorableValue;
     public void InternalUpdate(object? value)
     {
         var currentValue = value.Cast<T>()!;

@@ -1,48 +1,31 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Reflection;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Components;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
-    public partial class EnumerableInternalEdit<T>
+    public partial class EnumerableInternalEdit
     {
-        [Parameter]
-        public IEnumerable<T> Entities { get; set; } = null!;
-        [Parameter]
-        public BaseProperty Property { get; set; } = null!;
-        [Parameter]
-        public object? Context { get; set; }
-        [Parameter]
-        public bool DisableEdit { get; set; }
-        [Parameter]
-        public Dictionary<string, PropertyUiSettings>? PropertiesUiSettings { get; set; }
-        [Parameter]
-        public int Deep { get; set; }
-        [Parameter]
-        public PropertyUiSettings PropertyUiSettings { get; set; }
-        [Parameter]
-        public string? NavigationPath { get; set; }
-        [Parameter]
-        public string? Error { get; set; }
         [CascadingParameter]
-        public EditParameterBearer EditParameterBearer { get; set; }
-        [Inject]
-        public PropertyHandler PropertyHandler { get; set; } = null!;
-        private TypeShowcase TypeShowcase { get; set; } = null!;
-        private string? GetNextNavigationPath()
+        public EditParametersBearer EditParametersBearer { get; set; }
+        [Parameter]
+        public BaseProperty BaseProperty { get; set; } = null!;
+
+        private IEnumerable _entities;
+        private string? _error;
+        private PropertyUiSettings? _propertyUiSettings;
+        protected override void OnParametersSet()
         {
-            var navigationPath = NavigationPath;
-            if (NavigationPath != null)
-                navigationPath = $"{NavigationPath}.{Property.Self.Name}";
-            return navigationPath;
-        }
-        protected override Task OnParametersSetAsync()
-        {
-            if (Entities == null)
-                Entities = new List<T>();
-            if (!typeof(T).IsPrimitive())
-                TypeShowcase = PropertyHandler.GetEntity(typeof(T));
-            return base.OnParametersSetAsync();
+            var retrieveEntities = EditParametersBearer.GetValue(BaseProperty);
+            if (retrieveEntities.Exception == null)
+            {
+                _entities = retrieveEntities.Entity as IEnumerable;
+                _propertyUiSettings = EditParametersBearer.GetSettings(BaseProperty);
+            }
+            else
+                _error = retrieveEntities.Exception.Message;
+            base.OnParametersSet();
         }
         public void Update(int index, T value)
         {
@@ -67,7 +50,7 @@ namespace RepositoryFramework.Web.Components.Standard
             }
             else if (Entities is T[])
             {
-                Property.Set(Context, values.ToArray());
+                BaseProperty.Set(Context, values.ToArray());
             }
             else if (Entities is ICollection<T> collection)
             {
@@ -99,7 +82,7 @@ namespace RepositoryFramework.Web.Components.Standard
                         }
                     }
                     Entities = newArray;
-                    Property.Set(Context, newArray);
+                    BaseProperty.Set(Context, newArray);
                 }
                 StateHasChanged();
             });
@@ -122,7 +105,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 }
                 newArray[counter] = entity;
                 Entities = newArray;
-                Property.Set(Context, newArray);
+                BaseProperty.Set(Context, newArray);
             }
         }
     }
