@@ -132,10 +132,27 @@
         EditParametersBearer.SetValue(BaseProperty, value);
         _value = value;
     }
-    public void InternalProxyUpdate(object x)
+    public void InternalProxyUpdate(object selected)
     {
-        var id = x?.ToString();
-        InternalUpdate(_propertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value);
+        if (selected is IEnumerable<string> keys)
+        {
+            var selectedValues = keys.Select(x => _propertyUiSettings!.Values!.First(y => y.Id == x).Value);
+            if (_value is Array)
+            {
+                InternalUpdate(selectedValues.ToArray());
+            }
+            else if (_value is IList list)
+            {
+                list.Clear();
+                foreach (var value in selectedValues)
+                    list.Add(value);
+            }
+        }
+        else
+        {
+            var id = selected?.ToString();
+            InternalUpdate(_propertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value);
+        }
     }
     private object LabelComparer()
     {

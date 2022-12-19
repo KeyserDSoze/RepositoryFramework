@@ -16,10 +16,7 @@
                     @foreach (var baseProperty in BaseProperty.NonPrimitives)
                     {
                         <RadzenTabsItem Text="@baseProperty.Self.Name">
-                            @if (baseProperty.Type == PropertyType.Enumerable)
-                            {
-                                <DefaultButton BaseProperty="@baseProperty" Class="text-center mt-4 mb-2" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
-                            }
+                            <DefaultButton BaseProperty="@baseProperty" Class="text-center mt-4 mb-2" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
                             <div class="col-12">
                                 @if (baseProperty.Type == PropertyType.Complex)
                                 {

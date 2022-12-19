@@ -9,6 +9,9 @@
     var counter = 0;
     @if (!_propertyUiSettings.HasValues())
     {
+        <div class="col-12">
+            <DefaultButton BaseProperty="@BaseProperty" Class="text-center mt-4 mb-2" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
+        </div>
         foreach (var entity in _entities)
         {
             var index = counter;

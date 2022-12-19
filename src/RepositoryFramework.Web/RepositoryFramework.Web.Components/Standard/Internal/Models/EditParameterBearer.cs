@@ -17,8 +17,8 @@
         }
         public Dictionary<string, PropertyUiSettings> PropertiesRetrieved { get; set; }
         public Func<object?, Task<object?>>? EntityRetrieverByKey { get; set; }
-        public required Dictionary<string, object?> RestorableValues { get; init; }
         public TypeShowcase BaseTypeShowcase { get; set; }
         public bool DisableEdit { get; set; }
+        public Action StateHasChanged { get; set; }
     }
 }

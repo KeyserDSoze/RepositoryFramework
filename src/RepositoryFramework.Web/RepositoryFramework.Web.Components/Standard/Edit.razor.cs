@@ -24,7 +24,6 @@ namespace RepositoryFramework.Web.Components.Standard
         private TypeShowcase TypeShowcase { get; set; } = null!;
         private readonly EditParametersBearer _parametersBearer = new()
         {
-            RestorableValues = new(),
             BaseEntity = null,
         };
         private Entity<T, TKey> _entity;
@@ -54,6 +53,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 _parametersBearer.EntityRetrieverByKey = ValueRetrieverByKeyAsync;
                 _parametersBearer.BaseTypeShowcase = PropertyHandler.GetEntity(typeof(Entity<T, TKey>));
                 _parametersBearer.DisableEdit = DisableEdit;
+                _parametersBearer.StateHasChanged = () => StateHasChanged();
             }
             await base.OnParametersSetAsync().NoContext();
             LoadService.Hide();

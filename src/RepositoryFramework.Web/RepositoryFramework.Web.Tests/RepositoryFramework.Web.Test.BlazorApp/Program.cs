@@ -60,7 +60,7 @@ builder.Services.AddWarmUp(async serviceProvider =>
             Password = "23 default",
             InternalAppSettings = new InternalAppSettings
             {
-                Index = 44,
+                Index = 23,
                 Maps = new() { "23" },
                 Options = "23 default options"
             },

@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using RepositoryFramework.Web.Components;
 
 namespace RepositoryFramework.Web
 {
@@ -28,7 +29,7 @@ namespace RepositoryFramework.Web
         private RepositoryUiPropertyConfiguratorHelper<T, TKey> GetHelper<TProperty>(Expression<Func<T, TProperty>> navigationProperty)
         {
             var name = navigationProperty.Body.ToString();
-            name = name.Contains('.') ? name[(name.IndexOf('.') + 1)..] : string.Empty;
+            name = name.Contains('.') ? $"{Constant.ValueWithSeparator}{name[(name.IndexOf('.') + 1)..]}" : Constant.Value;
             if (!_retrieves.ContainsKey(name))
                 _retrieves.Add(name, new RepositoryUiPropertyConfiguratorHelper<T, TKey>());
             var retrieve = _retrieves[name];

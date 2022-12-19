@@ -32,7 +32,7 @@
                 </RadzenFieldset>
                 @foreach (var property in _parametersBearer.BaseTypeShowcase.Properties.Skip(1).Take(1))
                 {
-                    <RadzenFieldset>
+                    <RadzenFieldset Text="@typeof(T).Name">
                         <DefaultButton BaseProperty="@property" Class="text-center mb-2 w-100" />
                         <InternalEdit BaseProperty="@property" />
                     </RadzenFieldset>

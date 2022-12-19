@@ -82,7 +82,7 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
         public InternalAppSettings InternalAppSettings { get; set; }
         public List<string> Claims { get; set; }
         public string MainGroup { get; set; }
-        public string HashedMainGroup => MainGroup.ToHash();
+        public string? HashedMainGroup => MainGroup?.ToHash();
     }
     public sealed class Group
     {
