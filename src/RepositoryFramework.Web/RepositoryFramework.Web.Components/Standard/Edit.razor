@@ -12,11 +12,11 @@
                 <RadzenFieldset Text="@Constant.Key">
                     @if (!typeof(TKey).IsPrimitive())
                     {
-                        <InternalEdit BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.First()" />
+                        <InternalEdit BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.First()" ForceNotEditable="@(!_isNew)" />
                     }
                     else
                     {
-                        <InternalPrimitiveEdit BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.First()" />
+                        <InternalPrimitiveEdit BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.First()" ForceNotEditable="@(!_isNew)" />
                     }
                     @if (!_isRequestedToCreateNew)
                     {

@@ -43,6 +43,8 @@
     public string Class { get; set; }
     [Parameter]
     public bool WithIcon { get; set; }
+    [Parameter]
+    public bool ForceNotEditable { get; set; }
     private PropertyUiSettings? _propertyUiSettings;
     public bool _disableEdit { get; set; }
     private object? _value;
@@ -52,7 +54,7 @@
         if (EditParametersBearer != null && _propertyUiSettings?.HasDefault == true && !_disableEdit)
         {
             _propertyUiSettings = EditParametersBearer.GetSettings(BaseProperty);
-            _disableEdit = !EditParametersBearer.CanEdit(BaseProperty);
+            _disableEdit = ForceNotEditable || !EditParametersBearer.CanEdit(BaseProperty);
             _value = EditParametersBearer.GetValue(BaseProperty, Indexes);
         }
         base.OnParametersSet();

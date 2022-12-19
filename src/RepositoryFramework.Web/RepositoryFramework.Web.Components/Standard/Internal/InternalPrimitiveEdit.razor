@@ -104,6 +104,8 @@
     public int[]? Indexes { get; set; }
     [Parameter]
     public string? OverriddenName { get; set; }
+    [Parameter]
+    public bool ForceNotEditable { get; set; }
     [Inject]
     public ICopyService Copy { get; set; }
     private PropertyUiSettings? _propertyUiSettings;
@@ -119,7 +121,7 @@
             _value = value.Entity;
             _isMultiple = _value is not string && _value is IEnumerable;
             _propertyUiSettings = EditParametersBearer.GetSettings(BaseProperty);
-            _disableEdit = !EditParametersBearer.CanEdit(BaseProperty);
+            _disableEdit = ForceNotEditable || !EditParametersBearer.CanEdit(BaseProperty);
         }
         else
             _error = value.Exception.Message;

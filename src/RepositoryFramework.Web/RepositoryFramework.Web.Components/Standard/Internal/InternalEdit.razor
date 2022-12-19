@@ -5,7 +5,7 @@
     <div class="@_containerClass">
         @foreach (var baseProperty in BaseProperty.Primitives)
         {
-            <InternalPrimitiveEdit BaseProperty="@baseProperty" Indexes="@Indexes" />
+            <InternalPrimitiveEdit BaseProperty="@baseProperty" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
         }
     </div>
     @if (BaseProperty.NonPrimitives.Count > 0)
@@ -18,16 +18,16 @@
                         <RadzenTabsItem Text="@baseProperty.Self.Name">
                             @if (baseProperty.Type == PropertyType.Enumerable)
                             {
-                                <DefaultButton BaseProperty="@baseProperty" Class="text-center mt-4 mb-2" Indexes="@Indexes" />
+                                <DefaultButton BaseProperty="@baseProperty" Class="text-center mt-4 mb-2" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
                             }
                             <div class="col-12">
                                 @if (baseProperty.Type == PropertyType.Complex)
                                 {
-                                    <InternalEdit BaseProperty="@baseProperty" Indexes="@Indexes" />
+                                    <InternalEdit BaseProperty="@baseProperty" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
                                 }
                                 else
                                 {
-                                    <EnumerableInternalEdit BaseProperty="@baseProperty" Indexes="@Indexes" />
+                                    <EnumerableInternalEdit BaseProperty="@baseProperty" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
                                 }
                             </div>
                         </RadzenTabsItem>
@@ -45,6 +45,8 @@
     public BaseProperty BaseProperty { get; set; }
     [Parameter]
     public int[]? Indexes { get; set; }
+    [Parameter]
+    public bool ForceNotEditable { get; set; }
     private string? _containerClass;
     protected override void OnParametersSet()
     {

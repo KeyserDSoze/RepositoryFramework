@@ -16,11 +16,11 @@
                 <div class="col-11">
                     @if (BaseProperty.GenericType != PropertyType.Primitive)
                     {
-                        <InternalEdit BaseProperty="@BaseProperty" Indexes="@CreateNewIndexes(index)" />
+                        <InternalEdit BaseProperty="@BaseProperty" Indexes="@CreateNewIndexes(index)" ForceNotEditable="@ForceNotEditable" />
                     }
                     else
                     {
-                        <InternalPrimitiveEdit BaseProperty="@BaseProperty" OverriddenName="@($"{(index + 1)}. ")" Indexes="@CreateNewIndexes(index)" />
+                        <InternalPrimitiveEdit BaseProperty="@BaseProperty" OverriddenName="@($"{(index + 1)}. ")" Indexes="@CreateNewIndexes(index)" ForceNotEditable="@ForceNotEditable" />
                     }
                 </div>
                 <div class="col-1">
@@ -55,6 +55,8 @@
     public BaseProperty BaseProperty { get; set; } = null!;
     [Parameter]
     public int[]? Indexes { get; set; }
+    [Parameter]
+    public bool ForceNotEditable { get; set; }
     private IEnumerable _entities;
     private string? _error;
     private bool _disableEdit;
