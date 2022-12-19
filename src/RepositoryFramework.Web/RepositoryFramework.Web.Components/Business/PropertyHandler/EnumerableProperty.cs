@@ -8,6 +8,7 @@ namespace RepositoryFramework.Web.Components
         public EnumerableProperty(PropertyInfo info, BaseProperty? father) : base(info, father)
         {
             Type = PropertyType.Enumerable;
+            EnumerableDeep = EnumerableDeep + 1;
         }
 
         public override IEnumerable<BaseProperty> GetQueryableProperty()

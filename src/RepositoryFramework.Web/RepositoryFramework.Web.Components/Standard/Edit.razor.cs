@@ -32,7 +32,6 @@ namespace RepositoryFramework.Web.Components.Standard
         private bool _isRequestedToCreateNew;
         protected override async Task OnParametersSetAsync()
         {
-            await base.OnParametersSetAsync().NoContext();
             if (Query != null)
             {
                 if (!string.IsNullOrWhiteSpace(Key))
@@ -56,6 +55,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 _parametersBearer.BaseTypeShowcase = PropertyHandler.GetEntity(typeof(Entity<T, TKey>));
                 _parametersBearer.DisableEdit = DisableEdit;
             }
+            await base.OnParametersSetAsync().NoContext();
             LoadService.Hide();
         }
         private async Task<object?> ValueRetrieverByKeyAsync(object? key)
@@ -151,11 +151,6 @@ namespace RepositoryFramework.Web.Components.Standard
                 _keyBeforeEdit = _entity.Key;
             else
                 _entity.Key = _keyBeforeEdit!;
-        }
-        private void SetEntityDefault(object? x)
-        {
-            if (x is T t)
-                _entity.Value = t;
         }
     }
 }

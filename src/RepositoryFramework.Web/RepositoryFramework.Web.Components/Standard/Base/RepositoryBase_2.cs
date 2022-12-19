@@ -22,11 +22,7 @@ namespace RepositoryFramework.Web.Components
             TypeShowcase = PropertyHandler.GetEntity(typeof(Entity<T, TKey>));
             base.OnInitialized();
         }
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync().NoContext();
-        }
-        protected override Task OnParametersSetAsync()
+        protected override void OnParametersSet()
         {
             Repository = ServiceProvider?.GetService<IRepository<T, TKey>>();
             if (Repository != null)
@@ -40,7 +36,7 @@ namespace RepositoryFramework.Web.Components
                 Command = ServiceProvider?.GetService<ICommand<T, TKey>>();
             }
             CanEdit = Command != null;
-            return base.OnParametersSetAsync();
+            base.OnParametersSet();
         }
     }
 }

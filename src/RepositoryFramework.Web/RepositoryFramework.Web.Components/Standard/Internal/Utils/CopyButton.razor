@@ -8,7 +8,8 @@
 }
 <RadzenButton class="bg-transparent text-dark p-0"
         Click="@((x) => Copy.CopyAsync(text))"
-        data-bs-toggle="tooltip" title="@text"
+        data-bs-toggle="tooltip" 
+        title="@text"
         Text="@text" />
 
 @code {
@@ -17,4 +18,3 @@
     [Inject]
     public ICopyService Copy { get; set; }
 }
-

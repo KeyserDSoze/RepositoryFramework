@@ -3,8 +3,8 @@
     public sealed class EditParametersBearer
     {
         public required object? BaseEntity { get; set; }
-        public TryResponse<object?> GetValue(BaseProperty baseProperty)
-            => Try.WithDefaultOnCatch(() => baseProperty.Value(BaseEntity));
+        public TryResponse<object?> GetValue(BaseProperty baseProperty, int[]? indexes)
+            => Try.WithDefaultOnCatch(() => baseProperty.Value(BaseEntity, indexes));
         public void SetValue(BaseProperty baseProperty, object? value)
             => baseProperty.Set(BaseEntity, value);
         public bool CanEdit(BaseProperty baseProperty)

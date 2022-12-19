@@ -12,9 +12,7 @@
                 <RadzenFieldset Text="@Constant.Key">
                     @if (!typeof(TKey).IsPrimitive())
                     {
-                        <InternalEdit BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.First()"
-                              Deep="1"
-                              NavigationPath="@string.Empty" />
+                        <InternalEdit BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.First()" />
                     }
                     else
                     {
@@ -32,15 +30,13 @@
                         </RadzenAlert>
                     }
                 </RadzenFieldset>
-                <RadzenFieldset>
-                    <DefaultButton BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.Last()"
-                               Class="text-center mb-2 w-100"
-                               Update="@((x) => SetEntityDefault(x))" />
-                    <InternalEdit 
-                        BaseProperty="@_parametersBearer.BaseTypeShowcase.Properties.Last()"
-                        NavigationPath="@string.Empty"
-                    />
-                </RadzenFieldset>
+                @foreach (var property in _parametersBearer.BaseTypeShowcase.Properties.Skip(1).Take(1))
+                {
+                    <RadzenFieldset>
+                        <DefaultButton BaseProperty="@property" Class="text-center mb-2 w-100" />
+                        <InternalEdit BaseProperty="@property" />
+                    </RadzenFieldset>
+                }
                 @if (!DisableEdit || AllowDelete)
                 {
                     <RadzenFieldset Text="@Constant.Edit">

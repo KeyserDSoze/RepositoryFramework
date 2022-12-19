@@ -2,12 +2,12 @@
 @using Radzen;
 @using Radzen.Blazor
 
-@if (EditParameterBearer != null && _propertyUiSettings?.HasDefault == true && !DisableEdit)
+@if (_value != null)
 {
     if (WithIcon)
     {
         <span class="@Class">
-            @if (!EditParameterBearer.RestorableValues.ContainsKey(BaseProperty.NavigationPath))
+            @if (!EditParametersBearer.RestorableValues.ContainsKey(BaseProperty.NavigationPath))
             {
                 <RadzenButton Click=@(args => SetDefaultAsync()) Icon="star" ButtonStyle="ButtonStyle.Primary" />
             }
@@ -20,7 +20,7 @@
     else
     {
         <div class="@Class">
-            @if (!EditParameterBearer.RestorableValues.ContainsKey(BaseProperty.NavigationPath))
+            @if (!EditParametersBearer.RestorableValues.ContainsKey(BaseProperty.NavigationPath))
             {
                 <RadzenButton Click=@(args => SetDefaultAsync()) Text="Set default" ButtonStyle="ButtonStyle.Primary" />
             }
@@ -33,25 +33,28 @@
 }
 
 @code {
-    [CascadingParameter]
-    public EditParametersBearer EditParameterBearer { get; set; }
+    [CascadingParameter(Name = Constant.EditParametersBearer)]
+    public EditParametersBearer EditParametersBearer { get; set; }
     [Parameter]
     public BaseProperty BaseProperty { get; set; }
     [Parameter]
-    public Action<object?> Update { get; set; }
-    [Parameter]
-    public bool DisableEdit { get; set; }
+    public int[]? Indexes { get; set; }
     [Parameter]
     public string Class { get; set; }
     [Parameter]
     public bool WithIcon { get; set; }
     private PropertyUiSettings? _propertyUiSettings;
+    public bool _disableEdit { get; set; }
     private object? _value;
     private object? _restorableValue;
     protected override void OnParametersSet()
     {
-        _propertyUiSettings = EditParameterBearer.GetSettings(BaseProperty);
-        _value = BaseProperty.Value(EditParameterBearer.BaseEntity);
+        if (EditParametersBearer != null && _propertyUiSettings?.HasDefault == true && !_disableEdit)
+        {
+            _propertyUiSettings = EditParametersBearer.GetSettings(BaseProperty);
+            _disableEdit = !EditParametersBearer.CanEdit(BaseProperty);
+            _value = EditParametersBearer.GetValue(BaseProperty, Indexes);
+        }
         base.OnParametersSet();
     }
     public async Task SetDefaultAsync()
@@ -61,17 +64,17 @@
             entity = _propertyUiSettings!.Default;
         else
         {
-            var entityRetrieved = await EditParameterBearer.EntityRetrieverByKey.Invoke(_propertyUiSettings.DefaultKey).NoContext();
+            var entityRetrieved = await EditParametersBearer.EntityRetrieverByKey.Invoke(_propertyUiSettings.DefaultKey).NoContext();
             entity = _propertyUiSettings.ValueRetriever(entityRetrieved);
         }
         _restorableValue = _value;
-        Update(entity);
+        EditParametersBearer.SetValue(BaseProperty, entity);
         _value = entity;
     }
     public void Restore()
     {
         _value = _restorableValue;
-        Update(_restorableValue);
+        EditParametersBearer.SetValue(BaseProperty, _restorableValue);
         _restorableValue = null;
     }
 }

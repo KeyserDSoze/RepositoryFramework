@@ -80,7 +80,7 @@
                     {
                         <TemplateColumn Title="@value.Title" Sortable="true">
                             <ChildContent>
-                                <CopyButton GetValue="@(() => value.Value(context))" />
+                                <CopyButton GetValue="@(() => value.Value(context, null))" />
                             </ChildContent>
                             <ColumnOptions>
                                 <QueryFilter SearchValue="_searchDictionary.Get(value)" PropertyUiSettings="GetPropertySettings(value)" Search="@Search" />

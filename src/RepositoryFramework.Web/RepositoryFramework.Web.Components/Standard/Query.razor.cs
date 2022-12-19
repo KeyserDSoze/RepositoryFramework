@@ -111,7 +111,7 @@ namespace RepositoryFramework.Web.Components.Standard
             _ = await DialogService.OpenAsync<Visualizer>(property.NavigationPath,
                 new Dictionary<string, object>
                 {
-                    { "Entity", Try.WithDefaultOnCatch(() => property.Value(entity)).Entity },
+                    { "Entity", Try.WithDefaultOnCatch(() => property.Value(entity, null)).Entity },
                 }, new DialogOptions
                 {
                     Width = "80%"
@@ -133,7 +133,7 @@ namespace RepositoryFramework.Web.Components.Standard
             => string.Format(EnumerableLabelCount, EnumerableCount(entity, property));
         private int EnumerableCount(Entity<T, TKey>? entity, BaseProperty property)
         {
-            var response = Try.WithDefaultOnCatch(() => property.Value(entity));
+            var response = Try.WithDefaultOnCatch(() => property.Value(entity, null));
             if (response.Exception != null)
                 return -1;
             var items = response.Entity;

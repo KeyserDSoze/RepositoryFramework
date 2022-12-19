@@ -1,38 +1,54 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
 
-<div class="@_containerClass">
-    @foreach (var baseProperty in BaseProperty.Primitives)
-    {
-        <InternalPrimitiveEdit BaseProperty="@baseProperty" />
-    }
-</div>
-@if (BaseProperty.NonPrimitives.Count > 0)
+@if (EditParametersBearer != null)
 {
-    <div class="row row-cols">
-        <RadzenTabs SelectedIndex="0">
-            <Tabs>
-                @foreach (var baseProperty in BaseProperty.NonPrimitives)
-                {
-                    <RadzenTabsItem Text="@baseProperty.Self.Name">
-                        @if (baseProperty.Type == PropertyType.Enumerable)
-                        {
-                            <DefaultButton 
-                               BaseProperty="@baseProperty"
-                               Class="text-center mt-4 mb-2" />
-                        }
-                        <div class="col-12">
-                            @if (baseProperty.Type == PropertyType.Complex)
-                            {
-                                <InternalEdit BaseProperty="@baseProperty" />
-                            }
-                            else
-                            {
-                                <EnumerableInternalEdit BaseProperty="@baseProperty" />
-                            }
-                        </div>
-                    </RadzenTabsItem>
-                }
-            </Tabs>
-        </RadzenTabs>
+    <div class="@_containerClass">
+        @foreach (var baseProperty in BaseProperty.Primitives)
+        {
+            <InternalPrimitiveEdit BaseProperty="@baseProperty" Indexes="@Indexes" />
+        }
     </div>
+    @if (BaseProperty.NonPrimitives.Count > 0)
+    {
+        <div class="row row-cols">
+            <RadzenTabs SelectedIndex="0">
+                <Tabs>
+                    @foreach (var baseProperty in BaseProperty.NonPrimitives)
+                    {
+                        <RadzenTabsItem Text="@baseProperty.Self.Name">
+                            @if (baseProperty.Type == PropertyType.Enumerable)
+                            {
+                                <DefaultButton BaseProperty="@baseProperty" Class="text-center mt-4 mb-2" Indexes="@Indexes" />
+                            }
+                            <div class="col-12">
+                                @if (baseProperty.Type == PropertyType.Complex)
+                                {
+                                    <InternalEdit BaseProperty="@baseProperty" Indexes="@Indexes" />
+                                }
+                                else
+                                {
+                                    <EnumerableInternalEdit BaseProperty="@baseProperty" Indexes="@Indexes" />
+                                }
+                            </div>
+                        </RadzenTabsItem>
+                    }
+                </Tabs>
+            </RadzenTabs>
+        </div>
+    }
+}
+
+@code {
+    [CascadingParameter(Name = Constant.EditParametersBearer)]
+    public EditParametersBearer EditParametersBearer { get; set; }
+    [Parameter]
+    public BaseProperty BaseProperty { get; set; }
+    [Parameter]
+    public int[]? Indexes { get; set; }
+    private string? _containerClass;
+    protected override void OnParametersSet()
+    {
+        _containerClass = BaseProperty.Deep > 3 ? "row row-cols-1" : "row row-cols-1 row-cols-lg-2";
+        base.OnParametersSet();
+    }
 }

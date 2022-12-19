@@ -38,7 +38,7 @@
 
                             @foreach (var property in TypeShowcase.FlatProperties)
                             {
-                                <CopyButton GetValue="@(() => property.Value(item))" />
+                                <CopyButton GetValue="@(() => property.Value(item, null))" />
                             }
                         }
                     </tr>
