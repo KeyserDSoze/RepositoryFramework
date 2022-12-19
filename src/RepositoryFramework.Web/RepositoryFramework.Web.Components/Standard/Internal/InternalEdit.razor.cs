@@ -8,6 +8,8 @@ namespace RepositoryFramework.Web.Components.Standard
         public EditParametersBearer EditParametersBearer { get; set; }
         [Parameter]
         public BaseProperty BaseProperty { get; set; }
+        [Parameter]
+        public int? Index { get; set; }
         private string? _containerClass;
         protected override void OnParametersSet()
         {

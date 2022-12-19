@@ -50,7 +50,7 @@
     private object? _restorableValue;
     protected override void OnParametersSet()
     {
-        _propertyUiSettings = BaseProperty.GetSettings(EditParameterBearer);
+        _propertyUiSettings = EditParameterBearer.GetSettings(BaseProperty);
         _value = BaseProperty.Value(EditParameterBearer.BaseEntity);
         base.OnParametersSet();
     }

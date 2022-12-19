@@ -9,16 +9,16 @@
     {
         foreach (var entity in _entities)
         {
+            var index = counter;
             <div class="row">
                 <div class="col">
                     @if (BaseProperty.Type != PropertyType.Primitive)
                     {
-                        <InternalEdit BaseProperty="@BaseProperty.NonPrimitives.First()" />
+                        <InternalEdit BaseProperty="@BaseProperty" Index="@index" />
                     }
                     else
                     {
-                        var index = counter;
-                        <InternalPrimitiveEdit BaseProperty="@BaseProperty.NonPrimitives.First()" />
+                        <InternalPrimitiveEdit BaseProperty="@BaseProperty" OverriddenName="@($"{index}. ")" Index="@index" />
                     }
                 </div>
                 @{
@@ -29,9 +29,7 @@
     }
     else
     {
-        <InternalMultiSelectEdit Name="@BaseProperty.Self.Name"
-            Update="@((object x) => Update((IEnumerable<T>)x))" PropertyUiSettings="@PropertyUiSettings">
-        </InternalMultiSelectEdit>
+        <InternalPrimitiveEdit BaseProperty="@BaseProperty" />
     }
     @if (EditParametersBearer.CanEdit(BaseProperty) && !_propertyUiSettings.HasValues())
     {

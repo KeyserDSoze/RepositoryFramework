@@ -7,7 +7,7 @@
 
 @{
     var defaultClass = "col my-2";
-    if (!PropertyUiSettings.HasValues() && PropertyUiSettings?.HasTextEditor == true)
+    if (!_propertyUiSettings.HasValues() && _propertyUiSettings?.HasTextEditor == true)
     {
         defaultClass = "col-12 my-2";
     }
@@ -15,34 +15,34 @@
 <div class="@defaultClass">
     <div class="input-group">
         <span class="input-group-text">
-            @Name
+            @(OverriddenName ?? BaseProperty.Self.Name)
         </span>
-        @if (!PropertyUiSettings.HasValues())
+        @if (!_propertyUiSettings.HasValues())
         {
-            @if (PropertyUiSettings?.HasTextEditor == true)
+            @if (_propertyUiSettings?.HasTextEditor == true)
             {
-                string style = $"height: {PropertyUiSettings.MinHeight}px;";
+                string style = $"height: {_propertyUiSettings.MinHeight}px;";
 
-                <RadzenHtmlEditor Value="@Value?.ToString()"
+                <RadzenHtmlEditor Value="@_value?.ToString()"
                           ValueChanged="@((x) => InternalUpdate(x))"
                           class="form-control"
                           Style="@style"
                           Change=@OnChange
                           Paste=@OnPaste
-                          Disabled="@DisableEdit" />
+                          Disabled="@_disableEdit" />
             }
-            else if (Value is bool booleanValue)
+            else if (_value is bool booleanValue)
             {
-                if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
+                if (_value.GetType().IsGenericType)
                 {
-                    <RadzenCheckBox class="form-control" Value="@booleanValue" TriState=true TValue="bool?" Change=@(args => InternalUpdate(args)) Disabled="@DisableEdit" />
+                    <RadzenCheckBox class="form-control" Value="@booleanValue" TriState=true TValue="bool?" Change=@(args => InternalUpdate(args)) Disabled="@_disableEdit" />
                 }
                 else
                 {
-                    <RadzenCheckBox class="form-control" Value="@booleanValue" TriState=false TValue="bool" Change=@(args => InternalUpdate(args)) Disabled="@DisableEdit" />
+                    <RadzenCheckBox class="form-control" Value="@booleanValue" TriState=false TValue="bool" Change=@(args => InternalUpdate(args)) Disabled="@_disableEdit" />
                 }
             }
-            else if (Value is DateTime dateTime)
+            else if (_value is DateTime dateTime)
             {
                 <RadzenDatePicker class="form-control"
                           TValue="DateTime?"
@@ -51,33 +51,23 @@
                           HoursStep="1.5"
                           MinutesStep="5"
                           SecondsStep="10"
-                          Value="Value"
+                          Value="_value"
                           Change=@(args => InternalUpdate(args))
                           DateFormat="yyyy/MM/dd HH:mm:ss"
-                          Disabled="@DisableEdit" />
+                          Disabled="@_disableEdit" />
             }
-            else if (Value is DateOnly dateOnly)
+            else if (_value is DateOnly dateOnly)
             {
                 <RadzenDatePicker class="form-control"
                           TValue="DateOnly?"
-                          Value="Value"
+                          Value="_value"
                           Change=@(args => InternalUpdate(args))
                           DateFormat="yyyy/MM/dd"
-                          Disabled="@DisableEdit" />
-            }
-            else if (typeof(T).IsNumeric())
-            {
-                <RadzenNumeric class="form-control"
-                       TValue="T"
-                       Value="Value"
-                       Placeholder="Enter or clear value"
-                       Change="@(args => InternalUpdate(args))"
-                       TextAlign="TextAlign.Right"
-                       Disabled="@DisableEdit" />
+                          Disabled="@_disableEdit" />
             }
             else
             {
-                <RadzenTextBox class="form-control" Value="@Value?.ToString()" Change=@(args => InternalUpdate(args)) Disabled="DisableEdit" />
+                <RadzenTextBox class="form-control" Value="@_value?.ToString()" Change=@(args => InternalUpdate(args)) Disabled="_disableEdit" />
             }
         }
         else
@@ -86,32 +76,31 @@
                         AllowClear="true"
                         AllowFiltering="true"
                         FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                        Multiple="false"
+                        Multiple="@_isMultiple"
                         Placeholder="Select..."
-                        Data="@PropertyUiSettings!.Values"
-                        Value="@(PropertyUiSettings.LabelComparer(Value))"
+                        Data="@_propertyUiSettings!.Values"
+                        Value="@LabelComparer()"
                         TextProperty="Label"
                         ValueProperty="Id"
                         Change="@InternalProxyUpdate"
                         class="form-control"
-                        Disabled="@DisableEdit" />
+                        Disabled="@_disableEdit" />
         }
-        <DefaultButton 
-            Class="input-group-text"
-            WithIcon=true
-            Update="@InternalUpdate"
-            PropertyUiSettings="@PropertyUiSettings" 
-            Value="Value" />
+        <DefaultButton Class="input-group-text"
+                       WithIcon=true
+                       Update="@InternalUpdate"
+                       PropertyUiSettings="@_propertyUiSettings"
+                       Value="Value" />
         <span class="input-group-text">
-            <RadzenButton Click="@((x) => Copy.CopyAsync(Value?.ToString()))" Icon="file_copy" />
+            <RadzenButton Click="@((x) => Copy.CopyAsync(_value?.ToString()))" Icon="file_copy" />
         </span>
-        @if (!DisableEdit && Delete != null)
+        @if (!_disableEdit && Index != null)
         {
             <span class="input-group-text">
-                <RadzenButton Click="@((x) => Delete.Invoke())" Icon="delete" />
+                <RadzenButton Click="@((x) => RemoveFromEnumerable())" Icon="delete" />
             </span>
         }
-        <ErrorCatcher Error="@Error" />
+        <ErrorCatcher Error="@_error" />
     </div>
 </div>
 
@@ -120,36 +109,68 @@
     public EditParametersBearer EditParametersBearer { get; set; }
     [Parameter]
     public BaseProperty BaseProperty { get; set; }
+    [Parameter]
+    public int? Index { get; set; }
+    [Parameter]
+    public string? OverriddenName { get; set; }
     [Inject]
     public ICopyService Copy { get; set; }
+    private PropertyUiSettings? _propertyUiSettings;
+    private object? _value;
+    private string? _error;
+    private bool _disableEdit = true;
+    private bool _isMultiple = false;
+    protected override void OnParametersSet()
+    {
+        var value = EditParametersBearer.GetValue(BaseProperty);
+        if (value.Exception == null)
+        {
+            var entity = value.Entity;
+            if (Index != null && _value is IEnumerable entities)
+            {
+                _value = entities.ElementAt(Index.Value);
+            }
+            else
+                _value = entity;
+            _isMultiple = _value is not string && _value is IEnumerable;
+            _propertyUiSettings = EditParametersBearer.GetSettings(BaseProperty);
+            _disableEdit = !EditParametersBearer.CanEdit(BaseProperty);
+        }
+        else
+            _error = value.Exception.Message;
+        base.OnParametersSet();
+    }
     public void InternalUpdate(object? value)
     {
-        var currentValue = value.Cast<T>()!;
-        Update(currentValue);
-        Value = currentValue;
+        EditParametersBearer.SetValue(BaseProperty, value);
+        _value = value;
     }
     public void InternalProxyUpdate(object x)
     {
         var id = x?.ToString();
-        InternalUpdate(PropertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value);
+        InternalUpdate(_propertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value);
     }
-    public async Task SetDefaultAsync()
+    private void RemoveFromEnumerable()
     {
-        RestorableValue = Value;
-        if (PropertyUiSettings!.Default != null)
-            InternalUpdate(PropertyUiSettings!.Default);
-        else
+        var result = EditParametersBearer.GetValue(BaseProperty);
+        if (result.Exception == null)
         {
-            var entityRetrieved = await EditParameterBearer.EntityRetrieverByKey.Invoke(PropertyUiSettings.DefaultKey).NoContext();
-            var entity = PropertyUiSettings.ValueRetriever(entityRetrieved);
-            InternalUpdate(entity);
+            if (result.Entity is Array array)
+            {
+            }
         }
     }
-    public void Restore()
+    private object LabelComparer()
     {
-        Value = RestorableValue;
-        RestorableValue = default;
-        InternalUpdate(Value);
+        if (_isMultiple && _value is IEnumerable enumerable)
+            return GetLabels();
+        else
+            return _propertyUiSettings.LabelComparer(_value);
+    }
+    private IEnumerable<string> GetLabels()
+    {
+        foreach (var item in _value as IEnumerable)
+            yield return _propertyUiSettings.LabelComparer(item);
     }
     void OnPaste(HtmlEditorPasteEventArgs args)
     {
