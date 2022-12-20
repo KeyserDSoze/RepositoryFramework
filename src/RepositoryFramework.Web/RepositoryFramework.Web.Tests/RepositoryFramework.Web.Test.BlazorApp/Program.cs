@@ -30,15 +30,7 @@ builder.Services
     .PopulateWithRandomData(x => x.AppDomain, 34, 2)
     .And()
     .ExposeFor(3);
-builder.Services
-    .AddRepositoryInMemoryStorage<AppUser, int>()
-    .PopulateWithRandomData(x => x.Id, 67, 2)
-    .And()
-    .MapPropertiesForUi<AppUser, int, AppUserDesignMapper>()
-    .WithIcon("manage_accounts")
-    .WithName("User")
-    .ExposeFor(2)
-    .SetDefaultUiRoot();
+
 builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>
 {
     x.IsNotExposable = false;
@@ -46,6 +38,24 @@ builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>
     .PopulateWithRandomData(x => x.Id, 24, 2);
 builder.Services.AddRepositoryInMemoryStorage<Weather, int>()
     .PopulateWithRandomData(x => x.Id, 5, 2);
+builder.Services
+    .AddRepositoryInMemoryStorage<AppUser, int>()
+    .PopulateWithRandomData(x => x.Id, 67, 2)
+    .WithRandomValue(x => x.Groups, async serviceProvider =>
+    {
+        var repository = serviceProvider.GetService<IRepository<AppGroup, string>>()!;
+        return (await repository.ToListAsync().NoContext()).Select(x => new Group()
+        {
+            Id = x.Key,
+            Name = x.Value.Name
+        });
+    })
+    .And()
+    .MapPropertiesForUi<AppUser, int, AppUserDesignMapper>()
+    .WithIcon("manage_accounts")
+    .WithName("User")
+    .ExposeFor(2)
+    .SetDefaultUiRoot();
 builder.Services.AddWarmUp(async serviceProvider =>
 {
     var repository = serviceProvider.GetService<IRepository<AppUser, int>>();

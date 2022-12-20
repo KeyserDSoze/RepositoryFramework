@@ -23,7 +23,7 @@ namespace RepositoryFramework.InMemory
                 .Replace("First().", string.Empty);
         public IRepositoryInMemoryCreatorBuilder<T, TKey> WithPattern<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, params string[] regex)
         {
-            string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
+            var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.RegexForValueCreation;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = regex;
@@ -33,7 +33,7 @@ namespace RepositoryFramework.InMemory
         }
         public IRepositoryInMemoryCreatorBuilder<T, TKey> WithSpecificNumberOfElements<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, int numberOfElements)
         {
-            string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
+            var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.NumberOfElements;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = numberOfElements;
@@ -43,7 +43,7 @@ namespace RepositoryFramework.InMemory
         }
         public IRepositoryInMemoryCreatorBuilder<T, TKey> WithValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Func<TProperty> creator)
         {
-            string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
+            var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.DelegatedMethodForValueCreation;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = () => creator.Invoke()!;
@@ -51,9 +51,41 @@ namespace RepositoryFramework.InMemory
                 dictionary.Add(nameOfProperty, () => creator.Invoke()!);
             return this;
         }
+        public IRepositoryInMemoryCreatorBuilder<T, TKey> WithValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Func<IServiceProvider, Task<TProperty>> valueRetriever)
+        {
+            var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
+            var dictionary = _internalBehaviorSettings.DelegatedMethodForValueRetrieving;
+            if (dictionary.ContainsKey(nameOfProperty))
+                dictionary[nameOfProperty] = async (x) => await valueRetriever.Invoke(x).NoContext()!;
+            else
+                dictionary.Add(nameOfProperty, async (x) => await valueRetriever.Invoke(x).NoContext()!);
+            return this;
+        }
+        public IRepositoryInMemoryCreatorBuilder<T, TKey> WithRandomValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath,
+            Func<IServiceProvider, Task<IEnumerable<TProperty>>> valuesRetriever)
+        {
+            var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
+            var dictionary = _internalBehaviorSettings.DelegatedMethodWithRandomForValueRetrieving;
+            if (dictionary.ContainsKey(nameOfProperty))
+                dictionary[nameOfProperty] = async (x) => (await valuesRetriever.Invoke(x).NoContext()!).Select(x => (object)x!)!;
+            else
+                dictionary.Add(nameOfProperty, async (x) => (await valuesRetriever.Invoke(x).NoContext()!).Select(x => (object)x!)!);
+            return this;
+        }
+        public IRepositoryInMemoryCreatorBuilder<T, TKey> WithRandomValue<TProperty>(Expression<Func<T, IEnumerable<TProperty>>> navigationPropertyPath,
+           Func<IServiceProvider, Task<IEnumerable<TProperty>>> valuesRetriever)
+        {
+            var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
+            var dictionary = _internalBehaviorSettings.DelegatedMethodWithRandomForValueRetrieving;
+            if (dictionary.ContainsKey(nameOfProperty))
+                dictionary[nameOfProperty] = async (x) => (await valuesRetriever.Invoke(x).NoContext()!).Select(x => (object)x!)!;
+            else
+                dictionary.Add(nameOfProperty, async (x) => (await valuesRetriever.Invoke(x).NoContext()!).Select(x => (object)x!)!);
+            return this;
+        }
         public IRepositoryInMemoryCreatorBuilder<T, TKey> WithAutoIncrement<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, TProperty start)
         {
-            string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
+            var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.AutoIncrementations;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = start!;
@@ -63,7 +95,7 @@ namespace RepositoryFramework.InMemory
         }
         public IRepositoryInMemoryCreatorBuilder<T, TKey> WithImplementation<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Type implementationType)
         {
-            string nameOfProperty = GetNameOfProperty(navigationPropertyPath);
+            var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.ImplementationForValueCreation;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = implementationType;

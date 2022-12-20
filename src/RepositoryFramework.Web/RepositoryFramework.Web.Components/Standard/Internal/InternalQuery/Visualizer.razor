@@ -30,7 +30,7 @@
                         @if (_isPrimitive)
                         {
                             <td>
-                                @item?.ToString()
+                                <CopyButton GetValue="@(() => @item?.ToString())" />
                             </td>
                         }
                         else
@@ -38,7 +38,9 @@
 
                             @foreach (var property in TypeShowcase.FlatProperties)
                             {
-                                <CopyButton GetValue="@(() => property.Value(item, null))" />
+                                <td>
+                                    <CopyButton GetValue="@(() => property.Value(item, null))" />
+                                </td>
                             }
                         }
                     </tr>

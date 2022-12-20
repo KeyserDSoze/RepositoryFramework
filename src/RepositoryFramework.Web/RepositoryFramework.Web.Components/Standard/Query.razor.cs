@@ -108,7 +108,7 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         private async Task ShowMoreValuesAsync(Entity<T, TKey>? entity, BaseProperty property)
         {
-            _ = await DialogService.OpenAsync<Visualizer>(property.NavigationPath,
+            _ = await DialogService.OpenAsync<Visualizer>(property.Title,
                 new Dictionary<string, object>
                 {
                     { "Entity", Try.WithDefaultOnCatch(() => property.Value(entity, null)).Entity },
