@@ -12,6 +12,12 @@
         public string SecondaryLighter { get; set; } = "rgba(53, 160, 215, 0.2)";
         public string SecondaryDark { get; set; } = "#3193c6";
         public string SecondaryDarker { get; set; } = "#2878a1";
+        public string Success { get; set; } = "#198754";
+        public string Info { get; set; } = "#0dcaf0";
+        public string Warning { get; set; } = "#ffc107";
+        public string Danger { get; set; } = "#dc3545";
+        public string Light { get; set; } = "#adb5bd";
+        public string Dark { get; set; } = "#000";
         public string Base50 { get; set; } = "#ffffff";
         public string Base100 { get; set; } = "#f6f7fa";
         public string Base200 { get; set; } = "#e9edf0";
