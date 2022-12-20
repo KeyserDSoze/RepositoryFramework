@@ -1,16 +1,13 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
-@using Radzen;
-@using Radzen.Blazor
 
 @{
     var tryToGetTheValue = Try.WithDefaultOnCatch(() => GetValue.Invoke()?.ToString());
     var text = tryToGetTheValue.Entity ?? (tryToGetTheValue.Exception?.InnerException ?? tryToGetTheValue.Exception)?.Message ?? string.Empty;
 }
-<RadzenButton class="bg-transparent text-dark p-0"
-        Click="@((x) => Copy.CopyAsync(text))"
-        data-bs-toggle="tooltip" 
-        title="@text"
-        Text="@text" />
+<button class="bg-transparent text-dark p-0 border-0"
+        @onclick="@((x) => Copy.CopyAsync(text))">
+    @text
+</button>
 
 @code {
     [Parameter]

@@ -1,41 +1,20 @@
 ﻿@namespace RepositoryFramework.Web.Components.Standard
 
-@if (_value != null)
+@foreach (var baseProperty in BaseProperty.NonPrimitives)
 {
-    <div class="@Class">
-    @if (_restorableValue == null)
-    {
-        <button type="button" class="btn btn-primary btn-sm"
-        @onclick="@(args => SetDefaultAsync())">
-            @if (WithIcon)
+    <RadzenTabsItem Text="@baseProperty.Self.Name">
+        <DefaultButton BaseProperty="@baseProperty" Class="text-center mt-4 mb-2" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
+        <div class="col-12">
+            @if (baseProperty.Type == PropertyType.Complex)
             {
-                <span class="material-symbols-outlined">
-                    star
-                </span>
+                <InternalEdit BaseProperty="@baseProperty" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
             }
             else
             {
-                @:Set default
+                <EnumerableInternalEdit BaseProperty="@baseProperty" Indexes="@Indexes" ForceNotEditable="@ForceNotEditable" />
             }
-        </button>
-    }
-    else
-    {
-        <button type="button" class="btn btn-secondary btn-sm"
-        @onclick="@(args => Restore())">
-            @if (WithIcon)
-            {
-                <span class="material-symbols-outlined">
-                    arrow_back
-                </span>
-            }
-            else
-            {
-                @:Restore
-            }
-        </button>
-    }
-    </div>
+        </div>
+    </RadzenTabsItem>
 }
 
 @code {

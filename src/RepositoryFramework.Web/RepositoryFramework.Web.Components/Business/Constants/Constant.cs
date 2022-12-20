@@ -25,5 +25,10 @@
         public const string AllowDelete = nameof(AllowDelete);
         public const string None = nameof(None);
         public const string Error = nameof(Error);
+        public const string DialogWidth = "80%";
+        public const string NavLink = "nav-link";
+        public const string NavTabPane = "tab-pane fade show";
+        public const string NavLinkActive = "nav-link active";
+        public const string NavTabPaneActive = "tab-pane fade show active";
     }
 }

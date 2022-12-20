@@ -88,7 +88,12 @@
             }
             <DefaultButton BaseProperty="@BaseProperty" Class="input-group-text" WithIcon=true Indexes="@Indexes" />
             <span class="input-group-text">
-                <RadzenButton Click="@((x) => Copy.CopyAsync(_value?.ToString()))" Icon="file_copy" />
+                <button type="button" class="btn btn-warning btn-sm"
+                    @onclick="@(args => Copy.CopyAsync(_value?.ToString()))">
+                    <span class="material-symbols-outlined">
+                        file_copy
+                    </span>
+                </button>
             </span>
             <ErrorCatcher Error="@_error" />
         </div>

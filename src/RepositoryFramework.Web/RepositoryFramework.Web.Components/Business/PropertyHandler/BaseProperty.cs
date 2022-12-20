@@ -14,6 +14,7 @@ namespace RepositoryFramework.Web.Components
         public Type[]? Generics { get; private protected set; }
         public string NavigationPath { get; }
         public string Title { get; }
+        public BootstrapProperty BootstrapProperty { get; }
         public int Deep { get; }
         public int EnumerableDeep { get; private protected set; }
         public Type AssemblyType => Self.PropertyType;
@@ -42,6 +43,7 @@ namespace RepositoryFramework.Web.Components
                 Title = NavigationPath.Replace(Constant.ValueWithSeparator, string.Empty, 1);
             else
                 Title = NavigationPath;
+            BootstrapProperty = new(NavigationPath);
             Primitives = Sons.Where(x => x.Type == PropertyType.Primitive).ToList();
             NonPrimitives = Sons.Where(x => x.Type != PropertyType.Primitive).ToList();
         }

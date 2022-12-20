@@ -70,7 +70,7 @@ namespace RepositoryFramework.Web.Components.Standard
             stringBuilder.Append($"{Pagination.CurrentPageIndex}_{Pagination.ItemsPerPage}_");
             stringBuilder.Append(string.Join('_', _searchDictionary.GetExpressions()));
             stringBuilder.Append($"_{request.SortByColumn?.Title}_{request.SortByAscending}");
-            string queryKey = stringBuilder.ToString();
+            var queryKey = stringBuilder.ToString();
             if (_lastQueryKey != queryKey)
             {
                 LoadService.Show();
@@ -108,14 +108,18 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         private async Task ShowMoreValuesAsync(Entity<T, TKey>? entity, BaseProperty property)
         {
-            _ = await DialogService.OpenAsync<Visualizer>(property.Title,
-                new Dictionary<string, object>
-                {
-                    { "Entity", Try.WithDefaultOnCatch(() => property.Value(entity, null)).Entity },
-                }, new DialogOptions
-                {
-                    Width = "80%"
-                });
+            var retrieve = Try.WithDefaultOnCatch(() => property.Value(entity, null));
+            if (retrieve.Exception == null && retrieve.Entity is IEnumerable enumerable && enumerable.GetEnumerator().MoveNext())
+            {
+                _ = await DialogService.OpenAsync<Visualizer>(property.Title,
+                    new Dictionary<string, object>
+                    {
+                        { Constant.Entity, retrieve.Entity },
+                    }, new DialogOptions
+                    {
+                        Width = Constant.DialogWidth
+                    });
+            }
         }
         private IEnumerable<PageWrapper> GetPages()
         {

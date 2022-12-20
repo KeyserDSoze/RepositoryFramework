@@ -19,7 +19,7 @@ namespace RepositoryFramework.Web.Components.Services
             await _jsInterop.InvokeVoidAsync("navigator.clipboard.writeText", value).NoContext();
             _notificationService.Notify(new Radzen.NotificationMessage
             {
-                Duration = 4_000,
+                Duration = 1_000,
                 CloseOnClick = true,
                 Severity = Radzen.NotificationSeverity.Success,
                 Summary = Copied,
