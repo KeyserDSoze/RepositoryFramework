@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Http;
 using RepositoryFramework.Web.Components.Services;
@@ -13,7 +14,9 @@ namespace RepositoryFramework.Web.Components
         public NavigationManager NavigationManager { get; set; } = null!;
         [Inject]
         public IPolicyEvaluatorManager? PolicyEvaluatorManager { get; set; }
-        [CascadingParameter]
+        [Inject]
+        public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+        [CascadingParameter(Name = nameof(HttpContext))]
         public HttpContext HttpContext { get; set; } = null!;
         private List<AppMenuItem>? _contextAppMenu;
         protected override async Task OnInitializedAsync()
@@ -81,6 +84,10 @@ namespace RepositoryFramework.Web.Components
         {
             LoadService.Show();
             NavigationManager.NavigateTo(uri);
+        }
+        private void LogOut()
+        {
+            NavigationManager.NavigateTo("/Repository/Identity/Logout", true);
         }
         public void Dispose()
         {

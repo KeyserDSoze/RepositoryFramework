@@ -1,0 +1,14 @@
+﻿@page "/Repository/Settings"
+@namespace RepositoryFramework.Web.Components
+
+@if (_paletteKey != null && AppPaletteWrapper.Skins.Count > 1)
+{
+    <select class="form-control" @onchange=@((x) => ChangeSkin(x))>
+        @foreach (var skin in AppPaletteWrapper.Skins)
+        {
+            <option value="@skin.Key" selected="@(_paletteKey == skin.Key)">
+                @skin.Key
+            </option>
+        }
+    </select>
+}

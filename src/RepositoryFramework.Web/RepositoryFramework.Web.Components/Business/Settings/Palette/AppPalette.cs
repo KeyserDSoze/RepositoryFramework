@@ -10,6 +10,7 @@
         public string Danger { get; set; } = "#dc3545";
         public string Light { get; set; } = "#adb5bd";
         public string Dark { get; set; } = "#000";
+        public string Color { get; set; } = "#000";
         public string BackgroundColor { get; set; } = "#fff";
         public LinkPalette Link { get; set; } = new();
         public ButtonPalette Button { get; set; } = new();

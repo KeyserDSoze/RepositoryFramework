@@ -1,5 +1,8 @@
-﻿@using RepositoryFramework.Web.Components;
+﻿@using Microsoft.AspNetCore.Http;
+@using RepositoryFramework.Web.Components;
 @inject AppSettings Settings
+@inject AppPaletteWrapper AppPaletteWrapper
+@inject IHttpContextAccessor HttpContextAccessor
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <link rel="stylesheet" href="_content/Radzen.Blazor/css/default-base.css">
@@ -7,27 +10,40 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 <link href="_content/Rystem.RepositoryFramework.Web.Components/repository.css" rel="stylesheet" />
 
+@{
+    var palette = AppPaletteWrapper.Skins.First().Value;
+    if (HttpContextAccessor.HttpContext.Request.Cookies.TryGetValue(Constant.PaletteKey, out var paletteKey) && AppPaletteWrapper.Skins.ContainsKey(paletteKey))
+    {
+        palette = AppPaletteWrapper.Skins[paletteKey];
+    }
+}
+
 <style>
     :root {
-        --primary: @(Settings.Palette.Primary);
-        --secondary: @(Settings.Palette.Secondary);
-        --success: @(Settings.Palette.Success);
-        --info: @(Settings.Palette.Info);
-        --warning: @(Settings.Palette.Warning);
-        --danger: @(Settings.Palette.Danger);
-        --light: @(Settings.Palette.Light);
-        --dark: @(Settings.Palette.Dark);
-        --link-color: @(Settings.Palette.Link.Color);
-        --link-hover-color: @(Settings.Palette.Link.Hover);
-        --btn-color: @(Settings.Palette.Button.Color);
-        --btn-bg: @(Settings.Palette.Button.Background);
-        --btn-hover-color: shade-color(@(Settings.Palette.Button.Color), 10%);
-        --btn-hover-bg: shade-color(@(Settings.Palette.Button.Background), 15%);
-        --bs-body-color: @(Settings.Palette.BackgroundColor);
-        --table-color: @(Settings.Palette.Table.Color);
-        --table-striped-color: @(Settings.Palette.Table.StripedColor);
-        --table-bg: @(Settings.Palette.Table.Background);
-        --table-striped-bg: @(Settings.Palette.Table.StripedBackground);
+        --primary: @(palette.Primary);
+        --secondary: @(palette.Secondary);
+        --success: @(palette.Success);
+        --info: @(palette.Info);
+        --warning: @(palette.Warning);
+        --danger: @(palette.Danger);
+        --light: @(palette.Light);
+        --dark: @(palette.Dark);
+        --link-color: @(palette.Link.Color);
+        --link-hover-color: @(palette.Link.Hover);
+        --btn-color: @(palette.Button.Color);
+        --btn-bg: @(palette.Button.Background);
+        --btn-hover-color: shade-color(@(palette.Button.Color), 10%);
+        --btn-hover-bg: shade-color(@(palette.Button.Background), 15%);
+        --bs-body-color: @(palette.BackgroundColor);
+        --table-color: @(palette.Table.Color);
+        --table-striped-color: @(palette.Table.StripedColor);
+        --table-bg: @(palette.Table.Background);
+        --table-striped-bg: @(palette.Table.StripedBackground);
+    }
+
+    body {
+        background: var(--bs-body-color) !important;
+        color: var(--dark) !important;
     }
 
     .table {
@@ -38,6 +54,30 @@
         --bs-table-striped-bg: var(--table-striped-bg);
         color: var(--bs-table-color);
     }
+
+    .navbar {
+        --bs-navbar-color: var(--dark);
+        --bs-navbar-brand-color: var(--dark);
+        --bs-navbar-hover-color: opaque(var(--bs-navbar-color));
+        --bs-navbar-disabled-color: opaque(var(--bs-navbar-color));
+        --bs-navbar-active-color: color-contrast(var(--dark));
+        --bs-navbar-brand-hover-color: opaque(var(--bs-navbar-color));
+    }
+
+    .dropdown-menu {
+        --bs-dropdown-link-color: opaque(var(--dark));
+        --bs-dropdown-link-hover-color: opaque(opaque(var(--dark)));
+        --bs-dropdown-link-hover-bg: opaque(var(--bs-body-color));
+        --bs-dropdown-link-active-color: opaque(opaque(var(--bs-body-color)));
+        --bs-dropdown-link-active-bg: opaque(var(--primary));
+        --bs-dropdown-link-disabled-color: color-contrast(var(--primary));
+        --bs-dropdown-header-color: var(--dark);
+        --bs-dropdown-color: var(--dark);
+        --bs-dropdown-bg: var(--bs-body-color);
+        --bs-dropdown-border-color: var(--bs-border-color-translucent);
+        --bs-dropdown-divider-bg: var(--bs-border-color-translucent);
+    }
+
 
     .form-control {
         min-height: 50px;
@@ -104,5 +144,9 @@
 
     .input-group-text {
         padding: 0px 10px !important;
+    }
+
+    button.bg-transparent {
+        color: var(--dark) !important;
     }
 </style>

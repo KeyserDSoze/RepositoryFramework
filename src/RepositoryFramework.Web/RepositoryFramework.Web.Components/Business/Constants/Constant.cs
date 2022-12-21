@@ -30,5 +30,6 @@
         public const string NavTabPane = "tab-pane fade show";
         public const string NavLinkActive = "nav-link active";
         public const string NavTabPaneActive = "tab-pane fade show active";
+        public const string PaletteKey = nameof(PaletteKey);
     }
 }

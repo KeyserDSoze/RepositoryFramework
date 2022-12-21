@@ -311,7 +311,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     .WithName($"{method}{name}")
                     .AddAuthorization(authorization, method);
         }
-        
         private static RouteHandlerBuilder AddAuthorization(this RouteHandlerBuilder router, ApiAuthorization? authorization, RepositoryMethods path)
         {
             var policies = authorization?.GetPolicy(path);

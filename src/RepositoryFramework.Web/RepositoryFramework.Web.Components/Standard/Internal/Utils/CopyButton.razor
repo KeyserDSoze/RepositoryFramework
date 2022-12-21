@@ -4,7 +4,7 @@
     var tryToGetTheValue = Try.WithDefaultOnCatch(() => GetValue.Invoke()?.ToString());
     var text = tryToGetTheValue.Entity ?? (tryToGetTheValue.Exception?.InnerException ?? tryToGetTheValue.Exception)?.Message ?? string.Empty;
 }
-<button class="bg-transparent text-dark p-0 border-0"
+<button class="bg-transparent p-0 border-0"
         @onclick="@((x) => Copy.CopyAsync(text))">
     @text
 </button>
