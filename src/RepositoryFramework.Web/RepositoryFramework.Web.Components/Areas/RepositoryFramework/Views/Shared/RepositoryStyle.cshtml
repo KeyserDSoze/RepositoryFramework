@@ -17,40 +17,26 @@
         --danger: @(Settings.Palette.Danger);
         --light: @(Settings.Palette.Light);
         --dark: @(Settings.Palette.Dark);
-        --rz-base-50: @(Settings.Palette.Base50);
-        --rz-base-100: @(Settings.Palette.Base100);
-        --rz-base-200: @(Settings.Palette.Base200);
-        --rz-base-300: @(Settings.Palette.Base300);
-        --rz-base-400: @(Settings.Palette.Base400);
-        --rz-base-500: @(Settings.Palette.Base500);
-        --rz-base-600: @(Settings.Palette.Base600);
-        --rz-base-700: @(Settings.Palette.Base700);
-        --rz-base-800: @(Settings.Palette.Base800);
-        --rz-base-900: @(Settings.Palette.Base900);
-        --rz-primary: @(Settings.Palette.Primary);
-        --rz-primary-light: @(Settings.Palette.PrimaryLight);
-        --rz-primary-lighter: @(Settings.Palette.PrimaryLighter);
-        --rz-primary-dark: @(Settings.Palette.PrimaryDark);
-        --rz-primary-darker: @(Settings.Palette.PrimaryDarker);
-        --rz-secondary: @(Settings.Palette.Secondary);
-        --rz-secondary-light: @(Settings.Palette.SecondaryLight);
-        --rz-secondary-lighter: @(Settings.Palette.SecondaryLighter);
-        --rz-secondary-dark: @(Settings.Palette.SecondaryDark);
-        --rz-secondary-darker: @(Settings.Palette.SecondaryDarker);
-        --rz-series-1: @(Settings.Palette.Series1);
-        --rz-series-2: @(Settings.Palette.Series2);
-        --rz-series-3: @(Settings.Palette.Series3);
-        --rz-series-4: @(Settings.Palette.Series4);
-        --rz-series-5: @(Settings.Palette.Series5);
-        --rz-series-6: @(Settings.Palette.Series6);
-        --rz-series-7: @(Settings.Palette.Series7);
-        --rz-series-8: @(Settings.Palette.Series8);
-        --rz-border-width: @(Settings.Sizing.BorderWidth);
-        --rz-root-font-size: @(Settings.Sizing.RootFontSize);
-        --rz-body-font-size: @(Settings.Sizing.BodyFontSize);
-        --rz-body-line-height: @(Settings.Sizing.BodyLineHeight);
-        --rz-icon-size: @(Settings.Sizing.IconSize);
-        --rz-text-font-family: @(Settings.Sizing.TextFontFamily);
+        --link-color: @(Settings.Palette.Link.Color);
+        --link-hover-color: @(Settings.Palette.Link.Hover);
+        --btn-color: @(Settings.Palette.Button.Color);
+        --btn-bg: @(Settings.Palette.Button.Background);
+        --btn-hover-color: shade-color(@(Settings.Palette.Button.Color), 10%);
+        --btn-hover-bg: shade-color(@(Settings.Palette.Button.Background), 15%);
+        --bs-body-color: @(Settings.Palette.BackgroundColor);
+        --table-color: @(Settings.Palette.Table.Color);
+        --table-striped-color: @(Settings.Palette.Table.StripedColor);
+        --table-bg: @(Settings.Palette.Table.Background);
+        --table-striped-bg: @(Settings.Palette.Table.StripedBackground);
+    }
+
+    .table {
+        --bs-table-color: var(--table-color);
+        --bs-table-bg: var(--table-bg);
+        --bs-table-border-color: var(--bs-border-color);
+        --bs-table-striped-color: var(--table-striped-color);
+        --bs-table-striped-bg: var(--table-striped-bg);
+        color: var(--bs-table-color);
     }
 
     .form-control {
@@ -78,13 +64,18 @@
         vertical-align: middle !important;
     }
 
+    th:first-child, td:first-child {
+        position: sticky;
+        left: 0px;
+    }
+
     nav[b-3qssc0bm46] {
         float: right;
     }
 
     * {
         scrollbar-width: thin;
-        scrollbar-color: var(--rz-secondary) rgba(0,0,0,0);
+        scrollbar-color: var(--secondary) rgba(0,0,0,0);
     }
 
         *::-webkit-scrollbar {
@@ -97,7 +88,7 @@
         }
 
         *::-webkit-scrollbar-thumb {
-            background-color: var(--rz-secondary);
+            background-color: var(--secondary);
             border-radius: 10px;
             border: 3px solid rgba(0,0,0,0);
         }
@@ -106,7 +97,8 @@
         min-width: 300px;
         margin-left: -50px;
     }
-    .input-group-text{
+
+    .input-group-text {
         padding: 0px 10px !important;
     }
 </style>

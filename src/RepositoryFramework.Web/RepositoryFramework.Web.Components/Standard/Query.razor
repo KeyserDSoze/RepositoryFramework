@@ -69,7 +69,12 @@
         <QuickGrid TGridItem="Entity<T, TKey>" ResizableColumns=true class="table table-striped" Pagination="@Pagination" ItemsProvider="@(async (x) => await OnReadDataAsync(x))">
             <TemplateColumn Title="#">
                 <ChildContent>
-                    <RadzenLink Path="@GetEditUri(context.Key!)" Icon="edit" />
+                    <button type="button" class="btn btn-primary btn-sm"
+                            @onclick="@((x) => NavigateTo(GetEditUri(context.Key!)))">
+                        <span class="material-symbols-outlined">
+                            edit
+                        </span>
+                    </button>
                 </ChildContent>
             </TemplateColumn>
             @foreach (var value in TypeShowcase.FlatProperties)

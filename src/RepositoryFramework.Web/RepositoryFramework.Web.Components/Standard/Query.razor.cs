@@ -21,6 +21,8 @@ namespace RepositoryFramework.Web.Components.Standard
         public ICopyService Copy { get; set; }
         [Inject]
         public DialogService DialogService { get; set; }
+        [Inject]
+        public NavigationManager NavigationManager { get; set; } = null!;
         private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
         private readonly Dictionary<string, ColumnOptions> _columns = new();
         private readonly SearchDictionary _searchDictionary = new();
@@ -161,6 +163,11 @@ namespace RepositoryFramework.Web.Components.Standard
         public void Search()
         {
             StateHasChanged();
+        }
+        private void NavigateTo(string uri)
+        {
+            LoadService.Show();
+            NavigationManager.NavigateTo(uri);
         }
     }
 }

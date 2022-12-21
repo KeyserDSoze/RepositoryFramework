@@ -42,12 +42,27 @@
                     <RadzenFieldset Text="@Constant.Edit">
                         @if (!DisableEdit)
                         {
-                            <RadzenButton Click=@(args => SaveAsync(false)) Icon="assignment_turned_in" ButtonStyle="ButtonStyle.Secondary" />
-                            <RadzenButton Click=@(args => SaveAsync(true)) Icon="note_add" ButtonStyle="ButtonStyle.Primary" />
+                            <button type="button" class="btn btn-primary bg-secondary btn-sm"
+                        @onclick="@((x) => SaveAsync(false))">
+                                <span class="material-symbols-outlined">
+                                    assignment_turned_in
+                                </span>
+                            </button>
+                            <button type="button" class="btn btn-primary bg-primary btn-sm"
+                                 @onclick="@((x) => SaveAsync(true))">
+                                <span class="material-symbols-outlined">
+                                    note_add
+                                </span>
+                            </button>
                         }
                         @if (AllowDelete)
                         {
-                            <RadzenButton class="float-end" Click=@(args => CheckIfYouWantToDeleteAsync()) Icon="delete" ButtonStyle="ButtonStyle.Danger" />
+                            <button type="button" class="btn btn-primary bg-danger btn-sm float-end"
+                                @onclick="@((x) => CheckIfYouWantToDeleteAsync())">
+                                <span class="material-symbols-outlined">
+                                    delete
+                                </span>
+                            </button>
                         }
                     </RadzenFieldset>
                 }
