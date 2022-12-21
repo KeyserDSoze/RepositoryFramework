@@ -66,7 +66,7 @@
         </div>
     </RadzenFieldset>
     <div class="w-100 overflow-auto mt-2" style="min-height:400px;" tabindex="-1">
-        <QuickGrid TGridItem="Entity<T, TKey>" ResizableColumns=true class="table table-striped" Pagination="@Pagination" ItemsProvider="@(async (x) => await OnReadDataAsync(x))">
+        <QuickGrid TGridItem="Entity<T, TKey>" ResizableColumns=true class="table table-striped table-sticky" Pagination="@Pagination" ItemsProvider="@(async (x) => await OnReadDataAsync(x))">
             <TemplateColumn Title="#">
                 <ChildContent>
                     <button type="button" class="btn btn-primary btn-sm"

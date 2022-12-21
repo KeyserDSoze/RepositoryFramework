@@ -64,7 +64,11 @@
         vertical-align: middle !important;
     }
 
-    th:first-child, td:first-child {
+    .table tbody > tr > td {
+        vertical-align: middle;
+    }
+
+    .table-sticky th:first-child, .table-sticky td:first-child {
         position: sticky;
         left: 0px;
     }
