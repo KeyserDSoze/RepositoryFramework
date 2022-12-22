@@ -13,7 +13,7 @@ namespace RepositoryFramework.Web.Components
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
         [Inject]
-        public IPolicyEvaluatorManager? PolicyEvaluatorManager { get; set; }
+        public IPolicyEvaluatorManager? PolicyEvaluatorManager { get; set; } = null!;
         [Inject]
         public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         [CascadingParameter(Name = nameof(HttpContext))]
@@ -21,7 +21,7 @@ namespace RepositoryFramework.Web.Components
         private List<AppMenuItem>? _contextAppMenu;
         protected override async Task OnInitializedAsync()
         {
-            await VerifyMenuAsync();
+            await VerifyMenuAsync().NoContext();
             NavigationManager.LocationChanged += LocationChanged;
             await base.OnInitializedAsync().NoContext();
         }
@@ -53,7 +53,7 @@ namespace RepositoryFramework.Web.Components
                                     Icon = subComplextItem.Icon,
                                     Name = subComplextItem.Name,
                                     Uri = subComplextItem.Uri,
-                                    IsSelected = subComplextItem.Uri.ToLower().Contains(selectedPath.ToLower()),
+                                    IsSelected = subComplextItem.Uri.ToLower().Equals(selectedPath.ToLower()),
                                 });
                             }
                         }
@@ -84,6 +84,11 @@ namespace RepositoryFramework.Web.Components
         {
             LoadService.Show();
             NavigationManager.NavigateTo(uri);
+        }
+        private void NavigateTo(AppMenuItem item)
+        {
+            if (!item.IsSelected)
+                NavigateTo(item.Uri);
         }
         private void LogOut()
         {

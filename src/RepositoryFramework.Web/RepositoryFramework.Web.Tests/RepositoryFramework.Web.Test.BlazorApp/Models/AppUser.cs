@@ -34,9 +34,9 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
             .MapChoices(x => x.Groups, async (serviceProvider, entity) =>
             {
                 var repository = serviceProvider.GetService<IRepository<AppGroup, string>>();
-                List<LabelledPropertyValue> values = new();
+                List<LabelValueDropdownItem> values = new();
                 await foreach (var item in repository.QueryAsync())
-                    values.Add(new LabelledPropertyValue
+                    values.Add(new LabelValueDropdownItem
                     {
                         Label = item.Value.Name,
                         Id = item.Value.Name,
@@ -50,7 +50,7 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
             }, x => x.Name)
             .MapChoices(x => x.Settings.Maps, (serviceProvider, entity) =>
             {
-                return Task.FromResult(new List<LabelledPropertyValue> {
+                return Task.FromResult(new List<LabelValueDropdownItem> {
                     "X",
                     "Y",
                     "Z",
@@ -59,9 +59,9 @@ namespace RepositoryFramework.Web.Test.BlazorApp.Models
             .MapChoice(x => x.MainGroup, async (serviceProvider, entity) =>
             {
                 var repository = serviceProvider.GetService<IRepository<AppGroup, string>>();
-                List<LabelledPropertyValue> values = new();
+                List<LabelValueDropdownItem> values = new();
                 await foreach (var item in repository.QueryAsync())
-                    values.Add(new LabelledPropertyValue
+                    values.Add(new LabelValueDropdownItem
                     {
                         Label = item.Value.Name,
                         Id = item.Value.Id,

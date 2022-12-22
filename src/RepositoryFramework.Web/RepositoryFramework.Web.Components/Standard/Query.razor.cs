@@ -1,19 +1,23 @@
 ﻿using System.Collections;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
-using System.Text.Json;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.DependencyInjection;
 using Radzen;
 using RepositoryFramework.Web.Components.Services;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
+    public class PaginationState
+    {
+        public int ItemsPerPage { get; set; } = 10;
+        public int CurrentPageIndex { get; set; }
+        public int? TotalItemCount { get; set; }
+        public int? LastPageIndex => (TotalItemCount - 1) / ItemsPerPage;
+    }
     public partial class Query<T, TKey>
-        where TKey : notnull
+         where TKey : notnull
     {
         [Parameter]
         public PaginationState Pagination { get; set; }
@@ -25,7 +29,7 @@ namespace RepositoryFramework.Web.Components.Standard
         public NavigationManager NavigationManager { get; set; } = null!;
         private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
         private readonly Dictionary<string, ColumnOptions> _columns = new();
-        private readonly SearchDictionary _searchDictionary = new();
+        private readonly SearchWrapper<T> _searchWrapper = new();
         private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
 
         private void UpdateColumnsVisibility(object keys)
@@ -41,7 +45,6 @@ namespace RepositoryFramework.Web.Components.Standard
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            Pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
             foreach (var property in TypeShowcase.FlatProperties)
             {
                 _columns.Add(property.NavigationPath, new ColumnOptions
@@ -61,52 +64,56 @@ namespace RepositoryFramework.Web.Components.Standard
                 : new();
             await base.OnInitializedAsync().NoContext();
         }
+        protected override async Task OnParametersSetAsync()
+        {
+            await OnReadDataAsync().NoContext();
+            await base.OnParametersSetAsync().NoContext();
+        }
         private string GetEditUri(TKey key)
             => s_editUri != null ? string.Format(s_editUri, key.ToBase64()) : string.Empty;
         private string _lastQueryKey;
-        private GridItemsProviderResult<Entity<T, TKey>> _lastQuery;
-        private async Task<GridItemsProviderResult<Entity<T, TKey>>> OnReadDataAsync(
-            GridItemsProviderRequest<Entity<T, TKey>> request)
+        private IEnumerable<Entity<T, TKey>>? _items;
+        private async ValueTask OnReadDataAsync()
         {
             StringBuilder stringBuilder = new();
             stringBuilder.Append($"{Pagination.CurrentPageIndex}_{Pagination.ItemsPerPage}_");
-            stringBuilder.Append(string.Join('_', _searchDictionary.GetExpressions()));
-            stringBuilder.Append($"_{request.SortByColumn?.Title}_{request.SortByAscending}");
+            stringBuilder.Append(string.Join('_', _searchWrapper.GetExpressions()));
+            //stringBuilder.Append($"_{request.SortByColumn?.Title}_{request.SortByAscending}");
             var queryKey = stringBuilder.ToString();
             if (_lastQueryKey != queryKey)
             {
                 LoadService.Show();
                 _lastQueryKey = queryKey;
-                GridItemsProviderResult<Entity<T, TKey>> items = new();
                 var queryBuilder = Query.AsQueryBuilder();
 
-                foreach (var expression in _searchDictionary.GetExpressions<T>())
+                foreach (var expression in _searchWrapper.GetLambdaExpressions())
                     queryBuilder.Where(expression);
 
-                if (request.SortByColumn != null)
-                {
-                    var orderExpression = $"x => x.{request.SortByColumn.Title}".DeserializeAsDynamic(typeof(T));
-                    if (request.SortByAscending)
-                        queryBuilder = queryBuilder.OrderBy(x => orderExpression.Compile().DynamicInvoke(x));
-                    else if (!request.SortByAscending)
-                        queryBuilder = queryBuilder.OrderByDescending(x => orderExpression.Compile().DynamicInvoke(x));
-                }
+                //if (request.SortByColumn != null)
+                //{
+                //    var orderExpression = $"x => x.{request.SortByColumn.Title}".DeserializeAsDynamic(typeof(T));
+                //    if (request.SortByAscending)
+                //        queryBuilder = queryBuilder.OrderBy(x => orderExpression.Compile().DynamicInvoke(x));
+                //    else if (!request.SortByAscending)
+                //        queryBuilder = queryBuilder.OrderByDescending(x => orderExpression.Compile().DynamicInvoke(x));
+                //}
 
                 var page = await queryBuilder.PageAsync(Pagination.CurrentPageIndex + 1, Pagination.ItemsPerPage).NoContext();
-                items.TotalItemCount = (int)page.TotalCount;
-                items.Items = page.Items.ToList();
+                Pagination.TotalItemCount = (int)page.TotalCount;
+                _items = page.Items;
                 LoadService.Hide();
-                _lastQuery = items;
             }
-            return _lastQuery;
         }
-        public async ValueTask GoToPageAsync(int page)
+        private string? _selectedPageKey;
+        public void GoToPage(int page)
         {
             if (page < 0)
                 page = 0;
             else if (page > Pagination.LastPageIndex)
                 page = Pagination.LastPageIndex.Value;
-            await Pagination.SetCurrentPageIndexAsync(page).NoContext();
+            Pagination.CurrentPageIndex = page;
+            _selectedPageKey = Pagination.CurrentPageIndex.ToString();
+            StateHasChanged();
         }
         private async Task ShowMoreValuesAsync(Entity<T, TKey>? entity, BaseProperty property)
         {
@@ -123,13 +130,14 @@ namespace RepositoryFramework.Web.Components.Standard
                     });
             }
         }
-        private IEnumerable<PageWrapper> GetPages()
+        private IEnumerable<LabelValueDropdownItem> GetPages()
         {
-            for (int i = 0; i <= Pagination.LastPageIndex; i++)
+            for (var i = 0; i <= Pagination.LastPageIndex; i++)
             {
-                yield return new PageWrapper
+                yield return new LabelValueDropdownItem
                 {
-                    Label = i + 1,
+                    Label = (i + 1).ToString(),
+                    Id = i.ToString(),
                     Value = i,
                 };
             }

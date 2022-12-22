@@ -15,7 +15,7 @@ namespace RepositoryFramework.Web.Components
         protected override async Task OnParametersSetAsync()
         {
             if (!HttpContext.Request.Cookies.TryGetValue(Constant.PaletteKey, out _paletteKey))
-                _paletteKey = string.Empty;
+                _paletteKey = AppPaletteWrapper.Skins.First().Key;
             LoadService.Hide();
             await base.OnParametersSetAsync().NoContext();
         }

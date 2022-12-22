@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IEndpointRouteBuilder AddDefaultRepositoryEndpoints(this WebApplication app)
         {
+            app.UseStaticFiles();
             if (AppInternalSettings.Instance.IsAuthenticated)
             {
                 app

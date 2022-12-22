@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="_content/Radzen.Blazor/css/default-base.css">
 <link rel="stylesheet" href="_content/Microsoft.AspNetCore.Components.QuickGrid/Microsoft.AspNetCore.Components.QuickGrid.bundle.scp.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-<link href="_content/Rystem.RepositoryFramework.Web.Components/repository.css" rel="stylesheet" />
 
 @{
     var palette = AppPaletteWrapper.Skins.First().Value;
@@ -39,114 +38,10 @@
         --table-striped-color: @(palette.Table.StripedColor);
         --table-bg: @(palette.Table.Background);
         --table-striped-bg: @(palette.Table.StripedBackground);
-    }
-
-    body {
-        background: var(--bs-body-color) !important;
-        color: var(--dark) !important;
-    }
-
-    .table {
-        --bs-table-color: var(--table-color);
-        --bs-table-bg: var(--table-bg);
-        --bs-table-border-color: var(--bs-border-color);
-        --bs-table-striped-color: var(--table-striped-color);
-        --bs-table-striped-bg: var(--table-striped-bg);
-        color: var(--bs-table-color);
-    }
-
-    .navbar {
-        --bs-navbar-color: var(--dark);
-        --bs-navbar-brand-color: var(--dark);
-        --bs-navbar-hover-color: opaque(var(--bs-navbar-color));
-        --bs-navbar-disabled-color: opaque(var(--bs-navbar-color));
-        --bs-navbar-active-color: color-contrast(var(--dark));
-        --bs-navbar-brand-hover-color: opaque(var(--bs-navbar-color));
-    }
-
-    .dropdown-menu {
-        --bs-dropdown-link-color: opaque(var(--dark));
-        --bs-dropdown-link-hover-color: opaque(opaque(var(--dark)));
-        --bs-dropdown-link-hover-bg: opaque(var(--bs-body-color));
-        --bs-dropdown-link-active-color: opaque(opaque(var(--bs-body-color)));
-        --bs-dropdown-link-active-bg: opaque(var(--primary));
-        --bs-dropdown-link-disabled-color: color-contrast(var(--primary));
-        --bs-dropdown-header-color: var(--dark);
-        --bs-dropdown-color: var(--dark);
-        --bs-dropdown-bg: var(--bs-body-color);
-        --bs-dropdown-border-color: var(--bs-border-color-translucent);
-        --bs-dropdown-divider-bg: var(--bs-border-color-translucent);
-    }
-
-
-    .form-control {
-        min-height: 50px;
-        font-size: @(Settings.Sizing.InputFontSize) !important;
-    }
-
-    input {
-        font-size: @(Settings.Sizing.InputFontSize) !important;
-    }
-
-    .navbar-brand, .nav-item, .dropdown-item {
-        font-size: @(Settings.Sizing.NavigationFontSize) !important;
-    }
-
-        .nav-item .active {
-            font-weight: @(Settings.Sizing.NavigationFontWeight) !important;
-        }
-
-    .row {
-        margin: 0px !important;
-    }
-
-    .dropdown-toggle::after {
-        vertical-align: middle !important;
-    }
-
-    .table tbody > tr > td {
-        vertical-align: middle;
-    }
-
-    .table-sticky th:first-child, .table-sticky td:first-child {
-        position: sticky;
-        left: 0px;
-    }
-
-    nav[b-3qssc0bm46] {
-        float: right;
-    }
-
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: var(--secondary) rgba(0,0,0,0);
-    }
-
-        *::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        *::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0);
-        }
-
-        *::-webkit-scrollbar-thumb {
-            background-color: var(--secondary);
-            border-radius: 10px;
-            border: 3px solid rgba(0,0,0,0);
-        }
-
-    .col-options {
-        min-width: 300px;
-        margin-left: -50px;
-    }
-
-    .input-group-text {
-        padding: 0px 10px !important;
-    }
-
-    button.bg-transparent {
-        color: var(--dark) !important;
+        --nav-input-font-size: @(Settings.Sizing.InputFontSize);
+        --nav-font-size: @(Settings.Sizing.NavigationFontSize);
+        --nav-font-weight: @(Settings.Sizing.NavigationFontWeight);
     }
 </style>
+
+<link href="_content/Rystem.RepositoryFramework.Web.Components/repository.css" rel="stylesheet" />

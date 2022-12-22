@@ -9,7 +9,7 @@ namespace RepositoryFramework.Web.Components.Standard
         [Parameter]
         public PropertyUiSettings? PropertyUiSettings { get; set; }
         [Parameter]
-        public required SearchValue SearchValue { get; set; }
+        public required ISearchValue SearchValue { get; set; }
         [Parameter]
         public required Action Search { get; set; }
         private bool? _booleanValue;
@@ -57,9 +57,9 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             _stringValue = value;
             if (_stringValue == null)
-                SearchValue.Expression = null;
+                SearchValue.UpdateLambda(null);
             else
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath}.Contains(\"{_stringValue}\")";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath}.Contains(\"{_stringValue}\")");
             SearchValue.Value = _stringValue;
             Search();
         }
@@ -81,13 +81,13 @@ namespace RepositoryFramework.Web.Components.Standard
                     _dateTime.End = default;
             }
             if (_dateTime?.Start != null && _dateTime?.End != null)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_dateTime.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_dateTime.End}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_dateTime.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_dateTime.End}");
             else if (_dateTime?.Start != null)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_dateTime.Start}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_dateTime.Start}");
             else if (_dateTime?.End != null)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} <= {_dateTime.End}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} <= {_dateTime.End}");
             else
-                SearchValue.Expression = null;
+                SearchValue.UpdateLambda(null);
             SearchValue.Value = _dateTime;
             Search();
         }
@@ -109,13 +109,13 @@ namespace RepositoryFramework.Web.Components.Standard
                     _date.End = default;
             }
             if (_date?.Start != default && _date?.End != default)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_date.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_date.End}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_date.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_date.End}");
             else if (_date?.Start != default)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_date.Start}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_date.Start}");
             else if (_date?.End != default)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} <= {_date.End}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} <= {_date.End}");
             else
-                SearchValue.Expression = null;
+                SearchValue.UpdateLambda(null);
             SearchValue.Value = _date;
             Search();
         }
@@ -137,24 +137,24 @@ namespace RepositoryFramework.Web.Components.Standard
                     _number.End = default;
             }
             if (_number?.Start != default && _number?.End != default)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_number.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_number.End}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_number.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_number.End}");
             else if (_number?.Start != default)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_number.Start}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_number.Start}");
             else if (_number?.End != default)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} <= {_number.End}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} <= {_number.End}");
             else
-                SearchValue.Expression = null;
+                SearchValue.UpdateLambda(null);
             SearchValue.Value = _number;
             Search();
         }
         public void BoolSearch(object? value, bool emptyIsValid)
         {
             if (value == null && emptyIsValid)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} == null";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} == null");
             else if (value is bool booleanValue)
-                SearchValue.Expression = $"x => x.{SearchValue.BaseProperty.NavigationPath} == {booleanValue}";
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} == {booleanValue}");
             else
-                SearchValue.Expression = null;
+                SearchValue.UpdateLambda(null);
             SearchValue.Value = value;
             Search();
         }
@@ -179,10 +179,10 @@ namespace RepositoryFramework.Web.Components.Standard
                             builder.Append($"x.{SearchValue.BaseProperty.NavigationPath} == \"{value}\"");
                     }
                 }
-                SearchValue.Expression = builder.ToString();
+                SearchValue.UpdateLambda(builder.ToString());
             }
             else
-                SearchValue.Expression = null;
+                SearchValue.UpdateLambda(null);
             SearchValue.Value = x;
             Search();
         }

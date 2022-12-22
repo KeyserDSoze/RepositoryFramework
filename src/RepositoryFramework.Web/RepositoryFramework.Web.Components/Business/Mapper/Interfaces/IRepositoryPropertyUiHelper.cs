@@ -10,10 +10,10 @@ namespace RepositoryFramework.Web
         IRepositoryPropertyUiHelper<T, TKey> MapDefault<TProperty>(Expression<Func<T, TProperty>> navigationProperty, TKey defaultKey);
         IRepositoryPropertyUiHelper<T, TKey> SetTextEditor<TProperty>(Expression<Func<T, TProperty>> navigationProperty, int minHeight);
         IRepositoryPropertyUiHelper<T, TKey> MapChoice<TProperty>(Expression<Func<T, TProperty>> navigationProperty,
-            Func<IServiceProvider, Entity<T, TKey>?, Task<IEnumerable<LabelledPropertyValue>>> retriever,
+            Func<IServiceProvider, Entity<T, TKey>?, Task<IEnumerable<LabelValueDropdownItem>>> retriever,
             Func<TProperty, string> labelComparer);
         IRepositoryPropertyUiHelper<T, TKey> MapChoices<TProperty>(Expression<Func<T, IEnumerable<TProperty>>> navigationProperty,
-            Func<IServiceProvider, Entity<T, TKey>?, Task<IEnumerable<LabelledPropertyValue>>> retriever,
+            Func<IServiceProvider, Entity<T, TKey>?, Task<IEnumerable<LabelValueDropdownItem>>> retriever,
             Func<TProperty, string> labelComparer);
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.QuickGrid;
-using Microsoft.AspNetCore.Components.Rendering;
+﻿using Microsoft.AspNetCore.Components.Rendering;
 using RepositoryFramework.Web.Components.Standard;
 
 namespace RepositoryFramework.Web.Components

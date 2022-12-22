@@ -6,9 +6,18 @@
     <select class="form-control" @onchange=@((x) => ChangeSkin(x))>
         @foreach (var skin in AppPaletteWrapper.Skins)
         {
-            <option value="@skin.Key" selected="@(_paletteKey == skin.Key)">
-                @skin.Key
-            </option>
+            if (_paletteKey == skin.Key)
+            {
+                <option value="@skin.Key" selected>
+                    @skin.Key
+                </option>
+            }
+            else
+            {
+                <option value="@skin.Key">
+                    @skin.Key
+                </option>
+            }
         }
     </select>
 }
