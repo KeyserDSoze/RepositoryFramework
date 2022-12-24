@@ -16,7 +16,7 @@ namespace RepositoryFramework.Web.Components.Standard
         private string? _stringValue { get; set; }
         private ValueBearer<DateTime>? _dateTime { get; set; }
         private ValueBearer<DateOnly>? _date { get; set; }
-        private ValueBearer<decimal>? _number { get; set; }
+        private ValueBearer<decimal?>? _number { get; set; }
         private IEnumerable<string>? _optionKeys { get; set; }
         private const string FromLabel = "From";
         private const string ToLabel = "To";
@@ -39,7 +39,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 }
                 else if (SearchValue.BaseProperty.AssemblyType.IsNumeric())
                 {
-                    _number = SearchValue.Value != null ? SearchValue.Value.Cast<ValueBearer<decimal>>() : new ValueBearer<decimal>();
+                    _number = SearchValue.Value != null ? SearchValue.Value.Cast<ValueBearer<decimal?>>() : new ValueBearer<decimal?>();
                 }
                 else
                 {
@@ -120,28 +120,29 @@ namespace RepositoryFramework.Web.Components.Standard
             Search();
         }
 
-        public void NumberSearch(object? value, bool atStart)
+        public void NumberSearch(ChangeEventArgs args, bool atStart)
         {
-            if (value is decimal number)
-            {
-                if (atStart)
-                    _number.Start = number;
-                else
-                    _number.End = number;
-            }
-            else
+            if (args.Value == null)
             {
                 if (atStart)
                     _number.Start = default;
                 else
                     _number.End = default;
             }
+            else
+            {
+                var number = decimal.Parse(args.Value.ToString());
+                if (atStart)
+                    _number.Start = number;
+                else
+                    _number.End = number;
+            }
             if (_number?.Start != default && _number?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_number.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {_number.End}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} >= {_number.Start} AndAlso x.{SearchValue.BaseProperty.Title} <= {_number.End}");
             else if (_number?.Start != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} >= {_number.Start}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} >= {_number.Start}");
             else if (_number?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.NavigationPath} <= {_number.End}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} <= {_number.End}");
             else
                 SearchValue.UpdateLambda(null);
             SearchValue.Value = _number;
@@ -159,31 +160,28 @@ namespace RepositoryFramework.Web.Components.Standard
             Search();
         }
 
-        public void MultipleChoices(object? x)
+        public void MultipleChoices(IEnumerable<LabelValueDropdownItem> items)
         {
-            if (x is ChangeEventArgs eventArgs)
+            if (items.Any())
             {
                 StringBuilder builder = new();
-                if (eventArgs.Value is IEnumerable<string> ids)
+                foreach (var id in items.Select(x => x.Value))
                 {
-                    foreach (var id in ids)
-                    {
-                        if (builder.Length == 0)
-                            builder.Append("x => ");
-                        else
-                            builder.Append(" OrElse ");
-                        var value = PropertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value;
-                        if (value.GetType().IsNumeric())
-                            builder.Append($"x.{SearchValue.BaseProperty.NavigationPath} == {value}");
-                        else
-                            builder.Append($"x.{SearchValue.BaseProperty.NavigationPath} == \"{value}\"");
-                    }
+                    if (builder.Length == 0)
+                        builder.Append("x => ");
+                    else
+                        builder.Append(" OrElse ");
+                    var value = PropertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value;
+                    if (value.GetType().IsNumeric())
+                        builder.Append($"x.{SearchValue.BaseProperty.NavigationPath} == {value}");
+                    else
+                        builder.Append($"x.{SearchValue.BaseProperty.NavigationPath} == \"{value}\"");
                 }
                 SearchValue.UpdateLambda(builder.ToString());
             }
             else
                 SearchValue.UpdateLambda(null);
-            SearchValue.Value = x;
+            SearchValue.Value = items;
             Search();
         }
     }

@@ -39,7 +39,6 @@ body {
 
 
 .form-control {
-    min-height: 50px;
     font-size: var(--nav-input-font-size) !important;
 }
 
@@ -65,15 +64,12 @@ input {
 
 .table tbody > tr > td {
     vertical-align: middle;
+    min-width: 250px;
 }
 
 .table-sticky th:first-child, .table-sticky td:first-child {
     position: sticky;
     left: 0px;
-}
-
-nav[b-3qssc0bm46] {
-    float: right;
 }
 
 * {
@@ -96,15 +92,14 @@ nav[b-3qssc0bm46] {
         border: 3px solid rgba(0,0,0,0);
     }
 
-.col-options {
-    min-width: 300px;
-    margin-left: -50px;
-}
-
 .input-group-text {
     padding: 0px 10px !important;
 }
 
 button.bg-transparent {
     color: var(--dark) !important;
+}
+
+.material-symbols-outlined-small {
+    font-size: 16px;
 }

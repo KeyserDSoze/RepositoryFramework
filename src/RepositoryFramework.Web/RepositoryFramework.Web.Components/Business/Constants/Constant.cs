@@ -3,6 +3,7 @@
     internal static class Constant
     {
         public const string Key = nameof(Key);
+        public const string KeyWithSeparator = $"{nameof(Key)}.";
         public const string Entity = nameof(Entity);
         public const string EditParametersBearer = nameof(EditParametersBearer);
         public const string BaseProperty = nameof(BaseProperty);

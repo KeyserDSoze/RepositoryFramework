@@ -30,6 +30,7 @@ namespace RepositoryFramework.Web.Components.Standard
         private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
         private readonly Dictionary<string, ColumnOptions> _columns = new();
         private readonly SearchWrapper<T> _searchWrapper = new();
+        private readonly OrderWrapper<T, TKey> _orderWrapper = new();
         private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
 
         private void UpdateColumnsVisibility(object keys)
@@ -50,6 +51,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 _columns.Add(property.NavigationPath, new ColumnOptions
                 {
                     Type = property.Self.PropertyType,
+                    Order = OrderingType.None,
                     IsActive = true,
                     Label = property.Title,
                     Value = property.NavigationPath
@@ -78,7 +80,7 @@ namespace RepositoryFramework.Web.Components.Standard
             StringBuilder stringBuilder = new();
             stringBuilder.Append($"{Pagination.CurrentPageIndex}_{Pagination.ItemsPerPage}_");
             stringBuilder.Append(string.Join('_', _searchWrapper.GetExpressions()));
-            //stringBuilder.Append($"_{request.SortByColumn?.Title}_{request.SortByAscending}");
+            stringBuilder.Append(string.Join('_', _orderWrapper.GetExpressions()));
             var queryKey = stringBuilder.ToString();
             if (_lastQueryKey != queryKey)
             {
@@ -89,22 +91,16 @@ namespace RepositoryFramework.Web.Components.Standard
                 foreach (var expression in _searchWrapper.GetLambdaExpressions())
                     queryBuilder.Where(expression);
 
-                //if (request.SortByColumn != null)
-                //{
-                //    var orderExpression = $"x => x.{request.SortByColumn.Title}".DeserializeAsDynamic(typeof(T));
-                //    if (request.SortByAscending)
-                //        queryBuilder = queryBuilder.OrderBy(x => orderExpression.Compile().DynamicInvoke(x));
-                //    else if (!request.SortByAscending)
-                //        queryBuilder = queryBuilder.OrderByDescending(x => orderExpression.Compile().DynamicInvoke(x));
-                //}
+                _orderWrapper.Apply(queryBuilder);
 
                 var page = await queryBuilder.PageAsync(Pagination.CurrentPageIndex + 1, Pagination.ItemsPerPage).NoContext();
                 Pagination.TotalItemCount = (int)page.TotalCount;
                 _items = page.Items;
+                StateHasChanged();
                 LoadService.Hide();
             }
         }
-        private string? _selectedPageKey;
+        private string? _selectedPageKey = "0";
         public void GoToPage(int page)
         {
             if (page < 0)
@@ -113,7 +109,26 @@ namespace RepositoryFramework.Web.Components.Standard
                 page = Pagination.LastPageIndex.Value;
             Pagination.CurrentPageIndex = page;
             _selectedPageKey = Pagination.CurrentPageIndex.ToString();
-            StateHasChanged();
+            _ = OnReadDataAsync();
+        }
+        private string? _selectedItemsForPageKey = "0";
+        private void ChangeItemsPerPage(int itemsPerPage)
+        {
+            Pagination.ItemsPerPage = itemsPerPage;
+            _selectedItemsForPageKey = itemsPerPage.ToString();
+            GoToPage(0);
+        }
+        private void OrderBy(BaseProperty baseProperty)
+        {
+            var order = (OrderingType)(((int)_columns[baseProperty.NavigationPath].Order + 1) % 3);
+            _columns[baseProperty.NavigationPath].Order = order;
+            if (order == OrderingType.None)
+                _orderWrapper.Remove(baseProperty);
+            else if (order == OrderingType.Ascending)
+                _orderWrapper.Add(baseProperty);
+            else
+                _orderWrapper.Add(baseProperty, true);
+            _ = OnReadDataAsync();
         }
         private async Task ShowMoreValuesAsync(Entity<T, TKey>? entity, BaseProperty property)
         {
@@ -141,6 +156,24 @@ namespace RepositoryFramework.Web.Components.Standard
                     Value = i,
                 };
             }
+        }
+        private IEnumerable<LabelValueDropdownItem> GetPaging()
+        {
+            for (var i = 10; i < Pagination.TotalItemCount; i *= 2)
+            {
+                yield return new LabelValueDropdownItem
+                {
+                    Label = $"{i} per page",
+                    Id = i.ToString(),
+                    Value = i,
+                };
+            }
+            yield return new LabelValueDropdownItem
+            {
+                Label = "All",
+                Id = Pagination.TotalItemCount.ToString(),
+                Value = Pagination.TotalItemCount.Value,
+            };
         }
         private const string EnumerableLabelCount = "Show {0} items.";
         private string EnumerableCountAsString(Entity<T, TKey>? entity, BaseProperty property)
@@ -170,7 +203,7 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         public void Search()
         {
-            StateHasChanged();
+            _ = OnReadDataAsync();
         }
         private void NavigateTo(string uri)
         {

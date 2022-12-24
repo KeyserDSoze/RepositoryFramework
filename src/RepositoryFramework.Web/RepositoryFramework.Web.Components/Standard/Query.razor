@@ -4,83 +4,102 @@
 @typeparam TKey where TKey: notnull
 @inherits RepositoryBase<T, TKey>
 
-<div class="my-2">
-    <RadzenFieldset Text="Filters">
-        <div class="row">
-            @if (Pagination.TotalItemCount.HasValue)
-            {
-                <div class="w-100 row">
-                    <div class="col-12 col-md-4">
-                    </div>
-                    <div class="summary col-6 col-md-1 mt-1">
-                        <strong>@Pagination.TotalItemCount items</strong>
-                    </div>
-                    <div class="col-6 col-md-2">
-                        <select class="rz-dropdown rz-clear" @bind="@Pagination.ItemsPerPage">
-                            <option value="5">5 per page</option>
-                            <option value="10">10 per page</option>
-                            <option value="20">20 per page</option>
-                            <option value="50">50 per page</option>
-                            <option value="100">100 per page</option>
-                            <option value="500">500 per page</option>
-                        </select>
-                    </div>
-                    <div class="col-12 col-md-5">
-                        <nav role="navigation" class="float-md-end">
-                            <ul class="pagination">
-                                <li class="page-item">
-                                    <button @onclick="@(() => GoToPage(0))" disabled=@(Pagination.CurrentPageIndex <= 0) class="bg-transparent p-0 border-0">
-                                        <span class="material-symbols-outlined">
-                                            keyboard_double_arrow_left
-                                        </span>
-                                    </button>
-                                </li>
-                                <li class="page-item">
-                                    <button @onclick="@(() => GoToPage(Pagination.CurrentPageIndex - 1))" disabled=@(Pagination.CurrentPageIndex <= 0) class="bg-transparent p-0 border-0">
-                                        <span class="material-symbols-outlined">
-                                            chevron_left
-                                        </span>
-                                    </button>
-                                </li>
-                                <li class="page-item">
-                                    Page
-                                    <SelectDropdown PossibleValues="@GetPages()"
-                                                OnChange="@(async (x) => GoToPage((int)x.Value))"
-                                                SelectedKey="@_selectedPageKey"
-                                                NotEditable=false
-                                                Class="form-class">
-                                    </SelectDropdown>
-                                    of <strong>@(Pagination.LastPageIndex + 1)</strong>
-                                </li>
-                                <li class="page-item">
-                                    <button @onclick="@(() => GoToPage(Pagination.CurrentPageIndex + 1))" disabled=@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex) class="bg-transparent p-0 border-0">
-                                        <span class="material-symbols-outlined">
-                                            chevron_right
-                                        </span>
-                                    </button>
-                                </li>
-                                <li class="page-item">
-                                    <button @onclick="@(() => GoToPage(Pagination.LastPageIndex.Value))" disabled=@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex) class="bg-transparent p-0 border-0">
-                                        <span class="material-symbols-outlined">
-                                            keyboard_double_arrow_right
-                                        </span>
-                                    </button>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+<div class="mt-2">
+    <div class="row">
+        @if (Pagination.TotalItemCount.HasValue)
+        {
+            <div class="w-100 row">
+                <div class="col-12">
+                    <nav role="navigation" class="float-md-end">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <button @onclick="@(() => GoToPage(0))" disabled=@(Pagination.CurrentPageIndex <= 0) class="bg-transparent p-0 border-0">
+                                    <span class="material-symbols-outlined material-symbols-outlined-small">
+                                        keyboard_double_arrow_left
+                                    </span>
+                                </button>
+                            </li>
+                            <li class="page-item">
+                                <button @onclick="@(() => GoToPage(Pagination.CurrentPageIndex - 1))" disabled=@(Pagination.CurrentPageIndex <= 0) class="bg-transparent p-0 border-0">
+                                    <span class="material-symbols-outlined material-symbols-outlined-small">
+                                        chevron_left
+                                    </span>
+                                </button>
+                            </li>
+                            <li class="page-item">
+                                Page
+                                <SelectDropdown PossibleValues="@GetPages()"
+                                            OnChange="@(async (x) => GoToPage((int)x.Value))"
+                                            SelectedKey="@_selectedPageKey"
+                                            NotEditable=false
+                                            Class="form-class">
+                                </SelectDropdown>
+                                of <strong>@(Pagination.LastPageIndex + 1)</strong>
+                                (<strong>@Pagination.TotalItemCount</strong>) items.
+                                <SelectDropdown PossibleValues="@GetPaging()"
+                                            OnChange="@(async (x) => ChangeItemsPerPage((int)x.Value))"
+                                            SelectedKey="@_selectedItemsForPageKey"
+                                            NotEditable=false
+                                            Class="form-class">
+                                </SelectDropdown>
+                            </li>
+                            <li class="page-item">
+                                <button @onclick="@(() => GoToPage(Pagination.CurrentPageIndex + 1))" disabled=@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex) class="bg-transparent p-0 border-0">
+                                    <span class="material-symbols-outlined material-symbols-outlined-small">
+                                        chevron_right
+                                    </span>
+                                </button>
+                            </li>
+                            <li class="page-item">
+                                <button @onclick="@(() => GoToPage(Pagination.LastPageIndex.Value))" disabled=@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex) class="bg-transparent p-0 border-0">
+                                    <span class="material-symbols-outlined material-symbols-outlined-small">
+                                        keyboard_double_arrow_right
+                                    </span>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-            }
-        </div>
-    </RadzenFieldset>
+            </div>
+        }
+    </div>
     <div class="w-100 overflow-auto mt-2" style="min-height:400px;" tabindex="-1">
         <table class="table table-striped table-sticky">
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    @foreach (var property in TypeShowcase.FlatProperties)
+                    @foreach (var property in TypeShowcase.FlatProperties.Where(x => _columns[x.NavigationPath].IsActive))
                     {
-                        <th scope="col">@property.Title</th>
+                        <th scope="col">
+                            <div>@property.Title</div>
+                            @{
+                                var order = _columns[property.NavigationPath].Order;
+                            }
+                            @if (!property.NavigationPath.StartsWith(Constant.KeyWithSeparator) && property.NavigationPath != Constant.Key)
+                            {
+                                <button class="bg-transparent p-0 border-0"
+                                @onclick="@((x) => OrderBy(property))">
+                                    @if (order == OrderingType.None)
+                                    {
+                                        <span class="material-symbols-outlined material-symbols-outlined-small">
+                                            remove
+                                        </span>
+                                    }
+                                    else if (order == OrderingType.Ascending)
+                                    {
+                                        <span class="material-symbols-outlined material-symbols-outlined-small">
+                                            arrow_drop_down
+                                        </span>
+                                    }
+                                    else if (order == OrderingType.Descending)
+                                    {
+                                        <span class="material-symbols-outlined material-symbols-outlined-small">
+                                            arrow_drop_up
+                                        </span>
+                                    }
+                                </button>
+                            }
+                        </th>
                     }
                 </tr>
                 <tr>
@@ -99,14 +118,22 @@
                                         Value="@_columns.Where(x => x.Value.IsActive).Select(x => x.Key)"
                                         Change="@UpdateColumnsVisibility" />
                     </th>
-                    @foreach (var property in TypeShowcase.FlatProperties)
+                    @foreach (var property in TypeShowcase.FlatProperties.Where(x => _columns[x.NavigationPath].IsActive))
                     {
-                        <th scope="col">
-                            @if (property.Type != PropertyType.Enumerable)
-                            {
-                                <QueryFilter SearchValue="_searchWrapper.Get(property)" PropertyUiSettings="GetPropertySettings(property)" Search="@Search" />
-                            }
-                        </th>
+                        if (!property.NavigationPath.StartsWith(Constant.KeyWithSeparator) && property.NavigationPath != Constant.Key)
+                        {
+                            <th scope="col">
+                                @if (property.Type != PropertyType.Enumerable)
+                                {
+                                    <QueryFilter SearchValue="_searchWrapper.Get(property)"
+                                     PropertyUiSettings="GetPropertySettings(property)" Search="@Search" />
+                                }
+                            </th>
+                        }
+                        else
+                        {
+                            <th></th>
+                        }
                     }
                 </tr>
             </thead>
@@ -116,15 +143,15 @@
                     foreach (var item in _items)
                     {
                         <tr>
-                            <th scope="row">
+                            <td>
                                 <button type="button" class="btn btn-primary btn-sm"
                                 @onclick="@((x) => NavigateTo(GetEditUri(item.Key!)))">
-                                    <span class="material-symbols-outlined">
+                                    <span class="material-symbols-outlined material-symbols-outlined-small">
                                         edit
                                     </span>
                                 </button>
-                            </th>
-                            @foreach (var property in TypeShowcase.FlatProperties)
+                            </td>
+                            @foreach (var property in TypeShowcase.FlatProperties.Where(x => _columns[x.NavigationPath].IsActive))
                             {
                                 <td>
                                     @if (property.Type != PropertyType.Enumerable)
@@ -134,8 +161,8 @@
                                     else
                                     {
                                         <RadzenButton class="bg-transparent text-dark p-0"
-                                            Click="@((x) => ShowMoreValuesAsync(item, property))"
-                                            Text="@EnumerableCountAsString(item, property)" />
+                                      Click="@((x) => ShowMoreValuesAsync(item, property))"
+                                      Text="@EnumerableCountAsString(item, property)" />
                                     }
                                 </td>
                             }

@@ -29,13 +29,6 @@
                           Value="_dateTime.Start"
                           Change=@(args => DateTimeSearch(args, true))
                           DateFormat="yyyy/MM/dd" />
-                </Body>
-                <First>
-                    <RadzenButton Icon="close" Click="@((x) => DateTimeSearch(null, true))" />
-                </First>
-            </Labeller>
-            <Labeller Class="w-100 mt-1" Text="@ToLabel">
-                <Body>
                     <RadzenDatePicker class="form-control"
                           TValue="DateTime?"
                           Value="_dateTime.End"
@@ -43,7 +36,7 @@
                           DateFormat="yyyy/MM/dd" />
                 </Body>
                 <First>
-                    <RadzenButton Icon="close" Click="@((x) => DateTimeSearch(null, false))" />
+                    <RadzenButton Icon="close" Click="@((x) => DateTimeSearch(null, true))" />
                 </First>
             </Labeller>
         }
@@ -56,13 +49,6 @@
                           Value="_date.Start"
                           Change=@(args => DateSearch(args, true))
                           DateFormat="yyyy/MM/dd" />
-                </Body>
-                <First>
-                    <RadzenButton Icon="close" Click="@((x) => DateSearch(null, true))" />
-                </First>
-            </Labeller>
-            <Labeller Class="w-100 mt-1" Text="@ToLabel">
-                <Body>
                     <RadzenDatePicker class="form-control"
                           TValue="DateOnly?"
                           Value="_date.End"
@@ -70,66 +56,29 @@
                           DateFormat="yyyy/MM/dd" />
                 </Body>
                 <First>
-                    <RadzenButton Icon="close" Click="@((x) => DateSearch(null, false))" />
+                    <RadzenButton Icon="close" Click="@((x) => DateSearch(null, true))" />
                 </First>
             </Labeller>
         }
         else if (SearchValue.BaseProperty.AssemblyType.IsNumeric())
         {
-            <Labeller Class="w-100" Text="@FromLabel">
-                <Body>
-                    <RadzenNumeric class="form-control"
-                       TValue="decimal?"
-                       Value="_number.Start"
-                       Placeholder="Enter or clear value"
-                       Change="@(args => NumberSearch(args, true))"
-                       TextAlign="TextAlign.Right" />
-                </Body>
-                <First>
-                    <RadzenButton Icon="close" Click="@((x) => NumberSearch(null, true))" />
-                </First>
-            </Labeller>
-            <Labeller Class="w-100 mt-1" Text="@ToLabel">
-                <Body>
-                    <RadzenNumeric class="form-control"
-                       TValue="decimal?"
-                       Value="_number.End"
-                       Placeholder="Enter or clear value"
-                       Change="@(args => NumberSearch(args, false))"
-                       TextAlign="TextAlign.Right" />
-                </Body>
-                <First>
-                    <RadzenButton Icon="close" Click="@((x) => NumberSearch(null, false))" />
-                </First>
-            </Labeller>
+            <div class="w-100 row">
+                <input type="number" class="form-control col" @onchange="@(args => NumberSearch(args, true))" />
+                <input type="number" class="form-control col" @onchange="@(args => NumberSearch(args, false))" />
+            </div>
         }
         else
         {
-            <Labeller Class="w-100">
-                <Body>
-                    <RadzenTextBox class="form-control" Value="@_stringValue" Change="@(args => Contains(args?.ToString()))" />
-                </Body>
-                <First>
-                    <RadzenButton Icon="close" Click="@((x) => Contains(null))" />
-                </First>
-            </Labeller>
+            <RadzenTextBox class="form-control" Value="@_stringValue" Change="@(args => Contains(args?.ToString()))" />
         }
     }
     else
     {
-        <Labeller Class="w-100">
-            <Body>
-                <select class="form-control" multiple @onchange="MultipleChoices">
-                    @foreach (var option in PropertyUiSettings.Values)
-                    {
-                        <option value="@option.Id" selected="@(_optionKeys?.Contains(option.Id) == true)">@option.Label</option>
-                    }
-                </select>
-            </Body>
-            <First>
-                <RadzenButton Icon="close" Click="@((x) => MultipleChoices(null))" />
-            </First>
-        </Labeller>
-
+        <SelectMultipleDropdown 
+            Class="form-control"
+            PossibleValues="@PropertyUiSettings.Values"
+            SelectedKeys="@_optionKeys"
+            OnChange="@(async (x) => MultipleChoices(x))"
+        />
     }
 }
