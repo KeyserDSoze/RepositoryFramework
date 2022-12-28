@@ -109,18 +109,18 @@
                 <tr>
                     <th scope="col">
                         <RadzenDropDown TValue="IEnumerable<string>"
-                                        AllowClear="true"
-                                        AllowFiltering="true"
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                        Multiple="true"
-                                        Placeholder="Select..."
-                                        SelectedItemsText="columns selected."
-                                        SelectAllText="All columns selected."
-                                        Data="@_columns.Select(x => x.Value)"
-                                        ValueProperty="@Constant.Value"
-                                        TextProperty="@Constant.Label"
-                                        Value="@_columns.Where(x => x.Value.IsActive).Select(x => x.Key)"
-                                        Change="@UpdateColumnsVisibility" />
+                            AllowClear="true"
+                            AllowFiltering="true"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            Multiple="true"
+                            Placeholder="Select..."
+                            SelectedItemsText="columns selected."
+                            SelectAllText="All columns selected."
+                            Data="@_columns.Select(x => x.Value)"
+                            ValueProperty="@Constant.Value"
+                            TextProperty="@Constant.Label"
+                            Value="@_columns.Where(x => x.Value.IsActive).Select(x => x.Key)"
+                            Change="@UpdateColumnsVisibility" />
                         <input type="checkbox" checked="@_allSelected" class="form-check-input mt-2" @onchange="@(args => AddOrRemoveItemFromListAllKeys(args, _items.Select(x => x.Key)))" />
                     </th>
                     @foreach (var property in FlatProperties)

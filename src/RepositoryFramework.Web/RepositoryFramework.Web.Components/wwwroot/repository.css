@@ -55,6 +55,10 @@ input {
         font-weight: var(--nav-font-weight) !important;
     }
 
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    isolation: isolate;
+}
+
 .row {
     margin: 0px !important;
 }

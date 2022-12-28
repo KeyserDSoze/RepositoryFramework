@@ -14,7 +14,8 @@
             var checkIfNullIsAvailable = SearchValue.BaseProperty.AssemblyType == typeof(bool?);
             <SelectDropdown PossibleValues="@(checkIfNullIsAvailable ? BooleanTriState : BooleanState)"
                 SelectedKey="_booleanSelectedKey"
-                OnChange="@(async (x) => BoolSearch(x, checkIfNullIsAvailable))">
+                OnChange="@(async (x) => BoolSearch(x, checkIfNullIsAvailable))"
+                Class="form-select">
             </SelectDropdown>
         }
         else if (SearchValue.BaseProperty.AssemblyType == typeof(DateTime) || SearchValue.BaseProperty.AssemblyType == typeof(DateTime?))
@@ -45,9 +46,9 @@
     }
     else
     {
-        <SelectMultipleDropdown Class="form-control"
-                        PossibleValues="@PropertyUiSettings.Values"
-                        SelectedKeys="@_optionKeys"
-                        OnChange="@(async (x) => MultipleChoices(x))" />
+        <SelectMultipleDropdown Class="form-select"
+            PossibleValues="@PropertyUiSettings.Values"
+            SelectedKeys="@_optionKeys"
+            OnChange="@(async (x) => MultipleChoices(x))" />
     }
 }
