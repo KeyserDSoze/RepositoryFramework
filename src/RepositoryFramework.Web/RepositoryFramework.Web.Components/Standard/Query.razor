@@ -121,6 +121,7 @@
                                         TextProperty="@Constant.Label"
                                         Value="@_columns.Where(x => x.Value.IsActive).Select(x => x.Key)"
                                         Change="@UpdateColumnsVisibility" />
+                        <input type="checkbox" checked="@_allSelected" class="form-check-input mt-2" @onchange="@(args => AddOrRemoveItemFromListAllKeys(args, _items.Select(x => x.Key)))" />
                     </th>
                     @foreach (var property in FlatProperties)
                     {
@@ -154,6 +155,7 @@
                                         edit
                                     </span>
                                 </button>
+                                <input type="checkbox" class="form-check-input mt-2" checked="@_selectedKeys[item.Key]" value="@_selectedKeys[item.Key]" @onchange="@(args => AddOrRemoveItemFromList((bool)args.Value, item.Key))" />
                             </td>
                             @foreach (var property in FlatProperties)
                             {

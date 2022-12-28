@@ -2,6 +2,7 @@
 using System.Linq.Dynamic.Core;
 using System.Text;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Radzen;
 using RepositoryFramework.Web.Components.Services;
@@ -24,6 +25,7 @@ namespace RepositoryFramework.Web.Components.Standard
         private readonly SearchWrapper<T> _searchWrapper = new();
         private readonly OrderWrapper<T, TKey> _orderWrapper = new();
         private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
+        private bool _allSelected;
         private IEnumerable<BaseProperty> FlatProperties => TypeShowcase.FlatProperties.Where(x => _columns.ContainsKey(x.NavigationPath) && _columns[x.NavigationPath].IsActive && x.NavigationPath != nameof(Entity<T, TKey>.HasKey) && x.NavigationPath != nameof(Entity<T, TKey>.HasValue));
         private void UpdateColumnsVisibility(object keys)
         {
@@ -88,6 +90,8 @@ namespace RepositoryFramework.Web.Components.Standard
                 var page = await queryBuilder.PageAsync(Pagination.CurrentPageIndex + 1, Pagination.ItemsPerPage).NoContext();
                 Pagination.TotalItemCount = (int)page.TotalCount;
                 _items = page.Items;
+                _selectedKeys = _items.Select(x => x.Key).ToDictionary(x => x, x => false);
+                _allSelected = false;
                 StateHasChanged();
                 LoadService.Hide();
             }
@@ -201,6 +205,19 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             LoadService.Show();
             NavigationManager.NavigateTo(uri);
+        }
+        private Dictionary<TKey, bool> _selectedKeys = new();
+        private void AddOrRemoveItemFromList(bool check, TKey key)
+        {
+            _selectedKeys[key] = check;
+        }
+        private void AddOrRemoveItemFromListAllKeys(ChangeEventArgs args, IEnumerable<TKey> keys)
+        {
+            var isSelected = (args.Value is bool check && check);
+            foreach (var key in keys)
+                AddOrRemoveItemFromList(isSelected, key);
+            _allSelected = true;
+            StateHasChanged();
         }
     }
 }
