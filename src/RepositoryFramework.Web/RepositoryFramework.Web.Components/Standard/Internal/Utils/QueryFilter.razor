@@ -11,54 +11,26 @@
     {
         if (SearchValue.BaseProperty.AssemblyType == typeof(bool) || SearchValue.BaseProperty.AssemblyType == typeof(bool?))
         {
-            <Labeller Class="w-100">
-                <Body>
-                    <RadzenCheckBox class="form-control" Value="_booleanValue" TriState=true TValue="bool?" Change=@(args => BoolSearch(args, SearchValue.BaseProperty.AssemblyType == typeof(bool?))) />
-                </Body>
-                <First>
-                    <RadzenButton Icon="close" Click="@((x) => BoolSearch(null, false))" />
-                </First>
-            </Labeller>
+            var checkIfNullIsAvailable = SearchValue.BaseProperty.AssemblyType == typeof(bool?);
+            <SelectDropdown 
+                PossibleValues="@(checkIfNullIsAvailable ? BooleanTriState : BooleanState)"
+                SelectedKey="_booleanSelectedKey"
+                OnChange="@(async (x) => BoolSearch(x, checkIfNullIsAvailable))">
+            </SelectDropdown>
         }
         else if (SearchValue.BaseProperty.AssemblyType == typeof(DateTime) || SearchValue.BaseProperty.AssemblyType == typeof(DateTime?))
         {
-            <Labeller Class="w-100" Text="@FromLabel">
-                <Body>
-                    <RadzenDatePicker class="form-control"
-                          TValue="DateTime?"
-                          Value="_dateTime.Start"
-                          Change=@(args => DateTimeSearch(args, true))
-                          DateFormat="yyyy/MM/dd" />
-                    <RadzenDatePicker class="form-control"
-                          TValue="DateTime?"
-                          Value="_dateTime.End"
-                          Change=@(args => DateTimeSearch(args, false))
-                          DateFormat="yyyy/MM/dd" />
-                </Body>
-                <First>
-                    <RadzenButton Icon="close" Click="@((x) => DateTimeSearch(null, true))" />
-                </First>
-            </Labeller>
+             <div class="w-100 row">
+                <input type="date" class="form-control col" @onchange="@(args => DateTimeSearch(args, true))" />
+                <input type="date" class="form-control col" @onchange="@(args => DateTimeSearch(args, false))" />
+            </div>
         }
         else if (SearchValue.BaseProperty.AssemblyType == typeof(DateOnly) || SearchValue.BaseProperty.AssemblyType == typeof(DateOnly?))
         {
-            <Labeller Class="w-100" Text="@FromLabel">
-                <Body>
-                    <RadzenDatePicker class="form-control"
-                          TValue="DateOnly?"
-                          Value="_date.Start"
-                          Change=@(args => DateSearch(args, true))
-                          DateFormat="yyyy/MM/dd" />
-                    <RadzenDatePicker class="form-control"
-                          TValue="DateOnly?"
-                          Value="_date.End"
-                          Change=@(args => DateSearch(args, false))
-                          DateFormat="yyyy/MM/dd" />
-                </Body>
-                <First>
-                    <RadzenButton Icon="close" Click="@((x) => DateSearch(null, true))" />
-                </First>
-            </Labeller>
+            <div class="w-100 row">
+                <input type="date" class="form-control col" @onchange="@(args => DateSearch(args, true))" />
+                <input type="date" class="form-control col" @onchange="@(args => DateSearch(args, false))" />
+            </div>
         }
         else if (SearchValue.BaseProperty.AssemblyType.IsNumeric())
         {
@@ -69,7 +41,7 @@
         }
         else
         {
-            <RadzenTextBox class="form-control" Value="@_stringValue" Change="@(args => Contains(args?.ToString()))" />
+            <input type="text" class="form-control" @onchange="@(args => Contains(args))" />
         }
     }
     else

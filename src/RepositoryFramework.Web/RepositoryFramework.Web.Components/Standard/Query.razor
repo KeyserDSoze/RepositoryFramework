@@ -68,37 +68,41 @@
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    @foreach (var property in TypeShowcase.FlatProperties.Where(x => _columns[x.NavigationPath].IsActive))
+                    @foreach (var property in FlatProperties)
                     {
                         <th scope="col">
-                            <div>@property.Title</div>
-                            @{
-                                var order = _columns[property.NavigationPath].Order;
-                            }
-                            @if (!property.NavigationPath.StartsWith(Constant.KeyWithSeparator) && property.NavigationPath != Constant.Key)
-                            {
-                                <button class="bg-transparent p-0 border-0"
-                                @onclick="@((x) => OrderBy(property))">
-                                    @if (order == OrderingType.None)
-                                    {
-                                        <span class="material-symbols-outlined material-symbols-outlined-small">
-                                            remove
-                                        </span>
-                                    }
-                                    else if (order == OrderingType.Ascending)
-                                    {
-                                        <span class="material-symbols-outlined material-symbols-outlined-small">
-                                            arrow_drop_down
-                                        </span>
-                                    }
-                                    else if (order == OrderingType.Descending)
-                                    {
-                                        <span class="material-symbols-outlined material-symbols-outlined-small">
-                                            arrow_drop_up
-                                        </span>
-                                    }
-                                </button>
-                            }
+                            <div class="row">
+                                <div class="col mw-75">@property.Title</div>
+                                @{
+                                    var order = _columns[property.NavigationPath].Order;
+                                }
+                                @if (!property.NavigationPath.StartsWith(Constant.KeyWithSeparator) && property.NavigationPath != Constant.Key && property.Type != PropertyType.Enumerable)
+                                {
+                                    <div class="col">
+                                        <button class="bg-transparent p-0 border-0 float-end"
+                                        @onclick="@((x) => OrderBy(property))">
+                                            @if (order == OrderingType.None)
+                                            {
+                                                <span class="material-symbols-outlined material-symbols-outlined-small">
+                                                    remove
+                                                </span>
+                                            }
+                                            else if (order == OrderingType.Ascending)
+                                            {
+                                                <span class="material-symbols-outlined material-symbols-outlined-small">
+                                                    arrow_drop_down
+                                                </span>
+                                            }
+                                            else if (order == OrderingType.Descending)
+                                            {
+                                                <span class="material-symbols-outlined material-symbols-outlined-small">
+                                                    arrow_drop_up
+                                                </span>
+                                            }
+                                        </button>
+                                    </div>
+                                }
+                            </div>
                         </th>
                     }
                 </tr>
@@ -118,7 +122,7 @@
                                         Value="@_columns.Where(x => x.Value.IsActive).Select(x => x.Key)"
                                         Change="@UpdateColumnsVisibility" />
                     </th>
-                    @foreach (var property in TypeShowcase.FlatProperties.Where(x => _columns[x.NavigationPath].IsActive))
+                    @foreach (var property in FlatProperties)
                     {
                         if (!property.NavigationPath.StartsWith(Constant.KeyWithSeparator) && property.NavigationPath != Constant.Key)
                         {
@@ -151,7 +155,7 @@
                                     </span>
                                 </button>
                             </td>
-                            @foreach (var property in TypeShowcase.FlatProperties.Where(x => _columns[x.NavigationPath].IsActive))
+                            @foreach (var property in FlatProperties)
                             {
                                 <td>
                                     @if (property.Type != PropertyType.Enumerable)

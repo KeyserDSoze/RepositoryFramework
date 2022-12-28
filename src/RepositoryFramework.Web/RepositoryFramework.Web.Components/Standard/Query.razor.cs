@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
 using System.Text;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,13 +8,6 @@ using RepositoryFramework.Web.Components.Services;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
-    public class PaginationState
-    {
-        public int ItemsPerPage { get; set; } = 10;
-        public int CurrentPageIndex { get; set; }
-        public int? TotalItemCount { get; set; }
-        public int? LastPageIndex => (TotalItemCount - 1) / ItemsPerPage;
-    }
     public partial class Query<T, TKey>
          where TKey : notnull
     {
@@ -32,7 +24,7 @@ namespace RepositoryFramework.Web.Components.Standard
         private readonly SearchWrapper<T> _searchWrapper = new();
         private readonly OrderWrapper<T, TKey> _orderWrapper = new();
         private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
-
+        private IEnumerable<BaseProperty> FlatProperties => TypeShowcase.FlatProperties.Where(x => _columns.ContainsKey(x.NavigationPath) && _columns[x.NavigationPath].IsActive && x.NavigationPath != nameof(Entity<T, TKey>.HasKey) && x.NavigationPath != nameof(Entity<T, TKey>.HasValue));
         private void UpdateColumnsVisibility(object keys)
         {
             if (keys is IEnumerable<string> values)
@@ -46,7 +38,7 @@ namespace RepositoryFramework.Web.Components.Standard
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            foreach (var property in TypeShowcase.FlatProperties)
+            foreach (var property in TypeShowcase.FlatProperties.Where(x => x.NavigationPath != nameof(Entity<T, TKey>.HasKey) && x.NavigationPath != nameof(Entity<T, TKey>.HasValue)))
             {
                 _columns.Add(property.NavigationPath, new ColumnOptions
                 {
@@ -128,7 +120,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 _orderWrapper.Add(baseProperty);
             else
                 _orderWrapper.Add(baseProperty, true);
-            _ = OnReadDataAsync();
+            GoToPage(0);
         }
         private async Task ShowMoreValuesAsync(Entity<T, TKey>? entity, BaseProperty property)
         {
@@ -203,7 +195,7 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         public void Search()
         {
-            _ = OnReadDataAsync();
+            GoToPage(0);
         }
         private void NavigateTo(string uri)
         {
