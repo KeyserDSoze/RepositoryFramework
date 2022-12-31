@@ -12,7 +12,7 @@
         if (SearchValue.BaseProperty.AssemblyType == typeof(bool) || SearchValue.BaseProperty.AssemblyType == typeof(bool?))
         {
             var checkIfNullIsAvailable = SearchValue.BaseProperty.AssemblyType == typeof(bool?);
-            <SelectDropdown PossibleValues="@(checkIfNullIsAvailable ? BooleanTriState : BooleanState)"
+            <SelectDropdown PossibleValues="@(checkIfNullIsAvailable ? Constant.BooleanTriState : Constant.BooleanState)"
                 SelectedKey="_booleanSelectedKey"
                 OnChange="@(async (x) => BoolSearch(x, checkIfNullIsAvailable))"
                 Class="form-select">

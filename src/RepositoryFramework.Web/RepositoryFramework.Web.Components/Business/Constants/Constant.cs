@@ -33,5 +33,54 @@
         public const string NavLinkActive = "nav-link active";
         public const string NavTabPaneActive = "tab-pane fade show active";
         public const string PaletteKey = nameof(PaletteKey);
+
+        public static readonly IEnumerable<LabelValueDropdownItem> BooleanState = new List<LabelValueDropdownItem>()
+        {
+            new LabelValueDropdownItem
+            {
+                Id = "None",
+                Label= "None",
+                Value = null
+            },
+            new LabelValueDropdownItem
+            {
+                Id = "True",
+                Label= "True",
+                Value = true
+            },
+            new LabelValueDropdownItem
+            {
+                Id = "False",
+                Label= "False",
+                Value = false
+            },
+        };
+        public static readonly IEnumerable<LabelValueDropdownItem> BooleanTriState = new List<LabelValueDropdownItem>()
+        {
+            new LabelValueDropdownItem
+            {
+                Id = "None",
+                Label= "None",
+                Value = null
+            },
+           new LabelValueDropdownItem
+            {
+                Id = "True",
+                Label= "True",
+                Value = true
+            },
+            new LabelValueDropdownItem
+            {
+                Id = "False",
+                Label= "False",
+                Value = false
+            },
+            new LabelValueDropdownItem
+            {
+                Id = "Null",
+                Label= "Null",
+                Value = null!
+            },
+        };
     }
 }

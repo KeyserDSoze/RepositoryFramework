@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Components;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
@@ -15,64 +14,7 @@ namespace RepositoryFramework.Web.Components.Standard
         public required Action Search { get; set; }
         private IEnumerable<string>? _optionKeys { get; set; }
         private string _booleanSelectedKey = "None";
-        private static readonly IEnumerable<LabelValueDropdownItem> BooleanState = new List<LabelValueDropdownItem>()
-        {
-            new LabelValueDropdownItem
-            {
-                Id = "None",
-                Label= "None",
-                Value = null
-            },
-            new LabelValueDropdownItem
-            {
-                Id = "True",
-                Label= "True",
-                Value = true
-            },
-            new LabelValueDropdownItem
-            {
-                Id = "False",
-                Label= "False",
-                Value = false
-            },
-        };
-        private static readonly IEnumerable<LabelValueDropdownItem> BooleanTriState = new List<LabelValueDropdownItem>()
-        {
-            new LabelValueDropdownItem
-            {
-                Id = "None",
-                Label= "None",
-                Value = null
-            },
-           new LabelValueDropdownItem
-            {
-                Id = "True",
-                Label= "True",
-                Value = true
-            },
-            new LabelValueDropdownItem
-            {
-                Id = "False",
-                Label= "False",
-                Value = false
-            },
-            new LabelValueDropdownItem
-            {
-                Id = "Null",
-                Label= "Null",
-                Value = null!
-            },
-        };
-        protected override void OnParametersSet()
-        {
-            base.OnParametersSet();
-            if (PropertyUiSettings.HasValues() && SearchValue.Value != null)
-            {
-                _optionKeys = SearchValue.Value as IEnumerable<string>;
-            }
-        }
-
-        public void Contains(ChangeEventArgs args)
+        private void Contains(ChangeEventArgs args)
         {
             var value = args?.Value?.ToString();
             if (value == null || value == string.Empty)
@@ -81,98 +23,81 @@ namespace RepositoryFramework.Web.Components.Standard
                 SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title}.Contains(\"{value}\")");
             Search();
         }
-
+        private void SearchGreaterLesserThings(string? greaterThan, string? lesserThan)
+        {
+            if (greaterThan != null && lesserThan != null)
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {greaterThan} AndAlso x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {lesserThan}");
+            else if (greaterThan != null)
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {greaterThan}");
+            else if (lesserThan != null)
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {lesserThan}");
+            else
+                SearchValue.UpdateLambda(null);
+            Search();
+        }
+        private readonly ValueBearer<DateTime?> _dateTime = new();
         public void DateTimeSearch(ChangeEventArgs? args, bool atStart)
         {
-            var dateTime = new ValueBearer<DateTime>();
             var value = args?.Value?.ToString();
             if (string.IsNullOrWhiteSpace(value))
             {
                 if (atStart)
-                    dateTime.Start = default;
+                    _dateTime.Start = default;
                 else
-                    dateTime.End = default;
+                    _dateTime.End = default;
             }
             else
             {
                 var date = DateTime.Parse(value);
                 if (atStart)
-                    dateTime.Start = date;
+                    _dateTime.Start = date;
                 else
-                    dateTime.End = date;
+                    _dateTime.End = date;
             }
-            if (dateTime?.Start != null && dateTime?.End != null)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {dateTime.Start} AndAlso x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {dateTime.End}");
-            else if (dateTime?.Start != null)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {dateTime.Start}");
-            else if (dateTime?.End != null)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {dateTime.End}");
-            else
-                SearchValue.UpdateLambda(null);
-            SearchValue.Value = dateTime;
-            Search();
+            SearchGreaterLesserThings(_dateTime.Start?.ToString(), _dateTime.End?.ToString());
         }
 
+        private readonly ValueBearer<DateOnly?> _dateonly = new();
         public void DateSearch(ChangeEventArgs? args, bool atStart)
         {
-            var dateonly = new ValueBearer<DateOnly>();
             var value = args?.Value?.ToString();
             if (string.IsNullOrWhiteSpace(value))
             {
                 if (atStart)
-                    dateonly.Start = default;
+                    _dateonly.Start = default;
                 else
-                    dateonly.End = default;
+                    _dateonly.End = default;
             }
             else
             {
                 var date = DateOnly.Parse(value);
                 if (atStart)
-                    dateonly.Start = date;
+                    _dateonly.Start = date;
                 else
-                    dateonly.End = date;
+                    _dateonly.End = date;
             }
-            if (dateonly?.Start != default && dateonly?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {dateonly.Start} AndAlso x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {dateonly.End}");
-            else if (dateonly?.Start != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {dateonly.Start}");
-            else if (dateonly?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {dateonly.End}");
-            else
-                SearchValue.UpdateLambda(null);
-            SearchValue.Value = dateonly;
-            Search();
+            SearchGreaterLesserThings(_dateonly.Start?.ToString(), _dateonly.End?.ToString());
         }
-
+        private readonly ValueBearer<decimal?> _number = new();
         public void NumberSearch(ChangeEventArgs args, bool atStart)
         {
-            var number = new ValueBearer<decimal?>();
             var value = args?.Value?.ToString();
             if (string.IsNullOrWhiteSpace(value))
             {
                 if (atStart)
-                    number.Start = default;
+                    _number.Start = default;
                 else
-                    number.End = default;
+                    _number.End = default;
             }
             else
             {
                 var parsedNumber = decimal.Parse(args.Value.ToString()!);
                 if (atStart)
-                    number.Start = parsedNumber;
+                    _number.Start = parsedNumber;
                 else
-                    number.End = parsedNumber;
+                    _number.End = parsedNumber;
             }
-            if (number?.Start != default && number?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {number.Start} AndAlso x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {number.End}");
-            else if (number?.Start != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {number.Start}");
-            else if (number?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {number.End}");
-            else
-                SearchValue.UpdateLambda(null);
-            SearchValue.Value = number;
-            Search();
+            SearchGreaterLesserThings(_number.Start?.ToString(), _number.End?.ToString());
         }
         public void BoolSearch(LabelValueDropdownItem item, bool emptyIsValid)
         {
@@ -183,7 +108,6 @@ namespace RepositoryFramework.Web.Components.Standard
                 SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} == {booleanValue}");
             else
                 SearchValue.UpdateLambda(null);
-            SearchValue.Value = value;
             _booleanSelectedKey = item.Id;
             Search();
         }
@@ -209,7 +133,6 @@ namespace RepositoryFramework.Web.Components.Standard
             }
             else
                 SearchValue.UpdateLambda(null);
-            SearchValue.Value = items;
             Search();
         }
     }

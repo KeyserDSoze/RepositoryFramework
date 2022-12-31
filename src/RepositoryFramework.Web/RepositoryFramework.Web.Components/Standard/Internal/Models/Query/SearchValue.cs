@@ -5,7 +5,6 @@ namespace RepositoryFramework.Web.Components.Standard
 {
     public sealed class SearchValue<T> : ISearchValue
     {
-        public object? Value { get; set; }
         public string? Expression { get; private set; }
         public Expression<Func<T, bool>>? LambdaExpression { get; private set; }
         public required BaseProperty BaseProperty { get; init; }
