@@ -1,4 +1,6 @@
-﻿namespace RepositoryFramework.Web.Components.Standard
+﻿using System.Reflection;
+
+namespace RepositoryFramework.Web.Components.Standard
 {
     public sealed class EditParametersBearer
     {

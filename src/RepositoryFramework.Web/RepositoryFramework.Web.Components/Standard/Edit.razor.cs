@@ -51,7 +51,7 @@ namespace RepositoryFramework.Web.Components.Standard
                         await uiMapper.ValuesAsync(ServiceProvider!, _entity).NoContext() : new();
                 _parametersBearer.BaseEntity = _entity;
                 _parametersBearer.EntityRetrieverByKey = ValueRetrieverByKeyAsync;
-                _parametersBearer.BaseTypeShowcase = PropertyHandler.GetEntity(typeof(Entity<T, TKey>));
+                _parametersBearer.BaseTypeShowcase = typeof(Entity<T, TKey>).ToShowcase(IFurtherParameter.Create(Constant.FurtherProperty, x => new FurtherProperty(x)));
                 _parametersBearer.DisableEdit = DisableEdit;
                 _parametersBearer.StateHasChanged = () => StateHasChanged();
             }

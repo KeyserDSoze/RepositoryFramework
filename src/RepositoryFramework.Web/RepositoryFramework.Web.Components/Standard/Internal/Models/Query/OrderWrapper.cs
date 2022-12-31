@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
@@ -8,7 +9,7 @@ namespace RepositoryFramework.Web.Components.Standard
         private readonly Dictionary<string, OrderValue<T, TKey>> _orders = new();
         public void Add(BaseProperty baseProperty, bool byDescending = false)
         {
-            var expression = $"x => x.{baseProperty.Title}";
+            var expression = $"x => x.{baseProperty.GetFurtherProperty().Title}";
             var orderExpression = expression.Deserialize<T, object>();
             Remove(baseProperty);
             _orders.Add(baseProperty.NavigationPath, new OrderValue<T, TKey>

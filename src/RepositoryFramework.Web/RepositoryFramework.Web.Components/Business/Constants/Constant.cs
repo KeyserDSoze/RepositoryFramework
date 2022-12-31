@@ -9,6 +9,7 @@
         public const string BaseProperty = nameof(BaseProperty);
         public const string Entities = nameof(Entities);
         public const string Property = nameof(Property);
+        public const string FurtherProperty = nameof(FurtherProperty);
         public const string Context = nameof(Context);
         public const string Name = nameof(Name);
         public const string Value = nameof(Value);

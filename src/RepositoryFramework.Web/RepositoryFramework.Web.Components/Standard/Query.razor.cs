@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Linq.Dynamic.Core;
+using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Radzen;
 using RepositoryFramework.Web.Components.Services;
@@ -47,7 +47,7 @@ namespace RepositoryFramework.Web.Components.Standard
                     Type = property.Self.PropertyType,
                     Order = OrderingType.None,
                     IsActive = true,
-                    Label = property.Title,
+                    Label = property.GetFurtherProperty().Title,
                     Value = property.NavigationPath
                 });
             }
@@ -131,7 +131,7 @@ namespace RepositoryFramework.Web.Components.Standard
             var retrieve = Try.WithDefaultOnCatch(() => property.Value(entity, null));
             if (retrieve.Exception == null && retrieve.Entity is IEnumerable enumerable && enumerable.GetEnumerator().MoveNext())
             {
-                _ = await DialogService.OpenAsync<Visualizer>(property.Title,
+                _ = await DialogService.OpenAsync<Visualizer>(property.GetFurtherProperty().Title,
                     new Dictionary<string, object>
                     {
                         { Constant.Entity, retrieve.Entity },

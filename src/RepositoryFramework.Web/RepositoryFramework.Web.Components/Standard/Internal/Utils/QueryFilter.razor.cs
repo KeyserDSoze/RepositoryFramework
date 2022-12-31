@@ -78,7 +78,7 @@ namespace RepositoryFramework.Web.Components.Standard
             if (value == null || value == string.Empty)
                 SearchValue.UpdateLambda(null);
             else
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title}.Contains(\"{value}\")");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title}.Contains(\"{value}\")");
             Search();
         }
 
@@ -102,11 +102,11 @@ namespace RepositoryFramework.Web.Components.Standard
                     dateTime.End = date;
             }
             if (dateTime?.Start != null && dateTime?.End != null)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} >= {dateTime.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {dateTime.End}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {dateTime.Start} AndAlso x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {dateTime.End}");
             else if (dateTime?.Start != null)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} >= {dateTime.Start}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {dateTime.Start}");
             else if (dateTime?.End != null)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} <= {dateTime.End}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {dateTime.End}");
             else
                 SearchValue.UpdateLambda(null);
             SearchValue.Value = dateTime;
@@ -133,11 +133,11 @@ namespace RepositoryFramework.Web.Components.Standard
                     dateonly.End = date;
             }
             if (dateonly?.Start != default && dateonly?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} >= {dateonly.Start} AndAlso x.{SearchValue.BaseProperty.NavigationPath} <= {dateonly.End}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {dateonly.Start} AndAlso x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {dateonly.End}");
             else if (dateonly?.Start != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} >= {dateonly.Start}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {dateonly.Start}");
             else if (dateonly?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} <= {dateonly.End}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {dateonly.End}");
             else
                 SearchValue.UpdateLambda(null);
             SearchValue.Value = dateonly;
@@ -164,11 +164,11 @@ namespace RepositoryFramework.Web.Components.Standard
                     number.End = parsedNumber;
             }
             if (number?.Start != default && number?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} >= {number.Start} AndAlso x.{SearchValue.BaseProperty.Title} <= {number.End}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {number.Start} AndAlso x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {number.End}");
             else if (number?.Start != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} >= {number.Start}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} >= {number.Start}");
             else if (number?.End != default)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} <= {number.End}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} <= {number.End}");
             else
                 SearchValue.UpdateLambda(null);
             SearchValue.Value = number;
@@ -178,9 +178,9 @@ namespace RepositoryFramework.Web.Components.Standard
         {
             var value = item.Value;
             if (value == null && emptyIsValid)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} == null");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} == null");
             else if (value is bool booleanValue)
-                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.Title} == {booleanValue}");
+                SearchValue.UpdateLambda($"x => x.{SearchValue.BaseProperty.GetFurtherProperty().Title} == {booleanValue}");
             else
                 SearchValue.UpdateLambda(null);
             SearchValue.Value = value;
@@ -201,9 +201,9 @@ namespace RepositoryFramework.Web.Components.Standard
                         builder.Append(" OrElse ");
                     var value = PropertyUiSettings!.Values!.FirstOrDefault(x => x.Id == id)?.Value;
                     if (value.GetType().IsNumeric())
-                        builder.Append($"x.{SearchValue.BaseProperty.Title} == {value}");
+                        builder.Append($"x.{SearchValue.BaseProperty.GetFurtherProperty().Title} == {value}");
                     else
-                        builder.Append($"x.{SearchValue.BaseProperty.Title} == \"{value}\"");
+                        builder.Append($"x.{SearchValue.BaseProperty.GetFurtherProperty().Title} == \"{value}\"");
                 }
                 SearchValue.UpdateLambda(builder.ToString());
             }

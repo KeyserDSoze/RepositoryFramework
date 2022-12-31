@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework.Web.Components
@@ -10,8 +11,6 @@ namespace RepositoryFramework.Web.Components
         public IServiceProvider? ServiceProvider { get; set; }
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
-        [Inject]
-        public PropertyHandler PropertyHandler { get; set; } = null!;
         protected IRepository<T, TKey>? Repository { get; private set; }
         protected IQuery<T, TKey>? Query { get; private set; }
         protected ICommand<T, TKey>? Command { get; private set; }
@@ -19,7 +18,8 @@ namespace RepositoryFramework.Web.Components
         private protected bool CanEdit { get; set; }
         protected override void OnInitialized()
         {
-            TypeShowcase = PropertyHandler.GetEntity(typeof(Entity<T, TKey>));
+            TypeShowcase = typeof(Entity<T, TKey>)
+                .ToShowcase(IFurtherParameter.Create(Constant.FurtherProperty, x => new FurtherProperty(x)));
             base.OnInitialized();
         }
         protected override void OnParametersSet()

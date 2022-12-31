@@ -17,7 +17,6 @@ namespace Microsoft.Extensions.DependencyInjection
             settings.Invoke(options);
             services.AddSingleton(options);
             services.AddHttpContextAccessor();
-            services.AddSingleton<PropertyHandler>();
             services.AddSingleton<IAppMenu, AppMenu>();
             services.AddSingleton<IPolicyEvaluatorManager, PolicyEvaluatorManager>();
             services.AddScoped<ILoaderService, LoadService>();

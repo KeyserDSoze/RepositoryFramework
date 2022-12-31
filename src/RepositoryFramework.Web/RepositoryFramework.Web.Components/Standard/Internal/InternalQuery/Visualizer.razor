@@ -54,8 +54,6 @@
     [Parameter]
     public IEnumerable? Entity { get; set; }
     [Inject]
-    public PropertyHandler PropertyHandler { get; set; } = null!;
-    [Inject]
     public ICopyService Copy { get; set; }
     private TypeShowcase TypeShowcase { get; set; } = null!;
     private bool _isPrimitive;
@@ -68,7 +66,7 @@
             var type = enumerator.Current.GetType();
             _isPrimitive = type.IsPrimitive();
             if (!_isPrimitive)
-                TypeShowcase = PropertyHandler.GetEntity(type);
+                TypeShowcase = type.ToShowcase();
         }
     }
 }
