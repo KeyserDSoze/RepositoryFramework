@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Linq.Dynamic.Core;
+using System.Net.Mime;
 using System.Reflection;
 using System.Text;
+using System.Text.Csv;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using Radzen;
 using RepositoryFramework.Web.Components.Services;
 
@@ -218,6 +221,15 @@ namespace RepositoryFramework.Web.Components.Standard
                 AddOrRemoveItemFromList(isSelected, key);
             _allSelected = true;
             StateHasChanged();
+        }
+        [Inject]
+        public IJSRuntime JSRuntime { get; set; }
+        private const string CsvContentType = "text/csv";
+        private async ValueTask DownloadAsCsvAsync()
+        {
+            var fileName = $"{_lastQueryKey}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
+            var file = UTF8Encoding.UTF8.GetBytes(_items.ToCsv());
+            await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, CsvContentType, file);
         }
     }
 }

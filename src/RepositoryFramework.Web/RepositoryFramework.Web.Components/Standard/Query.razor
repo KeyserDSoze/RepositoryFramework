@@ -10,6 +10,11 @@
         {
             <div class="w-100 row">
                 <div class="col-12">
+                    <button @onclick="@((x) => DownloadAsCsvAsync())" class="bg-transparent p-0 border-0">
+                        <span class="material-symbols-outlined material-symbols-outlined-small">
+                            download
+                        </span>
+                    </button>
                     <nav role="navigation" class="float-md-end">
                         <ul class="pagination">
                             <li class="page-item">
