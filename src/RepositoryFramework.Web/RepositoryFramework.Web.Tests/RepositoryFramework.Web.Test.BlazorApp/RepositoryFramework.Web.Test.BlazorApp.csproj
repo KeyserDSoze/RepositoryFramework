@@ -8,16 +8,19 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Shared\**" />
+      <Content Remove="Shared\**" />
+      <EmbeddedResource Remove="Shared\**" />
+      <None Remove="Shared\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Remove="Pages\Index.razor" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\RepositoryFramework.Infrastructure.InMemory\RepositoryFramework.Infrastructure.InMemory.csproj" />
         <ProjectReference Include="..\..\RepositoryFramework.Web.Components\RepositoryFramework.Web.Components.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Shared\" />
     </ItemGroup>
 
     <ItemGroup>
