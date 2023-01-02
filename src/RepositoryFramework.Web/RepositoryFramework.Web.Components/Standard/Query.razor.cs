@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Radzen;
 using RepositoryFramework.Web.Components.Services;
+using RepositoryFramework.Web.Components.Standard;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
@@ -229,6 +231,25 @@ namespace RepositoryFramework.Web.Components.Standard
             var fileName = $"{_lastQueryKey}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
             var file = UTF8Encoding.UTF8.GetBytes(_items.ToCsv());
             await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, CsvContentType, file);
+        }
+        private const string RemoveIcon = "remove";
+        private const string ArrowDropDownIcon = "arrow_drop_down";
+        private const string ArrowDropUpIcon = "arrow_drop_up";
+        private string GetRightOrderingIcon(OrderingType order)
+        {
+            if (order == OrderingType.None)
+            {
+                return RemoveIcon;
+            }
+            else if (order == OrderingType.Ascending)
+            {
+                return ArrowDropDownIcon;
+            }
+            else if (order == OrderingType.Descending)
+            {
+                return ArrowDropUpIcon;
+            }
+            return string.Empty;
         }
     }
 }
