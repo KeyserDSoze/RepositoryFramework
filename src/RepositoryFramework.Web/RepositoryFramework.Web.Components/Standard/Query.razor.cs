@@ -151,7 +151,7 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 yield return new LabelValueDropdownItem
                 {
-                    Label = (i + 1).ToString(),
+                    Label = $"{(i + 1)} of {(Pagination.LastPageIndex + 1)}",
                     Id = i.ToString(),
                     Value = i,
                 };
@@ -170,7 +170,7 @@ namespace RepositoryFramework.Web.Components.Standard
             }
             yield return new LabelValueDropdownItem
             {
-                Label = "All",
+                Label = $"All {Pagination.TotalItemCount}",
                 Id = Pagination.TotalItemCount.ToString(),
                 Value = Pagination.TotalItemCount.Value,
             };
