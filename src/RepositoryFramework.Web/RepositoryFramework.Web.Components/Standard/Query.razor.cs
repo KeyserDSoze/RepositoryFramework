@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Radzen;
 using RepositoryFramework.Web.Components.Services;
-using RepositoryFramework.Web.Components.Standard;
 
 namespace RepositoryFramework.Web.Components.Standard
 {
@@ -31,16 +29,6 @@ namespace RepositoryFramework.Web.Components.Standard
         private Dictionary<string, PropertyUiSettings> _propertiesRetrieved;
         private bool _allSelected;
         private IEnumerable<BaseProperty> FlatProperties => TypeShowcase.FlatProperties.Where(x => _columns.ContainsKey(x.NavigationPath) && _columns[x.NavigationPath].IsActive && x.NavigationPath != nameof(Entity<T, TKey>.HasKey) && x.NavigationPath != nameof(Entity<T, TKey>.HasValue));
-        private void UpdateColumnsVisibility(object keys)
-        {
-            if (keys is IEnumerable<string> values)
-            {
-                foreach (var item in _columns)
-                    item.Value.IsActive = false;
-                foreach (var key in values)
-                    _columns[key].IsActive = true;
-            }
-        }
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -144,6 +132,30 @@ namespace RepositoryFramework.Web.Components.Standard
                         Width = Constant.DialogWidth
                     });
             }
+        }
+        private IEnumerable<LabelValueDropdownItem> GetColumns()
+        {
+            foreach (var column in _columns)
+                yield return new LabelValueDropdownItem
+                {
+                    Id = column.Key,
+                    Value = column.Value,
+                    Label = column.Value.Label,
+                };
+        }
+        private IEnumerable<string> GetSelectedColumns()
+        {
+            foreach (var column in _columns.Where(x => x.Value.IsActive))
+                yield return column.Key;
+        }
+        private ValueTask UpdateColumnsVisibility(IEnumerable<LabelValueDropdownItem> keys)
+        {
+            foreach (var item in _columns)
+                item.Value.IsActive = false;
+            foreach (var key in keys)
+                _columns[key.Id].IsActive = true;
+            StateHasChanged();
+            return ValueTask.CompletedTask;
         }
         private IEnumerable<LabelValueDropdownItem> GetPages()
         {
