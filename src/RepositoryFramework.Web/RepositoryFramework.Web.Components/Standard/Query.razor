@@ -9,60 +9,62 @@
         {
             <div class="w-100 row">
                 <div class="col-12">
-                    <button @onclick="@((x) => DownloadAsCsvAsync())" class="bg-transparent p-0 border-0">
+                    <button @onclick="@((x) => _ = DownloadAsCsvAsync())" class="btn btn-outline-primary">
                         <span class="material-symbols-outlined material-symbols-outlined-small">
                             download
                         </span>
                     </button>
-                    <nav role="navigation" class="float-md-end">
-                        <ul class="pagination">
-                            <li class="page-item">
-                                <button @onclick="@(() => GoToPage(0))" disabled=@(Pagination.CurrentPageIndex <= 0) class="bg-transparent p-0 border-0">
-                                    <span class="material-symbols-outlined material-symbols-outlined-small">
-                                        keyboard_double_arrow_left
-                                    </span>
-                                </button>
-                            </li>
-                            <li class="page-item">
-                                <button @onclick="@(() => GoToPage(Pagination.CurrentPageIndex - 1))" disabled=@(Pagination.CurrentPageIndex <= 0) class="bg-transparent p-0 border-0">
-                                    <span class="material-symbols-outlined material-symbols-outlined-small">
-                                        chevron_left
-                                    </span>
-                                </button>
-                            </li>
-                            <li class="page-item">
-                                Page
-                                <SelectDropdown PossibleValues="@GetPages()"
-                                            OnChange="@(async (x) => GoToPage((int)x.Value))"
-                                            SelectedKey="@_selectedPageKey"
-                                            NotEditable=false
-                                            Class="form-class">
-                                </SelectDropdown>
+                    <CopyButton GetValue="@(() => CopyAsCsv())" Icon="content_copy" Class="btn btn-outline-secondary">
+                    </CopyButton>
+                    <div class="col-12 col-xxl-5 col-xl-6 col-lg-7 col-md-8 col-sm-9 float-md-end row">
+                        <div class="col-1">
+                            <button @onclick="@(() => GoToPage(0))" disabled=@(Pagination.CurrentPageIndex <= 0) class="btn btn-outline-dark">
+                                <span class="material-symbols-outlined material-symbols-outlined-small">
+                                    keyboard_double_arrow_left
+                                </span>
+                            </button>
+                        </div>
+                        <div class="col-1">
+                            <button @onclick="@(() => GoToPage(Pagination.CurrentPageIndex - 1))" disabled=@(Pagination.CurrentPageIndex <= 0) class="btn btn-outline-dark">
+                                <span class="material-symbols-outlined material-symbols-outlined-small">
+                                    chevron_left
+                                </span>
+                            </button>
+                        </div>
+                        <div class="col-8 row">
+                            <div class="col mt-2">Page</div>
+                            <SelectDropdown PossibleValues="@GetPages()"
+                                        OnChange="@(async (x) => GoToPage((int)x.Value))"
+                                        SelectedKey="@_selectedPageKey"
+                                        NotEditable=false
+                                        Class="form-select col">
+                            </SelectDropdown>
+                            <div class="col text-nowrap mt-2">
                                 of <strong>@(Pagination.LastPageIndex + 1)</strong>
                                 (<strong>@Pagination.TotalItemCount</strong>) items.
-                                <SelectDropdown PossibleValues="@GetPaging()"
-                                            OnChange="@(async (x) => ChangeItemsPerPage((int)x.Value))"
-                                            SelectedKey="@_selectedItemsForPageKey"
-                                            NotEditable=false
-                                            Class="form-class">
-                                </SelectDropdown>
-                            </li>
-                            <li class="page-item">
-                                <button @onclick="@(() => GoToPage(Pagination.CurrentPageIndex + 1))" disabled=@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex) class="bg-transparent p-0 border-0">
-                                    <span class="material-symbols-outlined material-symbols-outlined-small">
-                                        chevron_right
-                                    </span>
-                                </button>
-                            </li>
-                            <li class="page-item">
-                                <button @onclick="@(() => GoToPage(Pagination.LastPageIndex.Value))" disabled=@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex) class="bg-transparent p-0 border-0">
-                                    <span class="material-symbols-outlined material-symbols-outlined-small">
-                                        keyboard_double_arrow_right
-                                    </span>
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
+                            </div>
+                            <SelectDropdown PossibleValues="@GetPaging()"
+                                        OnChange="@(async (x) => ChangeItemsPerPage((int)x.Value))"
+                                        SelectedKey="@_selectedItemsForPageKey"
+                                        NotEditable=false
+                                        Class="form-select col">
+                            </SelectDropdown>
+                        </div>
+                        <div class="col-1">
+                            <button @onclick="@(() => GoToPage(Pagination.CurrentPageIndex + 1))" disabled=@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex) class="btn btn-outline-dark">
+                                <span class="material-symbols-outlined material-symbols-outlined-small">
+                                    chevron_right
+                                </span>
+                            </button>
+                        </div>
+                        <div class="col-1">
+                            <button @onclick="@(() => GoToPage(Pagination.LastPageIndex.Value))" disabled=@(Pagination.CurrentPageIndex >= Pagination.LastPageIndex) class="btn btn-outline-dark">
+                                <span class="material-symbols-outlined material-symbols-outlined-small">
+                                    keyboard_double_arrow_right
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         }
@@ -76,9 +78,6 @@
                     {
                         <th scope="col">
                             <div class="row">
-                                @{
-                                    var order = _columns[property.NavigationPath].Order;
-                                }
                                 @if (!property.NavigationPath.StartsWith(Constant.KeyWithSeparator) && property.NavigationPath != Constant.Key && property.Type != PropertyType.Enumerable)
                                 {
                                     <div class="col">
@@ -86,7 +85,7 @@
                                         @onclick="@((x) => OrderBy(property))">
                                             @property.GetFurtherProperty().Title
                                             <span class="material-symbols-outlined material-symbols-outlined-small float-end mt-1">
-                                                @GetRightOrderingIcon(order)
+                                                @GetRightOrderingIcon(_columns[property.NavigationPath].Order)
                                             </span>
                                         </button>
                                     </div>

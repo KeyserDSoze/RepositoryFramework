@@ -228,10 +228,12 @@ namespace RepositoryFramework.Web.Components.Standard
         private const string CsvContentType = "text/csv";
         private async ValueTask DownloadAsCsvAsync()
         {
-            var fileName = $"{_lastQueryKey}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
+            var fileName = $"{typeof(T).Name}_{_lastQueryKey}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
             var file = UTF8Encoding.UTF8.GetBytes(_items.ToCsv());
             await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, CsvContentType, file);
         }
+        private string CopyAsCsv()
+            => _items.ToCsv();
         private const string RemoveIcon = "remove";
         private const string ArrowDropDownIcon = "arrow_drop_down";
         private const string ArrowDropUpIcon = "arrow_drop_up";
