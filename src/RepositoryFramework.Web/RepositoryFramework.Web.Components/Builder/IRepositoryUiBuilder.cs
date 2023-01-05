@@ -8,5 +8,6 @@ namespace RepositoryFramework.Web.Components.Builder
         IRepositoryUiBuilder AddSkinForUi(string name, Action<AppPalette> settings);
         IRepositoryUiBuilder AddDefaultSkinForUi();
         IRepositoryUiBuilder WithAuthenticatedUi();
+        IRepositoryUiBuilder AddDefaultLocalization();
     }
 }

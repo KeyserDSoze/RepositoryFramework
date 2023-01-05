@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.Web.Components.Business.Language;
 
 namespace RepositoryFramework.Web.Components.Builder
 {
@@ -44,6 +45,15 @@ namespace RepositoryFramework.Web.Components.Builder
         public IRepositoryUiBuilder WithAuthenticatedUi()
         {
             AppInternalSettings.Instance.IsAuthenticated = true;
+            return this;
+        }
+
+        public IRepositoryUiBuilder AddDefaultLocalization()
+        {
+            Services
+                .AddLocalization(options => options.ResourcesPath = "Resources");
+            RepositoryLocalizationOptions.Instance.HasLocalization = true;
+            Services.AddSingleton<ILocalizationHandler, LocalizationHandler>();
             return this;
         }
     }

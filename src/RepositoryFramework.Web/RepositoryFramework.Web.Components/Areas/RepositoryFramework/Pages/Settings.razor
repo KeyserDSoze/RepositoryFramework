@@ -1,23 +1,27 @@
 ﻿@page "/Repository/Settings"
 @namespace RepositoryFramework.Web.Components
+@using RepositoryFramework.Web.Components.Business.Language
+@using RepositoryFramework.Web.Components.Standard
 
-@if (_paletteKey != null && AppPaletteWrapper.Skins.Count > 1)
-{
-    <select class="form-control" @onchange=@((x) => ChangeSkin(x))>
-        @foreach (var skin in AppPaletteWrapper.Skins)
-        {
-            if (_paletteKey == skin.Key)
-            {
-                <option value="@skin.Key" selected>
-                    @skin.Key
-                </option>
-            }
-            else
-            {
-                <option value="@skin.Key">
-                    @skin.Key
-                </option>
-            }
-        }
-    </select>
-}
+<div class="row">
+    @if (_paletteKey != null && AppPaletteWrapper.Skins.Count > 1)
+    {
+        <div class="col">
+            <SelectDropdown Class="form-select"
+                        OnChange="@(x => ChangeSkin(x))"
+                        SelectedKey="@_paletteKey"
+                        PossibleValues="@GetSkins()">
+            </SelectDropdown>
+        </div>
+    }
+    @if (RepositoryLocalizationOptions.Instance.HasLocalization)
+    {
+        <div class="col">
+            <SelectDropdown Class="form-select"
+                        OnChange="@(x => ChangeLanguage(x))"
+                        SelectedKey="@_languageKey"
+                        PossibleValues="@GetLanguages()">
+            </SelectDropdown>
+        </div>
+    }
+</div>

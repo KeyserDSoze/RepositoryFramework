@@ -5,8 +5,10 @@ using System.Text;
 using System.Text.Csv;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using Radzen;
+using RepositoryFramework.Web.Components.Business.Language;
 using RepositoryFramework.Web.Components.Services;
 
 namespace RepositoryFramework.Web.Components.Standard
@@ -22,6 +24,8 @@ namespace RepositoryFramework.Web.Components.Standard
         public DialogService DialogService { get; set; }
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
+        [Inject]
+        public ILocalizationHandler? LocalizationHandler { get; set; } = null!;
         private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
         private readonly Dictionary<string, ColumnOptions> _columns = new();
         private readonly SearchWrapper<T> _searchWrapper = new();
@@ -169,13 +173,15 @@ namespace RepositoryFramework.Web.Components.Standard
                 };
             }
         }
+        [Inject]
+        public IStringLocalizer<SharedResource> Localizer { get; set; }
         private IEnumerable<LabelValueDropdownItem> GetPaging()
         {
             for (var i = 10; i < Pagination.TotalItemCount; i *= 2)
             {
                 yield return new LabelValueDropdownItem
                 {
-                    Label = $"{i} per page",
+                    Label = $"{i} {Localizer["per page"]}",
                     Id = i.ToString(),
                     Value = i,
                 };

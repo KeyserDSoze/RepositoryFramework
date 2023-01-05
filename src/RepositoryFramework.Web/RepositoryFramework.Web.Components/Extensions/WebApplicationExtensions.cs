@@ -2,8 +2,12 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using RepositoryFramework.Web.Components;
+using RepositoryFramework.Web.Components.Business.Language;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -12,6 +16,27 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IEndpointRouteBuilder AddDefaultRepositoryEndpoints(this WebApplication app)
         {
             app.UseStaticFiles();
+            if (RepositoryLocalizationOptions.Instance.HasLocalization)
+            {
+                app
+                    .UseRequestLocalization(options =>
+                    {
+                        options
+                        .SetDefaultCulture(RepositoryLocalizationOptions.Instance.SupportedCultures.First().Name)
+                        .AddSupportedCultures(RepositoryLocalizationOptions.Instance.SupportedCultures.Select(x => x.Name).ToArray())
+                        .AddSupportedUICultures(RepositoryLocalizationOptions.Instance.SupportedCultures.Select(x => x.Name).ToArray());
+                    }
+                    );
+                app.MapGet("/Repository/Language/{culture}", (string culture, IHttpContextAccessor httpContextAccessor) =>
+                {
+                    httpContextAccessor.HttpContext!.Response.Cookies.Append(
+                        CookieRequestCultureProvider.DefaultCookieName,
+                        CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                        new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+                    );
+                    httpContextAccessor.HttpContext.Response.Redirect("../../../../");
+                });
+            }
             if (AppInternalSettings.Instance.IsAuthenticated)
             {
                 app
