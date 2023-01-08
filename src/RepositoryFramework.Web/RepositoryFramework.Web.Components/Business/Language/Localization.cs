@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Localization;
+using RepositoryFramework.Web.Components.Resources;
 
 namespace RepositoryFramework.Web.Components.Business.Language
 {

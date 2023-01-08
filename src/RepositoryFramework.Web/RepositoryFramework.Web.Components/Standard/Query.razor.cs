@@ -9,6 +9,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using Radzen;
 using RepositoryFramework.Web.Components.Business.Language;
+using RepositoryFramework.Web.Components.Resources;
 using RepositoryFramework.Web.Components.Services;
 
 namespace RepositoryFramework.Web.Components.Standard
@@ -181,7 +182,7 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 yield return new LabelValueDropdownItem
                 {
-                    Label = $"{i} {Localizer["per page"]}",
+                    Label = $"{i} {Localizer["perpage"]}",
                     Id = i.ToString(),
                     Value = i,
                 };
