@@ -27,11 +27,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <EmbeddedResource Remove="Resources\SharedResource.it-IT.resx" />
-      <EmbeddedResource Remove="Resources\SharedResource.resx" />
-    </ItemGroup>
-
-    <ItemGroup>
         <SupportedPlatform Include="browser" />
     </ItemGroup>
     <ItemGroup>
@@ -63,23 +58,24 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="Resources\SharedResource.it-IT.resx">
-        <Generator></Generator>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Resources\SharedResource.resx">
-        <Generator></Generator>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Update="wwwroot\repository.css">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Update="wwwroot\repository.js">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\SharedResource.it-IT.resx">
+        <Generator></Generator>
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\SharedResource.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        <LastGenOutput>SharedResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

@@ -51,7 +51,7 @@ namespace RepositoryFramework.Web.Components.Builder
         public IRepositoryUiBuilder AddDefaultLocalization()
         {
             Services
-                .AddLocalization(options => options.ResourcesPath = "Resources");
+                .AddLocalization(options => options.ResourcesPath = string.Empty);
             RepositoryLocalizationOptions.Instance.HasLocalization = true;
             Services.AddSingleton<ILocalizationHandler, LocalizationHandler>();
             return this;
