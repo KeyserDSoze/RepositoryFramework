@@ -22,7 +22,7 @@ namespace RepositoryFramework.Web.Components.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class SharedResource {
+    internal class SharedResource {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace RepositoryFramework.Web.Components.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RepositoryFramework.Web.Components.Resources.SharedResource", typeof(SharedResource).Assembly);
@@ -51,7 +51,7 @@ namespace RepositoryFramework.Web.Components.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,11 +61,47 @@ namespace RepositoryFramework.Web.Components.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to per page.
+        ///   Looks up a localized string similar to {0} of ({1}).
         /// </summary>
-        public static string perpage {
+        internal static string _0__of___1__ {
             get {
-                return ResourceManager.GetString("perpage", resourceCulture);
+                return ResourceManager.GetString("{0} of ({1})", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}  per page.
+        /// </summary>
+        internal static string _0__per_page {
+            get {
+                return ResourceManager.GetString("{0} per page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All {0}.
+        /// </summary>
+        internal static string All__0_ {
+            get {
+                return ResourceManager.GetString("All {0}", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to items selected..
+        /// </summary>
+        internal static string items_selected_ {
+            get {
+                return ResourceManager.GetString("items selected.", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show {0} items..
+        /// </summary>
+        internal static string Show__0__items_ {
+            get {
+                return ResourceManager.GetString("Show {0} items.", resourceCulture);
             }
         }
     }

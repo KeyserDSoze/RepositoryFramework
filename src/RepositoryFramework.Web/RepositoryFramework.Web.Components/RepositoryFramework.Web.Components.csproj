@@ -59,6 +59,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Update="Resources\SharedResource.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>SharedResource.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
       <Content Update="wwwroot\repository.css">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
@@ -73,7 +81,7 @@
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Update="Resources\SharedResource.resx">
-        <Generator>PublicResXFileCodeGenerator</Generator>
+        <Generator>ResXFileCodeGenerator</Generator>
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         <LastGenOutput>SharedResource.Designer.cs</LastGenOutput>
       </EmbeddedResource>

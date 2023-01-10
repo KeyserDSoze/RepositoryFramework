@@ -117,7 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="perpage" xml:space="preserve">
-    <value>per page</value>
+  <data name="All {0}" xml:space="preserve">
+    <value>All {0}</value>
+  </data>
+  <data name="items selected." xml:space="preserve">
+    <value>items selected.</value>
+  </data>
+  <data name="Show {0} items." xml:space="preserve">
+    <value>Show {0} items.</value>
+  </data>
+  <data name="{0} of ({1})" xml:space="preserve">
+    <value>{0} of ({1})</value>
+  </data>
+  <data name="{0} per page" xml:space="preserve">
+    <value>{0}  per page</value>
   </data>
 </root>

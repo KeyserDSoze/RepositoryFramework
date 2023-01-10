@@ -27,6 +27,8 @@ namespace RepositoryFramework.Web.Components.Standard
         public NavigationManager NavigationManager { get; set; } = null!;
         [Inject]
         public ILocalizationHandler? LocalizationHandler { get; set; } = null!;
+        [Inject]
+        internal IStringLocalizer<SharedResource> Localizer { get; set; }
         private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
         private readonly Dictionary<string, ColumnOptions> _columns = new();
         private readonly SearchWrapper<T> _searchWrapper = new();
@@ -168,35 +170,33 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 yield return new LabelValueDropdownItem
                 {
-                    Label = $"{(i + 1)} of {(Pagination.LastPageIndex + 1)}",
+                    Label = Localizer[LanguageLabel.OfPages, i + 1, Pagination.LastPageIndex + 1],
                     Id = i.ToString(),
                     Value = i,
                 };
             }
         }
-        [Inject]
-        public IStringLocalizer<SharedResource> Localizer { get; set; }
+
         private IEnumerable<LabelValueDropdownItem> GetPaging()
         {
             for (var i = 10; i < Pagination.TotalItemCount; i *= 2)
             {
                 yield return new LabelValueDropdownItem
                 {
-                    Label = $"{i} {Localizer["perpage"]}",
+                    Label = Localizer[LanguageLabel.PerPage, i],
                     Id = i.ToString(),
                     Value = i,
                 };
             }
             yield return new LabelValueDropdownItem
             {
-                Label = $"All {Pagination.TotalItemCount}",
+                Label = Localizer[LanguageLabel.All, Pagination.TotalItemCount],
                 Id = Pagination.TotalItemCount.ToString(),
                 Value = Pagination.TotalItemCount.Value,
             };
         }
-        private const string EnumerableLabelCount = "Show {0} items.";
         private string EnumerableCountAsString(Entity<T, TKey>? entity, BaseProperty property)
-            => string.Format(EnumerableLabelCount, EnumerableCount(entity, property));
+            => Localizer[LanguageLabel.ShowItems, EnumerableCount(entity, property)];
         private int EnumerableCount(Entity<T, TKey>? entity, BaseProperty property)
         {
             var response = Try.WithDefaultOnCatch(() => property.Value(entity, null));
@@ -248,11 +248,11 @@ namespace RepositoryFramework.Web.Components.Standard
         private async ValueTask DownloadAsCsvAsync()
         {
             var fileName = $"{typeof(T).Name}_{_lastQueryKey}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
-            var file = UTF8Encoding.UTF8.GetBytes(_items.ToCsv());
+            var file = Encoding.UTF8.GetBytes(_items.ToCsv());
             await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, CsvContentType, file);
         }
         private string CopyAsCsv()
-            => _items.ToCsv();
+            => _items!.ToCsv();
         private const string RemoveIcon = "remove";
         private const string ArrowDropDownIcon = "arrow_drop_down";
         private const string ArrowDropUpIcon = "arrow_drop_up";
