@@ -1,6 +1,8 @@
-﻿using RepositoryFramework;
+﻿using Microsoft.Extensions.Localization;
+using RepositoryFramework;
 using RepositoryFramework.Web;
 using RepositoryFramework.Web.Components;
+using RepositoryFramework.Web.Components.Business.Language;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -58,6 +60,14 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddSingleton<IRepositoryPropertyUiHelper<T, TKey>, PropertyUiHelper<T, TKey>>();
             builder.Services.AddSingleton<IRepositoryUiMapper<T, TKey>, TUiMapper>();
             builder.Services.AddSingleton<IRepositoryPropertyUiMapper<T, TKey>, PropertyUiMapper<T, TKey>>();
+            return builder;
+        }
+        public static IRepositoryBuilder<T, TKey> WithLocalization<T, TKey, TLocalization>(
+            this IRepositoryBuilder<T, TKey> builder)
+            where TKey : notnull
+            where TLocalization : IStringLocalizer
+        {
+            RepositoryLocalizationOptions.Instance.LocalizationInterfaces.Add(typeof(T).FullName!, typeof(TLocalization));
             return builder;
         }
     }

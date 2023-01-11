@@ -63,11 +63,6 @@ input {
     margin: 0px !important;
 }
 
-    .row > * {
-        padding-right: 0px !important;
-        padding-left: 0px !important;
-    }
-
 .dropdown-toggle::after {
     vertical-align: middle !important;
 }
@@ -77,9 +72,9 @@ input {
     min-width: 250px;
 }
 
-    .table .first-column {
-        min-width: 100px !important;
-    }
+.table .first-column {
+    min-width: 100px !important;
+}
 
 .table-sticky th:first-child, .table-sticky td:first-child {
     position: sticky;
@@ -93,6 +88,7 @@ input {
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--secondary) rgba(0,0,0,0);
+    box-sizing: border-box;
 }
 
     *::-webkit-scrollbar {

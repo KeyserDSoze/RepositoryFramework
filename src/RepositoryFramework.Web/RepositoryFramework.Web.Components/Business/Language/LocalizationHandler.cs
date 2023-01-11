@@ -5,28 +5,26 @@ namespace RepositoryFramework.Web.Components.Business.Language
 {
     internal sealed class LocalizationHandler : ILocalizationHandler
     {
-        private readonly IStringLocalizer? _sharedLocalizer;
+        private readonly IStringLocalizer _sharedLocalizer;
         private readonly Dictionary<string, IStringLocalizer> _localizations = new();
-        public LocalizationHandler(IServiceProvider serviceProvider)
+        public LocalizationHandler(IServiceProvider serviceProvider, IStringLocalizer<SharedResource> sharedLocalizer)
         {
-            if (serviceProvider.GetService(typeof(IStringLocalizer<SharedResource>)) is IStringLocalizer defaultLocalizer)
-                _sharedLocalizer = defaultLocalizer;
+            _sharedLocalizer = sharedLocalizer;
             foreach (var localizationInterface in RepositoryLocalizationOptions.Instance.LocalizationInterfaces)
                 if (serviceProvider.GetService(localizationInterface.Value) is IStringLocalizer localizer)
                     _localizations.Add(localizationInterface.Key, localizer);
         }
-        public string Get(string value)
+        public string Get(string value, params object[] arguments)
+            => _sharedLocalizer[value, arguments];
+        public string Get<T>(string value, params object[] arguments)
+            => Get(typeof(T), value, arguments);
+
+        public string Get(Type type, string value, params object[] arguments)
         {
-            if (_sharedLocalizer != null)
-                return _sharedLocalizer[value];
-            return value;
-        }
-        public string Get<T>(string value)
-        {
-            var name = typeof(T).FullName!;
+            var name = type.FullName!;
             if (_localizations.ContainsKey(name))
-                return _localizations[name][value];
-            return value;
+                return _localizations[name][value, arguments];
+            return string.Format(value, arguments);
         }
     }
 }

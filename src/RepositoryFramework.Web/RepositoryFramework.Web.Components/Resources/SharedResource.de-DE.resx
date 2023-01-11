@@ -130,6 +130,6 @@
     <value>{0} von ({1})</value>
   </data>
   <data name="{0} per page" xml:space="preserve">
-    <value>{0}  pro seite</value>
+    <value>{0} pro seite</value>
   </data>
 </root>

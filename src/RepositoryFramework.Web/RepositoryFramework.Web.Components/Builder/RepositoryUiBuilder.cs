@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using RepositoryFramework.Web.Components.Business.Language;
 
 namespace RepositoryFramework.Web.Components.Builder
@@ -53,7 +54,8 @@ namespace RepositoryFramework.Web.Components.Builder
             Services
                 .AddLocalization(options => options.ResourcesPath = string.Empty);
             RepositoryLocalizationOptions.Instance.HasLocalization = true;
-            Services.AddSingleton<ILocalizationHandler, LocalizationHandler>();
+            Services.Remove(Services.First(x => x.ServiceType == typeof(ILocalizationHandler)));
+            Services.TryAddTransient<ILocalizationHandler, LocalizationHandler>();
             return this;
         }
     }

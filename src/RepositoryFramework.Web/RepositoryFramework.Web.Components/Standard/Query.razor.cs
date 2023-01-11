@@ -5,11 +5,8 @@ using System.Text;
 using System.Text.Csv;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using Radzen;
-using RepositoryFramework.Web.Components.Business.Language;
-using RepositoryFramework.Web.Components.Resources;
 using RepositoryFramework.Web.Components.Services;
 
 namespace RepositoryFramework.Web.Components.Standard
@@ -25,10 +22,6 @@ namespace RepositoryFramework.Web.Components.Standard
         public DialogService DialogService { get; set; }
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
-        [Inject]
-        public ILocalizationHandler? LocalizationHandler { get; set; } = null!;
-        [Inject]
-        internal IStringLocalizer<SharedResource> Localizer { get; set; }
         private static readonly string? s_editUri = $"Repository/{typeof(T).Name}/Edit/{{0}}";
         private readonly Dictionary<string, ColumnOptions> _columns = new();
         private readonly SearchWrapper<T> _searchWrapper = new();
@@ -170,7 +163,7 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 yield return new LabelValueDropdownItem
                 {
-                    Label = Localizer[LanguageLabel.OfPages, i + 1, Pagination.LastPageIndex + 1],
+                    Label = LocalizationHandler.Get(LanguageLabel.OfPages, i + 1, Pagination.LastPageIndex + 1),
                     Id = i.ToString(),
                     Value = i,
                 };
@@ -183,20 +176,20 @@ namespace RepositoryFramework.Web.Components.Standard
             {
                 yield return new LabelValueDropdownItem
                 {
-                    Label = Localizer[LanguageLabel.PerPage, i],
+                    Label = LocalizationHandler.Get(LanguageLabel.PerPage, i),
                     Id = i.ToString(),
                     Value = i,
                 };
             }
             yield return new LabelValueDropdownItem
             {
-                Label = Localizer[LanguageLabel.All, Pagination.TotalItemCount],
+                Label = LocalizationHandler.Get(LanguageLabel.All, Pagination.TotalItemCount),
                 Id = Pagination.TotalItemCount.ToString(),
                 Value = Pagination.TotalItemCount.Value,
             };
         }
         private string EnumerableCountAsString(Entity<T, TKey>? entity, BaseProperty property)
-            => Localizer[LanguageLabel.ShowItems, EnumerableCount(entity, property)];
+            => LocalizationHandler.Get(LanguageLabel.ShowItems, EnumerableCount(entity, property));
         private int EnumerableCount(Entity<T, TKey>? entity, BaseProperty property)
         {
             var response = Try.WithDefaultOnCatch(() => property.Value(entity, null));
@@ -272,5 +265,7 @@ namespace RepositoryFramework.Web.Components.Standard
             }
             return string.Empty;
         }
+        private string Translate(string value)
+            => LocalizationHandler.Get<T>(value);
     }
 }

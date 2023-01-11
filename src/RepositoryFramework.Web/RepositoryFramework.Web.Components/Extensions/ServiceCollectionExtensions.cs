@@ -2,6 +2,7 @@
 using Radzen;
 using RepositoryFramework.Web.Components;
 using RepositoryFramework.Web.Components.Builder;
+using RepositoryFramework.Web.Components.Business.Language;
 using RepositoryFramework.Web.Components.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -21,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IAppMenu, AppMenu>();
             services.AddSingleton<IPolicyEvaluatorManager, PolicyEvaluatorManager>();
             services.AddScoped<ILoaderService, LoadService>();
+            services.AddSingleton<ILocalizationHandler, EmptyLocalizationHandler>();
             services
                 .AddScoped<DialogService>()
                 .AddScoped<NotificationService>()

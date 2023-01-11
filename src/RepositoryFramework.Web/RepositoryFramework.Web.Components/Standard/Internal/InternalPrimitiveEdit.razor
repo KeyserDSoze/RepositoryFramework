@@ -15,7 +15,7 @@
     <div class="@defaultClass">
         <div class="input-group">
             <span class="input-group-text">
-                @(OverriddenName ?? BaseProperty.Self.Name)
+                @Translate(OverriddenName ?? BaseProperty.Self.Name)
             </span>
             @if (!_propertyUiSettings.HasValues())
             {
@@ -88,7 +88,7 @@
             }
             <DefaultButton BaseProperty="@BaseProperty" Class="input-group-text" WithIcon=true Indexes="@Indexes" />
             <span class="input-group-text">
-                <button type="button" class="btn btn-warning btn-sm"
+                <button type="button" class="btn btn-outline-warning btn-sm border-0"
                     @onclick="@(args => Copy.CopyAsync(_value?.ToString()))">
                     <span class="material-symbols-outlined material-symbols-outlined-small">
                         file_copy
@@ -178,5 +178,16 @@
     void OnChange(string html)
     {
         InternalUpdate(html);
+    }
+    private string Translate(string value)
+        => LocalizationHandler.Get(GetFatherType(), value);
+    private Type GetFatherType()
+    {
+        var father = BaseProperty;
+        while (father?.Father != null)
+        {
+            father = father.Father;
+        }
+        return father!.Self.PropertyType;
     }
 }

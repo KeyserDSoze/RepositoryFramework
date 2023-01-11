@@ -20,9 +20,9 @@
                     </div>
                     <div class="col-10 col-xxl-5 col-xl-6 col-lg-7 col-md-8">
                         <SelectMultipleDropdown Class="w-100"
-                                            OnChange="@UpdateColumnsVisibility"
-                                            PossibleValues="@GetColumns()"
-                                            SelectedKeys="@GetSelectedColumns()">
+                                OnChange="@UpdateColumnsVisibility"
+                                PossibleValues="@GetColumns()"
+                                SelectedKeys="@GetSelectedColumns()">
                         </SelectMultipleDropdown>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                                     <div class="col">
                                         <button class="bg-transparent p-0 border-0 fw-bold w-100 text-start"
                                         @onclick="@((x) => OrderBy(property))">
-                                            @property.GetFurtherProperty().Title
+                                            @Translate(property.GetFurtherProperty().Title)
                                             <span class="material-symbols-outlined material-symbols-outlined-small float-end mt-1">
                                                 @GetRightOrderingIcon(_columns[property.NavigationPath].Order)
                                             </span>
@@ -96,7 +96,7 @@
                                 }
                                 else
                                 {
-                                    <div class="col">@property.GetFurtherProperty().Title</div>
+                                    <div class="col">@Translate(property.GetFurtherProperty().Title)</div>
                                 }
                             </div>
                         </th>
@@ -146,7 +146,7 @@
                                 <td>
                                     @if (property.Type != PropertyType.Enumerable)
                                     {
-                                        <CopyButton GetValue="@(() => property.Value(item, null))" />
+                                        <CopyButton GetValue="@(() => Translate(property.Value(item, null)?.ToString() ?? string.Empty))" />
                                     }
                                     else
                                     {

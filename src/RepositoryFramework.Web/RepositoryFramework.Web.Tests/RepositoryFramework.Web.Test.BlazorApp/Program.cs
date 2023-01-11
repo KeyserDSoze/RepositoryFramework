@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Localization;
 using Microsoft.Identity.Web;
 using RepositoryFramework;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
+using RepositoryFramework.Web.Test.BlazorApp.Resources;
 using Whistleblowing.Licensing.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,7 @@ builder.Services
     .WithAuthenticatedUi()
     .AddDefaultSkinForUi()
     .AddDefaultLocalization();
+
 builder.Services.AddApplicationInsightsTelemetry(x =>
 {
     x.ConnectionString = "in secrets";
@@ -57,7 +60,10 @@ builder.Services
     .WithIcon("manage_accounts")
     .WithName("User")
     .ExposeFor(2)
-    .SetDefaultUiRoot();
+    .SetDefaultUiRoot()
+    .WithLocalization<AppUser, int, IStringLocalizer<SharedResource>>();
+    //.WithLocalization<AppUser, int, IStringLocalizer<SharedResource2>>();
+
 builder.Services.AddWarmUp(async serviceProvider =>
 {
     var repository = serviceProvider.GetService<IRepository<AppUser, int>>();
