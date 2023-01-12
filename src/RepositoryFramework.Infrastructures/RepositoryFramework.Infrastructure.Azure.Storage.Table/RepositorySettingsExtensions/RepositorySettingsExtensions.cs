@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class RepositorySettingsExtensions
     {
-        private static IRepositoryTableStorageBuilder<T, TKey> AddRepositoryInTableStorage<T, TKey>(
+        private static IRepositoryTableStorageBuilder<T, TKey> WithTableStorage<T, TKey>(
           this IRepositorySettings<T, TKey> settings,
           PatternType type,
           Action<TableStorageConnectionSettings> connectionSettings)
@@ -27,11 +27,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="connectionSettings">Settings for your storage connection.</param>
         /// <returns>IRepositoryTableStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryTableStorageBuilder<T, TKey> AddRepositoryInTableStorage<T, TKey>(
+        public static IRepositoryTableStorageBuilder<T, TKey> WithTableStorage<T, TKey>(
            this IRepositorySettings<T, TKey> settings,
            Action<TableStorageConnectionSettings> connectionSettings)
             where TKey : notnull
-             => settings.AddRepositoryInTableStorage(PatternType.Repository, connectionSettings);
+             => settings.WithTableStorage(PatternType.Repository, connectionSettings);
         /// <summary>
         /// Add a default table storage service for your command pattern.
         /// </summary>
@@ -40,11 +40,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="connectionSettings">Settings for your storage connection.</param>
         /// <returns>IRepositoryTableStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryTableStorageBuilder<T, TKey> AddCommandInTableStorage<T, TKey>(
+        public static IRepositoryTableStorageBuilder<T, TKey> WithCommandInTableStorage<T, TKey>(
            this IRepositorySettings<T, TKey> settings,
            Action<TableStorageConnectionSettings> connectionSettings)
             where TKey : notnull
-             => settings.AddRepositoryInTableStorage(PatternType.Command, connectionSettings);
+             => settings.WithTableStorage(PatternType.Command, connectionSettings);
         /// <summary>
         /// Add a default table storage service for your query pattern.
         /// </summary>
@@ -53,10 +53,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="connectionSettings">Settings for your storage connection.</param>
         /// <returns>IRepositoryTableStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryTableStorageBuilder<T, TKey> AddQueryInTableStorage<T, TKey>(
+        public static IRepositoryTableStorageBuilder<T, TKey> WithQueryInTableStorage<T, TKey>(
            this IRepositorySettings<T, TKey> settings,
            Action<TableStorageConnectionSettings> connectionSettings)
             where TKey : notnull
-             => settings.AddRepositoryInTableStorage(PatternType.Query, connectionSettings);
+             => settings.WithTableStorage(PatternType.Query, connectionSettings);
     }
 }

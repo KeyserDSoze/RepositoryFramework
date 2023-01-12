@@ -7,7 +7,7 @@ using Microsoft.Xrm.Sdk.Query;
 
 namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
 {
-    internal sealed class DataverseRepository<T, TKey> : IRepositoryPattern<T, TKey>
+    internal sealed class DataverseRepository<T, TKey> : IRepository<T, TKey>
         where TKey : notnull
     {
         private readonly ServiceClient _client;

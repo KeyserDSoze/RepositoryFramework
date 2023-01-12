@@ -6,14 +6,9 @@ namespace RepositoryFramework.Infrastructure.Dynamics.Dataverse
     internal sealed class RepositoryDataverseBuilder<T, TKey> : IRepositoryDataverseBuilder<T, TKey>
         where TKey : notnull
     {
-        public IRepositoryBuilder<T, TKey> Builder { get; }
-        public RepositoryDataverseBuilder(IRepositoryBuilder<T, TKey> builder)
-            => Builder = builder;
-        public IServiceCollection Services => Builder.Services;
-        public PatternType Type => Builder.Type;
-        public ServiceLifetime ServiceLifetime => Builder.ServiceLifetime;
-        public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
-            => Builder.Translate<TTranslated>();
+        public IServiceCollection Services { get; }
+        public RepositoryDataverseBuilder(IServiceCollection services)
+            => Services = services;
         public IRepositoryDataverseBuilder<T, TKey> WithColumn<TProperty>(Expression<Func<T, TProperty>> property,
             string? customPrefix = null)
         {

@@ -6,9 +6,10 @@ using RepositoryFramework.Infrastructure.Dynamics.Dataverse;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class ServiceCollectionExtensions
+    public static partial class RepositorySettingsExtensions
     {
-        private static async Task DataverseCreateTableOrMergeNewColumnsInExistingTableAsync<T, TKey>(DataverseOptions<T, TKey> options)
+        private static async Task DataverseCreateTableOrMergeNewColumnsInExistingTableAsync<T, TKey>(
+            DataverseOptions<T, TKey> options)
             where TKey : notnull
         {
             var serviceClient = options.GetClient();
