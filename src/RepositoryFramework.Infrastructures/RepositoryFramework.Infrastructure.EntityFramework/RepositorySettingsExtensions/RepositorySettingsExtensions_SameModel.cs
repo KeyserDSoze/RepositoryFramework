@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
         /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> AddCommandInEntityFramework<T, TKey, TContext>(
+        public static IRepositorySettings<T, TKey> WithCommandInEntityFramework<T, TKey, TContext>(
            this IRepositorySettings<T, TKey> settings,
                   Action<EntityFrameworkOptions<T, TKey, T, TContext>> options)
             where TKey : notnull
@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
         /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> AddQueryInEntityFramework<T, TKey, TContext>(
+        public static IRepositorySettings<T, TKey> WithQueryInEntityFramework<T, TKey, TContext>(
            this IRepositorySettings<T, TKey> settings,
                  Action<EntityFrameworkOptions<T, TKey, T, TContext>> options)
             where TKey : notnull

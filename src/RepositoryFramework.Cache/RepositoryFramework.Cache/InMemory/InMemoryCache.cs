@@ -10,7 +10,7 @@ namespace RepositoryFramework.Cache
             => _memoryCache = memoryCache;
         public Task<CacheResponse<TValue>> RetrieveAsync<TValue>(string key, CancellationToken cancellationToken = default)
         {
-            var isPresent = _memoryCache.TryGetValue(key, out TValue value);
+            var isPresent = _memoryCache.TryGetValue(key, out TValue? value);
             return Task.FromResult(new CacheResponse<TValue>(isPresent, value));
         }
 

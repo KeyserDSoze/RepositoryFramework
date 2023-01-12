@@ -6,6 +6,7 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         IServiceCollection Services { get; }
+        PatternType Type { get; }
         /// <summary>
         /// It's a parameter used by framework to understand the level of privacy,
         /// for instance, it's used in library Api.Server to avoid auto creation of an api with this repository implementation.

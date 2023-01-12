@@ -7,6 +7,7 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         public IServiceCollection Services { get; }
+        public PatternType Type { get; private set; }
         public void SetNotExposable()
         {
             var service = SetService();
@@ -28,7 +29,8 @@ namespace RepositoryFramework
             where TStorage : class, IRepository<T, TKey>
         {
             var service = SetService();
-            var currentType = typeof(IRepositoryPattern<T, TKey>);
+            Type = PatternType.Repository;
+            var currentType = typeof(IRepository<T, TKey>);
             service.AddOrUpdate(currentType, typeof(TStorage));
             Services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IRepositoryPattern<T, TKey>))
@@ -40,7 +42,8 @@ namespace RepositoryFramework
             where TStorage : class, ICommand<T, TKey>
         {
             var service = SetService();
-            var currentType = typeof(ICommandPattern<T, TKey>);
+            Type = PatternType.Command;
+            var currentType = typeof(ICommand<T, TKey>);
             service.AddOrUpdate(currentType, typeof(TStorage));
             Services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(ICommandPattern<T, TKey>))
@@ -52,7 +55,8 @@ namespace RepositoryFramework
             where TStorage : class, IQuery<T, TKey>
         {
             var service = SetService();
-            var currentType = typeof(IQueryPattern<T, TKey>);
+            var currentType = typeof(IQuery<T, TKey>);
+            Type = PatternType.Query;
             service.AddOrUpdate(currentType, typeof(TStorage));
             Services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IQueryPattern<T, TKey>))

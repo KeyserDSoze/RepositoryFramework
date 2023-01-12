@@ -3,20 +3,21 @@ using RepositoryFramework.Cache;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class RepositoryBuilderExtensions
+    public static partial class RepositorySettingsExtensions
     {
-        private static void AddCacheManager<T, TKey>(this IRepositoryBuilder<T, TKey> builder,
+        private static void AddCacheManager<T, TKey>(
+            this IRepositorySettings<T, TKey> settings,
             CacheOptions<T, TKey> options)
             where TKey : notnull
         {
-            if (builder.Type == PatternType.Repository)
-                builder.Services
+            if (settings.Type == PatternType.Repository)
+                settings.Services
                     .Decorate<IRepository<T, TKey>, CachedRepository<T, TKey>>();
-            else if (builder.Type == PatternType.Query)
-                builder.Services
+            else if (settings.Type == PatternType.Query)
+                settings.Services
                     .Decorate<IQuery<T, TKey>, CachedQuery<T, TKey>>();
             else if (options.HasCommandPattern)
-                builder.Services
+                settings.Services
                     .Decorate<ICommand<T, TKey>, CachedRepository<T, TKey>>();
         }
         /// <summary>
@@ -27,25 +28,25 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <typeparam name="TCache">Implementation of your cache.</typeparam>
-        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
+        /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="settings">Settings for your cache.</param>
         /// <param name="lifetime">Service Lifetime.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryBuilder<T, TKey> WithCache<T, TKey, TCache>(
-           this IRepositoryBuilder<T, TKey> builder,
-           Action<CacheOptions<T, TKey>>? settings = null,
+        /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositorySettings<T, TKey> WithCache<T, TKey, TCache>(
+           this IRepositorySettings<T, TKey> settings,
+           Action<CacheOptions<T, TKey>>? options = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
             where TCache : class, ICache<T, TKey>
         {
-            var options = new CacheOptions<T, TKey>();
-            settings?.Invoke(options);
-            builder.Services
+            var defaultOptions = new CacheOptions<T, TKey>();
+            options?.Invoke(defaultOptions);
+            settings.Services
                 .RemoveServiceIfAlreadyInstalled<TCache>(typeof(ICache<T, TKey>))
                 .AddService<ICache<T, TKey>, TCache>(lifetime)
-                .AddSingleton(options);
-            builder.AddCacheManager(options);
-            return builder;
+                .AddSingleton(defaultOptions);
+            settings.AddCacheManager(defaultOptions);
+            return settings;
         }
         /// <summary>
         /// Add distributed (for multi-instance environments) cache mechanism for your Repository or Query (CQRS), 
@@ -55,25 +56,25 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
         /// <typeparam name="TCache">Implementation of your cache.</typeparam>
-        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
+        /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="settings">Settings for your cache.</param>
         /// <param name="lifetime">Service Lifetime.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryBuilder<T, TKey> WithDistributedCache<T, TKey, TCache>(
-           this IRepositoryBuilder<T, TKey> builder,
-           Action<DistributedCacheOptions<T, TKey>>? settings = null,
+        /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public static IRepositorySettings<T, TKey> WithDistributedCache<T, TKey, TCache>(
+           this IRepositorySettings<T, TKey> settings,
+           Action<DistributedCacheOptions<T, TKey>>? options = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
             where TCache : class, IDistributedCache<T, TKey>
         {
-            var options = new DistributedCacheOptions<T, TKey>();
-            settings?.Invoke(options);
-            builder.Services
+            var defaultOptions = new DistributedCacheOptions<T, TKey>();
+            options?.Invoke(defaultOptions);
+            settings.Services
                 .RemoveServiceIfAlreadyInstalled<TCache>(typeof(IDistributedCache<T, TKey>))
                 .AddService<IDistributedCache<T, TKey>, TCache>(lifetime)
-                .AddSingleton(options);
-            builder.AddCacheManager(options);
-            return builder;
+                .AddSingleton(defaultOptions);
+            settings.AddCacheManager(defaultOptions);
+            return settings;
         }
     }
 }
