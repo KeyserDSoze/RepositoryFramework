@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 
 namespace RepositoryFramework.Infrastructure.MsSql
 {
-    internal sealed class SqlRepository<T, TKey> : IRepositoryPattern<T, TKey>, IAsyncDisposable
+    internal sealed class SqlRepository<T, TKey> : IRepository<T, TKey>, IAsyncDisposable
         where TKey : notnull
     {
         private readonly MsSqlOptions<T, TKey> _settings;

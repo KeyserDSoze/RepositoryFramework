@@ -1,10 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
-using RepositoryFramework;
 using RepositoryFramework.Infrastructure.MsSql;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class ServiceCollectionExtensions
+    public static partial class RepositorySettingsExtensions
     {
         private static async Task MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync<T, TKey>(MsSqlOptions<T, TKey> options)
         {

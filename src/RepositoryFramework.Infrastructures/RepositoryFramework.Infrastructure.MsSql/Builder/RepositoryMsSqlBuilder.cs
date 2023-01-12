@@ -7,14 +7,9 @@ namespace RepositoryFramework.Infrastructure.MsSql
     internal sealed class RepositoryMsSqlBuilder<T, TKey> : IRepositoryMsSqlBuilder<T, TKey>
         where TKey : notnull
     {
-        public IRepositoryBuilder<T, TKey> Builder { get; }
-        public RepositoryMsSqlBuilder(IRepositoryBuilder<T, TKey> builder)
-            => Builder = builder;
-        public IServiceCollection Services => Builder.Services;
-        public PatternType Type => Builder.Type;
-        public ServiceLifetime ServiceLifetime => Builder.ServiceLifetime;
-        public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
-            => Builder.Translate<TTranslated>();
+        public IServiceCollection Services { get; }
+        public RepositoryMsSqlBuilder(IServiceCollection services)
+            => Services = services;
         public IRepositoryMsSqlBuilder<T, TKey> WithPrimaryKey<TProperty>(Expression<Func<T, TProperty>> property, Action<PropertyHelper<T>> value)
         {
             var propertyName = property.Body.ToString().Split('.').Last();
