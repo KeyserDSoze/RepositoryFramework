@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TContext">Specify DB context to use. Please remember to configure it in DI.</typeparam>
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>></returns>
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>>></returns>
         public static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithEntityFramework<T, TKey, TEntityModel, TContext>(
            this IRepositorySettings<T, TKey> settings,
                 Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options)
@@ -45,8 +45,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TContext">Specify DB context to use. Please remember to configure it in DI.</typeparam>
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>></returns>
-        public static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithCommandInEntityFramework<T, TKey, TEntityModel, TContext>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, ICommand<<typeparamref name="T"/>, <typeparamref name="TKey"/>>>></returns>
+        public static IRepositoryBuilder<T, TKey, ICommand<T, TKey>> WithCommandInEntityFramework<T, TKey, TEntityModel, TContext>(
                 this IRepositorySettings<T, TKey> settings,
                 Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options)
             where TKey : notnull
@@ -62,8 +62,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TContext">Specify DB context to use. Please remember to configure it in DI.</typeparam>
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
-        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>></returns>
-        public static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithQueryInEntityFramework<T, TKey, TEntityModel, TContext>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IQuery<<typeparamref name="T"/>, <typeparamref name="TKey"/>>>></returns>
+        public static IRepositoryBuilder<T, TKey, IQuery<T, TKey>> WithQueryInEntityFramework<T, TKey, TEntityModel, TContext>(
             this IRepositorySettings<T, TKey> settings,
             Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options)
             where TKey : notnull

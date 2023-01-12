@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using RepositoryFramework.InMemory;
 using RepositoryFramework.Test.Domain;
 using RepositoryFramework.Test.Infrastructure.EntityFramework;
 using RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal;
@@ -18,12 +19,19 @@ var configurationSection = builder.Configuration.GetSection("AzureAd");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(configurationSection);
 
-builder.Services.AddRepositoryInMemoryStorage<IperUser, string>()
-    .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>()
+builder.Services.AddRepository<IperUser, string>(x =>
+{
+    x
+    .WithInMemory()
+    .Builder
+    .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
+    x
     .WithInMemoryCache(x =>
     {
         x.ExpiringTime = TimeSpan.FromMilliseconds(100_000);
     });
+});
+
 builder.Services.AddRepositoryInMemoryStorage<SuperUser, string>()
 .PopulateWithRandomData(x => x.Email!, 120, 5)
 .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");

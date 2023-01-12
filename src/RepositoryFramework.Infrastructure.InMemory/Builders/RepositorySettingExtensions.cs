@@ -14,7 +14,7 @@ namespace RepositoryFramework.InMemory
             CheckSettings(options);
             settings.SetRepositoryStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             settings.SetQueryStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
-            settings.SetCommandStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+            var builder = settings.SetCommandStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             settings.Services.AddEventAfterServiceCollectionBuild(serviceProvider =>
             {
                 var populationStrategy = serviceProvider.GetService<IPopulationStrategy<T, TKey>>();
@@ -22,7 +22,7 @@ namespace RepositoryFramework.InMemory
                     populationStrategy.Populate();
                 return Task.CompletedTask;
             });
-            return new RepositoryInMemoryBuilder<T, TKey>(settings.Services);
+            return new RepositoryInMemoryBuilder<T, TKey>(builder);
         }
         private static void CheckSettings<T, TKey>(RepositoryBehaviorSettings<T, TKey> settings)
              where TKey : notnull

@@ -8,7 +8,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddUserRepositoryWithDatabaseSqlAndEntityFramework(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddUserRepositoryWithDatabaseSqlAndEntityFramework(this IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddDbContext<SampleContext>(options =>
             {

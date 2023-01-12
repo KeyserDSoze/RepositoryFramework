@@ -9,10 +9,11 @@ namespace RepositoryFramework.InMemory
         where TKey : notnull
     {
         private readonly CreationSettings _behaviorSettings = new();
-        public IServiceCollection Services { get; }
-        public RepositoryInMemoryBuilder(IServiceCollection services)
+        public IServiceCollection Services => Builder.Services;
+        public IRepositoryBuilder<T, TKey, IRepository<T, TKey>> Builder { get; }
+        public RepositoryInMemoryBuilder(IRepositoryBuilder<T, TKey, IRepository<T, TKey>> builder)
         {
-            Services = services;
+            Builder = builder;
         }
         private void AddElementBasedOnGenericElements(TKey key, T value)
             => InMemoryStorage<T, TKey>.AddValue(key, value);
