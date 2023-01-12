@@ -7,10 +7,8 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         public IServiceCollection Services { get; }
-        public IRepositoryBuilder<T, TKey> RepositoryBuilder { get; }
-        public ApiBuilder(IRepositoryBuilder<T, TKey> builder, IServiceCollection services)
+        public ApiBuilder(IServiceCollection services)
         {
-            RepositoryBuilder = builder;
             Services = services;
         }
         public IRepositoryApiBuilder<T, TKey> WithVersion(string version)

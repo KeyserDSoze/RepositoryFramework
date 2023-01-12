@@ -6,14 +6,14 @@ namespace RepositoryFramework.InMemory
     internal class RepositoryInMemoryCreatorBuilder<T, TKey> : IRepositoryInMemoryCreatorBuilder<T, TKey>
         where TKey : notnull
     {
-        private protected readonly RepositoryInMemoryBuilder<T, TKey> _builder;
+        private protected readonly RepositoryInMemoryBuilder<T, TKey> Builder;
         private readonly CreationSettings _internalBehaviorSettings;
-        public IServiceCollection Services => _builder.Services;
+        public IServiceCollection Services => Builder.Services;
         public RepositoryInMemoryCreatorBuilder(
             RepositoryInMemoryBuilder<T, TKey> builder,
             CreationSettings internalBehaviorSettings)
         {
-            _builder = builder;
+            Builder = builder;
             _internalBehaviorSettings = internalBehaviorSettings;
         }
         private static string GetNameOfProperty<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath)
@@ -56,9 +56,9 @@ namespace RepositoryFramework.InMemory
             var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
             var dictionary = _internalBehaviorSettings.DelegatedMethodForValueRetrieving;
             if (dictionary.ContainsKey(nameOfProperty))
-                dictionary[nameOfProperty] = async (x) => await valueRetriever.Invoke(x).NoContext()!;
+                dictionary[nameOfProperty] = async (x) => (await valueRetriever.Invoke(x).NoContext())!;
             else
-                dictionary.Add(nameOfProperty, async (x) => await valueRetriever.Invoke(x).NoContext()!);
+                dictionary.Add(nameOfProperty, async (x) => (await valueRetriever.Invoke(x).NoContext())!);
             return this;
         }
         public IRepositoryInMemoryCreatorBuilder<T, TKey> WithRandomValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath,
@@ -106,6 +106,6 @@ namespace RepositoryFramework.InMemory
         public IRepositoryInMemoryCreatorBuilder<T, TKey> WithImplementation<TProperty, TEntity>(Expression<Func<T, TProperty>> navigationPropertyPath)
             => WithImplementation(navigationPropertyPath, typeof(TEntity));
         public IRepositoryInMemoryBuilder<T, TKey> And()
-            => _builder;
+            => Builder;
     }
 }

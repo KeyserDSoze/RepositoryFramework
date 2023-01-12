@@ -5,7 +5,7 @@ using RepositoryFramework.Api.Client.DefaultInterceptor;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class ServiceCollectionExtensions
+    public static partial class RepositorySettingsExtensions
     {
         /// <summary>
         /// Add global JWT interceptor for all repository clients. Interceptor runs before every request.
@@ -28,22 +28,22 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="T">Model used for your repository</typeparam>
         /// <typeparam name="TKey">Key to manage your data from repository</typeparam>
-        /// <param name="builder">RepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
-        /// <param name="settings">Settings.</param>
+        /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
+        /// <param name="authenticatorSettings">Settings.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryBuilder<T, TKey> AddCustomAuthorizationInterceptorForApiHttpClient<T, TKey>(
-            this IRepositoryBuilder<T, TKey> builder,
-            Action<AuthenticatorSettings<T>>? settings = null,
+        public static IRepositorySettings<T, TKey> AddCustomAuthorizationInterceptorForApiHttpClient<T, TKey>(
+            this IRepositorySettings<T, TKey> settings,
+            Action<AuthenticatorSettings<T>>? authenticatorSettings = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TKey : notnull
         {
             var options = new AuthenticatorSettings<T>();
-            settings?.Invoke(options);
-            builder
+            authenticatorSettings?.Invoke(options);
+            settings
                 .Services
                 .AddService<IRepositoryClientInterceptor<T>, BearerAuthenticator<T>>(serviceLifetime);
-            return builder;
+            return settings;
         }
     }
 }

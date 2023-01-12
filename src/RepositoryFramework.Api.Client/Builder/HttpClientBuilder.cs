@@ -9,7 +9,6 @@ namespace RepositoryFramework
     {
         public IRepositoryApiBuilder<T, TKey> ApiBuilder { get; }
         public IHttpClientBuilder ClientBuilder { get; }
-        public IRepositoryBuilder<T, TKey> RepositoryBuilder => ApiBuilder.RepositoryBuilder;
         public HttpClientBuilder(IRepositoryApiBuilder<T, TKey> apiBuilder, IHttpClientBuilder clientBuilder)
         {
             ApiBuilder = apiBuilder;

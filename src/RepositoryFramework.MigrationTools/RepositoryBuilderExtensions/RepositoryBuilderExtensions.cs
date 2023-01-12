@@ -12,23 +12,24 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Model used for your repository.</typeparam>
         /// <typeparam name="TKey">Key to retrieve, update or delete your data from repository.</typeparam>
         /// <typeparam name="TMigrationSource">Repository pattern for storage that you have to migrate.</typeparam>
-        /// <param name="builder">IServiceCollection.</param>
-        /// <param name="settings">Settings for migration.</param>
+        /// <param name="settings">IServiceCollection.</param>
+        /// <param name="options">Settings for migration.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>IServiceCollection</returns>
-        public static IRepositoryBuilder<T, TKey> AddMigrationSource<T, TKey, TMigrationSource>(this IRepositoryBuilder<T, TKey> builder,
-            Action<MigrationOptions<T, TKey>> settings,
+        public static IRepositorySettings<T, TKey> AddMigrationSource<T, TKey, TMigrationSource>(
+            this IRepositorySettings<T, TKey> settings,
+            Action<MigrationOptions<T, TKey>> options,
           ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
           where TMigrationSource : class, IMigrationSource<T, TKey>
           where TKey : notnull
         {
-            var options = new MigrationOptions<T, TKey>();
-            settings?.Invoke(options);
-            builder.Services
-                .AddSingleton(options)
+            var defaultOptions = new MigrationOptions<T, TKey>();
+            options?.Invoke(defaultOptions);
+            settings.Services
+                .AddSingleton(defaultOptions)
                 .AddService<IMigrationSource<T, TKey>, TMigrationSource>(serviceLifetime)
                 .AddService<IMigrationManager<T, TKey>, MigrationManager<T, TKey>>(serviceLifetime);
-            return builder;
+            return settings;
         }
     }
 }

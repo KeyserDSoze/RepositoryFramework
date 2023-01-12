@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.InMemory.Population;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.InMemory.Population;
 
 namespace RepositoryFramework.InMemory
 {
@@ -10,17 +10,12 @@ namespace RepositoryFramework.InMemory
     {
         private readonly CreationSettings _behaviorSettings = new();
         public IServiceCollection Services { get; }
-        public PatternType Type => PatternType.Repository;
-        public ServiceLifetime ServiceLifetime => ServiceLifetime.Singleton;
         public RepositoryInMemoryBuilder(IServiceCollection services)
         {
             Services = services;
         }
         private void AddElementBasedOnGenericElements(TKey key, T value)
             => InMemoryStorage<T, TKey>.AddValue(key, value);
-        public IRepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
-            where TNextKey : notnull
-            => Services!.AddRepositoryInMemoryStorage(settings);
         public IRepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,
             string json)

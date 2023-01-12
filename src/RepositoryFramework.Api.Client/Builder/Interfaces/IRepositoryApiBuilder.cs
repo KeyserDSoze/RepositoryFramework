@@ -6,7 +6,6 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         IServiceCollection Services { get; }
-        IRepositoryBuilder<T, TKey> RepositoryBuilder { get; }
         IRepositoryApiBuilder<T, TKey> WithName(string name);
         IRepositoryApiBuilder<T, TKey> WithStartingPath(string path);
         IRepositoryApiBuilder<T, TKey> WithVersion(string version);

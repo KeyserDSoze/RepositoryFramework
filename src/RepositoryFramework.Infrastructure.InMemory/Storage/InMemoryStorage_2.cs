@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace RepositoryFramework.InMemory
 {
-    internal class InMemoryStorage<T, TKey> : IRepositoryPattern<T, TKey>
+    internal class InMemoryStorage<T, TKey> : IRepository<T, TKey>
         where TKey : notnull
     {
         private readonly RepositoryBehaviorSettings<T, TKey> _settings;
@@ -96,7 +96,7 @@ namespace RepositoryFramework.InMemory
                 if (!cancellationToken.IsCancellationRequested)
                 {
                     var keyAsString = GetKeyAsString(key);
-                    return Values.ContainsKey(keyAsString) ? Values[keyAsString].Value : default;
+                    return Values.TryGetValue(keyAsString, out var value) ? value.Value : default;
                 }
                 else
                     throw new TaskCanceledException();

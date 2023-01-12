@@ -7,7 +7,6 @@ namespace RepositoryFramework
     {
         IRepositoryApiBuilder<T, TKey> ApiBuilder { get; }
         IHttpClientBuilder ClientBuilder { get; }
-        IRepositoryBuilder<T, TKey> RepositoryBuilder { get; }
         IRepositoryHttpClientBuilder<T, TKey> WithDefaultRetryPolicy();
     }
 }

@@ -186,8 +186,8 @@ namespace Microsoft.Extensions.DependencyInjection
                         var calculatedType = typeof(object);
                         if (string.IsNullOrWhiteSpace(returnType))
                             return calculatedType;
-                        if (PrimitiveMapper.Instance.FromNameToAssemblyQualifiedName.ContainsKey(returnType))
-                            calculatedType = Type.GetType(PrimitiveMapper.Instance.FromNameToAssemblyQualifiedName[returnType]);
+                        if (PrimitiveMapper.Instance.FromNameToAssemblyQualifiedName.TryGetValue(returnType, out var value))
+                            calculatedType = Type.GetType(value);
                         else
                             calculatedType = Type.GetType(returnType);
                         return calculatedType ?? typeof(object);

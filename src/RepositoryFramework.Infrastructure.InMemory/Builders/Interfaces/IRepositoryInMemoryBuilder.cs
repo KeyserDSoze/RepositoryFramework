@@ -1,13 +1,12 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework.InMemory
 {
-    public interface IRepositoryInMemoryBuilder<T, TKey> : IRepositoryBuilder<T, TKey>
+    public interface IRepositoryInMemoryBuilder<T, TKey>
         where TKey : notnull
     {
-        IRepositoryInMemoryBuilder<TNext, TNextKey> AddRepositoryInMemoryStorage<TNext, TNextKey>(
-            Action<RepositoryBehaviorSettings<TNext, TNextKey>>? settings = default)
-            where TNextKey : notnull;
+        IServiceCollection Services { get; }
         IRepositoryInMemoryBuilder<T, TKey> PopulateWithJsonData(
             Expression<Func<T, TKey>> navigationKey,
             string json);

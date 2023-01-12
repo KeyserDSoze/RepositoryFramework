@@ -1,11 +1,29 @@
-﻿using RepositoryFramework;
-using RepositoryFramework.InMemory;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RepositoryFramework.InMemory.Population;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace RepositoryFramework.InMemory
 {
-    public static partial class ServiceCollectionExtensions
+    public static class RepositorySettingExtensions
     {
+        public static IRepositoryInMemoryBuilder<T, TKey> WithInMemory<T, TKey>(this IRepositorySettings<T, TKey> settings,
+            Action<RepositoryBehaviorSettings<T, TKey>>? behaviorSettings = default)
+            where TKey : notnull
+        {
+            var options = new RepositoryBehaviorSettings<T, TKey>();
+            behaviorSettings?.Invoke(options);
+            CheckSettings(options);
+            settings.SetStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+            settings.SetQueryStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+            settings.SetCommandStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+            settings.Services.AddEventAfterServiceCollectionBuild(serviceProvider =>
+            {
+                var populationStrategy = serviceProvider.GetService<IPopulationStrategy<T, TKey>>();
+                if (populationStrategy != null)
+                    populationStrategy.Populate();
+                return Task.CompletedTask;
+            });
+            return new RepositoryInMemoryBuilder<T, TKey>(settings.Services);
+        }
         private static void CheckSettings<T, TKey>(RepositoryBehaviorSettings<T, TKey> settings)
              where TKey : notnull
         {

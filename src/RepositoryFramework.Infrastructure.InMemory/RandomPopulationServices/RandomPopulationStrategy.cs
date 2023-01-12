@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Reflection;
 
 namespace RepositoryFramework.InMemory.Population
 {
@@ -36,7 +35,7 @@ namespace RepositoryFramework.InMemory.Population
                             property.Name);
                         if (property.PropertyType.GetInterface(nameof(IList)) != null && value is IEnumerable enumerable)
                         {
-                            var list = Activator.CreateInstance(property.PropertyType) as IList;
+                            var list = (Activator.CreateInstance(property.PropertyType) as IList)!;
                             foreach (var singleItem in enumerable)
                                 list.Add(singleItem);
                             value = list;

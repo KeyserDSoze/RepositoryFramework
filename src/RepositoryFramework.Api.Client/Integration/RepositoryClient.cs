@@ -1,11 +1,11 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
-using System.Net;
 using System.Text.Json;
 
 namespace RepositoryFramework.Api.Client
 {
-    internal sealed class RepositoryClient<T, TKey> : IRepositoryPattern<T, TKey>
+    internal sealed class RepositoryClient<T, TKey> : IRepository<T, TKey>
         where TKey : notnull
     {
         private readonly HttpClient _httpClient;

@@ -2,7 +2,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class ServiceCollectionExtensions
+    public static partial class RepositorySettingsExtensions
     {
         /// <summary>
         /// Add global interceptor for all repository clients. Interceptor runs before every request.
