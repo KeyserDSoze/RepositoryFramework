@@ -11,7 +11,9 @@ namespace RepositoryFramework
         /// for instance, it's used in library Api.Server to avoid auto creation of an api with this repository implementation.
         /// </summary>
         void SetNotExposable();
-        IRepositoryBuilder<T, TKey, TStorage> SetStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        IRepositoryBuilder<T, TKey, TStorage> SetStorage<TStorage>(PatternType type, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+            where TStorage : class, IRepository<T, TKey>;
+        IRepositoryBuilder<T, TKey, TStorage> SetRepositoryStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TStorage : class, IRepository<T, TKey>;
         IRepositoryBuilder<T, TKey, TStorage> SetCommandStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TStorage : class, ICommand<T, TKey>;

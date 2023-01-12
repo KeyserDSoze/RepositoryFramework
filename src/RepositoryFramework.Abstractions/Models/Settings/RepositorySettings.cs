@@ -16,7 +16,15 @@ namespace RepositoryFramework
         {
             Services = services;
         }
-        public IRepositoryBuilder<T, TKey, TStorage> SetStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        public IRepositoryBuilder<T, TKey, TStorage> SetStorage<TStorage>(PatternType type, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+            where TStorage : class, IRepository<T, TKey>
+            => type switch
+            {
+                PatternType.Command => SetCommandStorage<TStorage>(serviceLifetime),
+                PatternType.Query => SetQueryStorage<TStorage>(serviceLifetime),
+                _ => SetRepositoryStorage<TStorage>(serviceLifetime)
+            };
+        public IRepositoryBuilder<T, TKey, TStorage> SetRepositoryStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TStorage : class, IRepository<T, TKey>
         {
             var service = SetService();

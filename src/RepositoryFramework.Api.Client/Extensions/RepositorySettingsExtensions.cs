@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 PatternType.Query => settings.SetQueryStorage<RepositoryClient<T, TKey>>(serviceLifetime),
                 PatternType.Command => settings.SetCommandStorage<RepositoryClient<T, TKey>>(serviceLifetime),
-                _ => settings.SetStorage<RepositoryClient<T, TKey>>(serviceLifetime),
+                _ => settings.SetRepositoryStorage<RepositoryClient<T, TKey>>(serviceLifetime),
             };
             return new ApiBuilder<T, TKey>(settings.Services);
         }

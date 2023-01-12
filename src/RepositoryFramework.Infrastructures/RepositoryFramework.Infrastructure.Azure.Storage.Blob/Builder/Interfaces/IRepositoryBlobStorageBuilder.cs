@@ -1,12 +1,13 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Blob
 {
-    public interface IRepositoryBlobStorageBuilder<T, TKey> : IRepositoryBuilder<T, TKey>
+    public interface IRepositoryBlobStorageBuilder<T, TKey>
         where TKey : notnull
     {
         IRepositoryBlobStorageBuilder<T, TKey> WithIndexing<TProperty>(
            Expression<Func<T, TProperty>> property);
-        IRepositoryBuilder<T, TKey> Builder { get; }
+        IServiceCollection Services { get; }
     }
 }

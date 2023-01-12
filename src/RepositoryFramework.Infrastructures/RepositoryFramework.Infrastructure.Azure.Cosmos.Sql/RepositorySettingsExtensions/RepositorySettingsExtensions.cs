@@ -5,6 +5,20 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class RepositorySettingsExtensions
     {
+        private static IRepositoryCosmosSqlBuilder<T, TKey> WithCosmosSql<T, TKey>(
+           this IRepositorySettings<T, TKey> settings,
+            PatternType type,
+            Action<CosmosSqlConnectionSettings> connectionSettings)
+            where TKey : notnull
+        {
+            var options = new CosmosSqlConnectionSettings();
+            connectionSettings.Invoke(options);
+            CosmosSqlServiceClientFactory.Instance.Add<T>(options);
+            settings.Services.AddSingleton(new CosmosSettings<T, TKey>(options.ContainerName ?? typeof(T).Name));
+            settings.Services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
+            settings.SetStorage<CosmosSqlRepository<T, TKey>>(type, ServiceLifetime.Singleton);
+            return new RepositoryCosmosSqlBuilder<T, TKey>(settings.Services);
+        }
         /// <summary>
         /// Add a default cosmos sql service for your repository pattern.
         /// </summary>
@@ -15,17 +29,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryCosmosSqlBuilder<T, TKey> WithCosmosSql<T, TKey>(
            this IRepositorySettings<T, TKey> settings,
-                Action<CosmosSqlConnectionSettings> connectionSettings)
+            Action<CosmosSqlConnectionSettings> connectionSettings)
             where TKey : notnull
-        {
-            var options = new CosmosSqlConnectionSettings();
-            connectionSettings.Invoke(options);
-            CosmosSqlServiceClientFactory.Instance.Add<T>(options);
-            settings.Services.AddSingleton(new CosmosSettings<T, TKey>(options.ContainerName ?? typeof(T).Name));
-            settings.Services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            settings.SetStorage<CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
-            return new RepositoryCosmosSqlBuilder<T, TKey>(settings.Services);
-        }
+            => settings.WithCosmosSql(PatternType.Repository, connectionSettings);
         /// <summary>
         /// Add a default cosmos sql service for your command pattern.
         /// </summary>
@@ -38,15 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
            this IRepositorySettings<T, TKey> settings,
                 Action<CosmosSqlConnectionSettings> connectionSettings)
             where TKey : notnull
-        {
-            var options = new CosmosSqlConnectionSettings();
-            connectionSettings.Invoke(options);
-            CosmosSqlServiceClientFactory.Instance.Add<T>(options);
-            settings.Services.AddSingleton(new CosmosSettings<T, TKey>(options.ContainerName ?? typeof(T).Name));
-            settings.Services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            settings.SetCommandStorage<CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
-            return new RepositoryCosmosSqlBuilder<T, TKey>(settings.Services);
-        }
+            => settings.WithCosmosSql(PatternType.Command, connectionSettings);
         /// <summary>
         /// Add a default cosmos sql service for your query pattern.
         /// </summary>
@@ -59,14 +57,6 @@ namespace Microsoft.Extensions.DependencyInjection
            this IRepositorySettings<T, TKey> settings,
                 Action<CosmosSqlConnectionSettings> connectionSettings)
             where TKey : notnull
-        {
-            var options = new CosmosSqlConnectionSettings();
-            connectionSettings.Invoke(options);
-            CosmosSqlServiceClientFactory.Instance.Add<T>(options);
-            settings.Services.AddSingleton(new CosmosSettings<T, TKey>(options.ContainerName ?? typeof(T).Name));
-            settings.Services.AddSingleton(CosmosSqlServiceClientFactory.Instance);
-            settings.SetQueryStorage<CosmosSqlRepository<T, TKey>>(ServiceLifetime.Singleton);
-            return new RepositoryCosmosSqlBuilder<T, TKey>(settings.Services);
-        }
+            => settings.WithCosmosSql(PatternType.Query, connectionSettings);
     }
 }

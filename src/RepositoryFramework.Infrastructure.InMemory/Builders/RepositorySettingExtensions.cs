@@ -12,7 +12,7 @@ namespace RepositoryFramework.InMemory
             var options = new RepositoryBehaviorSettings<T, TKey>();
             behaviorSettings?.Invoke(options);
             CheckSettings(options);
-            settings.SetStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+            settings.SetRepositoryStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             settings.SetQueryStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             settings.SetCommandStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             settings.Services.AddEventAfterServiceCollectionBuild(serviceProvider =>
