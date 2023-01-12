@@ -14,8 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TContext">Specify DB context to use. Please remember to configure it in DI.</typeparam>
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
-        /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithEntityFramework<T, TKey, TContext>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>></returns>
+        public static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithEntityFramework<T, TKey, TContext>(
            this IRepositorySettings<T, TKey> settings,
                 Action<EntityFrameworkOptions<T, TKey, T, TContext>> options)
             where TKey : notnull
@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var builder = settings.WithEntityFramework(PatternType.Repository, options);
             builder.Translate<T>().WithSamePorpertiesName();
-            return settings;
+            return builder;
         }
         /// <summary>
         /// Add a default Entity Framework service for your command pattern.
@@ -34,8 +34,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TContext">Specify DB context to use. Please remember to configure it in DI.</typeparam>
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
-        /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithCommandInEntityFramework<T, TKey, TContext>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>></returns>
+        public static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithCommandInEntityFramework<T, TKey, TContext>(
            this IRepositorySettings<T, TKey> settings,
                   Action<EntityFrameworkOptions<T, TKey, T, TContext>> options)
             where TKey : notnull
@@ -44,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var builder = settings.WithEntityFramework(PatternType.Command, options);
             builder.Translate<T>().WithSamePorpertiesName();
-            return settings;
+            return builder;
         }
         /// <summary>
         /// Add a default Entity Framework service for your query pattern.
@@ -54,8 +54,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TContext">Specify DB context to use. Please remember to configure it in DI.</typeparam>
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
-        /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithQueryInEntityFramework<T, TKey, TContext>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>></returns>
+        public static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithQueryInEntityFramework<T, TKey, TContext>(
            this IRepositorySettings<T, TKey> settings,
                  Action<EntityFrameworkOptions<T, TKey, T, TContext>> options)
             where TKey : notnull
@@ -64,7 +64,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var builder = settings.WithEntityFramework(PatternType.Query, options);
             builder.Translate<T>().WithSamePorpertiesName();
-            return settings;
+            return builder;
         }
     }
 }

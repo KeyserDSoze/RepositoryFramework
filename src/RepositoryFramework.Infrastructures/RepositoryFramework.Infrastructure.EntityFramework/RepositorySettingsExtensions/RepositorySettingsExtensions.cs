@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class RepositorySettingsExtensions
     {
-        private static IRepositoryBuilder<T, TKey, EntityFrameworkRepository<T, TKey, TEntityModel, TContext>> WithEntityFramework<T, TKey, TEntityModel, TContext>(
+        private static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithEntityFramework<T, TKey, TEntityModel, TContext>(
            this IRepositorySettings<T, TKey> settings,
             PatternType type,
             Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options)
@@ -28,17 +28,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TContext">Specify DB context to use. Please remember to configure it in DI.</typeparam>
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
-        /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithEntityFramework<T, TKey, TEntityModel, TContext>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>></returns>
+        public static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithEntityFramework<T, TKey, TEntityModel, TContext>(
            this IRepositorySettings<T, TKey> settings,
                 Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options)
             where TKey : notnull
             where TEntityModel : class
             where TContext : DbContext
-        {
-            settings.WithEntityFramework<T, TKey, TEntityModel, TContext>(PatternType.Repository, options);
-            return settings;
-        }
+            => settings.WithEntityFramework(PatternType.Repository, options);
         /// <summary>
         /// Add a default Entity Framework service for your command pattern.
         /// </summary>
@@ -48,17 +45,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TContext">Specify DB context to use. Please remember to configure it in DI.</typeparam>
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
-        /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithCommandInEntityFramework<T, TKey, TEntityModel, TContext>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>></returns>
+        public static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithCommandInEntityFramework<T, TKey, TEntityModel, TContext>(
                 this IRepositorySettings<T, TKey> settings,
                 Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options)
             where TKey : notnull
             where TEntityModel : class
             where TContext : DbContext
-        {
-            settings.WithEntityFramework<T, TKey, TEntityModel, TContext>(PatternType.Command, options);
-            return settings;
-        }
+            => settings.WithEntityFramework(PatternType.Repository, options);
         /// <summary>
         /// Add a default Entity Framework service for your query pattern.
         /// </summary>
@@ -68,17 +62,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TContext">Specify DB context to use. Please remember to configure it in DI.</typeparam>
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your Entity Framework connection.</param>
-        /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithQueryInEntityFramework<T, TKey, TEntityModel, TContext>(
+        /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>, IRepository<<typeparamref name="T"/>, <typeparamref name="TKey"/>>></returns>
+        public static IRepositoryBuilder<T, TKey, IRepository<T, TKey>> WithQueryInEntityFramework<T, TKey, TEntityModel, TContext>(
             this IRepositorySettings<T, TKey> settings,
             Action<EntityFrameworkOptions<T, TKey, TEntityModel, TContext>> options)
-        where TKey : notnull
-        where TEntityModel : class
-        where TContext : DbContext
-        {
-            settings.WithEntityFramework<T, TKey, TEntityModel, TContext>(PatternType.Query, options);
-            return settings;
-        }
+            where TKey : notnull
+            where TEntityModel : class
+            where TContext : DbContext
+            => settings.WithEntityFramework(PatternType.Repository, options);
         private static void Check<T, TKey, TEntityModel, TContext>()
         where TKey : notnull
         where TEntityModel : class

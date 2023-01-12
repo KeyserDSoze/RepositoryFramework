@@ -13,43 +13,55 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddDbContext<SampleContext>(options =>
             {
                 options.UseSqlServer(configuration["ConnectionString:Database"]);
-            }, ServiceLifetime.Scoped)
-                   .AddRepository<AppUser, AppUserKey, AppUserStorage>()
-                       .Translate<User>()
-                        .With(x => x.Id, x => x.Identificativo)
-                        .With(x => x.Username, x => x.Nome)
-                        .With(x => x.Email, x => x.IndirizzoElettronico)
+            }, ServiceLifetime.Scoped);
+
+            services.AddRepository<AppUser, AppUserKey>(x =>
+                   {
+                       x.SetRepositoryStorage<AppUserStorage>()
+                        .Translate<User>()
+                            .With(x => x.Id, x => x.Identificativo)
+                            .With(x => x.Username, x => x.Nome)
+                            .With(x => x.Email, x => x.IndirizzoElettronico)
                         .Builder
-                    .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness>()
-                    .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness2>();
+                            .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness>()
+                            .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness2>();
+                   });
+
             services
-                .AddRepositoryInEntityFramework<MappingUser, int, User, SampleContext>(
-                    x =>
+                .AddRepository<MappingUser, int>(x =>
+                {
+                    x.WithEntityFramework<MappingUser, int, User, SampleContext>(
+                        t =>
+                        {
+                            t.DbSet = x => x.Users;
+                            t.References = x => x.Include(x => x.IdGruppos);
+                        })
+                    .Translate<User>()
+                        .With(x => x.Username, x => x.Nome)
+                        .With(x => x.Username, x => x.Cognome)
+                        .With(x => x.Email, x => x.IndirizzoElettronico)
+                        .With(x => x.Groups, x => x.IdGruppos)
+                        .With(x => x.Id, x => x.Identificativo)
+                        .WithKey(x => x, x => x.Identificativo)
+                    .Builder
+                    .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
+                    .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();
+                });
+
+
+            services
+                .AddRepository<User, int>(x =>
+                {
+                    x.WithEntityFramework<User, int, SampleContext>(x =>
                     {
                         x.DbSet = x => x.Users;
                         x.References = x => x.Include(x => x.IdGruppos);
                     })
-                .Translate<User>()
-                    .With(x => x.Username, x => x.Nome)
-                    .With(x => x.Username, x => x.Cognome)
-                    .With(x => x.Email, x => x.IndirizzoElettronico)
-                    .With(x => x.Groups, x => x.IdGruppos)
-                    .With(x => x.Id, x => x.Identificativo)
-                    .WithKey(x => x, x => x.Identificativo)
-                .Builder
-                .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
-                .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();
-            services
-                .AddRepositoryInEntityFramework<User, int, SampleContext>(
-                    x =>
-                    {
-                        x.DbSet = x => x.Users;
-                        x.References = x => x.Include(x => x.IdGruppos);
-                    })
-                    .WithKey(x => x, x => x.Identificativo)
-                .Builder
-                .AddBusinessBeforeInsert<UserBeforeInsertBusiness>()
-                .AddBusinessBeforeInsert<UserBeforeInsertBusiness2>();
+                        .WithKey(x => x, x => x.Identificativo)
+                    .Builder
+                    .AddBusinessBeforeInsert<UserBeforeInsertBusiness>()
+                    .AddBusinessBeforeInsert<UserBeforeInsertBusiness2>();
+                });
             return services;
         }
     }

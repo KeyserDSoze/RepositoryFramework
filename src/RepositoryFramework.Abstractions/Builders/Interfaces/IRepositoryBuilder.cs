@@ -8,7 +8,7 @@ namespace RepositoryFramework
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
     /// <typeparam name="TStorage">Storage for your repository.</typeparam>
-    public interface IRepositoryBuilder<T, TKey, TStorage>
+    public interface IRepositoryBuilder<T, TKey, out TStorage>
           where TKey : notnull
         where TStorage : class
     {

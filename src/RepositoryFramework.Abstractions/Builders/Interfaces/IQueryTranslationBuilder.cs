@@ -10,7 +10,7 @@ namespace RepositoryFramework
     /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
     /// <typeparam name="TStorage">Storage for your repository.</typeparam>
     /// <typeparam name="TTranslated">Model for translation, T to TTranslated and viceversa.</typeparam>
-    public interface IQueryTranslationBuilder<T, TKey, TStorage, TTranslated>
+    public interface IQueryTranslationBuilder<T, TKey, out TStorage, TTranslated>
         where TKey : notnull
         where TStorage : class
     {
