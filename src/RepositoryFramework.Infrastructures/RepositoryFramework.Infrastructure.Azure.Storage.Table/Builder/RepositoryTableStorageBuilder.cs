@@ -7,14 +7,9 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
     internal sealed class RepositoryTableStorageBuilder<T, TKey> : IRepositoryTableStorageBuilder<T, TKey>
         where TKey : notnull
     {
-        public IRepositoryBuilder<T, TKey> Builder { get; }
-        public RepositoryTableStorageBuilder(IRepositoryBuilder<T, TKey> builder)
-            => Builder = builder;
-        public IServiceCollection Services => Builder.Services;
-        public PatternType Type => Builder.Type;
-        public ServiceLifetime ServiceLifetime => Builder.ServiceLifetime;
-        public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
-            => Builder.Translate<TTranslated>();
+        public IServiceCollection Services { get; }
+        public RepositoryTableStorageBuilder(IServiceCollection services)
+            => Services = services;
         public IRepositoryTableStorageBuilder<T, TKey> WithPartitionKey<TProperty, TKeyProperty>(
             Expression<Func<T, TProperty>> property,
             Expression<Func<TKey, TKeyProperty>> keyProperty)
@@ -32,7 +27,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         public IRepositoryTableStorageBuilder<T, TKey> WithTableStorageKeyReader<TKeyReader>()
             where TKeyReader : class, ITableStorageKeyReader<T, TKey>
         {
-            Builder.Services
+            Services
                 .AddSingleton<ITableStorageKeyReader<T, TKey>, TKeyReader>();
             return this;
         }
@@ -84,7 +79,7 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
                     TableStorageSettings<T, TKey>.Instance.Timestamp = name;
                 }
             }
-            Builder.Services.AddSingleton(TableStorageSettings<T, TKey>.Instance);
+            Services.AddSingleton(TableStorageSettings<T, TKey>.Instance);
         }
     }
 }

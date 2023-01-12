@@ -6,7 +6,7 @@ using Azure.Data.Tables;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
-    internal sealed class TableStorageRepository<T, TKey> : IRepositoryPattern<T, TKey>
+    internal sealed class TableStorageRepository<T, TKey> : IRepository<T, TKey>
         where TKey : notnull
     {
         private readonly TableClient _client;

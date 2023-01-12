@@ -1,8 +1,9 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
 {
-    public interface IRepositoryTableStorageBuilder<T, TKey> : IRepositoryBuilder<T, TKey>
+    public interface IRepositoryTableStorageBuilder<T, TKey>
         where TKey : notnull
     {
         IRepositoryTableStorageBuilder<T, TKey> WithTableStorageKeyReader<TKeyReader>()
@@ -14,6 +15,6 @@ namespace RepositoryFramework.Infrastructure.Azure.Storage.Table
         IRepositoryTableStorageBuilder<T, TKey> WithRowKey<TProperty>(Expression<Func<T, TProperty>> property);
         IRepositoryTableStorageBuilder<T, TKey> WithTimestamp(
            Expression<Func<T, DateTime>> property);
-        IRepositoryBuilder<T, TKey> Builder { get; }
+        IServiceCollection Services { get; }
     }
 }
