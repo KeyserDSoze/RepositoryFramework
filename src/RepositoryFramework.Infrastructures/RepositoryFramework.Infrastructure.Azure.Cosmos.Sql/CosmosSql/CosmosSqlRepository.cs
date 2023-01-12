@@ -7,7 +7,7 @@ using Microsoft.Azure.Cosmos.Linq;
 
 namespace RepositoryFramework.Infrastructure.Azure.Cosmos.Sql
 {
-    internal sealed class CosmosSqlRepository<T, TKey> : IRepositoryPattern<T, TKey>
+    internal sealed class CosmosSqlRepository<T, TKey> : IRepository<T, TKey>
         where TKey : notnull
     {
         private readonly Container _client;
