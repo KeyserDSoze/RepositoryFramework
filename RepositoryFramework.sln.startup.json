@@ -1,0 +1,25 @@
+/*
+    This is a configuration file for the SwitchStartupProject Visual Studio Extension
+    See https://heptapod.host/thirteen/switchstartupproject/blob/branch/current/Configuration.md
+*/
+{
+  /*  Configuration File Version  */
+  "Version": 3,
+
+  /*  Create an item in the dropdown list for each project in the solution?  */
+  "ListAllProjects": true,
+
+  "MultiProjectConfigurations": {
+    "Web": {
+      "Projects": {
+        "RepositoryFramework.Web.Test.Api": {},
+        "RepositoryFramework.Web.Test.BlazorApp": {}
+      }
+    },
+    "Normal": {
+      "Projects": {
+        "RepositoryFramework.Web.Test.App": {}
+      }
+    }
+  }
+}

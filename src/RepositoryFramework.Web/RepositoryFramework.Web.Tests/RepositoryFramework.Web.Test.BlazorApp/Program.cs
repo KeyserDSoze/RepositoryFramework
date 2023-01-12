@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Localization;
 using Microsoft.Identity.Web;
-using RepositoryFramework;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
 using RepositoryFramework.Web.Test.BlazorApp.Resources;
 using Whistleblowing.Licensing.Models;
@@ -31,75 +30,34 @@ builder.Services.AddApplicationInsightsTelemetry(x =>
     x.ConnectionString = "in secrets";
 });
 builder.Services
-    .AddRepositoryInMemoryStorage<AppConfiguration, string>()
-    .PopulateWithRandomData(x => x.AppDomain, 34, 2)
-    .And()
+    .AddRepositoryApiClient<AppConfiguration, string>()
+    .WithHttpClient("localhost:7246")
+    .RepositoryBuilder
     .ExposeFor(3);
 
-builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>
-{
-    x.IsNotExposable = false;
-})
-    .PopulateWithRandomData(x => x.Id, 24, 2);
-builder.Services.AddRepositoryInMemoryStorage<Weather, int>()
-    .PopulateWithRandomData(x => x.Id, 5, 2);
+builder.Services.AddRepositoryApiClient<AppGroup, string>()
+    .WithHttpClient("localhost:7246");
+builder.Services.AddRepositoryApiClient<Weather, int>()
+    .WithHttpClient("localhost:7246");
+
 builder.Services
-    .AddRepositoryInMemoryStorage<AppUser, int>()
-    .PopulateWithRandomData(x => x.Id, 67, 2)
-    .WithRandomValue(x => x.Groups, async serviceProvider =>
-    {
-        var repository = serviceProvider.GetService<IRepository<AppGroup, string>>()!;
-        return (await repository.ToListAsync().NoContext()).Select(x => new Group()
-        {
-            Id = x.Key,
-            Name = x.Value.Name
-        });
-    })
-    .And()
+    .AddRepositoryApiClient<AppUser, int>()
+    .WithHttpClient("localhost:7246")
+    .RepositoryBuilder
     .MapPropertiesForUi<AppUser, int, AppUserDesignMapper>()
     .WithIcon("manage_accounts")
     .WithName("User")
     .ExposeFor(2)
     .SetDefaultUiRoot()
     .WithLocalization<AppUser, int, IStringLocalizer<SharedResource>>();
-    //.WithLocalization<AppUser, int, IStringLocalizer<SharedResource2>>();
-
-builder.Services.AddWarmUp(async serviceProvider =>
-{
-    var repository = serviceProvider.GetService<IRepository<AppUser, int>>();
-    if (repository != null)
-    {
-        await repository.InsertAsync(23, new AppUser
-        {
-            Email = "23 default",
-            Groups = new(),
-            Id = 23,
-            Name = "23 default",
-            Password = "23 default",
-            InternalAppSettings = new InternalAppSettings
-            {
-                Index = 23,
-                Maps = new() { "23" },
-                Options = "23 default options"
-            },
-            Settings = new AppSettings
-            {
-                Color = "23 default",
-                Options = "23 default",
-                Maps = new() { "23" }
-            }
-        }).NoContext();
-    }
-});
+//.WithLocalization<AppUser, int, IStringLocalizer<SharedResource2>>();
 
 var app = builder.Build();
-await app.Services.WarmUpAsync();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

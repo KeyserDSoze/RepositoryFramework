@@ -80,6 +80,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.Web.Com
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryFramework.Web.Test.BlazorApp", "src\RepositoryFramework.Web\RepositoryFramework.Web.Tests\RepositoryFramework.Web.Test.BlazorApp\RepositoryFramework.Web.Test.BlazorApp.csproj", "{C505F2CD-1B3F-4DB8-87BA-3701DAA4BEA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryFramework.Web.Test.Api", "src\RepositoryFramework.Test\RepositoryFramework.Web.Test.Api\RepositoryFramework.Web.Test.Api.csproj", "{263B1553-6CFE-4C0E-B462-DB59ED882A62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -170,6 +172,10 @@ Global
 		{C505F2CD-1B3F-4DB8-87BA-3701DAA4BEA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C505F2CD-1B3F-4DB8-87BA-3701DAA4BEA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C505F2CD-1B3F-4DB8-87BA-3701DAA4BEA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{263B1553-6CFE-4C0E-B462-DB59ED882A62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{263B1553-6CFE-4C0E-B462-DB59ED882A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{263B1553-6CFE-4C0E-B462-DB59ED882A62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{263B1553-6CFE-4C0E-B462-DB59ED882A62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -192,6 +198,7 @@ Global
 		{9BCB3AE2-BBDC-49B7-89FB-6BC68C3F8E27} = {C895CA76-B934-4E1A-AA4C-AD08C20E2100}
 		{1D05DB7F-2F71-452C-9BD9-C5DD716D944B} = {F4EB8506-0138-40B5-99C7-B74CFEBED105}
 		{C505F2CD-1B3F-4DB8-87BA-3701DAA4BEA8} = {C895CA76-B934-4E1A-AA4C-AD08C20E2100}
+		{263B1553-6CFE-4C0E-B462-DB59ED882A62} = {C895CA76-B934-4E1A-AA4C-AD08C20E2100}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15846BE9-69D7-49D6-8E61-F58E9927D291}
