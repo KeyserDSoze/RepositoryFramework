@@ -4,17 +4,14 @@
         where TKey : notnull
     {
         private readonly IQueryPattern<T, TKey> _query;
-        private readonly RepositoryFrameworkOptions<T, TKey> _settings;
         private readonly IRepositoryBusinessManager<T, TKey>? _businessManager;
         private readonly IRepositoryFilterTranslator<T, TKey>? _translator;
 
         public Query(IQueryPattern<T, TKey> query,
-            RepositoryFrameworkOptions<T, TKey> settings,
             IRepositoryBusinessManager<T, TKey>? businessManager = null,
             IRepositoryFilterTranslator<T, TKey>? translator = null)
         {
             _query = query;
-            _settings = settings;
             _businessManager = businessManager;
             _translator = translator;
         }

@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-using RepositoryFramework;
-
-namespace Microsoft.Extensions.DependencyInjection
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
@@ -10,20 +7,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             s_throwExceptionIfARepositoryServiceIsAddedTwoOrMoreTimes = true;
             return services;
-        }
-        private static RepositoryFrameworkService SetService<T, TKey>(this IServiceCollection services)
-            where TKey : notnull
-        {
-            var entityType = typeof(T);
-            var keyType = typeof(TKey);
-            var service = RepositoryFrameworkRegistry.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
-            if (service == null)
-            {
-                service = new RepositoryFrameworkService(keyType, entityType);
-                RepositoryFrameworkRegistry.Instance.Services.Add(service);
-                services.TryAddSingleton(RepositoryFrameworkRegistry.Instance);
-            }
-            return service;
         }
         public static IServiceCollection AddService<TImplementation>(this IServiceCollection services,
            ServiceLifetime lifetime)

@@ -6,5 +6,4 @@
         internal static BusinessManagerOptions<T, TKey> Instance { get; } = new();
         public List<BusinessType> Services { get; } = new();
     }
-
 }

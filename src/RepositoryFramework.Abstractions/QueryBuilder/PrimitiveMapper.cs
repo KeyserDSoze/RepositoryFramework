@@ -6,44 +6,46 @@
         public Dictionary<string, string> FromAssemblyQualifiedNameToName { get; }
         private PrimitiveMapper()
         {
-            FromNameToAssemblyQualifiedName = new();
-            FromNameToAssemblyQualifiedName.Add("int", typeof(int).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("int?", typeof(int?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("uint", typeof(uint).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("uint?", typeof(uint?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("short", typeof(short).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("short?", typeof(short?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("ushort", typeof(ushort).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("ushort?", typeof(ushort?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("long", typeof(long).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("long?", typeof(long?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("ulong", typeof(ulong).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("ulong?", typeof(ulong?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("nint", typeof(nint).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("nint?", typeof(nint?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("nuint", typeof(nuint).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("nuint?", typeof(nuint?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("float", typeof(float).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("float?", typeof(float?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("double", typeof(double).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("double?", typeof(double?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("decimal", typeof(decimal).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("decimal?", typeof(decimal?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("Range", typeof(Range).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("Range?", typeof(Range?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("DateTime", typeof(DateTime).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("DateTime?", typeof(DateTime?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("TimeSpan", typeof(TimeSpan).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("TimeSpan?", typeof(TimeSpan?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("DateTimeOffset", typeof(DateTimeOffset).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("DateTimeOffset?", typeof(DateTimeOffset?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("Guid", typeof(Guid).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("Guid?", typeof(Guid?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("char", typeof(char).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("char?", typeof(char?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("bool", typeof(bool).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("bool?", typeof(bool?).AssemblyQualifiedName!);
-            FromNameToAssemblyQualifiedName.Add("string", typeof(string).AssemblyQualifiedName!);
+            FromNameToAssemblyQualifiedName = new()
+            {
+                { "int", typeof(int).AssemblyQualifiedName! },
+                { "int?", typeof(int?).AssemblyQualifiedName! },
+                { "uint", typeof(uint).AssemblyQualifiedName! },
+                { "uint?", typeof(uint?).AssemblyQualifiedName! },
+                { "short", typeof(short).AssemblyQualifiedName! },
+                { "short?", typeof(short?).AssemblyQualifiedName! },
+                { "ushort", typeof(ushort).AssemblyQualifiedName! },
+                { "ushort?", typeof(ushort?).AssemblyQualifiedName! },
+                { "long", typeof(long).AssemblyQualifiedName! },
+                { "long?", typeof(long?).AssemblyQualifiedName! },
+                { "ulong", typeof(ulong).AssemblyQualifiedName! },
+                { "ulong?", typeof(ulong?).AssemblyQualifiedName! },
+                { "nint", typeof(nint).AssemblyQualifiedName! },
+                { "nint?", typeof(nint?).AssemblyQualifiedName! },
+                { "nuint", typeof(nuint).AssemblyQualifiedName! },
+                { "nuint?", typeof(nuint?).AssemblyQualifiedName! },
+                { "float", typeof(float).AssemblyQualifiedName! },
+                { "float?", typeof(float?).AssemblyQualifiedName! },
+                { "double", typeof(double).AssemblyQualifiedName! },
+                { "double?", typeof(double?).AssemblyQualifiedName! },
+                { "decimal", typeof(decimal).AssemblyQualifiedName! },
+                { "decimal?", typeof(decimal?).AssemblyQualifiedName! },
+                { "Range", typeof(Range).AssemblyQualifiedName! },
+                { "Range?", typeof(Range?).AssemblyQualifiedName! },
+                { "DateTime", typeof(DateTime).AssemblyQualifiedName! },
+                { "DateTime?", typeof(DateTime?).AssemblyQualifiedName! },
+                { "TimeSpan", typeof(TimeSpan).AssemblyQualifiedName! },
+                { "TimeSpan?", typeof(TimeSpan?).AssemblyQualifiedName! },
+                { "DateTimeOffset", typeof(DateTimeOffset).AssemblyQualifiedName! },
+                { "DateTimeOffset?", typeof(DateTimeOffset?).AssemblyQualifiedName! },
+                { "Guid", typeof(Guid).AssemblyQualifiedName! },
+                { "Guid?", typeof(Guid?).AssemblyQualifiedName! },
+                { "char", typeof(char).AssemblyQualifiedName! },
+                { "char?", typeof(char?).AssemblyQualifiedName! },
+                { "bool", typeof(bool).AssemblyQualifiedName! },
+                { "bool?", typeof(bool?).AssemblyQualifiedName! },
+                { "string", typeof(string).AssemblyQualifiedName! }
+            };
             FromAssemblyQualifiedNameToName = FromNameToAssemblyQualifiedName.ToDictionary(x => x.Value, x => x.Key);
         }
         public static PrimitiveMapper Instance { get; } = new();

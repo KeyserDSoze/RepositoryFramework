@@ -7,12 +7,11 @@
         private readonly Lazy<Command<T, TKey>> _command;
 
         public Repository(IRepositoryPattern<T, TKey> repository,
-            RepositoryFrameworkOptions<T, TKey> settings,
             IRepositoryBusinessManager<T, TKey>? businessManager = null,
             IRepositoryFilterTranslator<T, TKey>? translator = null)
         {
-            _query = new Lazy<Query<T, TKey>>(() => new Query<T, TKey>(repository, settings, businessManager, translator));
-            _command = new Lazy<Command<T, TKey>>(() => new Command<T, TKey>(repository, settings, businessManager));
+            _query = new Lazy<Query<T, TKey>>(() => new Query<T, TKey>(repository, businessManager, translator));
+            _command = new Lazy<Command<T, TKey>>(() => new Command<T, TKey>(repository, businessManager));
         }
         public Task<State<T, TKey>> ExistAsync(TKey key, CancellationToken cancellationToken = default)
             => _query.Value.ExistAsync(key, cancellationToken);

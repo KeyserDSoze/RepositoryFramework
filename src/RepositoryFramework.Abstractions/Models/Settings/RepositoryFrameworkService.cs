@@ -8,6 +8,7 @@
         public Dictionary<string, (Type InterfaceType, Type CurrentType)> RepositoryTypes { get; }
         public Type KeyType { get; }
         public Type ModelType { get; }
+        public bool IsNotExposable { get; internal set; }
         public RepositoryFrameworkService(Type keyType, Type modelType)
         {
             KeyType = keyType;

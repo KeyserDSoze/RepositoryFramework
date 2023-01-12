@@ -83,7 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
             }
             Dictionary<string, bool> configuredMethods = new();
-            if (app.ServiceProvider.GetService(typeof(RepositoryFrameworkOptions<,>).MakeGenericType(serviceValue.ModelType, serviceValue.KeyType)) is IRepositoryFrameworkOptions options && !options.IsNotExposable)
+            if (!serviceValue.IsNotExposable)
             {
                 foreach (var (interfaceType, currentType) in serviceValue.RepositoryTypes.Select(x => x.Value))
                     foreach (var method in currentType.GetMethods(BindingFlags.Public | BindingFlags.Instance))

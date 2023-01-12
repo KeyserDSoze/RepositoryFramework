@@ -47,7 +47,7 @@ namespace System.Linq
         /// <returns>QueryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static QueryBuilder<T, TKey> AsQueryBuilder<T, TKey>(this IQueryPattern<T, TKey> entity)
             where TKey : notnull
-            => new QueryBuilder<T, TKey>(entity);
+            => new(entity);
         /// <summary>
         /// Take all elements by <paramref name="predicate"/> query.
         /// </summary>
