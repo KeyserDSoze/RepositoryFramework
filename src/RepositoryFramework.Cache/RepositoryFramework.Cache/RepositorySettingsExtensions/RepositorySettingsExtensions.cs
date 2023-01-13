@@ -10,13 +10,13 @@ namespace Microsoft.Extensions.DependencyInjection
             CacheOptions<T, TKey> options)
             where TKey : notnull
         {
-            if (settings.Type == PatternType.Repository)
+            if (settings.Type.HasFlag(PatternType.Repository))
                 settings.Services
                     .Decorate<IRepository<T, TKey>, CachedRepository<T, TKey>>();
-            else if (settings.Type == PatternType.Query)
+            else if (settings.Type.HasFlag(PatternType.Query))
                 settings.Services
                     .Decorate<IQuery<T, TKey>, CachedQuery<T, TKey>>();
-            else if (options.HasCommandPattern)
+            else if (settings.Type.HasFlag(PatternType.Command) && options.HasCommandPattern)
                 settings.Services
                     .Decorate<ICommand<T, TKey>, CachedRepository<T, TKey>>();
         }

@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.InMemory;
-using RepositoryFramework.UnitTest.Cache.Models;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.InMemory;
+using RepositoryFramework.UnitTest.Cache.Models;
 using Xunit;
 
 namespace RepositoryFramework.UnitTest

@@ -30,7 +30,7 @@ namespace RepositoryFramework
             where TStorage : class, IRepository<T, TKey>
         {
             var service = SetService();
-            Type = PatternType.Repository;
+            Type |= PatternType.Repository;
             ServiceLifetime = serviceLifetime;
             var currentType = typeof(IRepository<T, TKey>);
             service.AddOrUpdate(currentType, typeof(TStorage));
@@ -44,7 +44,7 @@ namespace RepositoryFramework
             where TStorage : class, ICommand<T, TKey>
         {
             var service = SetService();
-            Type = PatternType.Command;
+            Type |= PatternType.Command;
             ServiceLifetime = serviceLifetime;
             var currentType = typeof(ICommand<T, TKey>);
             service.AddOrUpdate(currentType, typeof(TStorage));
@@ -59,7 +59,7 @@ namespace RepositoryFramework
         {
             var service = SetService();
             var currentType = typeof(IQuery<T, TKey>);
-            Type = PatternType.Query;
+            Type |= PatternType.Query;
             ServiceLifetime = serviceLifetime;
             service.AddOrUpdate(currentType, typeof(TStorage));
             Services
