@@ -23,22 +23,44 @@ var retryPolicy = HttpPolicyExtensions
   .RetryAsync(3);
 
 builder.Services
-    .AddRepositoryApiClient<User, string>(serviceLifetime: ServiceLifetime.Scoped)
-    .WithHttpClient("localhost:7058")
-    .ClientBuilder
+    .AddRepository<User, string>(settings =>
+    {
+        settings.WithApiClient()
+        .WithHttpClient("localhost:7058")
+            .ClientBuilder
         .AddPolicyHandler(retryPolicy);
-builder.Services.AddRepositoryApiClient<SuperUser, string>(serviceLifetime: ServiceLifetime.Scoped)
-    .WithHttpClient("localhost:7058");
-builder.Services.AddRepositoryApiClient<IperUser, string>(serviceLifetime: ServiceLifetime.Scoped)
-    .WithHttpClient("localhost:7058");
-builder.Services.AddRepositoryApiClient<Animal, AnimalKey>(serviceLifetime: ServiceLifetime.Scoped)
-    .WithHttpClient("localhost:7058");
-builder.Services.AddRepositoryApiClient<AppUser, AppUserKey>(serviceLifetime: ServiceLifetime.Scoped)
-    .WithHttpClient("localhost:7058");
-builder.Services.AddRepositoryApiClient<Car, Guid>(serviceLifetime: ServiceLifetime.Scoped)
-    .WithHttpClient("localhost:7058");
-builder.Services.AddRepositoryApiClient<Car2, Range>(serviceLifetime: ServiceLifetime.Scoped)
-    .WithHttpClient("localhost:7058");
+    })
+    .AddRepository<SuperUser, string>(settings =>
+    {
+        settings.WithApiClient()
+        .WithHttpClient("localhost:7058");
+    })
+    .AddRepository<IperUser, string>(settings =>
+    {
+        settings.WithApiClient()
+        .WithHttpClient("localhost:7058");
+    })
+    .AddRepository<Animal, AnimalKey>(settings =>
+    {
+        settings.WithApiClient()
+        .WithHttpClient("localhost:7058");
+    })
+    .AddRepository<AppUser, AppUserKey>(settings =>
+    {
+        settings.WithApiClient()
+        .WithHttpClient("localhost:7058");
+    })
+    .AddRepository<Car, Guid>(settings =>
+    {
+        settings.WithApiClient()
+        .WithHttpClient("localhost:7058");
+    })
+    .AddRepository<Car2, Range>(settings =>
+    {
+        settings.WithApiClient()
+        .WithHttpClient("localhost:7058");
+    });
+
 builder.Services.AddDefaultAuthorizationInterceptorForApiHttpClient(settings =>
 {
     settings.Scopes = builder.Configuration["AzureAd:Scopes"].Split(' ');
