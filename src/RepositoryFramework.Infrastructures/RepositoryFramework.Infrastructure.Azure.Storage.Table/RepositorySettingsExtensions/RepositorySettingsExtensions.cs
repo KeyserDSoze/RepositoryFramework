@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class RepositorySettingsExtensions
     {
         private static IRepositoryTableStorageBuilder<T, TKey> WithTableStorage<T, TKey>(
-          this IRepositorySettings<T, TKey> settings,
+          this RepositorySettings<T, TKey> settings,
           PatternType type,
           Action<TableStorageConnectionSettings> connectionSettings)
            where TKey : notnull
@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="connectionSettings">Settings for your storage connection.</param>
         /// <returns>IRepositoryTableStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryTableStorageBuilder<T, TKey> WithTableStorage<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
            Action<TableStorageConnectionSettings> connectionSettings)
             where TKey : notnull
              => settings.WithTableStorage(PatternType.Repository, connectionSettings);
@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="connectionSettings">Settings for your storage connection.</param>
         /// <returns>IRepositoryTableStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryTableStorageBuilder<T, TKey> WithCommandInTableStorage<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
            Action<TableStorageConnectionSettings> connectionSettings)
             where TKey : notnull
              => settings.WithTableStorage(PatternType.Command, connectionSettings);
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="connectionSettings">Settings for your storage connection.</param>
         /// <returns>IRepositoryTableStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryTableStorageBuilder<T, TKey> WithQueryInTableStorage<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
            Action<TableStorageConnectionSettings> connectionSettings)
             where TKey : notnull
              => settings.WithTableStorage(PatternType.Query, connectionSettings);

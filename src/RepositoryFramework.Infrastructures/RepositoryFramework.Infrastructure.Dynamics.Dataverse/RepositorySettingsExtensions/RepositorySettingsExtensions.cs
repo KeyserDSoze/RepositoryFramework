@@ -8,8 +8,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class RepositorySettingsExtensions
     {
-        private static IRepositoryDataverseBuilder<T, TKey> AddRepositoryInDataverse<T, TKey>(
-          this IRepositorySettings<T, TKey> settings,
+        private static IRepositoryDataverseBuilder<T, TKey> WithDataverse<T, TKey>(
+          this RepositorySettings<T, TKey> settings,
             PatternType type,
             Action<DataverseOptions<T, TKey>> options)
             where TKey : notnull
@@ -28,11 +28,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your dataverse connection.</param>
         /// <returns>IRepositoryDataverseBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryDataverseBuilder<T, TKey> AddRepositoryInDataverse<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+        public static IRepositoryDataverseBuilder<T, TKey> WithDataverse<T, TKey>(
+           this RepositorySettings<T, TKey> settings,
             Action<DataverseOptions<T, TKey>> options)
             where TKey : notnull
-            => settings.AddRepositoryInDataverse(PatternType.Repository, options);
+            => settings.WithDataverse(PatternType.Repository, options);
         /// <summary>
         /// Add a default cosmos sql service for your command pattern.
         /// </summary>
@@ -41,11 +41,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your dataverse connection.</param>
         /// <returns>IRepositoryDataverseBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryDataverseBuilder<T, TKey> AddCommandInDataverse<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+        public static IRepositoryDataverseBuilder<T, TKey> WithCommandInDataverse<T, TKey>(
+           this RepositorySettings<T, TKey> settings,
             Action<DataverseOptions<T, TKey>> options)
             where TKey : notnull
-            => settings.AddRepositoryInDataverse(PatternType.Command, options);
+            => settings.WithDataverse(PatternType.Command, options);
         /// <summary>
         /// Add a default cosmos sql service for your query pattern.
         /// </summary>
@@ -54,10 +54,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your dataverse connection.</param>
         /// <returns>IRepositoryDataverseBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryDataverseBuilder<T, TKey> AddQueryInDataverse<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+        public static IRepositoryDataverseBuilder<T, TKey> WithQueryInDataverse<T, TKey>(
+           this RepositorySettings<T, TKey> settings,
             Action<DataverseOptions<T, TKey>> options)
             where TKey : notnull
-            => settings.AddRepositoryInDataverse(PatternType.Query, options);
+            => settings.WithDataverse(PatternType.Query, options);
     }
 }

@@ -18,12 +18,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddRepository<AppUser, AppUserKey>(x =>
                    {
-                       x.SetRepositoryStorage<AppUserStorage>()
-                        .Translate<User>()
-                            .With(x => x.Id, x => x.Identificativo)
-                            .With(x => x.Username, x => x.Nome)
-                            .With(x => x.Email, x => x.IndirizzoElettronico)
-                        .Builder
+                       x.SetRepositoryStorage<AppUserStorage>();
+                       x.Translate<User>()
+                           .With(x => x.Id, x => x.Identificativo)
+                           .With(x => x.Username, x => x.Nome)
+                           .With(x => x.Email, x => x.IndirizzoElettronico);
+                        x
                             .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness>()
                             .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness2>();
                    });
@@ -36,19 +36,18 @@ namespace Microsoft.Extensions.DependencyInjection
                         {
                             t.DbSet = x => x.Users;
                             t.References = x => x.Include(x => x.IdGruppos);
-                        })
-                    .Translate<User>()
+                        });
+                    x.Translate<User>()
                         .With(x => x.Username, x => x.Nome)
                         .With(x => x.Username, x => x.Cognome)
                         .With(x => x.Email, x => x.IndirizzoElettronico)
                         .With(x => x.Groups, x => x.IdGruppos)
                         .With(x => x.Id, x => x.Identificativo)
-                        .WithKey(x => x, x => x.Identificativo)
-                    .Builder
-                    .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
-                    .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();
+                        .WithKey(x => x, x => x.Identificativo);
+                    x
+                        .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
+                        .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();
                 });
-
 
             services
                 .AddRepository<User, int>(x =>
@@ -58,10 +57,10 @@ namespace Microsoft.Extensions.DependencyInjection
                         x.DbSet = x => x.Users;
                         x.References = x => x.Include(x => x.IdGruppos);
                     })
-                        .WithKey(x => x, x => x.Identificativo)
-                    .Builder
-                    .AddBusinessBeforeInsert<UserBeforeInsertBusiness>()
-                    .AddBusinessBeforeInsert<UserBeforeInsertBusiness2>();
+                        .WithKey(x => x, x => x.Identificativo);
+                    x
+                        .AddBusinessBeforeInsert<UserBeforeInsertBusiness>()
+                        .AddBusinessBeforeInsert<UserBeforeInsertBusiness2>();
                 });
             return services;
         }

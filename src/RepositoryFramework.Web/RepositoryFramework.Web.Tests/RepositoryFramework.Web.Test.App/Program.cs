@@ -1,4 +1,5 @@
-﻿using RepositoryFramework.Web.Test.App.Models;
+﻿using RepositoryFramework.InMemory;
+using RepositoryFramework.Web.Test.App.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +10,11 @@ builder.WebHost.UseWebRoot("wwwroot");
 builder.WebHost.UseStaticWebAssets();
 builder.Services
     .AddRepositoryUi(x => x.Name = "SuperSite");
-builder.Services.AddRepositoryInMemoryStorage<AppUser, int>()
+builder.Services.AddRepository<AppUser, int>(settings =>
+{
+    settings.WithInMemory()
     .PopulateWithRandomData(x => x.Id, 2, 2);
+});
 var app = builder.Build();
 await app.Services.WarmUpAsync();
 // Configure the HTTP request pipeline.

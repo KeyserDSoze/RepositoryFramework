@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class RepositorySettingsExtensions
     {
         private static IRepositoryMsSqlBuilder<T, TKey> WithMsSql<T, TKey>(
-          this IRepositorySettings<T, TKey> settings,
+          this RepositorySettings<T, TKey> settings,
                 PatternType type,
                Action<MsSqlOptions<T, TKey>> options)
            where TKey : notnull
@@ -26,8 +26,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="options">Settings for your MsSql connection.</param>
         /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryMsSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryMsSqlBuilder<T, TKey> WithRepositoryInMsSql<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+        public static IRepositoryMsSqlBuilder<T, TKey> WithMsSql<T, TKey>(
+           this RepositorySettings<T, TKey> settings,
                 Action<MsSqlOptions<T, TKey>> options)
             where TKey : notnull
             => settings.WithMsSql(PatternType.Repository, options);
@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryMsSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryMsSqlBuilder<T, TKey> WithCommandInMsSql<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
                 Action<MsSqlOptions<T, TKey>> options)
             where TKey : notnull
             => settings.WithMsSql(PatternType.Command, options);
@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">Settings for your repository.</param>
         /// <returns>IRepositoryMsSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryMsSqlBuilder<T, TKey> WithQueryInMsSql<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
                 Action<MsSqlOptions<T, TKey>> options)
             where TKey : notnull
             => settings.WithMsSql(PatternType.Query, options);

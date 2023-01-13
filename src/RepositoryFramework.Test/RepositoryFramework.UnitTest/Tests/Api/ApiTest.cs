@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RepositoryFramework.InMemory;
 using RepositoryFramework.Test.Domain;
 using RepositoryFramework.Test.Infrastructure.EntityFramework;
 using RepositoryFramework.Test.Infrastructure.EntityFramework.Models.Internal;
@@ -65,78 +66,114 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                             {
                                 services.AddHealthChecks();
                                 services.AddControllers();
-                                services.AddRepositoryInMemoryStorage<IperUser, string>()
-                                    .PopulateWithRandomData(x => x.Email!, 120, 5)
-                                    .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com")
-                                    .And()
-                                    .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>()
-                                    .Translate<IperUser>();
+                                services.AddRepository<IperUser, string>(settings =>
+                                {
+                                    settings
+                                        .WithInMemory()
+                                        .PopulateWithRandomData(x => x.Email!, 120, 5)
+                                        .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
+                                    settings
+                                        .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>()
+                                        .Translate<IperUser>();
+                                });
                                 services
-                                    .AddRepositoryInMemoryStorage<Animal, AnimalKey>()
-                                    .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert>()
-                                    .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert2>();
+                                    .AddRepository<Animal, AnimalKey>(settings =>
+                                    {
+                                        settings
+                                            .WithInMemory();
+                                        settings
+                                            .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert>()
+                                            .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert2>();
+                                    });
                                 services
-                                    .AddRepositoryInMemoryStorage<Plant, int>()
-                                        .WithInMemoryCache(x =>
-                                        {
-                                            x.ExpiringTime = TimeSpan.FromSeconds(1);
-                                            x.Methods = RepositoryMethods.All;
-                                        });
+                                    .AddRepository<Plant, int>(settings =>
+                                    {
+                                        settings
+                                            .WithInMemory();
+                                        settings
+                                            .WithInMemoryCache(x =>
+                                            {
+                                                x.ExpiringTime = TimeSpan.FromSeconds(1);
+                                                x.Methods = RepositoryMethods.All;
+                                            });
+                                    });
+
                                 services
                                     .AddRepository<ExtremelyRareUser, string, ExtremelyRareUserRepositoryStorage>();
                                 services
-                                    .AddRepositoryInBlobStorage<Car, Guid>(
-                                        x => { x.ConnectionString = configuration["ConnectionString:Storage"]; })
-                                    .AddBusinessBeforeInsert<CarBeforeInsertBusiness>()
-                                    .AddBusinessBeforeInsert<CarBeforeInsertBusiness2>();
+                                    .AddRepository<Car, Guid>(settings =>
+                                    {
+                                        settings.WithBlobStorage(x => x.ConnectionString = configuration["ConnectionString:Storage"]);
+                                        settings
+                                        .AddBusinessBeforeInsert<CarBeforeInsertBusiness>()
+                                            .AddBusinessBeforeInsert<CarBeforeInsertBusiness2>();
+                                    });
                                 services
-                                    .AddRepositoryInTableStorage<SuperCar, Guid>(
-                                        x => { x.ConnectionString = configuration["ConnectionString:Storage"]; })
-                                        .WithPartitionKey(x => x.Id, x => x)
-                                        .WithRowKey(x => x.Name)
-                                        .WithTimestamp(x => x.Time)
-                                        .WithTableStorageKeyReader<Car2KeyStorageReader>()
+                                    .AddRepository<SuperCar, Guid>(
+                                    settings =>
+                                    {
+                                        settings
+                                            .WithTableStorage(x => x.ConnectionString = configuration["ConnectionString:Storage"])
+                                            .WithPartitionKey(x => x.Id, x => x)
+                                            .WithRowKey(x => x.Name)
+                                            .WithTimestamp(x => x.Time)
+                                            .WithTableStorageKeyReader<Car2KeyStorageReader>();
+                                        settings
                                         .AddBusinessBeforeInsert<SuperCarBeforeInsertBusiness>()
                                         .AddBusinessBeforeInsert<SuperCarBeforeInsertBusiness2>();
+                                    });
                                 services
-                                    .AddRepositoryInCosmosSql<SuperUser, string>(x =>
+                                    .AddRepository<SuperUser, string>(
+                                    settings =>
                                     {
-                                        x.ConnectionString = configuration["ConnectionString:CosmosSql"];
-                                        x.DatabaseName = "BigDatabase";
-                                    })
-                                        .WithId(x => x.Email!)
-                                        .AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness>()
+                                        settings.WithCosmosSql(x =>
+                                        {
+                                            x.ConnectionString = configuration["ConnectionString:CosmosSql"];
+                                            x.DatabaseName = "BigDatabase";
+                                        })
+                                            .WithId(x => x.Email!);
+                                        settings.AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness>()
                                         .AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness2>();
+                                    });
                                 services
                                     .AddUserRepositoryWithDatabaseSqlAndEntityFramework(configuration);
                                 services.
-                                    AddRepositoryInDataverse<CalamityUniverseUser, string>(x =>
+                                    AddRepository<CalamityUniverseUser, string>(settings =>
                                     {
-                                        x.Prefix = "repo_";
-                                        x.SolutionName = "TestAlessandro";
-                                        x.SetConnection(configuration["ConnectionString:Dataverse:Environment"],
-                                            new(configuration["ConnectionString:Dataverse:ClientId"],
-                                         configuration["ConnectionString:Dataverse:ClientSecret"]));
-                                    })
-                                    .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness>()
-                                    .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness2>();
+                                        settings.WithDataverse(x =>
+                                        {
+                                            x.Prefix = "repo_";
+                                            x.SolutionName = "TestAlessandro";
+                                            x.SetConnection(configuration["ConnectionString:Dataverse:Environment"],
+                                                new(configuration["ConnectionString:Dataverse:ClientId"],
+                                             configuration["ConnectionString:Dataverse:ClientSecret"]));
+                                        });
+                                        settings
+                                            .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness>()
+                                            .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness2>();
+                                    });
                                 services.
-                                   AddRepositoryInMsSql<Cat, Guid>(x =>
+                                   AddRepository<Cat, Guid>(settings =>
                                    {
-                                       x.Schema = "repo";
-                                       x.ConnectionString = configuration["ConnectionString:Database"];
-                                   })
-                                   .WithPrimaryKey(x => x.Id, x =>
-                                   {
-                                       x.ColumnName = "Key";
-                                   })
-                                   .WithColumn(x => x.Paws, x =>
-                                   {
-                                       x.ColumnName = "Zampe";
-                                       x.IsNullable = true;
-                                   })
-                                   .AddBusinessBeforeInsert<CatBeforeInsertBusiness>()
-                                   .AddBusinessBeforeInsert<CatBeforeInsertBusiness2>();
+                                       settings
+                                        .WithMsSql(x =>
+                                        {
+                                            x.Schema = "repo";
+                                            x.ConnectionString = configuration["ConnectionString:Database"];
+                                        })
+                                            .WithPrimaryKey(x => x.Id, x =>
+                                            {
+                                                x.ColumnName = "Key";
+                                            })
+                                           .WithColumn(x => x.Paws, x =>
+                                           {
+                                               x.ColumnName = "Zampe";
+                                               x.IsNullable = true;
+                                           });
+                                       settings
+                                           .AddBusinessBeforeInsert<CatBeforeInsertBusiness>()
+                                           .AddBusinessBeforeInsert<CatBeforeInsertBusiness2>();
+                                   });
                                 services.AddApiFromRepositoryFramework()
                                             .WithName<ExtremelyRareUser>("extremelyrareuserrefresh")
                                             .WithName<CalamityUniverseUser>("calamityuser")
@@ -177,50 +214,72 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
                 services.AddSingleton<IHttpClientFactory>(HttpClientFactory.Instance);
                 services
-                    .AddRepositoryApiClient<SuperUser, string>(serviceLifetime: ServiceLifetime.Scoped)
+                    .AddRepository<SuperUser, string>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
-                services
-                    .AddRepositoryApiClient<AppUser, AppUserKey>(serviceLifetime: ServiceLifetime.Scoped)
+                    })
+                    .AddRepository<AppUser, AppUserKey>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
-                services
-                    .AddRepositoryApiClient<Plant, int>(serviceLifetime: ServiceLifetime.Scoped)
+                    })
+                    .AddRepository<Plant, int>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
-                services
-                    .AddRepositoryApiClient<IperUser, string>(serviceLifetime: ServiceLifetime.Scoped)
+                    })
+                    .AddRepository<IperUser, string>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
-                services
-                    .AddRepositoryApiClient<Animal, AnimalKey>(serviceLifetime: ServiceLifetime.Scoped)
+                    })
+                    .AddRepository<Animal, AnimalKey>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
-                services
-                    .AddRepositoryApiClient<Car, Guid>(serviceLifetime: ServiceLifetime.Scoped)
+                    })
+                    .AddRepository<Car, Guid>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
-                services
-                    .AddRepositoryApiClient<SuperCar, Guid>(serviceLifetime: ServiceLifetime.Scoped)
+                    })
+                    .AddRepository<SuperCar, Guid>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
-                services
-                    .AddRepositoryApiClient<CalamityUniverseUser, string>(serviceLifetime: ServiceLifetime.Scoped)
-                        .WithVersion(Version)
-                        .WithStartingPath(Path)
-                        .WithName("calamityuser");
-                services
-                    .AddRepositoryApiClient<Cat, Guid>(serviceLifetime: ServiceLifetime.Scoped)
+                    })
+                    .AddRepository<CalamityUniverseUser, string>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
-                services
-                    .AddRepositoryApiClient<MappingUser, int>(serviceLifetime: ServiceLifetime.Scoped)
+                    })
+                    .AddRepository<Cat, Guid>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
-                services
-                    .AddRepositoryApiClient<User, int>(serviceLifetime: ServiceLifetime.Scoped)
+                    })
+                    .AddRepository<MappingUser, int>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
                         .WithVersion(Version)
                         .WithStartingPath(Path);
+                    })
+                    .AddRepository<User, int>(settings =>
+                    {
+                        settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithVersion(Version)
+                        .WithStartingPath(Path);
+                    });
                 services.Finalize(out var serviceProvider);
                 HttpClientFactory.Instance.ServiceProvider = serviceProvider;
             }

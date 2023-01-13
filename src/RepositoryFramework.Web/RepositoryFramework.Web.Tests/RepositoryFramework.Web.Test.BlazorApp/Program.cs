@@ -30,26 +30,39 @@ builder.Services.AddApplicationInsightsTelemetry(x =>
     x.ConnectionString = "in secrets";
 });
 builder.Services
-    .AddRepositoryApiClient<AppConfiguration, string>()
-    .WithHttpClient("localhost:7246")
-    .RepositoryBuilder
-    .ExposeFor(3);
+    .AddRepository<AppConfiguration, string>(settings =>
+    {
+        settings
+            .WithApiClient()
+            .WithHttpClient("localhost:7246");
+        settings
+            .ExposeFor(3);
+    });
 
-builder.Services.AddRepositoryApiClient<AppGroup, string>()
+builder.Services.AddRepository<AppGroup, string>(settings =>
+{
+    settings.WithApiClient()
     .WithHttpClient("localhost:7246");
-builder.Services.AddRepositoryApiClient<Weather, int>()
+});
+builder.Services.AddRepository<Weather, int>(settings =>
+{
+    settings.WithApiClient()
     .WithHttpClient("localhost:7246");
+});
 
 builder.Services
-    .AddRepositoryApiClient<AppUser, int>()
-    .WithHttpClient("localhost:7246")
-    .RepositoryBuilder
-    .MapPropertiesForUi<AppUser, int, AppUserDesignMapper>()
-    .WithIcon("manage_accounts")
-    .WithName("User")
-    .ExposeFor(2)
-    .SetDefaultUiRoot()
-    .WithLocalization<AppUser, int, IStringLocalizer<SharedResource>>();
+    .AddRepository<AppUser, int>(settings =>
+    {
+        settings.WithApiClient().WithHttpClient("localhost:7246");
+        settings
+            .MapPropertiesForUi<AppUser, int, AppUserDesignMapper>()
+            .WithIcon("manage_accounts")
+            .WithName("User")
+            .ExposeFor(2)
+            .SetDefaultUiRoot()
+            .WithLocalization<AppUser, int, IStringLocalizer<SharedResource>>();
+    });
+
 //.WithLocalization<AppUser, int, IStringLocalizer<SharedResource2>>();
 
 var app = builder.Build();

@@ -15,43 +15,46 @@ namespace RepositoryFramework.UnitTest.InMemory.Population
         static PopulationTest()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
-                 .AddRepositoryInMemoryStorage<User, string>(options =>
+                 .AddRepository<User, string>(settings =>
                  {
-                     var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
-                         int.Parse(configuration["data_creation:delay_in_write_to"]));
-                     options.AddForCommandPattern(new MethodBehaviorSetting
+                     settings.WithInMemory(options =>
                      {
-                         MillisecondsOfWait = writingRange,
-                     });
-                     var readingRange = new Range(int.Parse(configuration["data_creation:delay_in_read_from"]),
-                         int.Parse(configuration["data_creation:delay_in_read_to"]));
-                     options.AddForQueryPattern(new MethodBehaviorSetting
-                     {
-                         MillisecondsOfWait = readingRange
-                     });
+                         var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
+                             int.Parse(configuration["data_creation:delay_in_write_to"]));
+                         options.AddForCommandPattern(new MethodBehaviorSetting
+                         {
+                             MillisecondsOfWait = writingRange,
+                         });
+                         var readingRange = new Range(int.Parse(configuration["data_creation:delay_in_read_from"]),
+                             int.Parse(configuration["data_creation:delay_in_read_to"]));
+                         options.AddForQueryPattern(new MethodBehaviorSetting
+                         {
+                             MillisecondsOfWait = readingRange
+                         });
+                     })
+                    .PopulateWithRandomData(x => x.Id!, 100)
+                    .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com");
                  })
-                .PopulateWithRandomData(x => x.Id!, 100)
-                .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com")
-                .And()
-                .AddRepositoryInMemoryStorage<SuperUser, string>(options =>
+                .AddRepository<SuperUser, string>(settings =>
                 {
-                    var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
-                        int.Parse(configuration["data_creation:delay_in_write_to"]));
-                    options.AddForCommandPattern(new MethodBehaviorSetting
+                    settings.WithInMemory(options =>
                     {
-                        MillisecondsOfWait = writingRange,
-                    });
-                    var readingRange = new Range(int.Parse(configuration["data_creation:delay_in_read_from"]),
-                        int.Parse(configuration["data_creation:delay_in_read_to"]));
-                    options.AddForQueryPattern(new MethodBehaviorSetting
-                    {
-                        MillisecondsOfWait = readingRange
-                    });
+                        var writingRange = new Range(int.Parse(configuration["data_creation:delay_in_write_from"]),
+                            int.Parse(configuration["data_creation:delay_in_write_to"]));
+                        options.AddForCommandPattern(new MethodBehaviorSetting
+                        {
+                            MillisecondsOfWait = writingRange,
+                        });
+                        var readingRange = new Range(int.Parse(configuration["data_creation:delay_in_read_from"]),
+                            int.Parse(configuration["data_creation:delay_in_read_to"]));
+                        options.AddForQueryPattern(new MethodBehaviorSetting
+                        {
+                            MillisecondsOfWait = readingRange
+                        });
+                    })
+                    .PopulateWithRandomData(x => x.Id!, 100)
+                    .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com");
                 })
-                .PopulateWithRandomData(x => x.Id!, 100)
-                .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com")
-                .And()
-                .Services
                 .Finalize(out s_serviceProvider)
                 .WarmUpAsync()
                 .ToResult();

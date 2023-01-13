@@ -1,13 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.Test.Domain;
-using RepositoryFramework.Test.Infrastructure.EntityFramework;
-using RepositoryFramework.Test.Infrastructure.EntityFramework.Models;
-using RepositoryFramework.UnitTest.Tests.AllIntegration.TableStorage;
-using System;
+﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.Test.Domain;
+using RepositoryFramework.UnitTest.Tests.AllIntegration.TableStorage;
 using Xunit;
 
 namespace RepositoryFramework.UnitTest.Repository
@@ -25,25 +23,31 @@ namespace RepositoryFramework.UnitTest.Repository
                     break;
                 case "tablestorage":
                     services
-                        .AddRepositoryInTableStorage<AppUser, AppUserKey>(
-                            x => { x.ConnectionString = configuration["ConnectionString:Storage"]; })
-                        .WithTableStorageKeyReader<TableStorageKeyReader>()
-                        .WithPartitionKey(x => x.Id, x => x.Id)
-                        .WithRowKey(x => x.Username)
-                        .WithTimestamp(x => x.CreationTime);
+                        .AddRepository<AppUser, AppUserKey>(settings =>
+                        {
+                            settings
+                            .WithTableStorage(x => x.ConnectionString = configuration["ConnectionString:Storage"])
+                            .WithTableStorageKeyReader<TableStorageKeyReader>()
+                                .WithPartitionKey(x => x.Id, x => x.Id)
+                                .WithRowKey(x => x.Username)
+                                .WithTimestamp(x => x.CreationTime);
+                        });
                     break;
                 case "blobstorage":
-                    services.AddRepositoryInBlobStorage<AppUser, AppUserKey>(
-                        x => { x.ConnectionString = configuration["ConnectionString:Storage"]; });
+                    services
+                        .AddRepository<AppUser, AppUserKey>(settings => settings
+                            .WithBlobStorage(x => x.ConnectionString = configuration["ConnectionString:Storage"]));
                     break;
                 case "cosmos":
-                    services.AddRepositoryInCosmosSql<AppUser, AppUserKey>(
-                        x =>
+                    services.AddRepository<AppUser, AppUserKey>(settings =>
+                    {
+                        settings.WithCosmosSql(x =>
                         {
                             x.ConnectionString = configuration["ConnectionString:CosmosSql"];
                             x.DatabaseName = "unittestdatabase";
                         })
                         .WithId(x => new AppUserKey(x.Id));
+                    });
                     break;
             }
             services.Finalize(out var serviceProvider);

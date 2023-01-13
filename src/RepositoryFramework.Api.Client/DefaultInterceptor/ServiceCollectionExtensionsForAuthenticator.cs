@@ -32,8 +32,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="authenticatorSettings">Settings.</param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> AddCustomAuthorizationInterceptorForApiHttpClient<T, TKey>(
-            this IRepositorySettings<T, TKey> settings,
+        public static RepositorySettings<T, TKey> AddCustomAuthorizationInterceptorForApiHttpClient<T, TKey>(
+            this RepositorySettings<T, TKey> settings,
             Action<AuthenticatorSettings<T>>? authenticatorSettings = null,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TKey : notnull

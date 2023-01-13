@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.InMemory;
 using RepositoryFramework.UnitTest.AllMethods.Models;
 using Xunit;
 
@@ -13,14 +14,20 @@ namespace RepositoryFramework.UnitTest.AllMethods
         static AllMethodTest()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
-                .AddRepositoryInMemoryStorage<Animal, long>()
-                .AddBusinessAfterInsert<AnimalBusiness>()
-                .AddBusinessBeforeInsert<AnimalBusiness>()
-                .Services
-                .AddRepositoryInMemoryStorage<Animal, AnimalKey>()
-                .PopulateWithRandomData(x => new AnimalKey(x.Id), 100)
-                .And()
-                .Services
+                .AddRepository<Animal, long>(settings =>
+                {
+                    settings
+                        .WithInMemory();
+                    settings
+                        .AddBusinessAfterInsert<AnimalBusiness>()
+                        .AddBusinessBeforeInsert<AnimalBusiness>();
+                })
+                .AddRepository<Animal, AnimalKey>(settings =>
+                {
+                    settings
+                        .WithInMemory()
+                        .PopulateWithRandomData(x => new AnimalKey(x.Id), 100);
+                })
                 .Finalize(out s_serviceProvider)
                 .WarmUpAsync()
                 .ToResult();

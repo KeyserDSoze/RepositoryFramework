@@ -1,4 +1,6 @@
-﻿using RepositoryFramework;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework;
+using RepositoryFramework.InMemory;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
 using Whistleblowing.Licensing.Models;
 
@@ -10,27 +12,37 @@ builder.Services.AddApiFromRepositoryFramework()
     .WithDescriptiveName("Api");
 
 builder.Services
-    .AddRepositoryInMemoryStorage<AppConfiguration, string>()
-    .PopulateWithRandomData(x => x.AppDomain, 34, 2);
-
-builder.Services.AddRepositoryInMemoryStorage<AppGroup, string>(null, x =>
-{
-    x.IsNotExposable = false;
-})
-    .PopulateWithRandomData(x => x.Id, 24, 2);
-builder.Services.AddRepositoryInMemoryStorage<Weather, int>()
-    .PopulateWithRandomData(x => x.Id, 5, 2);
-builder.Services
-    .AddRepositoryInMemoryStorage<AppUser, int>()
-    .PopulateWithRandomData(x => x.Id, 67, 2)
-    .WithRandomValue(x => x.Groups, async serviceProvider =>
+    .AddRepository<AppConfiguration, string>(settings =>
     {
-        var repository = serviceProvider.GetService<IRepository<AppGroup, string>>()!;
-        return (await repository.ToListAsync().NoContext()).Select(x => new Group()
-        {
-            Id = x.Key,
-            Name = x.Value.Name
-        });
+        settings.WithInMemory()
+        .PopulateWithRandomData(x => x.AppDomain, 34, 2);
+    });
+
+builder.Services.AddRepository<AppGroup, string>(settings =>
+{
+    settings.WithInMemory()
+    .PopulateWithRandomData(x => x.Id, 24, 2);
+});
+
+builder.Services.AddRepository<Weather, int>(settings =>
+{
+    settings.WithInMemory().PopulateWithRandomData(x => x.Id, 5, 2);
+});
+
+builder.Services
+    .AddRepository<AppUser, int>(settings =>
+    {
+        settings.WithInMemory()
+            .PopulateWithRandomData(x => x.Id, 67, 2)
+            .WithRandomValue(x => x.Groups, async serviceProvider =>
+            {
+                var repository = serviceProvider.GetService<IRepository<AppGroup, string>>()!;
+                return (await repository.ToListAsync().NoContext()).Select(x => new Group()
+                {
+                    Id = x.Key,
+                    Name = x.Value.Name
+                });
+            });
     });
 
 builder.Services.AddWarmUp(async serviceProvider =>

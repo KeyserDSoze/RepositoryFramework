@@ -15,8 +15,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="options">Settings for your cache.</param>
         /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithInMemoryCache<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+        public static RepositorySettings<T, TKey> WithInMemoryCache<T, TKey>(
+           this RepositorySettings<T, TKey> settings,
            Action<CacheOptions<T, TKey>>? options = null)
             where TKey : notnull
         {

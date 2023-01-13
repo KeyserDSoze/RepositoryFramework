@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.InMemory;
 using RepositoryFramework.UnitTest.Cache.Models;
 using System;
 using System.Linq;
@@ -20,18 +21,21 @@ namespace RepositoryFramework.UnitTest
                     options.Configuration = configuration["ConnectionString:Redis"];
                     options.InstanceName = "SampleInstance";
                 })
-                .AddRepositoryInMemoryStorage<Country, CountryKey>()
-                .PopulateWithRandomData(x => new CountryKey(x.Id, x.Abbreviation!), NumberOfEntries, NumberOfEntries)
-                .And()
-                .WithInMemoryCache(settings =>
+                .AddRepository<Country, CountryKey>(settings =>
                 {
-                    settings.ExpiringTime = TimeSpan.FromSeconds(10);
+                    settings
+                        .WithInMemory()
+                        .PopulateWithRandomData(x => new CountryKey(x.Id, x.Abbreviation!), NumberOfEntries, NumberOfEntries);
+                    settings
+                        .WithInMemoryCache(settings =>
+                        {
+                            settings.ExpiringTime = TimeSpan.FromSeconds(10);
+                        })
+                        .WithDistributedCache(settings =>
+                        {
+                            settings.ExpiringTime = TimeSpan.FromSeconds(10);
+                        });
                 })
-                .WithDistributedCache(settings =>
-                {
-                    settings.ExpiringTime = TimeSpan.FromSeconds(10);
-                })
-                .Services
                 .Finalize(out s_serviceProvider)
                 .WarmUpAsync()
                 .ToResult();

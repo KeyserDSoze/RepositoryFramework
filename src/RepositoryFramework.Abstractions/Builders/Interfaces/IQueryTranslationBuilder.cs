@@ -10,17 +10,16 @@ namespace RepositoryFramework
     /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
     /// <typeparam name="TStorage">Storage for your repository.</typeparam>
     /// <typeparam name="TTranslated">Model for translation, T to TTranslated and viceversa.</typeparam>
-    public interface IQueryTranslationBuilder<T, TKey, out TStorage, TTranslated>
+    public interface IQueryTranslationBuilder<T, TKey, TTranslated>
         where TKey : notnull
-        where TStorage : class
     {
-        IRepositoryBuilder<T, TKey, TStorage> Builder { get; }
         IServiceCollection Services { get; }
-        IQueryTranslationBuilder<T, TKey, TStorage, TTranslated> With<TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty);
-        IQueryTranslationBuilder<T, TKey, TStorage, TTranslated> WithSamePorpertiesName();
-        IQueryTranslationBuilder<T, TKey, TStorage, TTranslated> WithKey<TProperty, TTranslatedProperty>(
+        RepositorySettings<T, TKey> Settings { get; }
+        IQueryTranslationBuilder<T, TKey, TTranslated> With<TProperty, TTranslatedProperty>(Expression<Func<T, TProperty>> property, Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty);
+        IQueryTranslationBuilder<T, TKey, TTranslated> WithSamePorpertiesName();
+        IQueryTranslationBuilder<T, TKey, TTranslated> WithKey<TProperty, TTranslatedProperty>(
             Expression<Func<TKey, TProperty>> property,
             Expression<Func<TTranslated, TTranslatedProperty>> translatedProperty);
-        IQueryTranslationBuilder<T, TKey, TStorage, TFurtherTranslated> AndTranslate<TFurtherTranslated>();
+        IQueryTranslationBuilder<T, TKey, TFurtherTranslated> AndTranslate<TFurtherTranslated>();
     }
 }

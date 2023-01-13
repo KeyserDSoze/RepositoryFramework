@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class RepositorySettingsExtensions
     {
         private static IRepositoryCosmosSqlBuilder<T, TKey> WithCosmosSql<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
             PatternType type,
             Action<CosmosSqlConnectionSettings> connectionSettings)
             where TKey : notnull
@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="connectionSettings">Settings for your Cosmos database.</param>
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryCosmosSqlBuilder<T, TKey> WithCosmosSql<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
             Action<CosmosSqlConnectionSettings> connectionSettings)
             where TKey : notnull
             => settings.WithCosmosSql(PatternType.Repository, connectionSettings);
@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="connectionSettings">Settings for your Cosmos database.</param>
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryCosmosSqlBuilder<T, TKey> WithCommandInCosmosSql<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
                 Action<CosmosSqlConnectionSettings> connectionSettings)
             where TKey : notnull
             => settings.WithCosmosSql(PatternType.Command, connectionSettings);
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="connectionSettings">Settings for your Cosmos database.</param>
         /// <returns>IRepositoryCosmosSqlBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryCosmosSqlBuilder<T, TKey> WithQueryInCosmosSql<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
                 Action<CosmosSqlConnectionSettings> connectionSettings)
             where TKey : notnull
             => settings.WithCosmosSql(PatternType.Query, connectionSettings);

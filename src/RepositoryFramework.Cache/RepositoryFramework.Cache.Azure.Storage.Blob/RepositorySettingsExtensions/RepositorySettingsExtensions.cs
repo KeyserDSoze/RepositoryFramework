@@ -18,8 +18,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="options">Settings for your storage connection.</param>
         /// <param name="cacheOptions">Settings for your cache.</param>
         /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithBlobStorageCache<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+        public static RepositorySettings<T, TKey> WithBlobStorageCache<T, TKey>(
+           this RepositorySettings<T, TKey> settings,
                 Action<BlobStorageConnectionSettings> options,
                 Action<DistributedCacheOptions<T, TKey>>? cacheOptions = null)
             where TKey : notnull

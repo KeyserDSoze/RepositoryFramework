@@ -5,7 +5,7 @@ namespace RepositoryFramework.InMemory
 {
     public static class RepositorySettingExtensions
     {
-        public static IRepositoryInMemoryBuilder<T, TKey> WithInMemory<T, TKey>(this IRepositorySettings<T, TKey> settings,
+        public static IRepositoryInMemoryBuilder<T, TKey> WithInMemory<T, TKey>(this RepositorySettings<T, TKey> settings,
             Action<RepositoryBehaviorSettings<T, TKey>>? behaviorSettings = default)
             where TKey : notnull
         {

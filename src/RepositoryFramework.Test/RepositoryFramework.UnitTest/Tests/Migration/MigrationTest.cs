@@ -15,9 +15,11 @@ namespace RepositoryFramework.UnitTest.Migration
         static MigrationTest()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
-                    .AddRepository<SuperMigrationUser, string, SuperMigrationTo>()
-                    .AddMigrationSource<SuperMigrationUser, string, SuperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2)
-                .Services
+                    .AddRepository<SuperMigrationUser, string, SuperMigrationTo>(settings =>
+                    {
+                        settings
+                            .AddMigrationSource<SuperMigrationUser, string, SuperMigrationFrom>(x => x.NumberOfConcurrentInserts = 2);
+                    })
                 .Finalize(out s_serviceProvider)
                 .WarmUpAsync()
                 .ToResult();

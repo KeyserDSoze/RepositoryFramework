@@ -13,7 +13,6 @@ namespace RepositoryFramework.UnitTest.CustomRepository.SpecialKeys
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out _)
                 .AddRepository<ClassAnimal, ClassAnimalKey, ClassAnimalRepository>()
-                .Services
                 .Finalize(out s_serviceProvider);
         }
         private readonly IRepository<ClassAnimal, ClassAnimalKey> _repo;

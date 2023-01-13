@@ -8,21 +8,21 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class RepositoryBuilderExtensions
     {
-        public static IRepositoryBuilder<T, TKey> SetDefaultUiRoot<T, TKey>(
-            this IRepositoryBuilder<T, TKey> builder)
+        public static RepositorySettings<T, TKey> SetDefaultUiRoot<T, TKey>(
+            this RepositorySettings<T, TKey> builder)
             where TKey : notnull
         {
             AppInternalSettings.Instance.RootName = typeof(T).Name;
             return builder;
         }
-        public static IRepositoryBuilder<T, TKey> DoNotExposeInUi<T, TKey>(
-            this IRepositoryBuilder<T, TKey> builder)
+        public static RepositorySettings<T, TKey> DoNotExposeInUi<T, TKey>(
+            this RepositorySettings<T, TKey> builder)
             where TKey : notnull
         {
             AppInternalSettings.Instance.NotExposableRepositories.Add(typeof(T).Name);
             return builder;
         }
-        private static RepositoryAppMenuItem GetAppMenuSettings<T, TKey>(this IRepositoryBuilder<T, TKey> builder)
+        private static RepositoryAppMenuItem GetAppMenuSettings<T, TKey>(this RepositorySettings<T, TKey> builder)
             where TKey : notnull
         {
             var name = typeof(T).Name.ToLower();
@@ -31,29 +31,29 @@ namespace Microsoft.Extensions.DependencyInjection
                     RepositoryAppMenuItem.CreateDefault(typeof(T), typeof(TKey)));
             return AppInternalSettings.Instance.RepositoryAppMenuItems[name];
         }
-        public static IRepositoryBuilder<T, TKey> ExposeFor<T, TKey>(
-            this IRepositoryBuilder<T, TKey> builder, int index)
+        public static RepositorySettings<T, TKey> ExposeFor<T, TKey>(
+            this RepositorySettings<T, TKey> builder, int index)
             where TKey : notnull
         {
             builder.GetAppMenuSettings().Index = index;
             return builder;
         }
-        public static IRepositoryBuilder<T, TKey> WithIcon<T, TKey>(
-            this IRepositoryBuilder<T, TKey> builder, string icon)
+        public static RepositorySettings<T, TKey> WithIcon<T, TKey>(
+            this RepositorySettings<T, TKey> builder, string icon)
             where TKey : notnull
         {
             builder.GetAppMenuSettings().Icon = icon;
             return builder;
         }
-        public static IRepositoryBuilder<T, TKey> WithName<T, TKey>(
-            this IRepositoryBuilder<T, TKey> builder, string name)
+        public static RepositorySettings<T, TKey> WithName<T, TKey>(
+            this RepositorySettings<T, TKey> builder, string name)
             where TKey : notnull
         {
             builder.GetAppMenuSettings().Name = name;
             return builder;
         }
-        public static IRepositoryBuilder<T, TKey> MapPropertiesForUi<T, TKey, TUiMapper>(
-            this IRepositoryBuilder<T, TKey> builder)
+        public static RepositorySettings<T, TKey> MapPropertiesForUi<T, TKey, TUiMapper>(
+            this RepositorySettings<T, TKey> builder)
             where TKey : notnull
             where TUiMapper : class, IRepositoryUiMapper<T, TKey>
         {
@@ -62,8 +62,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddSingleton<IRepositoryPropertyUiMapper<T, TKey>, PropertyUiMapper<T, TKey>>();
             return builder;
         }
-        public static IRepositoryBuilder<T, TKey> WithLocalization<T, TKey, TLocalization>(
-            this IRepositoryBuilder<T, TKey> builder)
+        public static RepositorySettings<T, TKey> WithLocalization<T, TKey, TLocalization>(
+            this RepositorySettings<T, TKey> builder)
             where TKey : notnull
             where TLocalization : IStringLocalizer
         {

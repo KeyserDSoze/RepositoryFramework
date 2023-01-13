@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class RepositorySettingsExtensions
     {
-        private static IRepositoryApiBuilder<T, TKey> AddApiClient<T, TKey>(this IRepositorySettings<T, TKey> settings,
+        private static IRepositoryApiBuilder<T, TKey> AddApiClient<T, TKey>(this RepositorySettings<T, TKey> settings,
             PatternType clientType,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TKey : notnull
@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryApiBuilder<T, TKey> WithApiClient<T, TKey>(this IRepositorySettings<T, TKey> settings,
+        public static IRepositoryApiBuilder<T, TKey> WithApiClient<T, TKey>(this RepositorySettings<T, TKey> settings,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TKey : notnull
             => settings.AddApiClient(PatternType.Repository, serviceLifetime);
@@ -44,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryApiBuilder<T, TKey> WithCommandApiClient<T, TKey>(this IRepositorySettings<T, TKey> settings,
+        public static IRepositoryApiBuilder<T, TKey> WithCommandApiClient<T, TKey>(this RepositorySettings<T, TKey> settings,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TKey : notnull
             => settings.AddApiClient(PatternType.Command, serviceLifetime);
@@ -58,7 +58,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="serviceLifetime">Service Lifetime</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositoryApiBuilder<T, TKey> WithQueryApiClient<T, TKey>(this IRepositorySettings<T, TKey> settings,
+        public static IRepositoryApiBuilder<T, TKey> WithQueryApiClient<T, TKey>(this RepositorySettings<T, TKey> settings,
            ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
            where TKey : notnull
             => settings.AddApiClient(PatternType.Query, serviceLifetime);
@@ -72,8 +72,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></param>
         /// <param name="serviceLifetime">Service Lifetime.</param>
         /// <returns>IRepositoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> AddApiClientSpecificInterceptor<T, TKey, TInterceptor>(
-            this IRepositorySettings<T, TKey> settings,
+        public static RepositorySettings<T, TKey> AddApiClientSpecificInterceptor<T, TKey, TInterceptor>(
+            this RepositorySettings<T, TKey> settings,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
             where TInterceptor : class, IRepositoryClientInterceptor<T>
             where TKey : notnull

@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class RepositorySettingsExtensions
     {
         private static IRepositoryBlobStorageBuilder<T, TKey> WithBlobStorage<T, TKey>(
-          this IRepositorySettings<T, TKey> settings,
+          this RepositorySettings<T, TKey> settings,
           PatternType type,
           Action<BlobStorageConnectionSettings> connectionSettings)
            where TKey : notnull
@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="connectionSettings">Settings for your storage connection.</param>
         /// <returns>IRepositoryBlobStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBlobStorageBuilder<T, TKey> WithBlobStorage<T, TKey>(
-          this IRepositorySettings<T, TKey> settings,
+          this RepositorySettings<T, TKey> settings,
           Action<BlobStorageConnectionSettings> connectionSettings)
             where TKey : notnull
             => settings.WithBlobStorage(PatternType.Repository, connectionSettings);
@@ -40,7 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="connectionSettings">Settings for your storage connection.</param>
         /// <returns>IRepositoryBlobStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBlobStorageBuilder<T, TKey> WithCommandInBlobStorage<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
            Action<BlobStorageConnectionSettings> connectionSettings)
                where TKey : notnull
                => settings.WithBlobStorage(PatternType.Command, connectionSettings);
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="connectionSettings">Settings for your storage connection.</param>
         /// <returns>IRepositoryBlobStorageBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryBlobStorageBuilder<T, TKey> WithQueryInBlobStorage<T, TKey>(
-           this IRepositorySettings<T, TKey> settings,
+           this RepositorySettings<T, TKey> settings,
            Action<BlobStorageConnectionSettings> connectionSettings)
             where TKey : notnull
                => settings.WithBlobStorage(PatternType.Query, connectionSettings);

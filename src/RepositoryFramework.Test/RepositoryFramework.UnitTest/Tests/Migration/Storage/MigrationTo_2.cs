@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RepositoryFramework.UnitTest.Migration.Storage
 {
-    internal class SuperMigrationTo : IRepositoryPattern<SuperMigrationUser, string>
+    internal class SuperMigrationTo : IRepository<SuperMigrationUser, string>
     {
         private readonly Dictionary<string, SuperMigrationUser> _users = new();
         public async Task<State<SuperMigrationUser, string>> DeleteAsync(string key, CancellationToken cancellationToken = default)

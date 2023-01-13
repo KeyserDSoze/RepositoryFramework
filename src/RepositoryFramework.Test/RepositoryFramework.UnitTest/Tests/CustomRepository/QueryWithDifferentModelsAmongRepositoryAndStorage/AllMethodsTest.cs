@@ -14,15 +14,17 @@ namespace RepositoryFramework.UnitTest.QueryWithDifferentModelsAmongRepositoryAn
         static QueryWithDifferentModelsAmongRepositoryAndStorage()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out _)
-                .AddRepository<Car, int, CarRepository>()
-                .Translate<Auto>()
-                    .With(x => x.Id, x => x.Identificativo)
-                    .With(x => x.Id2, x => x.Identificativo2)
-                    .With(x => x.NumberOfWheels, x => x.NumeroRuote)
-                    .With(x => x.Plate, x => x.Targa)
-                    .With(x => x.Driver, x => x.Guidatore)
-                    .With(x => x.Driver!.Name, x => x.Guidatore!.Nome)
-                .Services
+                .AddRepository<Car, int, CarRepository>(settings =>
+                {
+                    settings
+                        .Translate<Auto>()
+                            .With(x => x.Id, x => x.Identificativo)
+                            .With(x => x.Id2, x => x.Identificativo2)
+                            .With(x => x.NumberOfWheels, x => x.NumeroRuote)
+                            .With(x => x.Plate, x => x.Targa)
+                            .With(x => x.Driver, x => x.Guidatore)
+                            .With(x => x.Driver!.Name, x => x.Guidatore!.Nome);
+                })
                 .Finalize(out s_serviceProvider);
         }
         private readonly IRepository<Car, int> _repository;

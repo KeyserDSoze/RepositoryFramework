@@ -22,14 +22,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddRepository<IperUser, string>(x =>
 {
     x
-    .WithInMemory()
-    .Builder
-    .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
+        .WithInMemory();
     x
-    .WithInMemoryCache(x =>
-    {
-        x.ExpiringTime = TimeSpan.FromMilliseconds(100_000);
-    });
+        .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
+    x
+        .WithInMemoryCache(x =>
+        {
+            x.ExpiringTime = TimeSpan.FromMilliseconds(100_000);
+        });
 });
 
 builder.Services

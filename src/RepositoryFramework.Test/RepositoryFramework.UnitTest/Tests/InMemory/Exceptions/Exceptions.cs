@@ -15,32 +15,34 @@ namespace RepositoryFramework.UnitTest.InMemory.Exceptions
         static Exceptions()
         {
             DiUtility.CreateDependencyInjectionWithConfiguration(out var configuration)
-                .AddRepositoryInMemoryStorage<Car, string>(options =>
+                .AddRepository<Car, string>(settings =>
                 {
-                    var customExceptions = new List<ExceptionOdds>
+                    settings.WithInMemory(options =>
                     {
-                        new ExceptionOdds()
+                        var customExceptions = new List<ExceptionOdds>
                         {
-                            Exception = new Exception("Normal Exception"),
-                            Percentage = 10.352
-                        },
-                        new ExceptionOdds()
+                            new ExceptionOdds()
+                            {
+                                Exception = new Exception("Normal Exception"),
+                                Percentage = 10.352
+                            },
+                            new ExceptionOdds()
+                            {
+                                Exception = new Exception("Big Exception"),
+                                Percentage = 49.1
+                            },
+                            new ExceptionOdds()
+                            {
+                                Exception = new Exception("Great Exception"),
+                                Percentage = 40.548
+                            }
+                        };
+                        options.AddForRepositoryPattern(new MethodBehaviorSetting
                         {
-                            Exception = new Exception("Big Exception"),
-                            Percentage = 49.1
-                        },
-                        new ExceptionOdds()
-                        {
-                            Exception = new Exception("Great Exception"),
-                            Percentage = 40.548
-                        }
-                    };
-                    options.AddForRepositoryPattern(new MethodBehaviorSetting
-                    {
-                        ExceptionOdds = customExceptions
+                            ExceptionOdds = customExceptions
+                        });
                     });
                 })
-                .Services
                 .Finalize(out s_serviceProvider);
         }
         private readonly IRepository<Car, string> _car;

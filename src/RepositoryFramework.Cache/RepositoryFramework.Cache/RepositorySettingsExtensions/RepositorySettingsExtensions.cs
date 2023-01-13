@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class RepositorySettingsExtensions
     {
         private static void AddCacheManager<T, TKey>(
-            this IRepositorySettings<T, TKey> settings,
+            this RepositorySettings<T, TKey> settings,
             CacheOptions<T, TKey> options)
             where TKey : notnull
         {
@@ -32,8 +32,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">Settings for your cache.</param>
         /// <param name="lifetime">Service Lifetime.</param>
         /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithCache<T, TKey, TCache>(
-           this IRepositorySettings<T, TKey> settings,
+        public static RepositorySettings<T, TKey> WithCache<T, TKey, TCache>(
+           this RepositorySettings<T, TKey> settings,
            Action<CacheOptions<T, TKey>>? options = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
@@ -60,8 +60,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="settings">Settings for your cache.</param>
         /// <param name="lifetime">Service Lifetime.</param>
         /// <returns>IRepositorySettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
-        public static IRepositorySettings<T, TKey> WithDistributedCache<T, TKey, TCache>(
-           this IRepositorySettings<T, TKey> settings,
+        public static RepositorySettings<T, TKey> WithDistributedCache<T, TKey, TCache>(
+           this RepositorySettings<T, TKey> settings,
            Action<DistributedCacheOptions<T, TKey>>? options = null,
            ServiceLifetime lifetime = ServiceLifetime.Singleton)
             where TKey : notnull
