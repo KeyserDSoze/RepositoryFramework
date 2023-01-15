@@ -13,7 +13,7 @@ builder.Services
 builder.Services.AddRepository<AppUser, int>(settings =>
 {
     settings.WithInMemory()
-    .PopulateWithRandomData(x => x.Id, 2, 2);
+    .PopulateWithRandomData(2, 2);
 });
 var app = builder.Build();
 await app.Services.WarmUpAsync();

@@ -1,14 +1,13 @@
 ﻿using System.Linq.Expressions;
+using System.Population.Random;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.InMemory.Population;
 
 namespace RepositoryFramework.InMemory
 {
     internal sealed class RepositoryInMemoryBuilder<T, TKey> : IRepositoryInMemoryBuilder<T, TKey>
         where TKey : notnull
     {
-        private readonly CreationSettings _behaviorSettings = new();
         public IServiceCollection Services => Builder.Services;
         public IRepositoryBuilder<T, TKey, IRepository<T, TKey>> Builder { get; }
         public RepositoryInMemoryBuilder(IRepositoryBuilder<T, TKey, IRepository<T, TKey>> builder)
@@ -35,39 +34,24 @@ namespace RepositoryFramework.InMemory
                 AddElementBasedOnGenericElements((TKey)keyProperty.GetValue(element)!, element);
             return this;
         }
-        public IRepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(
-            Expression<Func<T, TKey>> navigationKey,
+        public IPopulationBuilder<Entity<T, TKey>> PopulateWithRandomData(
             int numberOfElements = 100,
             int numberOfElementsWhenEnumerableIsFound = 10)
         {
-            Services.AddSingleton<IPopulationService, PopulationService>();
-            Services.AddSingleton<IInstanceCreator, InstanceCreator>();
-            Services.AddSingleton<IRegexService, RegexService>();
-            PopulationServiceSelector.Instance.TryAdd(new AbstractPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new ArrayPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new BoolPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new BytePopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new CharPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new ObjectPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new DictionaryPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new EnumerablePopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new GuidPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new NumberPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new RangePopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new StringPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new TimePopulationService());
-            Services.AddSingleton(PopulationServiceSelector.Instance);
-            Services.AddSingleton<IPopulationStrategy<T, TKey>, RandomPopulationStrategy<T, TKey>>();
-            _ = Services.AddSingleton(
-                new PopulationServiceSettings<T, TKey>
+            Services.AddPopulationService();
+            Services.AddEventAfterServiceCollectionBuild(serviceProvider =>
+            {
+                var populationStrategy = serviceProvider.GetService<IPopulation<Entity<T, TKey>>>();
+                if (populationStrategy != null)
                 {
-                    NumberOfElements = numberOfElements,
-                    BehaviorSettings = _behaviorSettings,
-                    NumberOfElementsWhenEnumerableIsFound = numberOfElementsWhenEnumerableIsFound,
-                    AddElementToMemory = AddElementBasedOnGenericElements,
-                    KeyCalculator = navigationKey.Compile()
-                });
-            return new RepositoryInMemoryCreatorBuilder<T, TKey>(this, _behaviorSettings);
+                    var elements = populationStrategy
+                        .Populate(numberOfElements, numberOfElementsWhenEnumerableIsFound);
+                    foreach (var element in elements)
+                        AddElementBasedOnGenericElements(element.Key!, element.Value!);
+                }
+                return Task.CompletedTask;
+            });
+            return Services.AddPopulationSettings<Entity<T, TKey>>();
         }
     }
 }

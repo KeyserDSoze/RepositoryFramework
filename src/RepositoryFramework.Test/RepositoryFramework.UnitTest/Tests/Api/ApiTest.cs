@@ -70,8 +70,8 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                 {
                                     settings
                                         .WithInMemory()
-                                        .PopulateWithRandomData(x => x.Email!, 120, 5)
-                                        .WithPattern(x => x.Email, @"[a-z]{5,10}@gmail\.com");
+                                        .PopulateWithRandomData(120, 5)
+                                        .WithPattern(x => x.Value.Email, @"[a-z]{5,10}@gmail\.com");
                                     settings
                                         .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>()
                                         .Translate<IperUser>();

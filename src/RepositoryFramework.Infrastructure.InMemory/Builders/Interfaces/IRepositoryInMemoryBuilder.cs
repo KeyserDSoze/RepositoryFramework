@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Population.Random;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryFramework.InMemory
@@ -14,8 +15,7 @@ namespace RepositoryFramework.InMemory
         IRepositoryInMemoryBuilder<T, TKey> PopulateWithDataInjection(
             Expression<Func<T, TKey>> navigationKey,
             IEnumerable<T> elements);
-        IRepositoryInMemoryCreatorBuilder<T, TKey> PopulateWithRandomData(
-            Expression<Func<T, TKey>> navigationKey,
+        IPopulationBuilder<Entity<T, TKey>> PopulateWithRandomData(
             int numberOfElements = 100,
             int numberOfElementsWhenEnumerableIsFound = 10);
     }

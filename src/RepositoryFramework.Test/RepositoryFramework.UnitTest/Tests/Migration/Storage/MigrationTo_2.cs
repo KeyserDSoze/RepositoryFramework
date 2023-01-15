@@ -1,17 +1,16 @@
-﻿using RepositoryFramework.UnitTest.Migration.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using RepositoryFramework.UnitTest.Migration.Models;
 
 namespace RepositoryFramework.UnitTest.Migration.Storage
 {
     internal class SuperMigrationTo : IRepository<SuperMigrationUser, string>
     {
-        private readonly Dictionary<string, SuperMigrationUser> _users = new();
+        private static readonly Dictionary<string, SuperMigrationUser> _users = new();
         public async Task<State<SuperMigrationUser, string>> DeleteAsync(string key, CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;

@@ -15,26 +15,26 @@ builder.Services
     .AddRepository<AppConfiguration, string>(settings =>
     {
         settings.WithInMemory()
-        .PopulateWithRandomData(x => x.AppDomain, 34, 2);
+        .PopulateWithRandomData(34, 2);
     });
 
 builder.Services.AddRepository<AppGroup, string>(settings =>
 {
     settings.WithInMemory()
-    .PopulateWithRandomData(x => x.Id, 24, 2);
+    .PopulateWithRandomData(24, 2);
 });
 
 builder.Services.AddRepository<Weather, int>(settings =>
 {
-    settings.WithInMemory().PopulateWithRandomData(x => x.Id, 5, 2);
+    settings.WithInMemory().PopulateWithRandomData(5, 2);
 });
 
 builder.Services
     .AddRepository<AppUser, int>(settings =>
     {
         settings.WithInMemory()
-            .PopulateWithRandomData(x => x.Id, 67, 2)
-            .WithRandomValue(x => x.Groups, async serviceProvider =>
+            .PopulateWithRandomData(67, 2)
+            .WithRandomValue(x => x.Value.Groups, async serviceProvider =>
             {
                 var repository = serviceProvider.GetService<IRepository<AppGroup, string>>()!;
                 return (await repository.ToListAsync().NoContext()).Select(x => new Group()

@@ -1,10 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.InMemory;
-using RepositoryFramework.UnitTest.InMemory.Population.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.InMemory;
+using RepositoryFramework.UnitTest.InMemory.Population.Models;
 using Xunit;
 
 namespace RepositoryFramework.UnitTest.InMemory.Population
@@ -32,8 +31,8 @@ namespace RepositoryFramework.UnitTest.InMemory.Population
                              MillisecondsOfWait = readingRange
                          });
                      })
-                    .PopulateWithRandomData(x => x.Id!, 100)
-                    .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com");
+                    .PopulateWithRandomData(100)
+                    .WithPattern(x => x.Value.Email, @"[a-z]{4,10}@gmail\.com");
                  })
                 .AddRepository<SuperUser, string>(settings =>
                 {
@@ -52,8 +51,8 @@ namespace RepositoryFramework.UnitTest.InMemory.Population
                             MillisecondsOfWait = readingRange
                         });
                     })
-                    .PopulateWithRandomData(x => x.Id!, 100)
-                    .WithPattern(x => x.Email, @"[a-z]{4,10}@gmail\.com");
+                    .PopulateWithRandomData(100)
+                    .WithPattern(x => x.Value.Email, @"[a-z]{4,10}@gmail\.com");
                 })
                 .Finalize(out s_serviceProvider)
                 .WarmUpAsync()

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RepositoryFramework.InMemory;
 using RepositoryFramework.Migration;
 using RepositoryFramework.UnitTest.Migration.Models;
 using RepositoryFramework.UnitTest.Migration.Storage;

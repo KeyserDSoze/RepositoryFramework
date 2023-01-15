@@ -25,7 +25,7 @@ namespace RepositoryFramework.UnitTest
                 {
                     settings
                         .WithInMemory()
-                        .PopulateWithRandomData(x => new CountryKey(x.Id, x.Abbreviation!), NumberOfEntries, NumberOfEntries);
+                        .PopulateWithRandomData(NumberOfEntries, NumberOfEntries);
                     settings
                         .WithInMemoryCache(settings =>
                         {

@@ -1,10 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework.InMemory.Population;
 
 namespace RepositoryFramework.InMemory
 {
     public static class RepositorySettingExtensions
     {
+        /// <summary>
+        /// Add an in memory storage to your repository.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="settings"></param>
+        /// <param name="behaviorSettings"></param>
+        /// <returns>IRepositoryInMemoryBuilder<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
         public static IRepositoryInMemoryBuilder<T, TKey> WithInMemory<T, TKey>(this RepositorySettings<T, TKey> settings,
             Action<RepositoryBehaviorSettings<T, TKey>>? behaviorSettings = default)
             where TKey : notnull
@@ -16,13 +23,6 @@ namespace RepositoryFramework.InMemory
             settings.SetRepositoryStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             settings.SetQueryStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             var builder = settings.SetCommandStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
-            settings.Services.AddEventAfterServiceCollectionBuild(serviceProvider =>
-            {
-                var populationStrategy = serviceProvider.GetService<IPopulationStrategy<T, TKey>>();
-                if (populationStrategy != null)
-                    populationStrategy.Populate();
-                return Task.CompletedTask;
-            });
             return new RepositoryInMemoryBuilder<T, TKey>(builder);
         }
         private static void CheckSettings<T, TKey>(RepositoryBehaviorSettings<T, TKey> settings)
