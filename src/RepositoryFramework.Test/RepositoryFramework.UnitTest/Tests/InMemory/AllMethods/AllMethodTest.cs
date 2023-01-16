@@ -109,7 +109,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
             var all = await _strangeKeyRepository.QueryAsync().ToListAsync();
             Assert.Equal(100, all.Count);
             foreach (var item in all)
-                await _strangeKeyRepository.DeleteAsync(new(item.Value!.Id));
+                await _strangeKeyRepository.DeleteAsync(item.Key);
 
             var key = new AnimalKey(1);
             var result = await _strangeKeyRepository.InsertAsync(key, new Animal { Id = 1, Name = "Eagle" });
