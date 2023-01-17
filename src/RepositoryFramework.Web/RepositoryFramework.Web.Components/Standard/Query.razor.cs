@@ -84,7 +84,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 _items = page.Items;
                 _selectedKeys = _items.Select(x => x.Key).ToDictionary(x => x, x => false);
                 _allSelected = false;
-                StateHasChanged();
+                _ = InvokeAsync(() => StateHasChanged());
                 LoadService.Hide();
             }
         }
@@ -154,7 +154,7 @@ namespace RepositoryFramework.Web.Components.Standard
                 item.Value.IsActive = false;
             foreach (var key in keys)
                 _columns[key.Id].IsActive = true;
-            StateHasChanged();
+            _ = InvokeAsync(() => StateHasChanged());
             return ValueTask.CompletedTask;
         }
         private IEnumerable<LabelValueDropdownItem> GetPages()
@@ -233,7 +233,7 @@ namespace RepositoryFramework.Web.Components.Standard
             foreach (var key in keys)
                 AddOrRemoveItemFromList(isSelected, key);
             _allSelected = true;
-            StateHasChanged();
+            _ = InvokeAsync(() => StateHasChanged());
         }
         [Inject]
         public IJSRuntime JSRuntime { get; set; }

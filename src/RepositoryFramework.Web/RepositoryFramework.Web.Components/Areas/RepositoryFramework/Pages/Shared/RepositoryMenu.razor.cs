@@ -78,7 +78,7 @@ namespace RepositoryFramework.Web.Components
                 }
             }
             _contextAppMenu = contextAppMenu;
-            StateHasChanged();
+            InvokeAsync(() => StateHasChanged());
         }
         private void NavigateTo(string uri)
         {

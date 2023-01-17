@@ -259,6 +259,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                     .AddRepository<CalamityUniverseUser, string>(settings =>
                     {
                         settings.WithApiClient(serviceLifetime: ServiceLifetime.Scoped)
+                        .WithName("calamityuser")
                         .WithVersion(Version)
                         .WithStartingPath(Path);
                     })

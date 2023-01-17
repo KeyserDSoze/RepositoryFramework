@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RepositoryFramework;
+﻿using RepositoryFramework;
 using RepositoryFramework.InMemory;
 using RepositoryFramework.Web.Test.BlazorApp.Models;
 using Whistleblowing.Licensing.Models;
@@ -78,6 +77,7 @@ await app.Services.WarmUpAsync();
 
 app.UseHttpsRedirection();
 app
-    .UseApiFromRepositoryFramework();
+    .UseApiFromRepositoryFramework()
+    .Build();
 
 app.Run();
