@@ -59,7 +59,7 @@ namespace RepositoryFramework.Web.Components.Standard
         }
         private string GetEditUri(TKey key)
             => s_editUri != null ? string.Format(s_editUri, key.ToBase64()) : string.Empty;
-        private string _lastQueryKey;
+        private string? _lastQueryKey;
         private IEnumerable<Entity<T, TKey>>? _items;
         private async ValueTask OnReadDataAsync()
         {

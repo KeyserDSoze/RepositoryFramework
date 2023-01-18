@@ -38,15 +38,15 @@ builder.Services
     {
         settins.WithInMemory()
             .PopulateWithRandomData( 120, 5)
-            .WithPattern(x => x.Value.Email, @"[a-z]{5,10}@gmail\.com");
+            .WithPattern(x => x.Value!.Email, @"[a-z]{5,10}@gmail\.com");
     });
 
 builder.Services.AddRepository<SuperiorUser, string>(settings =>
 {
     settings.WithInMemory()
         .PopulateWithRandomData(120, 5)
-        .WithPattern(x => x.Value.Email, @"[a-z]{5,10}@gmail\.com")
-        .WithPattern(x => x.Value.Port, @"[1-9]{3,4}");
+        .WithPattern(x => x.Value!.Email, @"[a-z]{5,10}@gmail\.com")
+        .WithPattern(x => x.Value!.Port, @"[1-9]{3,4}");
     settings.SetNotExposable();
 });
 
@@ -125,7 +125,6 @@ app
 
 //app.UseAuthentication();
 //app.UseAuthorization();
-#pragma warning disable S125 // Sections of code should not be commented out
 //.SetPolicy(RepositoryMethod.Query)
 //.Empty()
 //.SetPolicy(RepositoryMethod.Delete)
@@ -133,7 +132,5 @@ app
 //.With("Other")
 //.And()
 //.Finalize();
-#pragma warning restore S125 // Sections of code should not be commented out
-
 
 app.Run();
