@@ -12,7 +12,7 @@ namespace RepositoryFramework
         public void SetNotExposable()
         {
             var service = SetService();
-            service.IsNotExposable = false;
+            service.IsNotExposable = true;
         }
         public RepositorySettings(IServiceCollection services, PatternType type)
         {
@@ -39,7 +39,8 @@ namespace RepositoryFramework
             var service = SetService();
             ServiceLifetime = serviceLifetime;
             service.ServiceLifetime = ServiceLifetime;
-            service.AddOrUpdate(currentType, typeof(TStorage));
+            service.InterfaceType = currentType;
+            service.ImplementationType = typeof(TStorage);
             Services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IRepositoryPattern<T, TKey>))
                 .AddService(typeof(IRepositoryPattern<T, TKey>), storageType, serviceLifetime)
@@ -58,7 +59,8 @@ namespace RepositoryFramework
             var service = SetService();
             ServiceLifetime = serviceLifetime;
             service.ServiceLifetime = ServiceLifetime;
-            service.AddOrUpdate(currentType, typeof(TStorage));
+            service.InterfaceType = currentType;
+            service.ImplementationType = typeof(TStorage);
             Services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(ICommandPattern<T, TKey>))
                 .AddService(typeof(ICommandPattern<T, TKey>), storageType, serviceLifetime)
@@ -77,7 +79,8 @@ namespace RepositoryFramework
             var service = SetService();
             ServiceLifetime = serviceLifetime;
             service.ServiceLifetime = ServiceLifetime;
-            service.AddOrUpdate(currentType, typeof(TStorage));
+            service.InterfaceType = currentType;
+            service.ImplementationType = typeof(TStorage);
             Services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IQueryPattern<T, TKey>))
                 .AddService(typeof(IQueryPattern<T, TKey>), storageType, serviceLifetime)
@@ -87,15 +90,15 @@ namespace RepositoryFramework
         private RepositoryFrameworkService SetService()
         {
             var entityType = typeof(T);
-            var service = RepositoryFrameworkRegistry.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
-            if (service == null)
+            var serviceKey = RepositoryFrameworkRegistry.ToServiceKey(entityType, Type);
+            if (!RepositoryFrameworkRegistry.Instance.Services.ContainsKey(serviceKey))
             {
                 var keyType = typeof(TKey);
-                service = new RepositoryFrameworkService(keyType, entityType);
-                RepositoryFrameworkRegistry.Instance.Services.Add(service);
+                RepositoryFrameworkRegistry.Instance.Services.Add(serviceKey,
+                    new(keyType, entityType, Type));
                 Services.TryAddSingleton(RepositoryFrameworkRegistry.Instance);
             }
-            return service;
+            return RepositoryFrameworkRegistry.Instance.Services[serviceKey];
         }
         /// <summary>
         /// Add business to your repository or CQRS pattern.

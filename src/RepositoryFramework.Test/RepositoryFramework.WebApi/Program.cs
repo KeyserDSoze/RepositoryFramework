@@ -19,7 +19,7 @@ var configurationSection = builder.Configuration.GetSection("AzureAd");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(configurationSection);
 
-builder.Services.AddRepository<IperUser, string>(x =>
+builder.Services.AddQuery<IperUser, string>(x =>
 {
     x
         .WithInMemory();
@@ -118,7 +118,8 @@ var app = builder.Build();
 await app.Services.WarmUpAsync();
 
 app.UseHttpsRedirection();
-app.UseApiFromRepositoryFramework()
+app
+    .UseApiFromRepositoryFramework()
     .WithNoAuthorization();
 //.WithDefaultAuthorization();
 

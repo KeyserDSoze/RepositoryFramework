@@ -33,22 +33,45 @@ namespace Microsoft.Extensions.DependencyInjection
         => new ApiAuthorizationBuilder(authorization =>
             {
                 var services = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
-                foreach (var service in services!.Services)
-                    _ = app.UseApiFromRepository(service.ModelType, ApiSettings.Instance, authorization);
+                foreach (var service in services!.Services.GroupBy(x => x.Value.ModelType))
+                    _ = app.UseApiFromRepository(service.Key, ApiSettings.Instance, authorization);
                 return app;
             });
 
         private const string NotImplementedExceptionIlOperation = "newobj instance void System.NotImplementedException";
-        private static readonly List<string> s_possibleMethods = new()
+        private static readonly Dictionary<PatternType, List<string>> s_possibleMethods = new()
         {
-            nameof(AddGet),
-            nameof(AddQuery),
-            nameof(AddExist),
-            nameof(AddOperation),
-            nameof(AddInsert),
-            nameof(AddUpdate),
-            nameof(AddDelete),
-            nameof(AddBatch),
+            {
+                PatternType.Repository,
+                new() {
+                    nameof(AddGet),
+                    nameof(AddQuery),
+                    nameof(AddExist),
+                    nameof(AddOperation),
+                    nameof(AddInsert),
+                    nameof(AddUpdate),
+                    nameof(AddDelete),
+                    nameof(AddBatch)
+                }
+            },
+            {
+                PatternType.Query,
+                new() {
+                    nameof(AddGet),
+                    nameof(AddQuery),
+                    nameof(AddExist),
+                    nameof(AddOperation),
+                }
+            },
+            {
+                PatternType.Command,
+                new() {
+                    nameof(AddInsert),
+                    nameof(AddUpdate),
+                    nameof(AddDelete),
+                    nameof(AddBatch)
+                }
+            }
         };
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "I need reflection in this point to allow the creation of T methods at runtime.")]
@@ -63,8 +86,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 return app;
             s_setupRepositories.Add(modelType.FullName!, true);
             var registry = app.ServiceProvider.GetService<RepositoryFrameworkRegistry>();
-            var serviceValue = registry!.Services.FirstOrDefault(x => x.ModelType == modelType);
-            if (serviceValue == null)
+            var services = registry!.GetByModel(modelType);
+            if (!services.Any())
                 throw new ArgumentException($"Please check if your {modelType.Name} model has a service injected for IRepository, IQuery, ICommand.");
             var currentName = modelType.Name;
             if (settings.Names.ContainsKey(modelType.FullName!))
@@ -83,12 +106,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
             }
             Dictionary<string, bool> configuredMethods = new();
-            if (!serviceValue.IsNotExposable)
+            foreach (var service in services)
             {
-                foreach (var (interfaceType, currentType) in serviceValue.RepositoryTypes.Select(x => x.Value))
-                    foreach (var method in currentType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+                if (!service.IsNotExposable)
+                {
+                    foreach (var method in service.ImplementationType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
                     {
-                        var currentMethodName = s_possibleMethods.FirstOrDefault(x => x == $"Add{method.Name.Replace("Async", string.Empty)}");
+                        var currentMethodName = s_possibleMethods[service.Type].FirstOrDefault(x => x == $"Add{method.Name.Replace("Async", string.Empty)}");
                         if (!string.IsNullOrWhiteSpace(currentMethodName) && !configuredMethods.ContainsKey(currentMethodName))
                         {
                             var isNotImplemented = false;
@@ -101,11 +125,12 @@ namespace Microsoft.Extensions.DependencyInjection
                                 continue;
 
                             _ = typeof(EndpointRouteBuilderExtensions).GetMethod(currentMethodName, BindingFlags.NonPublic | BindingFlags.Static)!
-                               .MakeGenericMethod(modelType, serviceValue.KeyType, interfaceType)
+                               .MakeGenericMethod(modelType, service.KeyType, service.InterfaceType)
                                .Invoke(null, new object[] { app, currentName, settings.StartingPath, authorization! });
                             configuredMethods.Add(currentMethodName, true);
                         }
                     }
+                }
             }
             return app;
         }

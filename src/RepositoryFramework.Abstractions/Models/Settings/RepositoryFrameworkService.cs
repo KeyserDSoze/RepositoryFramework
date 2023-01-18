@@ -7,23 +7,18 @@ namespace RepositoryFramework
     /// </summary>
     public class RepositoryFrameworkService
     {
-        public Dictionary<string, (Type InterfaceType, Type CurrentType)> RepositoryTypes { get; }
         public Type KeyType { get; }
         public Type ModelType { get; }
+        public Type InterfaceType { get; internal set; } = null!;
+        public Type ImplementationType { get; internal set; } = null!;
         public bool IsNotExposable { get; internal set; }
         public ServiceLifetime ServiceLifetime { get; internal set; }
-        public RepositoryFrameworkService(Type keyType, Type modelType)
+        public PatternType Type { get; }
+        public RepositoryFrameworkService(Type keyType, Type modelType, PatternType type)
         {
             KeyType = keyType;
             ModelType = modelType;
-            RepositoryTypes = new();
-        }
-        public void AddOrUpdate(Type interfaceType, Type currentType)
-        {
-            if (RepositoryTypes.ContainsKey(interfaceType.Name))
-                RepositoryTypes[interfaceType.Name] = (interfaceType, currentType);
-            else
-                RepositoryTypes.Add(interfaceType.Name, (interfaceType, currentType));
+            Type = type;
         }
     }
 }

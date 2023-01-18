@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var defaultSettings = new RepositorySettings<T, TKey>(services, PatternType.Command);
-            settings.Invoke(defaultSettings);
+            settings?.Invoke(defaultSettings);
             return services;
         }
         /// <summary>
@@ -91,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TKey : notnull
         {
             var defaultSettings = new RepositorySettings<T, TKey>(services, PatternType.Query);
-            settings.Invoke(defaultSettings);
+            settings?.Invoke(defaultSettings);
             return services;
         }
         /// <summary>

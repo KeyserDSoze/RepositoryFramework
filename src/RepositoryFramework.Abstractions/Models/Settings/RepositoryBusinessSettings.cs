@@ -15,8 +15,8 @@ namespace RepositoryFramework
             else
             {
                 var entityType = typeof(T);
-                var service = RepositoryFrameworkRegistry.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
-                ServiceLifetime = service != null ? service.ServiceLifetime : ServiceLifetime.Transient;
+                var servicesByModel = RepositoryFrameworkRegistry.Instance.GetByModel(entityType);
+                ServiceLifetime = servicesByModel.FirstOrDefault()?.ServiceLifetime ?? ServiceLifetime.Transient;
             }
         }
         public RepositoryBusinessSettings<T, TKey> AddBusinessBeforeInsert<TBusiness>()

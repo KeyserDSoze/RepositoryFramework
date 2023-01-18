@@ -15,11 +15,11 @@
                 if (!Navigations.ContainsKey(item.Name.ToLower()))
                     Navigations.Add(item.Name.ToLower(), item);
             }
-            foreach (var service in repositoryFrameworkRegistry.Services)
+            foreach (var service in repositoryFrameworkRegistry.Services.Select(x => x.Value).GroupBy(x => x.ModelType))
             {
-                if (!AppInternalSettings.Instance.NotExposableRepositories.Any(x => x.ToLower() == service.ModelType.Name.ToLower())
-                    && !Navigations.ContainsKey(service.ModelType.Name.ToLower()))
-                    Navigations.Add(service.ModelType.Name.ToLower(), RepositoryAppMenuItem.CreateDefault(service.ModelType, service.KeyType));
+                if (!AppInternalSettings.Instance.NotExposableRepositories.Any(x => x.ToLower() == service.Key.Name.ToLower())
+                    && !Navigations.ContainsKey(service.Key.Name.ToLower()))
+                    Navigations.Add(service.Key.Name.ToLower(), RepositoryAppMenuItem.CreateDefault(service.First().ModelType, service.First().KeyType));
             }
             Navigations = Navigations.OrderBy(x => x.Value.Index).ToDictionary(x => x.Key, x => x.Value);
         }

@@ -151,9 +151,10 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                         {
                                             x.Prefix = "repo_";
                                             x.SolutionName = "TestAlessandro";
-                                            x.SetConnection(configuration["ConnectionString:Dataverse:Environment"],
-                                                new(configuration["ConnectionString:Dataverse:ClientId"],
-                                             configuration["ConnectionString:Dataverse:ClientSecret"]));
+                                            if (configuration != null)
+                                                x.SetConnection(configuration["ConnectionString:Dataverse:Environment"],
+                                                    new(configuration["ConnectionString:Dataverse:ClientId"],
+                                                 configuration["ConnectionString:Dataverse:ClientSecret"]));
                                         });
                                         settings
                                             .AddBusiness()

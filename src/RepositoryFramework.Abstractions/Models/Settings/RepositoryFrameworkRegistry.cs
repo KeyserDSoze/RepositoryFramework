@@ -6,7 +6,11 @@
     public class RepositoryFrameworkRegistry
     {
         public static RepositoryFrameworkRegistry Instance { get; } = new();
-        public List<RepositoryFrameworkService> Services { get; } = new();
+        public Dictionary<string, RepositoryFrameworkService> Services { get; } = new();
         private RepositoryFrameworkRegistry() { }
+        public static string ToServiceKey(Type modelType, PatternType type)
+            => $"{modelType.FullName}_{type}";
+        public IEnumerable<RepositoryFrameworkService> GetByModel(Type modelType)
+            => Services.Select(x => x.Value).Where(x => x.ModelType == modelType);
     }
 }
