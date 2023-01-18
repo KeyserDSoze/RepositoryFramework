@@ -24,6 +24,7 @@ builder.Services.AddRepository<IperUser, string>(x =>
     x
         .WithInMemory();
     x
+        .AddBusiness()
         .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
     x
         .WithInMemoryCache(x =>

@@ -18,14 +18,15 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddRepository<AppUser, AppUserKey>(x =>
                    {
-                       x.SetRepositoryStorage<AppUserStorage>();
+                       x.SetStorage<AppUserStorage>();
                        x.Translate<User>()
                            .With(x => x.Id, x => x.Identificativo)
                            .With(x => x.Username, x => x.Nome)
                            .With(x => x.Email, x => x.IndirizzoElettronico);
                         x
-                            .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness>()
-                            .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness2>();
+                            .AddBusiness()
+                                .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness>()
+                                .AddBusinessBeforeInsert<AppUserBeforeInsertBusiness2>();
                    });
 
             services
@@ -45,8 +46,9 @@ namespace Microsoft.Extensions.DependencyInjection
                         .With(x => x.Id, x => x.Identificativo)
                         .WithKey(x => x, x => x.Identificativo);
                     x
-                        .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
-                        .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();
+                        .AddBusiness()
+                            .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness>()
+                            .AddBusinessBeforeInsert<MappingUserBeforeInsertBusiness2>();
                 });
 
             services
@@ -58,10 +60,10 @@ namespace Microsoft.Extensions.DependencyInjection
                         x.References = x => x.Include(x => x.IdGruppos);
                     })
                         .WithKey(x => x, x => x.Identificativo);
-                    x
-                        .AddBusinessBeforeInsert<UserBeforeInsertBusiness>()
-                        .AddBusinessBeforeInsert<UserBeforeInsertBusiness2>();
                 });
+            services.AddBusinessForRepository<User, int>()
+                .AddBusinessBeforeInsert<UserBeforeInsertBusiness>()
+                .AddBusinessBeforeInsert<UserBeforeInsertBusiness2>();
             return services;
         }
     }

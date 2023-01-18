@@ -7,138 +7,105 @@ namespace RepositoryFramework
         where TKey : notnull
     {
         public IServiceCollection Services { get; }
-        public PatternType Type { get; private set; }
+        public PatternType Type { get; }
         public ServiceLifetime ServiceLifetime { get; private set; }
         public void SetNotExposable()
         {
             var service = SetService();
             service.IsNotExposable = false;
         }
-        public RepositorySettings(IServiceCollection services)
+        public RepositorySettings(IServiceCollection services, PatternType type)
         {
             Services = services;
+            Type = type;
         }
-        public IRepositoryBuilder<T, TKey, TStorage> SetStorage<TStorage>(PatternType type, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TStorage : class, IRepository<T, TKey>
-            => type switch
+        public IRepositoryBuilder<T, TKey, TStorage> SetStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+            where TStorage : class
+            => Type switch
             {
                 PatternType.Command => SetCommandStorage<TStorage>(serviceLifetime),
                 PatternType.Query => SetQueryStorage<TStorage>(serviceLifetime),
                 _ => SetRepositoryStorage<TStorage>(serviceLifetime)
             };
-        public IRepositoryBuilder<T, TKey, TStorage> SetRepositoryStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TStorage : class, IRepository<T, TKey>
+        private IRepositoryBuilder<T, TKey, TStorage> SetRepositoryStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+            where TStorage : class
         {
-            var service = SetService();
-            Type |= PatternType.Repository;
-            ServiceLifetime = serviceLifetime;
+            var storageType = typeof(TStorage);
             var currentType = typeof(IRepository<T, TKey>);
+            if (!storageType.GetInterfaces().Any(x => x == currentType))
+            {
+                throw new ArgumentException($"{storageType.FullName} is not a {currentType.FullName}");
+            }
+            var service = SetService();
+            ServiceLifetime = serviceLifetime;
+            service.ServiceLifetime = ServiceLifetime;
             service.AddOrUpdate(currentType, typeof(TStorage));
             Services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IRepositoryPattern<T, TKey>))
-                .AddService<IRepositoryPattern<T, TKey>, TStorage>(serviceLifetime)
+                .AddService(typeof(IRepositoryPattern<T, TKey>), storageType, serviceLifetime)
                 .AddService<IRepository<T, TKey>, Repository<T, TKey>>(serviceLifetime);
             return new RepositoryBuilder<T, TKey, TStorage>(Services, PatternType.Repository, serviceLifetime);
         }
-        public IRepositoryBuilder<T, TKey, TStorage> SetCommandStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TStorage : class, ICommand<T, TKey>
+        private IRepositoryBuilder<T, TKey, TStorage> SetCommandStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+            where TStorage : class
         {
-            var service = SetService();
-            Type |= PatternType.Command;
-            ServiceLifetime = serviceLifetime;
+            var storageType = typeof(TStorage);
             var currentType = typeof(ICommand<T, TKey>);
+            if (!storageType.GetInterfaces().Any(x => x == currentType))
+            {
+                throw new ArgumentException($"{storageType.FullName} is not a {currentType.FullName}");
+            }
+            var service = SetService();
+            ServiceLifetime = serviceLifetime;
+            service.ServiceLifetime = ServiceLifetime;
             service.AddOrUpdate(currentType, typeof(TStorage));
             Services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(ICommandPattern<T, TKey>))
-                .AddService<ICommandPattern<T, TKey>, TStorage>(serviceLifetime)
+                .AddService(typeof(ICommandPattern<T, TKey>), storageType, serviceLifetime)
                 .AddService<ICommand<T, TKey>, Command<T, TKey>>(serviceLifetime);
             return new RepositoryBuilder<T, TKey, TStorage>(Services, PatternType.Command, serviceLifetime);
         }
-        public IRepositoryBuilder<T, TKey, TStorage> SetQueryStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-            where TStorage : class, IQuery<T, TKey>
+        private IRepositoryBuilder<T, TKey, TStorage> SetQueryStorage<TStorage>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+            where TStorage : class
         {
-            var service = SetService();
+            var storageType = typeof(TStorage);
             var currentType = typeof(IQuery<T, TKey>);
-            Type |= PatternType.Query;
+            if (!storageType.GetInterfaces().Any(x => x == currentType))
+            {
+                throw new ArgumentException($"{storageType.FullName} is not a {currentType.FullName}");
+            }
+            var service = SetService();
             ServiceLifetime = serviceLifetime;
+            service.ServiceLifetime = ServiceLifetime;
             service.AddOrUpdate(currentType, typeof(TStorage));
             Services
                 .RemoveServiceIfAlreadyInstalled<TStorage>(currentType, typeof(IQueryPattern<T, TKey>))
-                .AddService<IQueryPattern<T, TKey>, TStorage>(serviceLifetime)
+                .AddService(typeof(IQueryPattern<T, TKey>), storageType, serviceLifetime)
                 .AddService<IQuery<T, TKey>, Query<T, TKey>>(serviceLifetime);
             return new RepositoryBuilder<T, TKey, TStorage>(Services, PatternType.Query, serviceLifetime);
         }
         private RepositoryFrameworkService SetService()
         {
             var entityType = typeof(T);
-            var keyType = typeof(TKey);
             var service = RepositoryFrameworkRegistry.Instance.Services.FirstOrDefault(x => x.ModelType == entityType);
             if (service == null)
             {
+                var keyType = typeof(TKey);
                 service = new RepositoryFrameworkService(keyType, entityType);
                 RepositoryFrameworkRegistry.Instance.Services.Add(service);
                 Services.TryAddSingleton(RepositoryFrameworkRegistry.Instance);
             }
             return service;
         }
-        public RepositorySettings<T, TKey> AddBusinessBeforeInsert<TBusiness>()
-           where TBusiness : class, IRepositoryBusinessBeforeInsert<T, TKey>
-           => AddBusiness<TBusiness>(RepositoryMethods.Insert, false);
-        public RepositorySettings<T, TKey> AddBusinessAfterInsert<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessAfterInsert<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Insert, true);
-        public RepositorySettings<T, TKey> AddBusinessBeforeUpdate<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessBeforeUpdate<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Update, false);
-        public RepositorySettings<T, TKey> AddBusinessAfterUpdate<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessAfterUpdate<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Update, true);
-        public RepositorySettings<T, TKey> AddBusinessBeforeDelete<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessBeforeDelete<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Delete, false);
-        public RepositorySettings<T, TKey> AddBusinessAfterDelete<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessAfterDelete<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Delete, true);
-        public RepositorySettings<T, TKey> AddBusinessBeforeBatch<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessBeforeBatch<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Batch, false);
-        public RepositorySettings<T, TKey> AddBusinessAfterBatch<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessAfterBatch<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Batch, true);
-        public RepositorySettings<T, TKey> AddBusinessBeforeGet<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessBeforeGet<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Get, false);
-        public RepositorySettings<T, TKey> AddBusinessAfterGet<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessAfterGet<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Get, true);
-        public RepositorySettings<T, TKey> AddBusinessBeforeExist<TBusiness>()
-           where TBusiness : class, IRepositoryBusinessBeforeExist<T, TKey>
-           => AddBusiness<TBusiness>(RepositoryMethods.Exist, false);
-        public RepositorySettings<T, TKey> AddBusinessAfterExist<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessAfterExist<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Exist, true);
-        public RepositorySettings<T, TKey> AddBusinessBeforeQuery<TBusiness>()
-           where TBusiness : class, IRepositoryBusinessBeforeQuery<T, TKey>
-           => AddBusiness<TBusiness>(RepositoryMethods.Query, false);
-        public RepositorySettings<T, TKey> AddBusinessAfterQuery<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessAfterQuery<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Query, true);
-        public RepositorySettings<T, TKey> AddBusinessBeforeOperation<TBusiness>()
-           where TBusiness : class, IRepositoryBusinessBeforeOperation<T, TKey>
-           => AddBusiness<TBusiness>(RepositoryMethods.Operation, false);
-        public RepositorySettings<T, TKey> AddBusinessAfterOperation<TBusiness>()
-            where TBusiness : class, IRepositoryBusinessAfterOperation<T, TKey>
-            => AddBusiness<TBusiness>(RepositoryMethods.Operation, true);
-        private RepositorySettings<T, TKey> AddBusiness<TBusiness>(RepositoryMethods method, bool isAfterRequest)
-            where TBusiness : class
+        /// <summary>
+        /// Add business to your repository or CQRS pattern.
+        /// </summary>
+        /// <param name="serviceLifetime">Service Lifetime to override the actual lifetime of your repository.</param>
+        /// <returns>RepositoryBusinessSettings<<typeparamref name="T"/>, <typeparamref name="TKey"/>></returns>
+        public RepositoryBusinessSettings<T, TKey> AddBusiness(ServiceLifetime? serviceLifetime = null)
         {
-            BusinessManagerOptions<T, TKey>.Instance.Services.Add(
-               new BusinessType(method, typeof(TBusiness), isAfterRequest));
-            Services
-                .AddService<IRepositoryBusinessManager<T, TKey>, RepositoryBusinessManager<T, TKey>>(ServiceLifetime)
-                .AddSingleton(BusinessManagerOptions<T, TKey>.Instance)
-                .AddService<TBusiness>(ServiceLifetime);
-            return this;
+            serviceLifetime ??= ServiceLifetime;
+            return new(Services, serviceLifetime.Value);
         }
         public IQueryTranslationBuilder<T, TKey, TTranslated> Translate<TTranslated>()
         {

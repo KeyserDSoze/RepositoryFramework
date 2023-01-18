@@ -73,7 +73,9 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                         .PopulateWithRandomData(120, 5)
                                         .WithPattern(x => x.Value.Email, @"[a-z]{5,10}@gmail\.com");
                                     settings
-                                        .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>()
+                                        .AddBusiness()
+                                            .AddBusinessBeforeInsert<IperRepositoryBeforeInsertBusiness>();
+                                    settings
                                         .Translate<IperUser>();
                                 });
                                 services
@@ -82,8 +84,9 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                         settings
                                             .WithInMemory();
                                         settings
-                                            .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert>()
-                                            .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert2>();
+                                            .AddBusiness()
+                                                .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert>()
+                                                .AddBusinessBeforeInsert<AnimalBusinessBeforeInsert2>();
                                     });
                                 services
                                     .AddRepository<Plant, int>(settings =>
@@ -104,10 +107,11 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                     .AddRepository<Car, Guid>(settings =>
                                     {
                                         settings.WithBlobStorage(x => x.ConnectionString = configuration["ConnectionString:Storage"]);
-                                        settings
-                                        .AddBusinessBeforeInsert<CarBeforeInsertBusiness>()
-                                            .AddBusinessBeforeInsert<CarBeforeInsertBusiness2>();
                                     });
+                                services
+                                    .AddBusinessForRepository<Car, Guid>()
+                                        .AddBusinessBeforeInsert<CarBeforeInsertBusiness>()
+                                        .AddBusinessBeforeInsert<CarBeforeInsertBusiness2>();
                                 services
                                     .AddRepository<SuperCar, Guid>(
                                     settings =>
@@ -119,6 +123,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                             .WithTimestamp(x => x.Time)
                                             .WithTableStorageKeyReader<Car2KeyStorageReader>();
                                         settings
+                                        .AddBusiness()
                                         .AddBusinessBeforeInsert<SuperCarBeforeInsertBusiness>()
                                         .AddBusinessBeforeInsert<SuperCarBeforeInsertBusiness2>();
                                     });
@@ -132,7 +137,9 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                             x.DatabaseName = "BigDatabase";
                                         })
                                             .WithId(x => x.Email!);
-                                        settings.AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness>()
+                                        settings
+                                        .AddBusiness()
+                                        .AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness>()
                                         .AddBusinessBeforeInsert<SuperUserBeforeInsertBusiness2>();
                                     });
                                 services
@@ -149,6 +156,7 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                              configuration["ConnectionString:Dataverse:ClientSecret"]));
                                         });
                                         settings
+                                            .AddBusiness()
                                             .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness>()
                                             .AddBusinessBeforeInsert<CalamityUniverseUserBeforeInsertBusiness2>();
                                     });
@@ -170,10 +178,11 @@ namespace RepositoryFramework.UnitTest.Tests.Api
                                                x.ColumnName = "Zampe";
                                                x.IsNullable = true;
                                            });
-                                       settings
-                                           .AddBusinessBeforeInsert<CatBeforeInsertBusiness>()
-                                           .AddBusinessBeforeInsert<CatBeforeInsertBusiness2>();
                                    });
+                                services.
+                                  AddBusinessForRepository<Cat, Guid>()
+                                    .AddBusinessBeforeInsert<CatBeforeInsertBusiness>()
+                                    .AddBusinessBeforeInsert<CatBeforeInsertBusiness2>();
                                 services.AddApiFromRepositoryFramework()
                                             .WithName<ExtremelyRareUser>("extremelyrareuserrefresh")
                                             .WithName<CalamityUniverseUser>("calamityuser")

@@ -77,7 +77,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
                         .WithPattern(x => x.Value.J!.First().A, "[a-z]{4,5}")
                         .WithPattern(x => x.Value.Y!.First().Value.A, "[a-z]{4,5}");
                 })
-                .AddRepository<DelegationPopulation, string>(settings =>
+                .AddQuery<DelegationPopulation, string>(settings =>
                 {
                     settings
                         .WithInMemory()
@@ -155,7 +155,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
         }
         private readonly IRepository<PopulationTest, string> _test;
         private readonly IRepository<RegexPopulationTest, string> _population;
-        private readonly IQueryPattern<DelegationPopulation, string> _delegation;
+        private readonly IQuery<DelegationPopulation, string> _delegation;
         private readonly IRepository<AutoincrementModel, int> _autoincrementRepository;
         private readonly IRepository<AutoincrementModel2, int> _autoincrementRepository2;
 
@@ -163,7 +163,7 @@ namespace RepositoryFramework.UnitTest.InMemory.RandomPopulation
         {
             _test = s_serviceProvider.GetService<IRepository<PopulationTest, string>>()!;
             _population = s_serviceProvider.GetService<IRepository<RegexPopulationTest, string>>()!;
-            _delegation = s_serviceProvider.GetService<IQueryPattern<DelegationPopulation, string>>()!;
+            _delegation = s_serviceProvider.GetService<IQuery<DelegationPopulation, string>>()!;
             _autoincrementRepository = s_serviceProvider.GetService<IRepository<AutoincrementModel, int>>()!;
             _autoincrementRepository2 = s_serviceProvider.GetService<IRepository<AutoincrementModel2, int>>()!;
         }

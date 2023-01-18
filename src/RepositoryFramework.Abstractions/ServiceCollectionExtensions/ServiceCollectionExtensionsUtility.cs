@@ -27,6 +27,16 @@
                 ServiceLifetime.Singleton => services.AddSingleton<TService, TImplementation>(),
                 _ => services.AddScoped<TService, TImplementation>()
             };
+        public static IServiceCollection AddService(this IServiceCollection services,
+            Type serviceType,
+            Type implementationType,
+            ServiceLifetime lifetime)
+           => lifetime switch
+           {
+               ServiceLifetime.Transient => services.AddTransient(serviceType, implementationType),
+               ServiceLifetime.Singleton => services.AddSingleton(serviceType, implementationType),
+               _ => services.AddScoped(serviceType, implementationType)
+           };
 
         public static IServiceCollection RemoveServiceIfAlreadyInstalled<TStorage>(this IServiceCollection services,
             params Type[] types)

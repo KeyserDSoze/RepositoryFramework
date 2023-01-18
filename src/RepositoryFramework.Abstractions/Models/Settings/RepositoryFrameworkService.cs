@@ -1,4 +1,6 @@
-﻿namespace RepositoryFramework
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace RepositoryFramework
 {
     /// <summary>
     /// Model for your repository service registry.
@@ -9,6 +11,7 @@
         public Type KeyType { get; }
         public Type ModelType { get; }
         public bool IsNotExposable { get; internal set; }
+        public ServiceLifetime ServiceLifetime { get; internal set; }
         public RepositoryFrameworkService(Type keyType, Type modelType)
         {
             KeyType = keyType;

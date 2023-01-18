@@ -20,9 +20,7 @@ namespace RepositoryFramework.InMemory
             behaviorSettings?.Invoke(options);
             CheckSettings(options);
             settings.Services.AddSingleton(options);
-            settings.SetRepositoryStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
-            settings.SetQueryStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
-            var builder = settings.SetCommandStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
+            var builder = settings.SetStorage<InMemoryStorage<T, TKey>>(ServiceLifetime.Singleton);
             return new RepositoryInMemoryBuilder<T, TKey>(builder);
         }
         private static void CheckSettings<T, TKey>(RepositoryBehaviorSettings<T, TKey> settings)

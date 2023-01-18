@@ -19,6 +19,7 @@ namespace RepositoryFramework.UnitTest.AllMethods
                     settings
                         .WithInMemory();
                     settings
+                    .AddBusiness()
                         .AddBusinessAfterInsert<AnimalBusiness>()
                         .AddBusinessBeforeInsert<AnimalBusiness>();
                 })
