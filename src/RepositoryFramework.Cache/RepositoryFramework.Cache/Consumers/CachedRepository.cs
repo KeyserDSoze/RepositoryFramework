@@ -1,6 +1,6 @@
 ﻿namespace RepositoryFramework.Cache
 {
-    internal class CachedRepository<T, TKey> : CachedQuery<T, TKey>, IRepository<T, TKey>
+    internal sealed class CachedRepository<T, TKey> : CachedQuery<T, TKey>, IRepository<T, TKey>
          where TKey : notnull
     {
         private readonly IRepository<T, TKey>? _repository;
