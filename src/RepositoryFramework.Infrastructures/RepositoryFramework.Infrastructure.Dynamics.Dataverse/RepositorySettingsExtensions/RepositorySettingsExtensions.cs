@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(DataverseOptions<T, TKey>.Instance);
             settings.Services.AddSingleton(DataverseOptions<T, TKey>.Instance);
-            settings.Services.AddEventAfterServiceCollectionBuild(serviceProvider => DataverseCreateTableOrMergeNewColumnsInExistingTableAsync(DataverseOptions<T, TKey>.Instance));
+            settings.Services.AddWarmUp(serviceProvider => DataverseCreateTableOrMergeNewColumnsInExistingTableAsync(DataverseOptions<T, TKey>.Instance));
             settings.SetStorage<DataverseRepository<T, TKey>>(ServiceLifetime.Singleton);
             return new RepositoryDataverseBuilder<T, TKey>(settings.Services);
         }

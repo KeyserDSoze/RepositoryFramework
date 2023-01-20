@@ -39,7 +39,7 @@ namespace RepositoryFramework.InMemory
             int numberOfElementsWhenEnumerableIsFound = 10)
         {
             Services.AddPopulationService();
-            Services.AddEventAfterServiceCollectionBuild(serviceProvider =>
+            Services.AddWarmUp(serviceProvider =>
             {
                 var populationStrategy = serviceProvider.GetService<IPopulation<Entity<T, TKey>>>();
                 if (populationStrategy != null)

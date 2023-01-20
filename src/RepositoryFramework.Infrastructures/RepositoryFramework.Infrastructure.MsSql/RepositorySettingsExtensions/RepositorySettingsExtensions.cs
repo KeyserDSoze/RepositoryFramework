@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Invoke(MsSqlOptions<T, TKey>.Instance);
             settings.Services.AddSingleton(MsSqlOptions<T, TKey>.Instance);
-            settings.Services.AddEventAfterServiceCollectionBuild(serviceProvider => MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync(MsSqlOptions<T, TKey>.Instance));
+            settings.Services.AddWarmUp(serviceProvider => MsSqlCreateTableOrMergeNewColumnsInExistingTableAsync(MsSqlOptions<T, TKey>.Instance));
             settings.SetStorage<SqlRepository<T, TKey>>(ServiceLifetime.Scoped);
             return new RepositoryMsSqlBuilder<T, TKey>(settings.Services);
         }
