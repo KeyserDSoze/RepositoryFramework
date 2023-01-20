@@ -6,6 +6,7 @@ namespace RepositoryFramework.Test.Models
 {
     public class CalamityUniverseUserBeforeInsertBusiness2 : IRepositoryBusinessBeforeInsert<CalamityUniverseUser, string>
     {
+        public int Priority => 1;
         public async Task<State<CalamityUniverseUser, string>> BeforeInsertAsync(Entity<CalamityUniverseUser, string> entity, CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;

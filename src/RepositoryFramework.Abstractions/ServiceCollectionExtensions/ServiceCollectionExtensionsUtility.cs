@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {
@@ -37,6 +39,62 @@
                ServiceLifetime.Singleton => services.AddSingleton(serviceType, implementationType),
                _ => services.AddScoped(serviceType, implementationType)
            };
+        public static IServiceCollection TryAddService<TImplementation>(this IServiceCollection services,
+           ServiceLifetime lifetime)
+           where TImplementation : class
+        {
+            switch (lifetime)
+            {
+                case ServiceLifetime.Transient:
+                    services.TryAddTransient<TImplementation>();
+                    break;
+                case ServiceLifetime.Singleton:
+                    services.TryAddSingleton<TImplementation>();
+                    break;
+                default:
+                    services.TryAddScoped<TImplementation>();
+                    break;
+            }
+            return services;
+        }
+        public static IServiceCollection TryAddService<TService, TImplementation>(this IServiceCollection services,
+            ServiceLifetime lifetime)
+            where TImplementation : class, TService
+            where TService : class
+        {
+            switch (lifetime)
+            {
+                case ServiceLifetime.Transient:
+                    services.TryAddTransient<TService, TImplementation>();
+                    break;
+                case ServiceLifetime.Singleton:
+                    services.TryAddSingleton<TService, TImplementation>();
+                    break;
+                default:
+                    services.TryAddScoped<TService, TImplementation>();
+                    break;
+            }
+            return services;
+        }
+        public static IServiceCollection TryAddService(this IServiceCollection services,
+            Type serviceType,
+            Type implementationType,
+            ServiceLifetime lifetime)
+        {
+            switch (lifetime)
+            {
+                case ServiceLifetime.Transient:
+                    services.TryAddTransient(serviceType, implementationType);
+                    break;
+                case ServiceLifetime.Singleton:
+                    services.TryAddSingleton(serviceType, implementationType);
+                    break;
+                default:
+                    services.TryAddScoped(serviceType, implementationType);
+                    break;
+            }
+            return services;
+        }
 
         public static IServiceCollection RemoveServiceIfAlreadyInstalled<TStorage>(this IServiceCollection services,
             params Type[] types)

@@ -13,6 +13,7 @@ namespace RepositoryFramework.WebApi
     }
     public class IperRepositoryBeforeInsertBusiness : IRepositoryBusinessBeforeInsert<IperUser, string>
     {
+        public int Priority => 0;
         public async Task<State<IperUser, string>> BeforeInsertAsync(Entity<IperUser, string> entity, CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;

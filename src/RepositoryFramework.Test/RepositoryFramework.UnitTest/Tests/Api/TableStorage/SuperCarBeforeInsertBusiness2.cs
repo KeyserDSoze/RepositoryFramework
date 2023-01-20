@@ -6,6 +6,7 @@ namespace RepositoryFramework.Test.Models
 {
     public class SuperCarBeforeInsertBusiness2 : IRepositoryBusinessBeforeInsert<SuperCar, Guid>
     {
+        public int Priority => 1;
         public async Task<State<SuperCar, Guid>> BeforeInsertAsync(Entity<SuperCar, Guid> entity, CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;

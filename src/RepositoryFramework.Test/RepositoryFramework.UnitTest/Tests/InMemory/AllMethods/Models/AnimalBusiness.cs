@@ -9,6 +9,7 @@ namespace RepositoryFramework.UnitTest.AllMethods.Models
 {
     internal sealed class AnimalBusiness : IRepositoryBusinessBeforeInsert<Animal, long>, IRepositoryBusinessAfterInsert<Animal, long>
     {
+        public int Priority => 0;
         public static int After;
         public Task<State<Animal, long>> AfterInsertAsync(State<Animal, long> state, Entity<Animal, long> entity, CancellationToken cancellationToken = default)
         {

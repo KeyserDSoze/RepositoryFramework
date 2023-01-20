@@ -4,6 +4,7 @@ namespace RepositoryFramework.Test.Domain
 {
     public class UserBeforeInsertBusiness2 : IRepositoryBusinessBeforeInsert<User, int>
     {
+        public int Priority => 1;
         public async Task<State<User, int>> BeforeInsertAsync(Entity<User, int> entity, CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;

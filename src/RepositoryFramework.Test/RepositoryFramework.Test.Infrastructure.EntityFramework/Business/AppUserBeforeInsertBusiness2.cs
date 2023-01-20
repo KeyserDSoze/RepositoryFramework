@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace RepositoryFramework.Test.Domain
+﻿namespace RepositoryFramework.Test.Domain
 {
     public class AppUserBeforeInsertBusiness2 : IRepositoryBusinessBeforeInsert<AppUser, AppUserKey>
     {
+        public int Priority => 0;
         public async Task<State<AppUser, AppUserKey>> BeforeInsertAsync(Entity<AppUser, AppUserKey> entity, CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;

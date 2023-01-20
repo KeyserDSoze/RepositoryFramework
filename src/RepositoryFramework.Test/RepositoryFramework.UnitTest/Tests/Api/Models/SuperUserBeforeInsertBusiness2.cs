@@ -6,6 +6,7 @@ namespace RepositoryFramework.Test.Models
 {
     public class SuperUserBeforeInsertBusiness2 : IRepositoryBusinessBeforeInsert<SuperUser, string>
     {
+        public int Priority => 1;
         public async Task<State<SuperUser, string>> BeforeInsertAsync(Entity<SuperUser, string> entity, CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;

@@ -5,7 +5,7 @@
     /// </summary>
     /// <typeparam name="T">Model used for your repository.</typeparam>
     /// <typeparam name="TKey">Key to manage your data from repository.</typeparam>
-    public interface IRepositoryBusinessBeforeUpdate<T, TKey>
+    public interface IRepositoryBusinessBeforeUpdate<T, TKey> : IRepositoryBusiness
         where TKey : notnull
     {
         Task<State<T, TKey>> BeforeUpdateAsync(Entity<T, TKey> entity, CancellationToken cancellationToken = default);

@@ -6,6 +6,7 @@ namespace RepositoryFramework.Test.Models
 {
     public class CatBeforeInsertBusiness2 : IRepositoryBusinessBeforeInsert<Cat, Guid>
     {
+        public int Priority => 1;
         public async Task<State<Cat, Guid>> BeforeInsertAsync(Entity<Cat, Guid> entity, CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;
